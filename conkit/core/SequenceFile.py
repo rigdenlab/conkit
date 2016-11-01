@@ -50,6 +50,7 @@ class SequenceFile(Entity):
     SequenceFile(id="example" nseqs=2)
 
     """
+    __slots__ = ['_remark', '_status']
 
     _UNKNOWN = 0
     _NO_ALIGNMENT = -1

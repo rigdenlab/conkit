@@ -40,8 +40,9 @@ class ContactFile(Entity):
     >>> print(contact_file)
     ContactFile(id="example" nseqs=2)
 
-
     """
+    __slots__ = ['_author', '_method', '_remark', '_target']
+
     def __init__(self, id):
         """Initialise a new contact map
 

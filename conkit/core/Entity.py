@@ -45,6 +45,7 @@ class Entity(object):
     Instead, use one or more of the the remaining data models.
 
     """
+    __slots__ = ['_id', '_parent', '_child_list', '_child_dict']
 
     def __init__(self, id):
         """Initialise a generic :obj:`Entity`

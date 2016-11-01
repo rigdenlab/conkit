@@ -59,6 +59,8 @@ class ContactMap(Entity):
 
     """
 
+    __slots__ = ['_sequence']
+
     def __init__(self, id):
         """Initialise a new contact map"""
         self._sequence = None

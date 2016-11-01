@@ -57,6 +57,9 @@ class Contact(Entity):
     Contact(id="(1, 25)" res1="A" res1_seq=1 res2="A" res2_seq=25 raw_score=1.0)
 
     """
+    __slots__ = ['_distance_bound', '_raw_score', '_res1', '_res2', '_res1_chain', '_res2_chain',
+                 '_res1_seq', '_res2_seq', '_res1_altseq', '_res2_altseq', '_scalar_score',
+                 '_status', '_weight']
 
     _UNKNOWN = 0
     _FALSE_POSITIVE = -1
@@ -168,7 +171,7 @@ class Contact(Entity):
         score : float
 
         """
-        self._raw_score = score
+        self._raw_score = float(score)
 
     @property
     def res1(self):
@@ -218,6 +221,7 @@ class Contact(Entity):
         index : int
 
         """
+        # Keep this statement in case we get a float
         if not isinstance(index, int):
             raise TypeError('Data type int required for res_seq')
         self._res1_altseq = index
@@ -236,6 +240,7 @@ class Contact(Entity):
         index : int
 
         """
+        # Keep this statement in case we get a float
         if not isinstance(index, int):
             raise TypeError('Data type int required for res_seq')
         self._res2_altseq = index
@@ -286,6 +291,7 @@ class Contact(Entity):
         index : int
 
         """
+        # Keep this statement in case we get a float
         if not isinstance(index, int):
             raise TypeError('Data type int required for res_seq')
         self._res1_seq = index
@@ -304,6 +310,7 @@ class Contact(Entity):
         index : int
 
         """
+        # Keep this statement in case we get a float
         if not isinstance(index, int):
             raise TypeError('Data type int required for res_seq')
         self._res2_seq = index
@@ -363,7 +370,7 @@ class Contact(Entity):
         weight : float, int
 
         """
-        self._weight = weight
+        self._weight = float(weight)
 
     def define_false_positive(self):
         """Define a contact as false positive

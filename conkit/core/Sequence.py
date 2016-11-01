@@ -33,6 +33,7 @@ class Sequence(Entity):
     Sequence(id="example" seq="ABCDEF" seqlen=6)
 
     """
+    __slots__ = ['_remark', '_seq']
 
     def __init__(self, id, seq):
         """Initialise a generic contact pair
@@ -60,7 +61,7 @@ class Sequence(Entity):
             seq_string = self.seq[:5] + '...' + self.seq[-5:]
         else:
             seq_string = self.seq
-        return "Sequence(id=\"{0}\" seq=\"{1}\" seqlen={2})".format(
+        return "Sequence(id=\"{0}\" seq=\"{1}\" seq_len={2})".format(
             self.id, seq_string, len(self.seq))
 
     @property
