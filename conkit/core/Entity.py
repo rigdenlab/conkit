@@ -56,10 +56,15 @@ class Entity(object):
            The ID of the selected entity
 
         """
-        self._id = id
+        self._id = None
         self._parent = None
         self._child_list = []
         self._child_dict = {}
+
+        # Assign values post creation to use setter/getter methods
+        # Possibly very bad practice but no better alternative for now
+        self.id = id
+
 
     def __contains__(self, id):
         """True if there is a child element with the given id"""

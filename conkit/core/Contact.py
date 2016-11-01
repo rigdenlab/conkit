@@ -81,19 +81,27 @@ class Contact(Entity):
            The residue sequence number of residue 2
 
         """
-        self._distance_bound = distance_bound
-        self._raw_score = raw_score
+        self._distance_bound = (0, 8)
+        self._raw_score = 1.0
         self._res1 = 'X'
         self._res2 = 'X'
         self._res1_chain = ''
         self._res2_chain = ''
-        self._res1_seq = res1_seq
-        self._res2_seq = res2_seq
+        self._res1_seq = 0
+        self._res2_seq = 0
         self._res1_altseq = 0
         self._res2_altseq = 0
         self._scalar_score = 0.0
         self._status = self._UNKNOWN
         self._weight = 1.0
+
+        # Assign values post creation to use setter/getter methods
+        # Possibly very bad practice but no better alternative for now
+        self.distance_bound = distance_bound
+        self.raw_score = raw_score
+        self.res1_seq = res1_seq
+        self.res2_seq = res2_seq
+
         super(Contact, self).__init__((res1_seq, res2_seq))
 
     def __repr__(self):

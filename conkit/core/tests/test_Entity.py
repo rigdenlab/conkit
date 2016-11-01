@@ -221,7 +221,7 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 4
         entity = Entity([1, 2])
-        self.assertEqual([1, 2], entity.id)
+        self.assertEqual((1, 2), entity.id)
         # ======================================================
         # Test Case 5
         entity = Entity((1., 2.))
