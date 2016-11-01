@@ -27,9 +27,9 @@ class Contact(Entity):
     raw_score : float
        The prediction score for the contact pair
     res1 : str
-       The amino acid of residue 1
+       The amino acid of residue 1 [default: X]
     res2 : str
-       The amino acid of residue 2
+       The amino acid of residue 2 [default: X]
     res1_chain : str
        The chain for residue 1
     res2_chain : str
@@ -183,7 +183,7 @@ class Contact(Entity):
 
     @property
     def res1(self):
-        """The amino acid of residue 1 [default: Ala]"""
+        """The amino acid of residue 1 [default: X]"""
         return self._res1
 
     @res1.setter
@@ -200,7 +200,7 @@ class Contact(Entity):
 
     @property
     def res2(self):
-        """The amino acid of residue 2 [default: Ala]"""
+        """The amino acid of residue 2 [default: X]"""
         return self._res2
 
     @res2.setter
