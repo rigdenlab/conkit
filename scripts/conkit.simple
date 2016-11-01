@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+"""
+Simple example pipeline to predict contact pairs
+"""
+
+import argparse
+import os
+import sys
+
+import conkit
+
+__author__ = "Felix Simkovic"
+__date__ = "01 June 2016"
+__version__ = "1.0"
+
+
+def main():
+
+    p = argparse.ArgumentParser()
+    p.add_argument('-prefix', help='Job ID')
+    p.add_argument('-wdir', default=os.getcwd(), help='working directory')
+    p.add_argument('hhblitsdb', help='HHblits database')
+    p.add_argument('fasta', help="fasta file")
+    args = p.parse_args()
+
+    # Set the database variable
+    hhblits_db = os.path.abspath(args.hhblitsdb)
+
+    # Set the sequence file variable
+    if args.prefix:
+        name = args.prefix
+    else:
+        name = os.path.basename(args.fasta).rsplit(".", 1)[0]
+
+    seq_fname = os.path.abspath(args.fasta)
+    a3m_fname = os.path.join(args.wdir, name+'.a3m')
+    hhr_fname = os.path.join(args.wdir, name+'.hhr')
+    jon_fname = os.path.join(args.wdir, name+'.jones')
+    matrix_fname = os.path.join(args.wdir, name+'.mat')
+    casprr_fname = os.path.join(args.wdir, name+'.rr')
+
+    # Generate a multiple sequence alignment
+    hhblits_cline = conkit.applications.HHblitsCommandLine(input=seq_fname, output=hhr_fname,
+                                                           database=hhblits_db, oa3m=a3m_fname,
+                                                           niterations=3,  id=99, show_all=True,
+                                                           cov=60, diff='inf', maxfilt=500000)
+    print(hhblits_cline)
+    hhblits_cline()
+
+    # CCMpred requires alignments to be in the *jones* format - i.e. the format created
+    # and used by David Jones in PSICOV
+    msa_h = conkit.io.read(open(a3m_fname, 'r'), 'a3m')
+    print('Total Number of sequences: {0}'.format(msa_h.nseqs))
+    print('Number of effective sequences: {0}'.format(msa_h.calculate_meff()))
+    conkit.io.write(open(jon_fname, 'w'), 'jones', msa_h)
+
+    # Use the re-formatted alignment for contact prediction
+    ccmpred_cline = conkit.applications.CCMpredCommandLine(alnfile=jon_fname, matfile=matrix_fname, 
+                                                           renormalize=True)
+    print(ccmpred_cline)
+    ccmpred_cline()
+
+    # Add sequence information to contact hierarchy
+    con_h = conkit.io.read(open(matrix_fname, 'r'), 'ccmpred')
+    seq_h = conkit.io.read(open(seq_fname, 'r'), 'fasta')
+    # Do some post-prediction processing for visualisation and analysis
+    for cmap, seq in zip(con_h, seq_h):
+        cmap.sequence = seq
+        cmap.remove_neighbors(min_distance=5, inplace=True)
+        cmap.sort('raw_score', reverse=True, inplace=True)
+        cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
+        plot_fname = os.path.join(args.wdir, name + '.' + cmap.id +'.pdf')
+        cmap.plot_map(file_format='pdf', file_name=plot_fname)
+
+    # Use the ccmpred parser to write a contact file
+    conkit.io.write(open(casprr_fname, 'w'), 'casprr', con_h)
+    return casprr_fname
+
+if __name__ == "__main__":
+    sys.exit(main())

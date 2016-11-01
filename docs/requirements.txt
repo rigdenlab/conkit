@@ -1,0 +1,8 @@
+biopython
+ipykernel
+matplotlib
+nbsphinx
+numpy
+numpydoc
+scipy
+
