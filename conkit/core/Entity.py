@@ -65,7 +65,6 @@ class Entity(object):
         # Possibly very bad practice but no better alternative for now
         self.id = id
 
-
     def __contains__(self, id):
         """True if there is a child element with the given id"""
         return id in self.child_dict
