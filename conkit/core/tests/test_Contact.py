@@ -216,15 +216,14 @@ class Test(unittest.TestCase):
         self.assertFalse(contact.is_false_positive)
 
     def test__set_residue(self):
-        contact = Contact(0, 0, 0)
-        self.assertEqual("A", contact._set_residue("ALA"))
-        self.assertEqual("A", contact._set_residue("Ala"))
-        self.assertEqual("A", contact._set_residue("ala"))
-        self.assertEqual("A", contact._set_residue("A"))
-        self.assertEqual("A", contact._set_residue("a"))
-        self.assertRaises(ValueError, contact._set_residue, 'AL')
-        self.assertRaises(ValueError, contact._set_residue, '-')
-        self.assertRaises(ValueError, contact._set_residue, 1)
+        self.assertEqual("A", Contact._set_residue("ALA"))
+        self.assertEqual("A", Contact._set_residue("Ala"))
+        self.assertEqual("A", Contact._set_residue("ala"))
+        self.assertEqual("A", Contact._set_residue("A"))
+        self.assertEqual("A", Contact._set_residue("a"))
+        self.assertRaises(ValueError, Contact._set_residue, 'AL')
+        self.assertRaises(ValueError, Contact._set_residue, '-')
+        self.assertRaises(ValueError, Contact._set_residue, 1)
 
 
 if __name__ == "__main__":

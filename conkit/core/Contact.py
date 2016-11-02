@@ -92,7 +92,7 @@ class Contact(Entity):
         self._res1_altseq = 0
         self._res2_altseq = 0
         self._scalar_score = 0.0
-        self._status = self._UNKNOWN
+        self._status = Contact._UNKNOWN
         self._weight = 1.0
 
         # Assign values post creation to use setter/getter methods
@@ -147,7 +147,7 @@ class Contact(Entity):
         define_false_positive, define_true_positive, is_true_positive
 
         """
-        return True if self.status == self._FALSE_POSITIVE else False
+        return True if self.status == Contact._FALSE_POSITIVE else False
 
     @property
     def is_true_positive(self):
@@ -163,7 +163,7 @@ class Contact(Entity):
         define_true_positive, define_false_positive, is_false_positive
 
         """
-        return True if self.status == self._TRUE_POSITIVE else False
+        return True if self.status == Contact._TRUE_POSITIVE else False
 
     @property
     def raw_score(self):
@@ -196,7 +196,7 @@ class Contact(Entity):
            The one- or three-letter code of an amino acid
 
         """
-        self._res1 = self._set_residue(amino_acid)
+        self._res1 = Contact._set_residue(amino_acid)
 
     @property
     def res2(self):
@@ -213,7 +213,7 @@ class Contact(Entity):
            The one- or three-letter code of an amino acid
 
         """
-        self._res2 = self._set_residue(amino_acid)
+        self._res2 = Contact._set_residue(amino_acid)
 
     @property
     def res1_altseq(self):
@@ -359,7 +359,7 @@ class Contact(Entity):
            Unknown status
 
         """
-        if any(i == status for i in [self._UNKNOWN, self._FALSE_POSITIVE, self._TRUE_POSITIVE]):
+        if any(i == status for i in [Contact._UNKNOWN, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE]):
             self._status = status
         else:
             raise ValueError("Unknown status")
@@ -388,7 +388,7 @@ class Contact(Entity):
         define_true_positive, is_true_positive, is_false_positive
 
         """
-        self._status = self._FALSE_POSITIVE
+        self._status = Contact._FALSE_POSITIVE
 
     def define_true_positive(self):
         """Define a contact as true positive
@@ -398,9 +398,10 @@ class Contact(Entity):
         define_false_positive, is_false_positive, is_true_positive
 
         """
-        self._status = self._TRUE_POSITIVE
+        self._status = Contact._TRUE_POSITIVE
 
-    def _set_residue(self, amino_acid):
+    @staticmethod
+    def _set_residue(amino_acid):
         """Assign the residue to the corresponding amino_acid"""
 
         # Check that the amino acid exists
