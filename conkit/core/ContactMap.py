@@ -15,9 +15,14 @@ from conkit.core.Sequence import Sequence
 
 import collections
 import itertools
-import matplotlib.pyplot
 import numpy
 import warnings
+
+try:
+    import matplotlib.pyplot
+    MATPLOTLIB = True
+except ImportError:
+    MATPLOTLIB = False
 
 
 class ContactMap(Entity):
@@ -527,7 +532,14 @@ class ContactMap(Entity):
         If the ``file_name`` variable is not changed, the current file will be
         continuously overwritten.
 
+        Raises
+        ------
+        RuntimeError
+           Matplotlib not installed
+
         """
+        if not MATPLOTLIB:
+            raise RuntimeError('Dependency not found: matplotlib')
 
         fig, ax = matplotlib.pyplot.subplots(figsize=(5, 5), dpi=600)
 
