@@ -66,7 +66,7 @@ class SequenceFile(Entity):
 
         """
         self._remark = []
-        self._status = self._UNKNOWN
+        self._status = SequenceFile._UNKNOWN
         super(SequenceFile, self).__init__(id)
 
     def __repr__(self):
@@ -82,12 +82,12 @@ class SequenceFile(Entity):
            A boolean status for the alignment
         """
         seq_length = self.top_sequence.seq_len
-        self.status = self._YES_ALIGNMENT
+        self.status = SequenceFile._YES_ALIGNMENT
         for sequence in self:
             if sequence.seq_len != seq_length:
-                self.status = self._NO_ALIGNMENT
+                self.status = SequenceFile._NO_ALIGNMENT
                 break
-        return True if self.status == self._YES_ALIGNMENT else False
+        return True if self.status == SequenceFile._YES_ALIGNMENT else False
 
     @property
     def nseqs(self):
@@ -143,7 +143,7 @@ class SequenceFile(Entity):
            Unknown status
 
         """
-        if any(i == status for i in [self._UNKNOWN, self._NO_ALIGNMENT, self._YES_ALIGNMENT]):
+        if any(i == status for i in [SequenceFile._UNKNOWN, SequenceFile._NO_ALIGNMENT, SequenceFile._YES_ALIGNMENT]):
             self._status = status
         else:
             raise ValueError("Unknown status")

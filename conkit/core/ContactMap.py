@@ -58,7 +58,6 @@ class ContactMap(Entity):
     ContactMap(id="example" ncontacts=2)
 
     """
-
     __slots__ = ['_sequence']
 
     def __init__(self, id):
