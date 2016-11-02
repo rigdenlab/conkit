@@ -12,7 +12,11 @@ __version__ = 0.1
 from conkit.core.Entity import Entity
 
 import numpy
-import scipy.spatial
+try:
+    import scipy.spatial
+    SCIPY = True
+except ImportError:
+    SCIPY = False
 
 
 class SequenceFile(Entity):
@@ -189,10 +193,15 @@ class SequenceFile(Entity):
         ------
         MemoryError
            Too many sequences in the alignment for Hamming distance calculation
+        RuntimeError
+           SciPy package not installed
         ValueError
            :obj:`SequenceFile` is not an alignment
 
         """
+        if not SCIPY:
+            raise RuntimeError('Cannot find SciPy package')
+
         if not self.is_alignment:
             raise ValueError('This is not an alignment')
 
