@@ -32,7 +32,7 @@ class PdbParser(_ContactFileParser):
         """Build a peptide using Biopython to extract the sequence"""
         return Sequence(chain.id + '_seq', ''.join(constants.THREE_TO_ONE[residue.resname] for residue in chain))
 
-    def _chain_contacts(self, chain1, chain2, distance_cutoff):
+    def _chain_contacts(self, chain1, chain2):
         """Determine the contact pairs intra- or inter-molecular
 
         Parameters
@@ -41,8 +41,6 @@ class PdbParser(_ContactFileParser):
            A first chain object
         chain2 : Bio.PDB.Chain()
            A second chain object
-        distance_cutoff : int
-           A distance cutoff
 
         Yields
         ------
@@ -74,20 +72,19 @@ class PdbParser(_ContactFileParser):
                 # Biopython implementation to calculate distance between atoms
                 distance = atom1 - atom2
 
-                if distance < distance_cutoff:
-                    construct1 = Atom(
-                        resname=residue1.resname,
-                        resseq=int(residue1.id[1]),
-                        resseq_alt=resseq1_alt,
-                        reschain=chain1.id,
-                    )
-                    construct2 = Atom(
-                        resname=residue2.resname,
-                        resseq=int(residue2.id[1]),
-                        resseq_alt=resseq2_alt,
-                        reschain=chain2.id,
-                    )
-                    yield (construct1, construct2, distance)
+                construct1 = Atom(
+                    resname=residue1.resname,
+                    resseq=int(residue1.id[1]),
+                    resseq_alt=resseq1_alt,
+                    reschain=chain1.id,
+                )
+                construct2 = Atom(
+                    resname=residue2.resname,
+                    resseq=int(residue2.id[1]),
+                    resseq_alt=resseq2_alt,
+                    reschain=chain2.id,
+                )
+                yield (construct1, construct2, distance)
 
     def _remove_atom(self, chain, type):
         """Tidy up a chain removing all HETATM entries"""
@@ -148,7 +145,7 @@ class PdbParser(_ContactFileParser):
                     contact_map = ContactMap(chain1.id + chain2.id)
 
                 # Find all contacts between the two chains
-                for (atom1, atom2, distance) in self._chain_contacts(chain1, chain2, distance_cutoff):
+                for (atom1, atom2, distance) in self._chain_contacts(chain1, chain2):
                     contact = Contact(
                         atom1.resseq,
                         atom2.resseq,
@@ -162,6 +159,12 @@ class PdbParser(_ContactFileParser):
                     contact.res2 = atom2.resname
                     contact.res1_chain = atom1.reschain
                     contact.res2_chain = atom2.reschain
+
+                    if distance < distance_cutoff:
+                        contact.define_true_positive()
+                    else:
+                        contact.define_false_positive()
+
                     contact_map.add(contact)
 
                 # Tidy up empty maps
@@ -169,10 +172,10 @@ class PdbParser(_ContactFileParser):
                     # Get the full length of the peptide sequence and store it
                     if len(contact_map.id) == 1:                                                # INTRA !!!
                         contact_map.sequence = self._build_sequence(chain1)
-                        assert len(contact_map.sequence.seq) == len(chain1)                # Check that ncon analyzed == len_chains
+                        assert len(contact_map.sequence.seq) == len(chain1)                     # Check that ncon analyzed == len_chains
                     else:                                                                       # INTER !!!
                         contact_map.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
-                        assert len(contact_map.sequence.seq) == len(chain1) + len(chain2)  # Check that ncon analyzed == len_chains
+                        assert len(contact_map.sequence.seq) == len(chain1) + len(chain2)       # Check that ncon analyzed == len_chains
                     hierarchy.add(contact_map)                                                  # Save the map into the hierarchy
                 else:
                     del contact_map                                                             # Delete the empty contact map
