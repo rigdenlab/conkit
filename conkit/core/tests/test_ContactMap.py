@@ -409,6 +409,35 @@ class Test(unittest.TestCase):
         contact_map1.assign_sequence_register()
 
         contact_map2 = ContactMap('bar')
+        for i, params in enumerate([(1, 5, 1.0), (1, 6, 1.0), (2, 4, 1.0)]):
+            contact = Contact(*params)
+            contact.res1_altseq = params[0]
+            contact.res2_altseq = params[1]
+            if i % 2 == 0:
+                contact.define_true_positive()
+            else:
+                contact.define_false_positive()
+            contact_map2.add(contact)
+        contact_map2.sequence = Sequence('bar', 'BCDEFG')
+        contact_map2.assign_sequence_register(altloc=True)
+
+        contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
+        self.assertEqual(
+            [Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
+            [c.status for c in contact_map1]
+        )
+        self.assertEqual([2, 2, 3], [c.res1_altseq for c in contact_map2])
+        self.assertEqual([6, 7, 5], [c.res2_altseq for c in contact_map2])
+        # ======================================================
+        # Test Case 5
+        contact_map1 = ContactMap('foo')
+        for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
+            contact = Contact(*params)
+            contact_map1.add(contact)
+        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.assign_sequence_register()
+
+        contact_map2 = ContactMap('bar')
 
         contact1 = Contact(95, 30, 1.0)
         contact1.res1_chain = 'A'
@@ -444,7 +473,7 @@ class Test(unittest.TestCase):
             [c.status for c in contact_map1]
         )
         # ======================================================
-        # Test Case 5
+        # Test Case 6
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -487,7 +516,7 @@ class Test(unittest.TestCase):
             [c.status for c in contact_map1]
         )
         # ======================================================
-        # Test Case 6
+        # Test Case 7
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -535,7 +564,7 @@ class Test(unittest.TestCase):
         self.assertEqual([30, 31, 9999, 30, 9999], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', '', 'B', ''], [c.res2_chain for c in contact_map1])
         # ======================================================
-        # Test Case 7
+        # Test Case 8
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -582,7 +611,7 @@ class Test(unittest.TestCase):
         self.assertEqual([30, 31, 30], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', 'B'], [c.res2_chain for c in contact_map1])
         # ======================================================
-        # Test Case 8
+        # Test Case 9
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
