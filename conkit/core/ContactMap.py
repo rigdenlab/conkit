@@ -14,7 +14,6 @@ from conkit.core.Entity import Entity
 from conkit.core.Sequence import Sequence
 
 import collections
-import itertools
 import numpy
 import warnings
 
@@ -23,6 +22,36 @@ try:
     MATPLOTLIB = True
 except ImportError:
     MATPLOTLIB = False
+
+
+class _Residue(object):
+    """A basic class representing a residue"""
+    __slots__ = ('res_seq', 'res_altseq', 'res_name', 'res_chain')
+
+    def __init__(self, res_seq, res_altseq, res_name, res_chain):
+        self.res_seq = res_seq
+        self.res_altseq = res_altseq
+        self.res_name = res_name
+        self.res_chain = res_chain
+
+    def __repr__(self):
+        string = "Residue(res_seq='{0}' res_altseq='{1}' res_name='{2}' res_chain='{3}'"
+        return string.format(self.res_seq, self.res_altseq, self.res_name, self.res_chain)
+
+
+class _Gap(object):
+    """A basic class representing a gap residue"""
+    __slots__ = ('res_seq', 'res_altseq', 'res_name', 'res_chain')
+
+    def __init__(self):
+        self.res_seq = 9999
+        self.res_altseq = 9999
+        self.res_name = 'X'
+        self.res_chain = ''
+
+    def __repr__(self):
+        string = "Gap(res_seq='{0}' res_altseq='{1}' res_name='{2}' res_chain='{3}'"
+        return string.format(self.res_seq, self.res_altseq, self.res_name, self.res_chain)
 
 
 class ContactMap(Entity):
@@ -323,32 +352,49 @@ class ContactMap(Entity):
            Use the res_altloc positions [default: False]
 
         """
-        # Template namedtuple for temporary storage
-        Template = collections.namedtuple('Template', ['res_seq', 'res_altseq', 'res_matchseq', 'res_name', 'status'])
+        contact_map_keymap = collections.OrderedDict()
 
-        # Faster and remembers order?!
-        cmap_mapping = collections.OrderedDict()
-        for c in self:
-            pos1 = Template(res_seq=c.res1_seq, res_altseq=c.res1_altseq, res_matchseq=constants.UNKNOWN,
-                            res_name=c.res1, status=constants.UNREGISTERED)
-            pos2 = Template(res_seq=c.res2_seq, res_altseq=c.res2_altseq, res_matchseq=constants.UNKNOWN,
-                            res_name=c.res2, status=constants.UNREGISTERED)
+        for contact in self:
+            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
+            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
 
             if altloc:
-                res1_index, res2_index = c.res1_altseq, c.res2_altseq
+                res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
             else:
-                res1_index, res2_index = c.res1_seq, c.res2_seq
+                res1_index, res2_index = contact.res1_seq, contact.res2_seq
 
-            if res1_index in cmap_mapping and cmap_mapping[res1_index]:
-                assert cmap_mapping[res1_index] == pos1
-            if res2_index in cmap_mapping and cmap_mapping[res2_index]:
-                assert cmap_mapping[res2_index] == pos2
+            contact_map_keymap[res1_index] = pos1
+            contact_map_keymap[res2_index] = pos2
 
-            cmap_mapping[res1_index] = pos1
-            cmap_mapping[res2_index] = pos2
+        contact_map_keymap_sorted = sorted(contact_map_keymap.items(), key=lambda x: int(x[0]))
+        return zip(*contact_map_keymap_sorted)[1]
 
-        cmap_sorted = sorted(cmap_mapping.items(), key=lambda x: int(x[0]))
-        return [nt._asdict() for nt in zip(*cmap_sorted)[1]]
+    def find(self, indexes, altloc=False):
+        """Find all contacts associated with ``index``
+
+        Parameters
+        ----------
+        index : list, tuple
+           A list of residue indexes to find
+        altloc : bool
+           Use the res_altloc positions [default: False]
+
+        Returns
+        -------
+        :obj:`ContactMap`
+           A modified version of the contact map containing
+           the found contacts
+
+        """
+        contact_map = self.copy()
+        for contact in self:
+            if altloc and (contact.res1_altseq in indexes or contact.res2_altseq in indexes):
+                continue
+            elif contact.res1_seq in indexes or contact.res2_seq in indexes:
+                continue
+            else:
+                contact_map.remove(contact.id)
+        return contact_map
 
     def match(self, other, remove_unmatched=False, renumber=False, inplace=False):
         """Modify both hierarchies so residue numbers match one another.
@@ -374,118 +420,128 @@ class ContactMap(Entity):
 
         Returns
         -------
-        hierarchy_mod
-           A ConKit :obj:`ContactMap`, regardless of inplace
-        hierarchy_ref
-           A ConKit :obj:`ContactMap`, regardless of inplace
-
-        Warnings
-        --------
-        This function is highly unstable for inter-molecular contacts. Please remove all
-        intra-molecular contacts from both maps manually before matching!
+        hierarchy_mod, hierarchy_ref
+           Two ConKit :obj:`ContactMap` instances, regardless of inplace
 
         """
-        warnings.warn('Unstable for inter-molecular contacts!')
-
         contact_map1 = self._inplace(inplace)
         contact_map2 = other._inplace(inplace)
 
+        # ================================================================
+        # 1. Align all sequences
+        # ================================================================
+
         # Align both full sequences against each other
-        contact_map1.sequence.align_local(contact_map2.sequence,
-            id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1,
-            inplace=True
-        )
-        # Align the repr sequence of map 1 against full sequence of map 1
-        contact_map1.sequence.align_local(contact_map1.repr_sequence,
-            id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2,
-            inplace=True
-        )
-        # Align the __altloc__ repr sequence of map 2 against full sequence of map 2
-        contact_map2.sequence.align_local(contact_map2.repr_sequence_altloc,
-            id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2,
-            inplace=True
-        )
-        # Align the repr sequence of map 1 against the __altloc__ repr sequence of map 2
-        contact_map1.repr_sequence.align_local(
-            contact_map2.repr_sequence_altloc,
-            id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5,
-            inplace=True
-        )
+        aligned_sequences_full = contact_map1.sequence.align_local(contact_map2.sequence, id_chars=2,
+                                                                   nonid_chars=1, gap_open_pen=-0.5,
+                                                                   gap_ext_pen=-0.1)
+        contact_map1_full_sequence, contact_map2_full_sequence = aligned_sequences_full
 
-        # Make sure all of our sequences are identical in length
-        if not (contact_map1.sequence.seq_len
-                == contact_map1.repr_sequence.seq_len
-                == contact_map2.sequence.seq_len
-                == contact_map2.repr_sequence_altloc.seq_len):
-            raise ValueError('Sequences do not match in length')
+        # Align contact map 1 full sequences with representative sequence
+        aligned_sequences_map1 = contact_map1_full_sequence.align_local(contact_map1.repr_sequence,
+                                                                        id_chars=2, nonid_chars=1, gap_open_pen=-0.5,
+                                                                        gap_ext_pen=-0.2, inplace=True)
+        contact_map1_repr_sequence = aligned_sequences_map1[-1]
 
-        if all(c == '-' for c in contact_map1.repr_sequence.seq):
-            raise ValueError('No representative sequence available for - {0}'.format(contact_map1))
-        elif all(c == '-' for c in contact_map2.repr_sequence_altloc.seq):
-            raise ValueError('No representative sequence available for - {0}'.format(contact_map2))
+        # Align contact map 2 full sequences with __ALTLOC__ representative sequence
+        aligned_sequences_map2 = contact_map2_full_sequence.align_local(contact_map2.repr_sequence_altloc,
+                                                                        id_chars=2, nonid_chars=1, gap_open_pen=-0.5,
+                                                                        gap_ext_pen=-0.2, inplace=True)
+        contact_map2_repr_sequence = aligned_sequences_map2[-1]
 
-        # Create default residue key mappings
-        cmap1_keymap = contact_map1.create_keymap()
-        cmap2_keymap = contact_map2.create_keymap(altloc=True)
+        # Align both aligned representative sequences
+        aligned_sequences_repr = contact_map1_repr_sequence.align_local(contact_map2_repr_sequence,
+                                                                        id_chars=2, nonid_chars=1, gap_open_pen=-1.0,
+                                                                        gap_ext_pen=-0.5, inplace=True)
+        contact_map1_repr_sequence, contact_map2_repr_sequence = aligned_sequences_repr
 
-        # ------------------------------------------------------------------------------------------------------------------
-        # Match the mappings using their res_seq entries
-        cursor1 = cursor2 = 0
-        for pos1, pos2 in zip(contact_map1.repr_sequence.seq, contact_map2.repr_sequence_altloc.seq):
-            if pos1 == pos2 and pos1 == '-':  # Gap
-                continue
-            elif pos1 != pos2 and pos1 == '-':  # Gap in cmap1 sequence
-                cmap2_keymap[cursor2]['status'] = constants.UNMATCHED
-                cursor2 += 1
-            elif pos1 != pos2 and pos2 == '-':  # Gap in cmap2 sequence
-                cmap1_keymap[cursor1]['status'] = constants.UNMATCHED
-                cursor1 += 1
-            else:  # Match
-                if cmap1_keymap[cursor1]['res_name'] != cmap2_keymap[cursor2]['res_name']:
-                    raise RuntimeError('Matched residues with different residue names')
-                cmap1_keymap[cursor1]['res_matchseq'] = cmap2_keymap[cursor2]['res_seq']
-                cmap1_keymap[cursor1]['status'] = constants.MATCHED
-                cmap2_keymap[cursor2]['res_matchseq'] = cmap1_keymap[cursor1]['res_seq']
-                cmap2_keymap[cursor2]['status'] = constants.MATCHED
-                cursor1, cursor2 = cursor1 + 1, cursor2 + 1
+        # ================================================================
+        # 2. Identify TPs in other, map them, and match them to self
+        # ================================================================
 
-        # ------------------------------------------------------------------------------------------------------------------
-        # Modify contact_map1 to match contact_map2
-        for combo in itertools.combinations(cmap1_keymap, 2):
+        # Encode the sequences to uint8 character arrays for easier and faster handling
+        encoded_repr = numpy.asarray([
+            numpy.fromstring(contact_map1_repr_sequence.seq, dtype='uint8'),
+            numpy.fromstring(contact_map2_repr_sequence.seq, dtype='uint8')
+        ])
 
-            # Note: contact id is tuple of strings not ints
-            contact_id_orig = tuple([combo[0]['res_seq'], combo[1]['res_seq']])
-            contact_id_matched = tuple([combo[0]['res_matchseq'], combo[1]['res_matchseq']])
-            contact_status = tuple([combo[0]['status'], combo[1]['status']])
+        # Create mappings for both contact maps
+        contact_map1_keymap = contact_map1.create_keymap()
+        contact_map2_keymap = contact_map2.create_keymap(altloc=True)
 
-            # Skip non-existent combinations
-            if contact_id_orig not in contact_map1:
-                continue
+        # Some checks
+        assert len(contact_map1_keymap) == len(numpy.where(encoded_repr[0] != ord('-'))[0])
+        assert len(contact_map2_keymap) == len(numpy.where(encoded_repr[1] != ord('-'))[0])
 
-            # THIS FIXES IT ALL - WORK OUT THE LIMITS FOR INTER-CHAINS
-            # elif contact_id_orig[0] < 128 and contact_id_orig[1] < 128:
-            #     cmap1.remove(contact_id_orig)
-            #     continue
-            # elif contact_id_orig[0] > 127 and contact_id_orig[1] > 127:
-            #     cmap1.remove(contact_id_orig)
-            #     continue
+        # Create a sequence matching keymap including deletions and insertions
+        keymaps = [[], []]
+        it_contact_map1 = iter(contact_map1_keymap)
+        it_contact_map2 = iter(contact_map2_keymap)
+        for amino_acid1, amino_acid2 in zip(encoded_repr[0], encoded_repr[1]):
+            if amino_acid1 == ord('-'):
+                keymaps[0].append(_Gap())
+            else:
+                keymaps[0].append(it_contact_map1.next())
 
-            # Define the TRUE and FALSE positive status of the contact
-            if sum(contact_status) == constants.MATCHED and contact_id_matched in contact_map2:
-                contact_map1[contact_id_orig].define_true_positive()
-            elif sum(contact_status) == constants.MATCHED:
-                contact_map1[contact_id_orig].define_false_positive()
+            if amino_acid2 == ord('-'):
+                keymaps[1].append(_Gap())
+            else:
+                keymaps[1].append(it_contact_map2.next())
+        contact_map1_keymap, contact_map2_keymap = keymaps
 
-            # Note: It is essential to renumber the contact first!
-            #       To avoid indexing issues or formatting problems, we do __NOT__ change the
-            #       key in our contact map of this particular contact -
-            #       only the res1_seq, res2_seq, res1_altseq and res2_altseq attributes.
-            if renumber:
-                contact_map1[contact_id_orig].res1_seq, contact_map1[contact_id_orig].res2_seq = contact_id_matched
-                contact_map1[contact_id_orig].res1_altseq, contact_map1[contact_id_orig].res2_altseq = contact_id_orig
+        # Reindex the altseq positions to account for insertions/deletions
+        def reindex(keymap):
+            """Reindex a key map"""
+            for i, residue in enumerate(keymap):
+                if isinstance(residue, _Residue):
+                    residue.res_altseq = i + 1
+            return keymap
+        contact_map1_keymap = reindex(contact_map1_keymap)
+        contact_map2_keymap = reindex(contact_map2_keymap)
 
-            if remove_unmatched and sum(contact_status) != 0:
-                contact_map1.remove(contact_id_orig)
+        # TODO: Find a speed-up for this loop
+        # Adjust contact_map2 altseqs based on the insertions and deletions
+        for residue in contact_map2_keymap:
+            if isinstance(residue, _Residue):
+                # Important to find them using original res_seq
+                for contact in contact_map2.find([residue.res_seq]):
+                    if contact.res1_seq == residue.res_seq:
+                        contact_map2[contact.id].res1_altseq = residue.res_altseq
+                    elif contact.res2_seq == residue.res_seq:
+                        contact_map2[contact.id].res2_altseq = residue.res_altseq
+
+        # Adjust true and false positive statuses
+        for contact in contact_map2:
+            id = (contact.res1_altseq, contact.res2_altseq)
+            if id in contact_map1:
+                contact_map1[id].status = contact.status
+
+        # ================================================================
+        # 3. Remove unmatched contacts
+        # ================================================================
+        if remove_unmatched:
+            for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap):
+                if isinstance(residue1, _Gap):
+                    continue
+                elif isinstance(residue2, _Gap):
+                    for contact in contact_map1.find([residue1.res_seq]):
+                        contact_map1.remove(contact.id)
+
+        # ================================================================
+        # 4. Renumber the contact map 1 based on contact map 2
+        # ================================================================
+        if renumber:
+            for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap):
+                if isinstance(residue1, _Gap):
+                    continue
+                for contact in contact_map1.find([residue1.res_seq]):
+                    contact = contact_map1[contact.id]
+                    if contact.res1_seq == residue1.res_seq:
+                        contact.res1_seq = residue2.res_seq
+                        contact.res1_chain = residue2.res_chain
+                    else:
+                        contact.res2_seq = residue2.res_seq
+                        contact.res2_chain = residue2.res_chain
 
         return contact_map1, contact_map2
 
@@ -513,13 +569,15 @@ class ContactMap(Entity):
 
         return contact_map
 
-    def plot_map(self, other=None, altloc=False, file_format='png', file_name='contactmap.png'):
+    def plot_map(self, other=None, reference=None, altloc=False, file_format='png', file_name='contactmap.png'):
         """Produce a 2D contact map plot
 
         Parameters
         ----------
         other : :obj:`ContactMap`, optional
            A ConKit :obj:`ContactMap`
+        reference : :obj:`ContactMap`, optional
+           A ConKit :obj:`ContactMap` [this map refers to the reference contacts]
         altloc : bool
            Use the res_altloc positions [default: False]
         file_format : str, optional
@@ -543,46 +601,62 @@ class ContactMap(Entity):
 
         fig, ax = matplotlib.pyplot.subplots(figsize=(5, 5), dpi=600)
 
-        def draw(x, y, c):
-            ax.scatter(x, y, color=c, marker='.', s=10, edgecolor='none', linewidths=0.0)
-
         # Plot the other_ref contacts
-        if other:
+        if reference:
             if altloc:
-                other_data = numpy.asarray([(c.res1_altseq, c.res2_altseq) for c in other])
+                reference_data = numpy.asarray([(c.res1_altseq, c.res2_altseq)
+                                                for c in reference if c.is_true_positive])
             else:
-                other_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in other])
-            other_colors = [constants.RFCOLOR for _ in xrange(len(other))]
-            draw(other_data.T[0], other_data.T[1], other_colors)  # upper
-            draw(other_data.T[1], other_data.T[0], other_colors)  # lower
+                reference_data = numpy.asarray([(c.res1_seq, c.res2_seq)
+                                                for c in reference if c.is_true_positive])
+            reference_colors = [constants.RFCOLOR for _ in xrange(len(reference_data))]
+            ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
+                       marker='.', s=10, edgecolor='none', linewidths=0.0)
+            ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
+                       marker='.', s=10, edgecolor='none', linewidths=0.0)
 
         # Plot the self contacts
-        if altloc:
-            self_data = numpy.asarray([(c.res1_altseq, c.res2_altseq) for c in self])
-        else:
-            self_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in self])
+        self_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in self])
         self_colors = [
-            constants.TPCOLOR if contact.is_true_positive else
-            constants.FPCOLOR if contact.is_false_positive else
-            constants.NTCOLOR
-            for contact in self
+            constants.TPCOLOR if contact.is_true_positive
+            else constants.FPCOLOR if contact.is_false_positive
+            else constants.NTCOLOR for contact in self
         ]
-        draw(self_data.T[0], self_data.T[1], self_colors)  # upper
-        draw(self_data.T[1], self_data.T[0], self_colors)  # lower
+        # This is the bottom triangle
+        ax.scatter(self_data.T[1], self_data.T[0], color=self_colors,
+                   marker='.', s=10, edgecolor='none', linewidths=0.0)
+
+        # Plot the other contacts
+        if other:
+            other_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in other])
+            other_colors = [
+                constants.TPCOLOR if contact.is_true_positive
+                else constants.FPCOLOR if contact.is_false_positive
+                else constants.NTCOLOR for contact in other
+            ]
+            # This is the upper triangle
+            ax.scatter(other_data.T[0], other_data.T[1], color=other_colors,
+                    marker='.', s=10, edgecolor='none', linewidths=0.0)
+        else:
+            # This is the upper triangle
+            ax.scatter(self_data.T[0], self_data.T[1], color=self_colors,
+                               marker='.', s=10, edgecolor='none', linewidths=0.0)
 
         # Prettify the plot
         label = 'Residue number'
         ax.set_xlabel(label)
         ax.set_ylabel(label)
 
-        if self.sequence is not None:
-            lim = self.sequence.seq_len
-        else:
-            lim = self_data.flatten().max()
-        ax.set_xlim(1, lim)
-        ax.set_ylim(1, lim)
+        # Allow dynamic x and y limits
+        min_res_seq = numpy.min(self_data.ravel()) - 5
+        max_res_seq = numpy.max(self_data.ravel()) + 5
+        if other:
+            min_res_seq = numpy.min(numpy.append(self_data.ravel(), other_data.ravel())) - 5
+            max_res_seq = numpy.max(numpy.append(self_data.ravel(), other_data.ravel())) + 5
+        ax.set_xlim(min_res_seq, max_res_seq)
+        ax.set_ylim(min_res_seq, max_res_seq)
 
-        fig.tight_layout()
+        # fig.tight_layout()
 
         _, file_extension = file_name.rsplit('.', 1)
         if file_extension != file_format:
