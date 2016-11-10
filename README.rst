@@ -6,9 +6,14 @@ Contact Prediction ToolKit
 
 **A Python Interface for contact predictions**
 
-.. image:: https://badge.fury.io/py/conkit.svg
-   :target: https://badge.fury.io/py/conkit
+
+.. image:: https://img.shields.io/pypi/v/conkit.svg
+   :target: https://pypi.python.org/pypi/conkit
    :alt: PyPy Package
+
+.. image:: https://img.shields.io/pypi/pyversions/conkit.svg
+   :target: https://pypi.python.org/pypi/conkit
+   :alt: Python Versions
 
 .. image:: https://readthedocs.org/projects/conkit/badge/?version=latest
    :target: http://conkit.readthedocs.io/en/latest/?badge=latest
