@@ -683,7 +683,7 @@ class Test(unittest.TestCase):
             contact_map.add(c)
         contact_map_mod = contact_map.remove_neighbors(min_distance=2)
         self.assertListEqual([(1, 5), (2, 4), (5, 1)], [c.id for c in contact_map_mod])
-        self.assertItemsEqual([(1, 5), (2, 4), (5, 1)], contact_map_mod.child_dict.keys())
+        self.assertEqual([(1, 5), (2, 4), (5, 1)], sorted(contact_map_mod.child_dict.keys()))
         # ======================================================
         # Test Case 2
         contact_map = ContactMap('test')
