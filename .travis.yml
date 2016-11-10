@@ -5,6 +5,7 @@ python:
 before_install:
   - "export DISPLAY=:99.0"
 install:
+  - pip install -r docs/requirements.txt
   - pip install nose coverage
   - pip install coveralls
 script:
