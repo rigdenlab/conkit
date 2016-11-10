@@ -15,6 +15,7 @@ setup(
     author_email='felixsimkovic@me.com',
     license='GNU General Public License',
     url='https://github.com/fsimkovic/conkit',
+    download_url='https://github.com/fsimkovic/conkit/tarball/0.1.1',
     package_dir={
         'conkit': 'conkit'
     },
