@@ -501,7 +501,7 @@ class ContactMap(Entity):
 
         # TODO: Find a speed-up for this loop
         # Adjust contact_map2 altseqs based on the insertions and deletions
-        encoder = {x.res_seq: x.res_altseq for x in contact_map2_keymap if isinstance(x, _Residue)}
+        encoder = dict((x.res_seq, x.res_altseq) for x in contact_map2_keymap if isinstance(x, _Residue))
         for contact in contact_map2:
             if contact.res1_altseq in encoder.keys():
                 contact.res1_altseq = encoder[contact.res1_altseq]
