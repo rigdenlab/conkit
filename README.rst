@@ -6,15 +6,24 @@ Contact Prediction ToolKit
 
 **A Python Interface for contact predictions**
 
-[![Documentation Status](https://readthedocs.org/projects/conkit/badge/?version=latest)](http://conkit.readthedocs.io/en/latest/?badge=latest)
+.. image:: https://badge.fury.io/py/conkit.svg
+   :target: https://badge.fury.io/py/conkit
+   :alt: PyPy Package
+
+.. image:: https://travis-ci.org/fsimkovic/conkit.svg?branch=master
+   :target: https://travis-ci.org/fsimkovic/conkit
+   :alt: Travis Build
+
+.. image:: https://readthedocs.org/projects/conkit/badge/?version=latest
+   :target: http://conkit.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 ConKit is a Python interface, which provides a number of features, such as:
 - Parsers for Multiple Sequence Alignment and contact prediction files
 - Easy-to-use wrappers for the most-commonly used software, e.g. HHblits, Jackhmmer, CCMpred, PSICOV, ...
 - Many convenience functions for map-structure matching, determination of True Positive contacts, calculation of MSA and contact prediction statistics, etc.
 
-.. warning::
-   THIS IS A PRE-RELEASE VERSION!
+**`NOTE: THIS IS A PRE-RELEASE VERSION!`**
    
 Documentation
 ^^^^^^^^^^^^^
