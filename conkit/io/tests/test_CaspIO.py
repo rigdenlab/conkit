@@ -24,7 +24,7 @@ def _create_tmp(data=None):
 
 class Test(unittest.TestCase):
 
-    def test_read_one_map(self):
+    def test_read(self):
         # ======================================================
         # Test Case 1
         content = """PFRMAT RR
