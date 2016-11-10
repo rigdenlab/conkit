@@ -8,7 +8,7 @@ import glob
 setup(
     name='conkit',
     description=__doc__.replace("\n", ""),
-    long_description=open('README.rst').read()
+    long_description=open('README.rst').read(),
     version=__version__,
     author='Felix Simkovic',
     author_email='felixsimkovic@me.com',
