@@ -3,7 +3,7 @@ python:
   - "2.7"
 before_install:
   - "export DISPLAY=:99.0"
-  - "sudo apt-get install -qq python-numpy python-scipy biopython"
+  - "sudo apt-get install -qq python-numpy python-scipy python-biopython"
 install:
   - pip install nose coverage
   - pip install coveralls

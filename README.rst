@@ -18,6 +18,14 @@ Contact Prediction ToolKit
    :target: http://conkit.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://coveralls.io/repos/fsimkovic/conkit/badge.png?branch=master
+   :target: https://coveralls.io/r/fsimkovic/conkit?branch=master
+   :alt: Coveralls Status
+
+.. image:: https://landscape.io/github/fsimkovic/conkit/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/fsimkovic/conkit/master
+   :alt: Code Health
+
 
 ConKit is a Python interface, which provides a number of features, such as:
 
