@@ -10,16 +10,17 @@ Contact Prediction ToolKit
    :target: https://badge.fury.io/py/conkit
    :alt: PyPy Package
 
-.. image:: https://travis-ci.org/fsimkovic/conkit.svg?branch=master
-   :target: https://travis-ci.org/fsimkovic/conkit
-   :alt: Travis Build
-
 .. image:: https://readthedocs.org/projects/conkit/badge/?version=latest
    :target: http://conkit.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://travis-ci.org/fsimkovic/conkit.svg?branch=master
+   :target: https://travis-ci.org/fsimkovic/conkit
+   :alt: Travis Build
+
 .. image:: https://coveralls.io/repos/github/fsimkovic/conkit/badge.svg?branch=master
    :target: https://coveralls.io/github/fsimkovic/conkit?branch=master
+
    :alt: Coveralls Status
 
 .. image:: https://landscape.io/github/fsimkovic/conkit/master/landscape.svg?style=flat
