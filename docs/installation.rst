@@ -3,6 +3,18 @@
 Installation
 ============
 
+PyPi
+----
+The easiest way to install ConKit is via ``easy_install`` or ``pip``. To do so, simply run the following command on your command line and your are ready to go.
+
+.. code-block:: bash
+
+   $> pip install conkit
+
+
+Source Code
+-----------
+
 If you want to install ConKit from source, download the `latest version`_ from the GitHub repository. Then, use the following commands to install ConKit.
 
 Download the latest version directly from GitHub or via your command line using ``git clone``
