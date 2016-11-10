@@ -501,14 +501,12 @@ class ContactMap(Entity):
 
         # TODO: Find a speed-up for this loop
         # Adjust contact_map2 altseqs based on the insertions and deletions
-        for residue in contact_map2_keymap:
-            if isinstance(residue, _Residue):
-                # Important to find them using original res_seq
-                for contact in contact_map2.find([residue.res_seq]):
-                    if contact.res1_seq == residue.res_seq:
-                        contact_map2[contact.id].res1_altseq = residue.res_altseq
-                    elif contact.res2_seq == residue.res_seq:
-                        contact_map2[contact.id].res2_altseq = residue.res_altseq
+        encoder = {x.res_seq: x.res_altseq for x in contact_map2_keymap if isinstance(x, _Residue)}
+        for contact in contact_map2:
+            if contact.res1_altseq in encoder.keys():
+                contact.res1_altseq = encoder[contact.res1_altseq]
+            if contact.res2_altseq in encoder.keys():
+                contact.res2_altseq = encoder[contact.res2_altseq]
 
         # Adjust true and false positive statuses
         for contact in contact_map2:
