@@ -20,7 +20,6 @@ Contact Prediction ToolKit
 
 .. image:: https://coveralls.io/repos/github/fsimkovic/conkit/badge.svg?branch=master
    :target: https://coveralls.io/github/fsimkovic/conkit?branch=master
-
    :alt: Coveralls Status
 
 .. image:: https://landscape.io/github/fsimkovic/conkit/master/landscape.svg?style=flat
