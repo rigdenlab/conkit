@@ -57,7 +57,7 @@ def main():
 
     # Use the re-formatted alignment for contact prediction
     ccmpred_cline = conkit.applications.CCMpredCommandLine(alnfile=jon_fname, matfile=matrix_fname, 
-                                                           renormalize=True)
+                                                           threads=2, renormalize=True)
     print(ccmpred_cline)
     ccmpred_cline()
 
