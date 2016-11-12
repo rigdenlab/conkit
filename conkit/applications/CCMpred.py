@@ -67,6 +67,9 @@ class CCMpredCommandLine(AbstractCommandline):
                     "Store raw prediction matrix in RAWFILE",
                     filename=True,
                     equate=False),
+            _Option(['-t', 'threads'],
+                    'Calculate using THREADS threads on the CPU (automatically disables CUDA if available) [default: 1]',
+                    equate=False),
 
             _Option(['-w', 'idthres'],
                      "Set sequence reweighting identity threshold to IDTHRES [default: 0.8]",
