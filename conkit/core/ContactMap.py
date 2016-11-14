@@ -507,9 +507,7 @@ class ContactMap(Entity):
                 contact.res1_altseq = encoder[contact.res1_altseq]
             if contact.res2_altseq in encoder.keys():
                 contact.res2_altseq = encoder[contact.res2_altseq]
-
-        # Adjust true and false positive statuses
-        for contact in contact_map2:
+            # Adjust true and false positive statuses
             id = (contact.res1_altseq, contact.res2_altseq)
             if id in contact_map1:
                 contact_map1[id].status = contact.status
