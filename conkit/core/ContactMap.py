@@ -385,6 +385,10 @@ class ContactMap(Entity):
            A modified version of the contact map containing
            the found contacts
 
+        See Also
+        --------
+        find_gen
+
         """
         contact_map = self.copy()
         for contact in self:
@@ -395,6 +399,38 @@ class ContactMap(Entity):
             else:
                 contact_map.remove(contact.id)
         return contact_map
+
+    def find_gen(self, indexes, altloc=False):
+        """Find all contacts associated with ``index``
+
+        Parameters
+        ----------
+        index : list, tuple
+           A list of residue indexes to find
+        altloc : bool
+           Use the res_altloc positions [default: False]
+
+        Yields
+        ------
+        generator
+           A generator containing contacts
+
+        Notes
+        -----
+        Unlike :obj:`find()`, this function returns a generator without
+        the :obj:`ContactMap` wrapper. It is therefore much faster to access
+        but less suitable for further handling
+
+        See Also
+        --------
+        find
+
+        """
+        for contact in self:
+            if altloc and (contact.res1_altseq in indexes or contact.res2_altseq in indexes):
+                yield contact
+            elif contact.res1_seq in indexes or contact.res2_seq in indexes:
+                yield contact
 
     def match(self, other, remove_unmatched=False, renumber=False, inplace=False):
         """Modify both hierarchies so residue numbers match one another.
@@ -530,8 +566,7 @@ class ContactMap(Entity):
             for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap):
                 if isinstance(residue1, _Gap):
                     continue
-                for contact in contact_map1.find([residue1.res_seq]):
-                    contact = contact_map1[contact.id]
+                for contact in contact_map1.find_gen([residue1.res_seq]):
                     if contact.res1_seq == residue1.res_seq:
                         contact.res1_seq = residue2.res_seq
                         contact.res1_chain = residue2.res_chain
