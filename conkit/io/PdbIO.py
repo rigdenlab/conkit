@@ -122,7 +122,7 @@ class PdbParser(_ContactFileParser):
         :obj:`ContactFile`
 
         """
-        structure = PDBParser().get_structure("pdb", f_handle)
+        structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
 
         hierarchies = []
         for model in structure:
