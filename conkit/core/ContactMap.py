@@ -35,7 +35,7 @@ class _Residue(object):
         self.res_chain = res_chain
 
     def __repr__(self):
-        string = "Residue(res_seq='{0}' res_altseq='{1}' res_name='{2}' res_chain='{3}'"
+        string = "Residue(res_seq='{0}' res_altseq='{1}' res_name='{2}' res_chain='{3}')"
         return string.format(self.res_seq, self.res_altseq, self.res_name, self.res_chain)
 
 
@@ -50,7 +50,7 @@ class _Gap(object):
         self.res_chain = ''
 
     def __repr__(self):
-        string = "Gap(res_seq='{0}' res_altseq='{1}' res_name='{2}' res_chain='{3}'"
+        string = "Gap(res_seq='{0}' res_altseq='{1}' res_name='{2}' res_chain='{3}')"
         return string.format(self.res_seq, self.res_altseq, self.res_name, self.res_chain)
 
 
