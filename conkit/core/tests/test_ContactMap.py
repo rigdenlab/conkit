@@ -395,6 +395,7 @@ class Test(unittest.TestCase):
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
+        self.assertEqual([(2, 7), (3, 5)], [c.id for c in contact_map1])
         self.assertEqual(
             [Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
             [c.status for c in contact_map1]

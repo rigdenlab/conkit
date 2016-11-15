@@ -427,9 +427,11 @@ class ContactMap(Entity):
 
         """
         for contact in self:
-            if altloc and (contact.res1_altseq in indexes or contact.res2_altseq in indexes):
-                yield contact
-            elif contact.res1_seq in indexes or contact.res2_seq in indexes:
+            if altloc and not (contact.res1_altseq in indexes or contact.res2_altseq in indexes):
+                continue
+            elif not (contact.res1_seq in indexes or contact.res2_seq in indexes):
+                continue
+            else:
                 yield contact
 
     def match(self, other, remove_unmatched=False, renumber=False, inplace=False):
@@ -552,12 +554,10 @@ class ContactMap(Entity):
         # 3. Remove unmatched contacts
         # ================================================================
         if remove_unmatched:
-            for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap):
-                if isinstance(residue1, _Gap):
-                    continue
-                elif isinstance(residue2, _Gap):
-                    for contact in contact_map1.find([residue1.res_seq]):
-                        contact_map1.remove(contact.id)
+            indexes = [residue1.res_seq for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap)
+                       if not isinstance(residue1, _Gap) and isinstance(residue2, _Gap)]
+            for contact in contact_map1.find(indexes):
+                contact_map1.remove(contact.id)
 
         # ================================================================
         # 4. Renumber the contact map 1 based on contact map 2
