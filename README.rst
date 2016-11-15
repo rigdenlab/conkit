@@ -55,6 +55,6 @@ Found a Bug?
 ^^^^^^^^^^^^
 Please use the `Issue Tracker`_.
 
-.. _here: https://fsimkovic.github.io/conkit
+.. _here: http://conkit.readthedocs.io
 .. _Issue Tracker: https://github.com/fsimkovic/conkit/issues
 
