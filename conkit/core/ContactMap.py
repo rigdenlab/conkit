@@ -537,19 +537,24 @@ class ContactMap(Entity):
         contact_map1_keymap = reindex(contact_map1_keymap)
         contact_map2_keymap = reindex(contact_map2_keymap)
 
-        # TODO: Find a speed-up for this loop
-        # Adjust contact_map2 altseqs based on the insertions and deletions
-        encoder = dict((x.res_seq, x.res_altseq) for x in contact_map2_keymap if isinstance(x, _Residue))
-        for contact in contact_map2:
-            if contact.res1_altseq in encoder.keys():
-                contact.res1_altseq = encoder[contact.res1_altseq]
-            if contact.res2_altseq in encoder.keys():
-                contact.res2_altseq = encoder[contact.res2_altseq]
+        # Adjust the res_altseq based on the insertions and deletions
+        def adjust(keymap, map):
+            """Adjust res_altseq entries to insertions and deletions"""
+            encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
+            for c in map:
+                if c.res1_altseq in encoder.keys():
+                    c.res1_altseq = encoder[c.res1_altseq]
+                if c.res2_altseq in encoder.keys():
+                    c.res2_altseq = encoder[c.res2_altseq]
+            return map
+        contact_map2 = adjust(contact_map2_keymap, contact_map2)
 
-            # Adjust true and false positive statuses
-            id = (contact.res1_altseq, contact.res2_altseq)
-            if id in contact_map1:
-                contact_map1[id].status = contact.status
+        # Adjust true and false positive statuses
+        for ref_contact in contact_map2:
+            for mod_contact in contact_map1:
+                if ref_contact.res1_altseq == mod_contact.res1_seq:
+                    if ref_contact.res2_altseq == mod_contact.res2_seq:
+                        mod_contact.status = ref_contact.status
 
         # ================================================================
         # 3. Remove unmatched contacts
