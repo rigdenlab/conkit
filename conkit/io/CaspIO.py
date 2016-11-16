@@ -187,7 +187,12 @@ class CaspParser(_ContactFileParser):
                 contact_map.rescale(inplace=True)
             for contact in contact_map:
                 s = '{res1_chain: <}{res1_seq: <4}{res2_chain: <}{res2_seq:<4}{lb: <3}{ub: <3}{raw_score: <.6f}'
-                s = s.format(res1_chain=contact.res1_chain, res1_seq=contact.res1_seq, res2_chain=contact.res2_chain,
+                if contact.res1_chain == contact.res2_chain:
+                    res1_chain = res2_chain = ""
+                else:
+                    res1_chain = contact.res1_chain
+                    res2_chain = contact.res2_chain
+                s = s.format(res1_chain=res1_chain, res1_seq=contact.res1_seq, res2_chain=res2_chain,
                              res2_seq=contact.res2_seq, lb=contact.distance_bound[0], ub=contact.distance_bound[1],
                              raw_score=contact.raw_score)
                 f_handle.write(s + os.linesep)
