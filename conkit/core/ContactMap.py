@@ -458,8 +458,8 @@ class ContactMap(Entity):
 
         Returns
         -------
-        hierarchy_mod, hierarchy_ref
-           Two ConKit :obj:`ContactMap` instances, regardless of inplace
+        hierarchy_mod
+            :obj:`ContactMap` instance, regardless of inplace
 
         """
         contact_map1 = self._inplace(inplace)
@@ -545,6 +545,7 @@ class ContactMap(Entity):
                 contact.res1_altseq = encoder[contact.res1_altseq]
             if contact.res2_altseq in encoder.keys():
                 contact.res2_altseq = encoder[contact.res2_altseq]
+
             # Adjust true and false positive statuses
             id = (contact.res1_altseq, contact.res2_altseq)
             if id in contact_map1:
@@ -574,7 +575,7 @@ class ContactMap(Entity):
                         contact.res2_seq = residue2.res_seq
                         contact.res2_chain = residue2.res_chain
 
-        return contact_map1, contact_map2
+        return contact_map1
 
     def remove_neighbors(self, min_distance=5, inplace=False):
         """Remove contacts between neighboring residues
