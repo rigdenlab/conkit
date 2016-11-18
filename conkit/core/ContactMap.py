@@ -343,32 +343,6 @@ class ContactMap(Entity):
             contact.scalar_score = sca_score
         return
 
-    def create_keymap(self, altloc=False):
-        """Create a simple keymap
-
-        Paramters
-        ---------
-        altloc : bool
-           Use the res_altloc positions [default: False]
-
-        """
-        contact_map_keymap = collections.OrderedDict()
-
-        for contact in self:
-            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
-            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
-
-            if altloc:
-                res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
-            else:
-                res1_index, res2_index = contact.res1_seq, contact.res2_seq
-
-            contact_map_keymap[res1_index] = pos1
-            contact_map_keymap[res2_index] = pos2
-
-        contact_map_keymap_sorted = sorted(contact_map_keymap.items(), key=lambda x: int(x[0]))
-        return zip(*contact_map_keymap_sorted)[1]
-
     def find(self, indexes, altloc=False):
         """Find all contacts associated with ``index``
 
@@ -399,40 +373,6 @@ class ContactMap(Entity):
             else:
                 contact_map.remove(contact.id)
         return contact_map
-
-    def find_gen(self, indexes, altloc=False):
-        """Find all contacts associated with ``index``
-
-        Parameters
-        ----------
-        index : list, tuple
-           A list of residue indexes to find
-        altloc : bool
-           Use the res_altloc positions [default: False]
-
-        Yields
-        ------
-        generator
-           A generator containing contacts
-
-        Notes
-        -----
-        Unlike :obj:`find()`, this function returns a generator without
-        the :obj:`ContactMap` wrapper. It is therefore much faster to access
-        but less suitable for further handling
-
-        See Also
-        --------
-        find
-
-        """
-        for contact in self:
-            if altloc and not (contact.res1_altseq in indexes or contact.res2_altseq in indexes):
-                continue
-            elif not (contact.res1_seq in indexes or contact.res2_seq in indexes):
-                continue
-            else:
-                yield contact
 
     def match(self, other, remove_unmatched=False, renumber=False, inplace=False):
         """Modify both hierarchies so residue numbers match one another.
@@ -504,57 +444,29 @@ class ContactMap(Entity):
         ])
 
         # Create mappings for both contact maps
-        contact_map1_keymap = contact_map1.create_keymap()
-        contact_map2_keymap = contact_map2.create_keymap(altloc=True)
+        contact_map1_keymap = ContactMap._create_keymap(contact_map1)
+        contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
         # Some checks
         assert len(contact_map1_keymap) == len(numpy.where(encoded_repr[0] != ord('-'))[0])
         assert len(contact_map2_keymap) == len(numpy.where(encoded_repr[1] != ord('-'))[0])
 
         # Create a sequence matching keymap including deletions and insertions
-        keymaps = [[], []]
-        it_contact_map1 = iter(contact_map1_keymap)
-        it_contact_map2 = iter(contact_map2_keymap)
-        for amino_acid1, amino_acid2 in zip(encoded_repr[0], encoded_repr[1]):
-            if amino_acid1 == ord('-'):
-                keymaps[0].append(_Gap())
-            else:
-                keymaps[0].append(it_contact_map1.next())
-
-            if amino_acid2 == ord('-'):
-                keymaps[1].append(_Gap())
-            else:
-                keymaps[1].append(it_contact_map2.next())
-        contact_map1_keymap, contact_map2_keymap = keymaps
+        contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
+        contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
 
         # Reindex the altseq positions to account for insertions/deletions
-        def reindex(keymap):
-            """Reindex a key map"""
-            for i, residue in enumerate(keymap):
-                if isinstance(residue, _Residue):
-                    residue.res_altseq = i + 1
-            return keymap
-        contact_map1_keymap = reindex(contact_map1_keymap)
-        contact_map2_keymap = reindex(contact_map2_keymap)
+        contact_map1_keymap = ContactMap._reindex(contact_map1_keymap)
+        contact_map2_keymap = ContactMap._reindex(contact_map2_keymap)
 
         # Adjust the res_altseq based on the insertions and deletions
-        def adjust(keymap, map):
-            """Adjust res_altseq entries to insertions and deletions"""
-            encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
-            for c in map:
-                if c.res1_altseq in encoder.keys():
-                    c.res1_altseq = encoder[c.res1_altseq]
-                if c.res2_altseq in encoder.keys():
-                    c.res2_altseq = encoder[c.res2_altseq]
-            return map
-        contact_map2 = adjust(contact_map2_keymap, contact_map2)
-
+        contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
         # Adjust true and false positive statuses
-        for ref_contact in contact_map2:
-            for mod_contact in contact_map1:
-                if ref_contact.res1_altseq == mod_contact.res1_seq:
-                    if ref_contact.res2_altseq == mod_contact.res2_seq:
-                        mod_contact.status = ref_contact.status
+        for other_contact in contact_map2:
+            for self_contact in contact_map1:
+                if self_contact.res1_seq == other_contact.res1_altseq \
+                        and self_contact.res2_seq == other_contact.res2_altseq:
+                    self_contact.status = other_contact.status
 
         # ================================================================
         # 3. Remove unmatched contacts
@@ -569,16 +481,7 @@ class ContactMap(Entity):
         # 4. Renumber the contact map 1 based on contact map 2
         # ================================================================
         if renumber:
-            for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap):
-                if isinstance(residue1, _Gap):
-                    continue
-                for contact in contact_map1.find_gen([residue1.res_seq]):
-                    if contact.res1_seq == residue1.res_seq:
-                        contact.res1_seq = residue2.res_seq
-                        contact.res1_chain = residue2.res_chain
-                    else:
-                        contact.res2_seq = residue2.res_seq
-                        contact.res2_chain = residue2.res_chain
+            contact_map1 = ContactMap._renumber(contact_map1, contact_map1_keymap, contact_map2_keymap)
 
         return contact_map1
 
@@ -760,4 +663,91 @@ class ContactMap(Entity):
         """
         contact_map = self._inplace(inplace)
         contact_map._sort(kword, reverse)
+        return contact_map
+
+    @staticmethod
+    def _adjust(contact_map, keymap):
+        """Adjust res_altseq entries to insertions and deletions"""
+        encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
+        for contact in contact_map:
+            if contact.res1_seq in encoder.keys():
+                contact.res1_altseq = encoder[contact.res1_seq]
+            if contact.res2_seq in encoder.keys():
+                contact.res2_altseq = encoder[contact.res2_seq]
+        return contact_map
+
+    @staticmethod
+    def _create_keymap(contact_map, altloc=False):
+        """Create a simple keymap
+
+        Paramters
+        ---------
+        altloc : bool
+           Use the res_altloc positions [default: False]
+
+        Returns
+        -------
+        list
+           A list of residue mappings
+
+        """
+        contact_map_keymap = collections.OrderedDict()
+        for contact in contact_map:
+            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
+            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
+            if altloc:
+                res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
+            else:
+                res1_index, res2_index = contact.res1_seq, contact.res2_seq
+            contact_map_keymap[res1_index] = pos1
+            contact_map_keymap[res2_index] = pos2
+        contact_map_keymap_sorted = sorted(contact_map_keymap.items(), key=lambda x: int(x[0]))
+        return zip(*contact_map_keymap_sorted)[1]
+
+    @staticmethod
+    def _find_single(contact_map, index):
+        """Find all contacts associated with ``index`` based on id property"""
+        for c in contact_map:
+            if c.id[0] == index:
+                yield c
+            elif c.id[1] == index:
+                yield c
+
+    @staticmethod
+    def _insert_states(sequence, keymap):
+        """Create a sequence matching keymap including deletions and insertions"""
+        it = iter(keymap)
+        keymap_ = []
+        for amino_acid in sequence:
+            if amino_acid == ord('-'):
+                keymap_.append(_Gap())
+            else:
+                keymap_.append(it.next())
+        return keymap_
+
+    @staticmethod
+    def _reindex(keymap):
+        """Reindex a key map"""
+        for i, residue in enumerate(keymap):
+            if isinstance(residue, _Residue):
+                residue.res_altseq = i + 1
+        return keymap
+
+    @staticmethod
+    def _renumber(contact_map, self_keymap, other_keymap):
+        """Renumber the contact map based on the mapping of self and other keymaps"""
+        for self_residue, other_residue in zip(self_keymap, other_keymap):
+            if isinstance(self_residue, _Gap):
+                continue
+            for contact in ContactMap._find_single(contact_map, self_residue.res_seq):
+                # Make sure we check with the ID, which doesn't change
+                if contact.id[0] == self_residue.res_altseq:
+                    contact.res1_seq = other_residue.res_seq
+                    contact.res1_chain = other_residue.res_chain
+                elif contact.id[1] == self_residue.res_altseq:
+                    contact.res2_seq = other_residue.res_seq
+                    contact.res2_chain = other_residue.res_chain
+                else:
+                    raise ValueError('Should never get here')
+
         return contact_map
