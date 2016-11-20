@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.CCMpredIO import CCMpredParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -38,16 +30,17 @@ class Test(unittest.TestCase):
 4.54095035791397094727e-01      7.34628796577453613281e-01      3.75739067792892456055e-01      3.39132964611053466797e-01      1.31566718220710754395e-01      9.12294447422027587891e-01      5.99323771893978118896e-02      6.80750906467437744141e-01      0.00000000000000000000e+00      3.14438492059707641602e-01
 7.60651111602783203125e-01      5.52687942981719970703e-01      6.22575819492340087891e-01      3.63562554121017456055e-01      2.77379721403121948242e-01      5.38770556449890136719e-01      5.63172996044158935547e-01      1.05407856665351573611e-07      3.14439445734024047852e-01      0.00000000000000000000e+00
 """
-        f_name = _create_tmp(content)
-        contact_file = CCMpredParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CCMpredParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(55, len(contact_map1))
-        self.assertItemsEqual(
-            [1] * 10 + [2] * 9 + [3] * 8 + [4] * 7 + [5] * 6 + [6] * 5 + [7] * 4 + [8] * 3 + [9] * 2 + [10] * 1,
-            [c.res1_seq for c in contact_map1]
+        self.assertEqual(
+            sorted([1] * 10 + [2] * 9 + [3] * 8 + [4] * 7 + [5] * 6 + [6] * 5 + [7] * 4 + [8] * 3 + [9] * 2 + [10] * 1),
+            sorted([c.res1_seq for c in contact_map1])
         )
-        self.assertItemsEqual(
+        self.assertEqual(
             [1.0, 0.9122951030731201, 0.9058651924133301, 0.806087076663971, 0.7808407545089722, 0.7606513500213623,
              0.7487139701843262, 0.7346281409263611, 0.7222579121589661, 0.6807504892349243, 0.6225751638412476,
              0.5631722211837769, 0.5526887774467468, 0.5485477447509766, 0.5387697219848633, 0.5287532210350037,
@@ -72,8 +65,9 @@ class Test(unittest.TestCase):
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        f_name = _create_tmp()
-        CCMpredParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CCMpredParser().write(f_out, contact_file)
         content = """0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 6.999999999999999556e-01 6.999999999999999556e-01 0.000000000000000000e+00 0.000000000000000000e+00
 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 9.000000000000000222e-01 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00
 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 4.000000000000000222e-01
@@ -87,7 +81,8 @@ class Test(unittest.TestCase):
 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00
 0.000000000000000000e+00 0.000000000000000000e+00 4.000000000000000222e-01 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 

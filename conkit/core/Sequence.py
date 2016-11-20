@@ -110,7 +110,7 @@ class Sequence(Entity):
            One or more amino acids in the sequence are not recognised
 
         """
-        if any(c not in ONE_TO_THREE.keys() for c in seq.upper() if c != '-'):
+        if any(c not in list(ONE_TO_THREE.keys()) for c in seq.upper() if c != '-'):
             raise ValueError('Unrecognized amino acids in sequence')
         self._seq = seq
 

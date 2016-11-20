@@ -118,14 +118,14 @@ class StockholmIO(_SequenceFileParser):
             chunk = []
             sequence_string = sequence_entry.seq
             sequence_string = sequence_string.upper()  # UPPER CASE !!!
-            for j in xrange(0, sequence_entry.seq_len, 200):
+            for j in range(0, sequence_entry.seq_len, 200):
                 chunk.append(sequence_string[j:j + 200])
             chunks.append(tuple([sequence_entry.id, chunk]))
 
         # Write the sequence out in chunks
-        for j in xrange(len(chunks[0][1])):
+        for j in range(len(chunks[0][1])):
             f_handle.write(os.linesep)
-            for i in xrange(len(chunks)):
+            for i in range(len(chunks)):
                 f_handle.write(
                     "{ident:41} {seq_chunk}{ls}".format(
                         ident=chunks[i][0],

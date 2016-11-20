@@ -38,19 +38,12 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 3
         sequence = Sequence('foo', 'GSMFTPK')
-        try:
+        with self.assertRaises(ValueError):
             sequence.seq = 'A2A'
-            self.assertFalse(True)
-        except ValueError:
-            self.assertTrue(True)
         # ======================================================
         # Test Case 3
         sequence = Sequence('foo', 'GSMFTPK')
-        try:
-            sequence.seq = '------'
-            self.assertTrue(True)
-        except ValueError:
-            self.assertFalse(True)
+        sequence.seq = '-------'
 
     def test_seq_len(self):
         # ======================================================
@@ -140,4 +133,4 @@ class Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

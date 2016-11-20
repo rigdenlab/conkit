@@ -55,10 +55,10 @@ class BbcontactsCommandLine(AbstractCommandline):
     def __init__(self, cmd="bbcontacts", **kwargs):
 
         # TODO: figure a way to group CL arguments as in `mutually_exclusive_group`
-        if 'dssp_file' in kwargs.keys() and 'psipred_file' in kwargs.keys():
+        if 'dssp_file' in list(kwargs.keys()) and 'psipred_file' in list(kwargs.keys()):
             msg = 'Provide only one of [dssp_file|psipred_file]!'
             raise RuntimeError(msg)
-        elif not ('dssp_file' in kwargs.keys() or 'psipred_file' in kwargs.keys()):
+        elif not ('dssp_file' in list(kwargs.keys()) or 'psipred_file' in list(kwargs.keys())):
             msg = 'Provide one of [dssp_file|psipred_file]!'
             raise RuntimeError(msg)
 

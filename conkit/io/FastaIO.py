@@ -103,7 +103,7 @@ class FastaIO(_SequenceFileParser):
 
             # Cut the sequence into chunks [FASTA <= 60 chars per line]
             sequence_string = sequence_entry.seq.upper()       # UPPER CASE !!!
-            for i in xrange(0, sequence_entry.seq_len, 60):
+            for i in range(0, sequence_entry.seq_len, 60):
                 f_handle.write(sequence_string[i:i+60] + os.linesep)
 
         return

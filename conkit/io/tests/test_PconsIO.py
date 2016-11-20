@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.PconsIO import PconsParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -44,13 +36,14 @@ class Test(unittest.TestCase):
 1 16 0.01397
 1 17 0.01192
 """
-        f_name = _create_tmp(content)
-        contact_file = PconsParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(range(2, 18), [c.res2_seq for c in contact_map1])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         os.unlink(f_name)
 
@@ -75,13 +68,14 @@ Hello WOrld
 1 16 0.01397
 1 17 0.01192
 """
-        f_name = _create_tmp(content)
-        contact_file = PconsParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(range(2, 18), [c.res2_seq for c in contact_map1])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         os.unlink(f_name)
 
@@ -120,14 +114,15 @@ Res1 Res2 Score
 
 ##############################################################################
 """
-        f_name = _create_tmp(content)
-        contact_file = PconsParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(['Generated from test_remark'], contact_file.remark)
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(range(2, 18), [c.res2_seq for c in contact_map1])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         self.assertEqual('shorter_test', contact_map1.sequence.id)
         self.assertEqual('HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD', contact_map1.sequence.seq)
@@ -169,14 +164,15 @@ Res1 Res2 Score
 
 ##############################################################################
 """
-        f_name = _create_tmp(content)
-        contact_file = PconsParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(['Generated from test_remark'], contact_file.remark)
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(range(2, 18), [c.res2_seq for c in contact_map1])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         self.assertEqual('longer_test', contact_map1.sequence.id)
         self.assertEqual('HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD'
@@ -199,8 +195,9 @@ Res1 Res2 Score
             contact_map.add(contact)
         contact_map.sequence = Sequence('sequence_1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        PconsParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            PconsParser().write(f_out, contact_file)
         content = """##############################################################################
 PconsC3 result file
 Generated from ConKit
@@ -221,7 +218,8 @@ Res1 Res2 Score
 
 ##############################################################################
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 

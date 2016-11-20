@@ -414,9 +414,9 @@ class Contact(Entity):
         _amino_acid = amino_acid.upper()
         if not (len(_amino_acid) == 1 or len(_amino_acid) == 3):
             raise ValueError(msg)
-        elif len(_amino_acid) == 1 and _amino_acid not in constants.THREE_TO_ONE.values():
+        elif len(_amino_acid) == 1 and _amino_acid not in list(constants.THREE_TO_ONE.values()):
             raise ValueError(msg)
-        elif len(_amino_acid) == 3 and _amino_acid not in constants.THREE_TO_ONE.keys():
+        elif len(_amino_acid) == 3 and _amino_acid not in list(constants.THREE_TO_ONE.keys()):
             raise ValueError(msg)
 
         # Save the one-letter-code

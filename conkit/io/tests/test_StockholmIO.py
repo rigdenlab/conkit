@@ -4,18 +4,10 @@ __author__ = "Felix Simkovic"
 __date__ = "12 Sep 2016"
 
 from conkit.io.StockholmIO import StockholmIO
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -61,9 +53,10 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
 #=GC RF                                   ...................x.......................xx.............................................................................................x..x.x............x....x.xx........x..x.......................
 //
 """
-        f_name = _create_tmp(msa)
+        f_name = create_tmp_f(content=msa)
         parser = StockholmIO()
-        hierarchy = parser.read(open(f_name, 'r'))
+        with open(f_name, 'r') as f_in:
+            hierarchy = parser.read(f_in)
         for i, sequence_entry in enumerate(hierarchy):
             if i == 0:
                 self.assertEqual('1EAZ:A|PDBID|CHAIN|SEQUENCE',
@@ -83,9 +76,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                                  '-----------------------------------------------------------------------------------K-'
                                  '-R-R------------Y----C-VL--------E--N-----------------------',
                                  sequence_entry.seq)
-                self.assertItemsEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
-                                       'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
-                                      sequence_entry.remark)
+                self.assertEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
+                                  'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
+                                 sequence_entry.remark)
             elif i == 2:
                 self.assertEqual('UniRef100_A0A0D2WIY8/761-857',
                                  sequence_entry.id)
@@ -95,9 +88,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                                  '-----------------------------------------------------------------------------------K-'
                                  '-K-R------------Y----I-AI--------K--E-----------------------',
                                  sequence_entry.seq)
-                self.assertItemsEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
-                                       'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
-                                      sequence_entry.remark)
+                self.assertEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
+                                  'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
+                                 sequence_entry.remark)
             elif i == 3:
                 self.assertEqual('UniRef100_A0A0D2WIY8/1126-1228',
                                  sequence_entry.id)
@@ -107,9 +100,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                                  '-----------------------------------------------------------------------------------R-'
                                  '-K-R------------W----I-VM--------E--H-----------------------',
                                  sequence_entry.seq)
-                self.assertItemsEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
-                                       'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
-                                      sequence_entry.remark)
+                self.assertEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
+                                  'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
+                                 sequence_entry.remark)
             elif i == 4:
                 self.assertEqual('UniRef100_A0A0D2WIY8/1245-1341',
                                  sequence_entry.id)
@@ -119,9 +112,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                                  '-----------------------------------------------------------------------------------K-'
                                  '-K-R------------W----L-VL--------K--G-----------------------',
                                  sequence_entry.seq)
-                self.assertItemsEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
-                                       'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
-                                      sequence_entry.remark)
+                self.assertEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
+                                  'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
+                                 sequence_entry.remark)
             elif i == 5:
                 self.assertEqual('UniRef100_A0A0D2WIY8/1752-1857',
                                  sequence_entry.id)
@@ -131,9 +124,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                                  '-----------------------------------------------------------------------------------K-'
                                  '-R-R------------W----F-ST--------T--P-----------------------',
                                  sequence_entry.seq)
-                self.assertItemsEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
-                                       'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
-                                      sequence_entry.remark)
+                self.assertEqual(['[subseq from] Stromal membrane-associated GTPase-activating protein 2 n=1 Tax=C'
+                                  'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
+                                 sequence_entry.remark)
 
         del parser, hierarchy, sequence_entry
         os.unlink(f_name)
@@ -179,11 +172,12 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
 #=GC RF                                   ...................x.......................xx.............................................................................................x..x.x............x....x.xx........x..x.......................
 //
 """
-        f_name_in = _create_tmp(msa)
         parser = StockholmIO()
-        hierarchy = parser.read(open(f_name_in, 'r'))
-        f_name_out = _create_tmp()
-        parser.write(open(f_name_out, 'w'), hierarchy)
+        f_name_in = create_tmp_f(content=msa)
+        f_name_out = create_tmp_f()
+        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+            hierarchy = parser.read(f_in)
+            parser.write(f_out, hierarchy)
 
         ref = """# STOCKHOLM 1.0
 #=GF ID 1EAZ:A|PDBID|CHAIN|SEQUENCE
@@ -209,7 +203,8 @@ UniRef100_A0A0D2WIY8/1245-1341            -------------------T------------------
 UniRef100_A0A0D2WIY8/1752-1857            -------------------K-----------------------TW---------------------------------------------------------------------------------------------K--R-R------------W----F-ST--------T--P-----------------------
 //
 """
-        output = "".join(open(f_name_out, 'r').readlines())
+        with open(f_name_out, 'r') as f_in:
+            output = "".join(f_in.readlines())
         self.assertEqual(ref, output)
         del parser, hierarchy
         os.unlink(f_name_in)

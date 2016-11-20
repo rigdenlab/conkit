@@ -67,7 +67,7 @@ class CaspParser(_ContactFileParser):
         while True:
 
             try:
-                line = it.next()
+                line = next(it)
             except StopIteration:
                 break
 
@@ -94,7 +94,7 @@ class CaspParser(_ContactFileParser):
                 while True:
 
                     try:
-                        line = it.next()
+                        line = next(it)
                     except StopIteration:
                         break
 
@@ -180,7 +180,7 @@ class CaspParser(_ContactFileParser):
             f_handle.write("MODEL  {0}".format(contact_map.id) + os.linesep)
             if isinstance(contact_map.sequence, Sequence):
                 sequence = contact_map.sequence
-                for i in xrange(0, sequence.seq_len, 50):
+                for i in range(0, sequence.seq_len, 50):
                     f_handle.write(sequence.seq[i:i+50] + os.linesep)
             # Casp Roll format specifies raw scores to be in [0, 1]
             if any(c.raw_score > 1.0 or c.raw_score < 0.0 for c in contact_map):

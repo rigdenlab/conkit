@@ -1,5 +1,6 @@
 """Testing facility for conkit.core.entity"""
 
+from builtins import range
 __author__ = "Felix Simkovic"
 __date__ = "12 Aug 2016"
 
@@ -45,11 +46,8 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 3
         entity = Entity('test')
-        try:
+        with self.assertRaises(KeyError):
             del entity['foo']
-            self.assertFalse(True)
-        except KeyError:
-            self.assertTrue(True)
 
     def test_getitem(self):
         # ======================================================
@@ -98,7 +96,7 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 5
         entity = Entity('test')
-        for i in xrange(10):
+        for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
         new_entity = entity[:5]
         self.assertEqual(type(entity), type(new_entity))
@@ -107,7 +105,7 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 6
         entity = Entity('test')
-        for i in xrange(10):
+        for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
         new_entity = entity[1::2]
         self.assertEqual(type(entity), type(new_entity))
@@ -118,7 +116,7 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 1
         entity = Entity('test')
-        for i in xrange(10):
+        for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
         for i, e in enumerate(entity):
             self.assertEqual('foo_{0}'.format(i), e.id)
@@ -127,7 +125,7 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 1
         entity = Entity('test')
-        for i in xrange(10):
+        for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
         self.assertEqual(10, len(entity))
         # ======================================================
@@ -139,9 +137,9 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 1
         entity = Entity('test')
-        for i in xrange(10):
+        for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
-        rev = list(reversed(range(10)))
+        rev = list(reversed(list(range(10))))
         for i, e in enumerate(reversed(entity)):
             self.assertNotEqual('foo_{0}'.format(i), e.id)
             self.assertEqual('foo_{0}'.format(rev[i]), e.id)
@@ -273,7 +271,8 @@ class Test(unittest.TestCase):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
-        self.assertRaises(ValueError, entity._sort, 'test', True)
+        with self.assertRaises(ValueError):
+            entity._sort('test', True)
 
     def test_add(self):
         # ======================================================
@@ -291,7 +290,8 @@ class Test(unittest.TestCase):
         entity.add(child_entity)
         self.assertTrue(child_entity in entity.child_list)
         self.assertTrue('foo' in entity.child_dict)
-        self.assertRaises(ValueError, entity.add, Entity('foo'))
+        with self.assertRaises(ValueError):
+            entity.add(Entity('foo'))
 
     def test_copy(self):
         # ======================================================
@@ -353,13 +353,9 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 3
         entity = Entity('test')
-        try:
+        with self.assertRaises(KeyError):
             entity.remove('foo')
-            self.assertFalse(True)
-        except KeyError:
-            self.assertTrue(True)
-
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

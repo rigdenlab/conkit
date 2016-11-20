@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.CaspIO import CaspParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -47,8 +39,9 @@ HDFGRTYIWQMSD
 9 14  0  8  0.50
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = CaspParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(9, len(contact_map1))
@@ -75,17 +68,15 @@ MODEL  1
 9 14  0  8  0.50
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = CaspParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(9, len(contact_map1))
         self.assertIsNone(contact_map1.sequence)
-        try:
+        with self.assertRaises(TypeError):
             _ = contact_map1.repr_sequence
-            self.assertTrue(False)
-        except TypeError:
-            self.assertTrue(True)
         os.unlink(f_name)
 
         # ======================================================
@@ -103,17 +94,15 @@ MODEL  1
 9 14  0  8  0.50
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = CaspParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(9, len(contact_map1))
         self.assertIsNone(contact_map1.sequence)
-        try:
+        with self.assertRaises(TypeError):
             _ = contact_map1.repr_sequence
-            self.assertTrue(False)
-        except TypeError:
-            self.assertTrue(True)
         os.unlink(f_name)
 
         # ======================================================
@@ -151,8 +140,9 @@ HDFGRTYIWQM
 ENDMDL
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = CaspParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CaspParser().read(f_in)
         self.assertEqual(2, len(contact_file))
         contact_map1 = contact_file[0]
         self.assertEqual(9, len(contact_map1))
@@ -193,8 +183,9 @@ HDFGRTYIWQMSD
 9 14  0  8  0.50
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = CaspParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CaspParser().read(f_in)
         self.assertEqual(2, len(contact_file))
         contact_map1 = contact_file["1"]
         self.assertEqual(9, len(contact_map1))
@@ -217,9 +208,11 @@ END
 7 14  0  8  0.30
 9 14  0  8  0.50
 """
-        f_name = _create_tmp(content)
+        f_name = create_tmp_f(content=content)
         parser = CaspParser()
-        self.assertRaises(ValueError, parser.read, open(f_name, 'r'))
+        with open(f_name, 'r') as f_in:
+            with self.assertRaises(ValueError):
+                CaspParser().read(f_in)
         os.unlink(f_name)
 
 #         # ======================================================
@@ -250,8 +243,9 @@ END
 # A9 B14  0  8  0.50
 # END
 # """
-#         f_name = _create_tmp(content)
-#         contact_file = CaspParser().read(open(f_name, 'r'))
+#         f_name = create_tmp_f(content=content)
+#         with open(f_name, 'r') as f_in:
+#             contact_file = CaspParser().read(f_in)
 #         contact_map1 = contact_file.top_map
 #         self.assertEqual(1, len(contact_file))
 #         self.assertEqual(15, len(contact_map1))
@@ -274,8 +268,9 @@ END
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        CaspParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CaspParser().write(f_out, contact_file)
         content = """PFRMAT RR
 TARGET R9999
 AUTHOR 1234-5678-9000
@@ -291,7 +286,8 @@ HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD
 ENDMDL
 END
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -304,8 +300,9 @@ END
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        f_name = _create_tmp()
-        CaspParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CaspParser().write(f_out, contact_file)
         content = """PFRMAT RR
 MODEL  1
 HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD
@@ -316,7 +313,8 @@ HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD
 ENDMDL
 END
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -328,8 +326,9 @@ END
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        f_name = _create_tmp()
-        CaspParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CaspParser().write(f_out, contact_file)
         content = """PFRMAT RR
 MODEL  1
 1   9   0  8  0.700000
@@ -339,7 +338,8 @@ MODEL  1
 ENDMDL
 END
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -352,8 +352,9 @@ END
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        f_name = _create_tmp()
-        CaspParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CaspParser().write(f_out, contact_file)
         content = """PFRMAT RR
 MODEL  1
 HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF
@@ -365,7 +366,8 @@ DGCHDFGRTYIWQMSD
 ENDMDL
 END
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -378,8 +380,9 @@ END
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        f_name = _create_tmp()
-        CaspParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CaspParser().write(f_out, contact_file)
         content = """PFRMAT RR
 MODEL  1
 HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF
@@ -391,7 +394,8 @@ DGCHDFGRTYIWQMSD
 ENDMDL
 END
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -409,8 +413,9 @@ END
             contact.res2_chain = c[2]
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        f_name = _create_tmp()
-        CaspParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            CaspParser().write(f_out, contact_file)
         content = """PFRMAT RR
 MODEL  1
 HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF
@@ -422,9 +427,11 @@ A3   B12  0  8  0.400000
 ENDMDL
 END
 """
-        data = "".join(open(f_name, 'r').readlines())
-        self.assertEqual(content, data)
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         os.unlink(f_name)
 
+
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
+

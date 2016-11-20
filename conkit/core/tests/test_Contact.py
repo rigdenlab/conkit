@@ -26,20 +26,13 @@ class Test(unittest.TestCase):
         # Test Case 3
         contact = Contact(1, 2, 1.0)
         try:
-            contact.distance_bound = 8
-            self.assertTrue(False)
-        except TypeError:
-            self.assertTrue(True)
-        try:
-            contact.distance_bound = 'test'
-            self.assertTrue(False)
-        except TypeError:
-            self.assertTrue(True)
-        try:
             contact.distance_bound = (1, 100)
-            self.assertTrue(True)
         except TypeError:
-            self.assertTrue(False)
+            self.fail('contact.distance_bound raised TypeError unexpectedly')
+        with self.assertRaises(TypeError):
+            contact.distance_bound = 8
+        with self.assertRaises(TypeError):
+            contact.distance_bound = 'test'
 
     def test_is_false_positive(self):
         # ======================================================
@@ -83,11 +76,8 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 3
         contact = Contact(1, 2, 1.0)
-        try:
+        with self.assertRaises(ValueError):
             contact.res1 = '8'
-            self.assertFalse(True)
-        except ValueError:
-            self.assertTrue(True)
 
     def test_res2(self):
         # ======================================================
@@ -103,11 +93,8 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 3
         contact = Contact(1, 2, 1.0)
-        try:
+        with self.assertRaises(ValueError):
             contact.res2 = '?'
-            self.assertFalse(True)
-        except ValueError:
-            self.assertTrue(True)
 
     def test_res1_chain(self):
         # ======================================================
@@ -227,4 +214,4 @@ class Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

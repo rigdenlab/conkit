@@ -4,18 +4,10 @@ __author__ = "Felix Simkovic"
 __date__ = "13 Sep 2016"
 
 from conkit.io.JonesIO import JonesIO
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -28,9 +20,10 @@ EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        f_name = _create_tmp(msa)
+        f_name = create_tmp_f(content=msa)
         parser = JonesIO()
-        sequence_file = parser.read(open(f_name, 'r'))
+        with open(f_name, 'r') as f_in:
+            sequence_file = parser.read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual('seq_0', sequence_entry.id)
@@ -58,9 +51,11 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 >header4
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        f_name = _create_tmp(msa)
+        f_name = create_tmp_f(content=msa)
         parser = JonesIO()
-        self.assertRaises(ValueError, parser.read, open(f_name, 'r'))
+        with open(f_name, 'r') as f_in:
+            with self.assertRaises(ValueError):
+                parser.read(f_in)
         del parser
         os.unlink(f_name)
 
@@ -72,16 +67,19 @@ EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        f_name_in = _create_tmp(msa)
+        f_name_in = create_tmp_f(content=msa)
+        f_name_out = create_tmp_f()
         parser = JonesIO()
-        sequence_file = parser.read(open(f_name_in, 'r'))
-        f_name_out = _create_tmp()
-        parser.write(open(f_name_out, 'w'), sequence_file)
-        output = "".join(open(f_name_out, 'r').readlines())
+        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+            sequence_file = parser.read(f_in)
+            parser.write(f_out, sequence_file)
+        with open(f_name_out, 'r') as f_in:
+            output = "".join(f_in.readlines())
         self.assertEqual(msa, output)
         del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

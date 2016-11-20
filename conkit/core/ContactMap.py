@@ -206,7 +206,7 @@ class ContactMap(Entity):
         if not isinstance(self.sequence, Sequence):
             raise TypeError('Define the sequence as Sequence() instance')
         # Get all resseqs that are the contact map
-        res1_seqs, res2_seqs = zip(*[contact.id for contact in self])
+        res1_seqs, res2_seqs = list(zip(*[contact.id for contact in self]))
         res_seqs = set(
             sorted(res1_seqs + res2_seqs)
         )
@@ -236,7 +236,7 @@ class ContactMap(Entity):
         if not isinstance(self.sequence, Sequence):
             raise TypeError('Define the sequence as Sequence() instance')
         # Get all resseqs that are the contact map
-        res1_seqs, res2_seqs = zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self])
+        res1_seqs, res2_seqs = list(zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
         res_seqs = set(
             sorted(res1_seqs + res2_seqs)
         )
@@ -294,7 +294,7 @@ class ContactMap(Entity):
         """Construct the representative sequence"""
         # Determine which are present and which are not
         representative_sequence = ''
-        for i in xrange(1, self.sequence.seq_len + 1):
+        for i in range(1, self.sequence.seq_len + 1):
             if i in res_seqs:
                 representative_sequence += self.sequence.seq[i - 1]
             else:
@@ -549,7 +549,7 @@ class ContactMap(Entity):
             else:
                 reference_data = numpy.asarray([(c.res1_seq, c.res2_seq)
                                                 for c in reference if c.is_true_positive])
-            reference_colors = [constants.RFCOLOR for _ in xrange(len(reference_data))]
+            reference_colors = [constants.RFCOLOR for _ in range(len(reference_data))]
             ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
                        marker='.', s=10, edgecolor='none', linewidths=0.0)
             ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
@@ -670,9 +670,9 @@ class ContactMap(Entity):
         """Adjust res_altseq entries to insertions and deletions"""
         encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
         for contact in contact_map:
-            if contact.res1_seq in encoder.keys():
+            if contact.res1_seq in list(encoder.keys()):
                 contact.res1_altseq = encoder[contact.res1_seq]
-            if contact.res2_seq in encoder.keys():
+            if contact.res2_seq in list(encoder.keys()):
                 contact.res2_altseq = encoder[contact.res2_seq]
         return contact_map
 
@@ -701,8 +701,8 @@ class ContactMap(Entity):
                 res1_index, res2_index = contact.res1_seq, contact.res2_seq
             contact_map_keymap[res1_index] = pos1
             contact_map_keymap[res2_index] = pos2
-        contact_map_keymap_sorted = sorted(contact_map_keymap.items(), key=lambda x: int(x[0]))
-        return zip(*contact_map_keymap_sorted)[1]
+        contact_map_keymap_sorted = sorted(list(contact_map_keymap.items()), key=lambda x: int(x[0]))
+        return list(zip(*contact_map_keymap_sorted))[1]
 
     @staticmethod
     def _find_single(contact_map, index):
@@ -722,7 +722,7 @@ class ContactMap(Entity):
             if amino_acid == ord('-'):
                 keymap_.append(_Gap())
             else:
-                keymap_.append(it.next())
+                keymap_.append(next(it))
         return keymap_
 
     @staticmethod

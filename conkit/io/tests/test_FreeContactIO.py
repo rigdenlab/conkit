@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.FreeContactIO import FreeContactParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -38,14 +30,15 @@ class Test(unittest.TestCase):
 1 M 10 L 0.0134577 0
 1 M 11 G 0.0234555 0
 """
-        f_name = _create_tmp(content)
-        contact_file = FreeContactParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = FreeContactParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [c.res1_seq for c in contact_map1])
         self.assertEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [c.res2_seq for c in contact_map1])
-        self.assertItemsEqual(
+        self.assertEqual(
             [0.0338619, 0.0307956, 0.0268079, 0.0219783, 0.0222061, 0.0213079, 0.0119054,
              0.0275182, 0.0134577, 0.0234555],
             [c.raw_score for c in contact_map1]
@@ -67,14 +60,16 @@ class Test(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        FreeContactParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            FreeContactParser().write(f_out, contact_file)
         content = """1 H 9 L 0.7 0
 1 H 10 L 0.7 0
 2 L 8 I 0.9 0
 3 E 12 K 0.4 0
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 

@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.ComsatIO import ComsatParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -56,14 +48,16 @@ class Test(unittest.TestCase):
 8    N   171  V   H1-H6
 9    V   171  V   H1-H6
 """
-        f_name = _create_tmp(content)
-        contact_file = ComsatParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = ComsatParser().read(f_in, 'r')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(28, len(contact_map1))
-        self.assertItemsEqual(
+        self.assertEqual(
             [19, 19, 11, 11, 12, 12, 40, 41, 33, 33, 46, 47, 69, 69, 96, 96, 82, 82, 82, 83, 128, 129, 118, 119, 20, 21, 8, 9],
-            [c.res1_seq for c in contact_map1])
+            [c.res1_seq for c in contact_map1]
+        )
         os.unlink(f_name)
 
     def test_write(self):
@@ -81,14 +75,16 @@ class Test(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        ComsatParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            ComsatParser().write(f_out, contact_file)
         content = """1	H	9	L	Hx-Hx
 1	H	10	L	Hx-Hx
 2	L	8	I	Hx-Hx
 3	E	12	K	Hx-Hx
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 

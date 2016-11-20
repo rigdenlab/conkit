@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.PlmDCAIO import PlmDCAParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -38,14 +30,15 @@ class Test(unittest.TestCase):
 1,10,0.049844
 1,11,0.045109
 """
-        f_name = _create_tmp(content)
-        contact_file = PlmDCAParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PlmDCAParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [c.res1_seq for c in contact_map1])
         self.assertEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [c.res2_seq for c in contact_map1])
-        self.assertItemsEqual(
+        self.assertEqual(
             [0.12212, 0.14004, 0.12926, 0.089211, 0.079976, 0.078954, 0.052275, 0.026012, 0.049844, 0.045109],
             [c.raw_score for c in contact_map1]
         )
@@ -66,14 +59,16 @@ class Test(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        PlmDCAParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            PlmDCAParser().write(f_out, contact_file)
         content = """1,9,0.700000
 1,10,0.700000
 2,8,0.900000
 3,12,0.400000
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 

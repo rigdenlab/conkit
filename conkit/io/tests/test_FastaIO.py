@@ -4,18 +4,10 @@ __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
 
 from conkit.io.FastaIO import FastaIO
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -28,9 +20,10 @@ GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
 SSEHP
 """
-        f_name = _create_tmp(seq)
+        f_name = create_tmp_f(content=seq)
         parser = FastaIO()
-        sequence_file = parser.read(open(f_name, 'r'))
+        with open(f_name, 'r') as f_in:
+            sequence_file = parser.read(f_in)
         sequence_entry = sequence_file.top_sequence
         ref_id = "00FAF_A <unknown description>"
         self.assertEqual(ref_id, sequence_entry.id)
@@ -45,12 +38,13 @@ SSEHP
 >00FAF_A <unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 """
-        f_name = _create_tmp(seq)
+        f_name = create_tmp_f(content=seq)
         parser = FastaIO()
-        sequence_file = parser.read(open(f_name, 'r'))
+        with open(f_name, 'r') as f_in:
+            sequence_file = parser.read(f_in)
         sequence_entry = sequence_file.top_sequence
         ref_f_remark = [' Hello World']
-        self.assertItemsEqual(ref_f_remark, sequence_file.remark)
+        self.assertEqual(ref_f_remark, sequence_file.remark)
         ref_id = "00FAF_A <unknown description>"
         self.assertEqual(ref_id, sequence_entry.id)
         ref_seq = "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK"
@@ -69,10 +63,11 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA
 >seq3
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
 """
-        f_name = _create_tmp(msa)
+        f_name = create_tmp_f(content=msa)
         parser = FastaIO()
-        sequence_file = parser.read(open(f_name, 'r'))
-        self.assertItemsEqual(['foo', 'bar'], sequence_file.remark)
+        with open(f_name, 'r') as f_in:
+            sequence_file = parser.read(f_in)
+        self.assertEqual(['foo', 'bar'], sequence_file.remark)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual('seq1', sequence_entry.id)
@@ -94,34 +89,36 @@ GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
 SSEHP
 """
-        f_name_in = _create_tmp(seq)
+        f_name_in = create_tmp_f(content=seq)
+        f_name_out = create_tmp_f()
         parser = FastaIO()
-        sequence_file = parser.read(open(f_name_in, 'r'))
-        f_name_out = _create_tmp()
-        parser.write(open(f_name_out, 'w'), sequence_file)
-        output = "".join(open(f_name_out, 'r').readlines())
+        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+            sequence_file = parser.read(f_in)
+            parser.write(f_out, sequence_file)
+        with open(f_name_out, 'r') as f_in:
+            output = "".join(f_in.readlines())
         self.assertEqual(seq, output)
         del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
-
         # ==================================================
         # Normal sequence mode - with comment
         seq = """# Hello World
 >00FAF_A|<unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 """
-        f_name_in = _create_tmp(seq)
+        f_name_in = create_tmp_f(content=seq)
+        f_name_out = create_tmp_f()
         parser = FastaIO()
-        sequence_file = parser.read(open(f_name_in, 'r'))
-        f_name_out = _create_tmp()
-        parser.write(open(f_name_out, 'w'), sequence_file)
-        output = "".join(open(f_name_out, 'r').readlines())
+        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+            sequence_file = parser.read(f_in)
+            parser.write(f_out, sequence_file)
+        with open(f_name_out, 'r') as f_in:
+            output = "".join(f_in.readlines())
         self.assertEqual(seq, output)
         del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
-
         # ==================================================
         # Multiple sequence alignment
         msa = """#foo
@@ -133,16 +130,19 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA
 >seq3
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
 """
-        f_name_in = _create_tmp(msa)
+        f_name_in = create_tmp_f(content=msa)
+        f_name_out = create_tmp_f()
         parser = FastaIO()
-        sequence_file = parser.read(open(f_name_in, 'r'))
-        f_name_out = _create_tmp()
-        parser.write(open(f_name_out, 'w'), sequence_file)
-        output = "".join(open(f_name_out, 'r').readlines())
+        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+            sequence_file = parser.read(f_in)
+            parser.write(f_out, sequence_file)
+        with open(f_name_out, 'r') as f_in:
+            output = "".join(f_in.readlines())
         self.assertEqual(msa, output)
         del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

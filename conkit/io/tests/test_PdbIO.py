@@ -4,17 +4,10 @@ __author__ = "Felix Simkovic"
 __date__ = "26 Oct 2016"
 
 from conkit.io.PdbIO import PdbParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -40,14 +33,15 @@ ATOM     15  O   PHE A 208      32.852  45.936  -5.051  0.50 17.69           O
 ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = PdbParser().read(open(f_name, 'r'), distance_cutoff=8, atom_type='CB')
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CB')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(6, len(contact_map1))
         self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.is_true_positive])
         self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.is_true_positive])
-        self.assertItemsEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.is_true_positive])
+        self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.is_true_positive])
         os.unlink(f_name)
         # ======================================================
         # Test Case 2
@@ -69,14 +63,15 @@ ATOM     15  O   PHE A 208      32.852  45.936  -5.051  0.50 17.69           O
 ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
-        f_name = _create_tmp(content)
-        contact_file = PdbParser().read(open(f_name, 'r'), distance_cutoff=8, atom_type='CA')
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CA')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(6, len(contact_map1))
         self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_true_positive])
         self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_true_positive])
-        self.assertItemsEqual([0.934927], [c.raw_score for c in contact_map1 if c.is_true_positive])
+        self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.is_true_positive])
         os.unlink(f_name)
         # ======================================================
         # Test Case 3
@@ -98,14 +93,15 @@ ATOM     15  O   PHE A 208      32.852  45.936  -5.051  0.50 17.69           O
 ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
-        f_name = _create_tmp(content)
-        contact_file = PdbParser().read(open(f_name, 'r'), distance_cutoff=7, atom_type='CB')
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=7, atom_type='CB')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(6, len(contact_map1))
         self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_true_positive])
         self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_true_positive])
-        self.assertItemsEqual([0.934108], [c.raw_score for c in contact_map1 if c.is_true_positive])
+        self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.is_true_positive])
         os.unlink(f_name)
         # ======================================================
         # Test Case 4
@@ -128,8 +124,9 @@ ATOM     15  O   PHE B 208      32.852  45.936  -5.051  0.50 17.69           O
 ATOM     16  CB  PHE B 208      31.726  43.102  -3.518  0.50 19.90           C
 END
 """
-        f_name = _create_tmp(content)
-        contact_file = PdbParser().read(open(f_name, 'r'), distance_cutoff=8, atom_type='CB')
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CB')
         # Two maps because no contacts in B
         contact_map1 = contact_file['A']     # chain A
         contact_map2 = contact_file['AB']    # chain AB

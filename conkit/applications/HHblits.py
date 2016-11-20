@@ -49,7 +49,7 @@ class HHblitsCommandLine(AbstractCommandline):
     def __init__(self, cmd="hhblits", **kwargs):
 
         # TODO: Figure out how to do mutual groups
-        if 'local' in kwargs.keys() and 'global' in kwargs.keys():
+        if 'local' in list(kwargs.keys()) and 'global' in list(kwargs.keys()):
             warnings.warn("Use only one of \"global_aln/local_aln\" alignment modes")
             return
 

@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.GremlinIO import GremlinParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -39,16 +31,17 @@ class Test(unittest.TestCase):
 215	268	215_V	268_A	0.1109	2.604	0.998
 262	266	262_G	266_K	0.1040	2.442	0.997
 """
-        f_name = _create_tmp(content)
-        contact_file = GremlinParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = GremlinParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
-        self.assertItemsEqual(
+        self.assertEqual(
             [179, 262, 428, 214, 457, 220, 143, 79, 215, 262],
             [c.res1_seq for c in contact_map1]
         )
-        self.assertItemsEqual(
+        self.assertEqual(
             [0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
             [c.raw_score for c in contact_map1]
         )
@@ -70,16 +63,17 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 215	268	215_V	268_A	0.1109	2.604	0.998
 262	266	262_G	266_K	0.1040	2.442	0.997
 """
-        f_name = _create_tmp(content)
-        contact_file = GremlinParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = GremlinParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
-        self.assertItemsEqual(
+        self.assertEqual(
             [179, 262, 428, 214, 457, 220, 143, 79, 215, 262],
             [c.res1_seq for c in contact_map1]
         )
-        self.assertItemsEqual(
+        self.assertEqual(
             [0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
             [c.raw_score for c in contact_map1]
         )
@@ -102,8 +96,9 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 30	65	A	30_A	65_T	0.054	1.065	0.532	N/A
 24	434	AB	24_A	244_L	0.054	1.064	0.531	0.123
 """
-        f_name = _create_tmp(content)
-        contact_file = GremlinParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = GremlinParser().read(f_in)
         self.assertEqual(3, len(contact_file))
         chain_a_res1seq = [127, 83, 108, 63, 30]
         chain_a_rawscore = [0.183, 0.183, 0.105, 0.098, 0.054]
@@ -116,8 +111,8 @@ i	j	i_id	j_id	r_sco	s_sco	prob
                                                       [chain_a_rawscore, chain_ab_rawscore, chain_b_rawscore],
                                                       contact_file):
             self.assertEqual(count, len(cmap))
-            self.assertItemsEqual(res1_seqs, [c.res1_seq for c in cmap])
-            self.assertItemsEqual(raw_scores, [c.raw_score for c in cmap])
+            self.assertEqual(res1_seqs, [c.res1_seq for c in cmap])
+            self.assertEqual(raw_scores, [c.raw_score for c in cmap])
         os.unlink(f_name)
 
     def test_write(self):
@@ -131,15 +126,17 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        GremlinParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            GremlinParser().write(f_out, contact_file)
         content = """i	j	i_id	j_id	r_sco	s_sco	prob
 1	9	1_H	9_L	0.7	1.0	1.0
 1	10	1_H	10_L	0.7	1.0	1.0
 2	8	2_L	8_I	0.9	1.3	1.0
 3	12	3_E	12_K	0.4	0.6	1.0
 """.format(sep="\t")
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -151,15 +148,17 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        f_name = _create_tmp()
-        GremlinParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            GremlinParser().write(f_out, contact_file)
         content = """i	j	i_id	j_id	r_sco	s_sco	prob
 1	9	1_X	9_X	0.7	1.0	1.0
 1	10	1_X	10_X	0.7	1.0	1.0
 2	8	2_X	8_X	0.9	1.3	1.0
 3	12	3_X	12_X	0.4	0.6	1.0
 """.format(sep="\t")
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
@@ -179,8 +178,9 @@ i	j	i_id	j_id	r_sco	s_sco	prob
                 contact_map.add(c)
             contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
             contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        GremlinParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            GremlinParser().write(f_out, contact_file)
         content = """i	j	gene	i_id	j_id	r_sco	s_sco	prob	I_prob
 1	9	A	1_H	9_L	0.7	1.0	1.0	N/A
 1	10	A	1_H	10_L	0.7	1.0	1.0	N/A
@@ -195,7 +195,8 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 2	8	B	2_L	8_I	0.9	1.3	1.0	N/A
 3	12	B	3_E	12_K	0.4	0.6	1.0	N/A
 """.format(sep="\t")
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 

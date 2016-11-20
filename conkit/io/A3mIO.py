@@ -128,9 +128,9 @@ class A3mIO(_SequenceFileParser):
         insert_max_lengths = [
             max(
                 len(inserts[i][j])
-                for i in xrange(len(inserts))
+                for i in range(len(inserts))
             )
-            for j in xrange(len(inserts[0]))
+            for j in range(len(inserts[0]))
         ]
 
         # Add gaps where gaps are needed

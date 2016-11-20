@@ -132,7 +132,8 @@ class Test(unittest.TestCase):
             contact_map.add(contact)
         sequence1 = Sequence('foo', 'ABC')
         sequence2 = Sequence('bar', 'DE')
-        self.assertRaises(TypeError, contact_map.sequence, [sequence1, sequence2])
+        with self.assertRaises(TypeError):
+            contact_map.sequence([sequence1, sequence2])
 
     def test_top_contact(self):
         # ======================================================
@@ -949,9 +950,10 @@ class Test(unittest.TestCase):
         self.assertEqual([9999, 9999, 9999, 9999], [c.res_seq for c in reindex])
         self.assertEqual([9999, 9999, 9999, 9999], [c.res_altseq for c in reindex])
 
+    @unittest.skip("Test case missing")
     def test__renumber(self):
         pass
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

@@ -79,7 +79,7 @@ class Entity(object):
     def __getitem__(self, id):
         """Return the child with the given id"""
         if isinstance(id, slice):
-            indexes_to_keep = range(*id.indices(len(self)))
+            indexes_to_keep = list(range(*id.indices(len(self))))
             copy_to_return = self.copy()
             for i, child in enumerate(self):
                 if i not in indexes_to_keep:

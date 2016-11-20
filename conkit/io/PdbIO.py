@@ -2,6 +2,8 @@
 Parser module specific to Pdb files
 """
 
+from __future__ import division
+
 __author__ = "Felix Simkovic"
 __date__ = "27 Sep 2016"
 __version__ = 0.1
@@ -51,16 +53,16 @@ class PdbParser(_ContactFileParser):
         Atom = collections.namedtuple('Atom', 'resname resseq resseq_alt reschain')
 
         if chain1 == chain2:
-            range1 = range2 = range(1, len(chain1) + 1)
+            range1 = range2 = list(range(1, len(chain1) + 1))
         else:
-            range1 = range(1, len(chain1) + 1)
-            range2 = range(len(chain1) + 1, len(chain1)+len(chain2) + 1)
+            range1 = list(range(1, len(chain1) + 1))
+            range2 = list(range(len(chain1) + 1, len(chain1)+len(chain2) + 1))
 
         assert len(range1) == len(chain1)
         assert len(range2) == len(chain2)
 
-        for (resseq1_alt, residue1), (resseq2_alt, residue2) in itertools.product(zip(range1, chain1),
-                                                                                  zip(range2, chain2)):
+        for (resseq1_alt, residue1), (resseq2_alt, residue2) in itertools.product(list(zip(range1, chain1)),
+                                                                                  list(zip(range2, chain2))):
             for atom1, atom2 in itertools.product(residue1, residue2):
 
                 # Ignore duplicates

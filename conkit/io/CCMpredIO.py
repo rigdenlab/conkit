@@ -2,6 +2,8 @@
 Parser module specific to CCMpred predictions
 """
 
+from __future__ import division
+
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = 0.1
@@ -91,8 +93,7 @@ class CCMpredParser(_ContactFileParser):
         ------
         RuntimeError
            More than one contact map in the hierarchy
-
-
+        
         """
         # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
@@ -102,12 +103,12 @@ class CCMpredParser(_ContactFileParser):
 
         for contact_map in contact_file:
             len_mat = max([c.res1_seq for c in contact_map] + [c.res2_seq for c in contact_map])
-            mat = numpy.zeros((len_mat, len_mat), numpy.float)
+            mat = numpy.zeros((len_mat, len_mat), numpy.float64)
 
             for contact in contact_map:
                 mat[contact.res1_seq - 1][contact.res2_seq - 1] = contact.raw_score
                 mat[contact.res2_seq - 1][contact.res1_seq - 1] = contact.raw_score
-
+            
             numpy.savetxt(f_handle, mat)
 
         return

@@ -8,18 +8,10 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.io.MemBrainIO import MemBrainParser
+from conkit._util import create_tmp_f
 
 import os
 import unittest
-import tempfile
-
-
-def _create_tmp(data=None):
-    f_in = tempfile.NamedTemporaryFile(delete=False)
-    if data:
-        f_in.write(data)
-    f_in.close()
-    return f_in.name
 
 
 class Test(unittest.TestCase):
@@ -41,14 +33,15 @@ H1      24      I       H2      51      A       0.790044
 H1      19      L       H2      62      G       0.784613
 H1      19      L       H2      55      F       0.782741
 """
-        f_name = _create_tmp(content)
-        contact_file = MemBrainParser().read(open(f_name, 'r'))
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = MemBrainParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(12, len(contact_map1))
         self.assertEqual([30, 33, 18, 30, 26, 18, 33, 12, 29, 24, 19, 19], [c.res1_seq for c in contact_map1])
         self.assertEqual([55, 51, 65, 54, 57, 58, 63, 68, 55, 51, 62, 55], [c.res2_seq for c in contact_map1])
-        self.assertItemsEqual(
+        self.assertEqual(
             [1.000000, 0.944091, 0.942259, 0.919241, 0.817638, 0.797449, 0.795520,
              0.795462, 0.791829, 0.790044, 0.784613, 0.782741],
             [c.raw_score for c in contact_map1]
@@ -70,15 +63,17 @@ H1      19      L       H2      55      F       0.782741
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.assign_sequence_register()
-        f_name = _create_tmp()
-        MemBrainParser().write(open(f_name, 'w'), contact_file)
+        f_name = create_tmp_f()
+        with open(f_name, 'w') as f_out:
+            MemBrainParser().write(f_out, contact_file)
         content = """Helix   Position        Residue Helix   Position        Residue Probability
 Hx      1       H       Hx      9       L       0.700000
 Hx      1       H       Hx      10      L       0.700000
 Hx      2       L       Hx      8       I       0.900000
 Hx      3       E       Hx      12      K       0.400000
 """
-        data = "".join(open(f_name, 'r').readlines())
+        with open(f_name, 'r') as f_in:
+            data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
 
