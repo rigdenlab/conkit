@@ -17,12 +17,6 @@ import collections
 import numpy
 import warnings
 
-try:
-    import matplotlib.pyplot
-    MATPLOTLIB = True
-except ImportError:
-    MATPLOTLIB = False
-
 
 class _Residue(object):
     """A basic class representing a residue"""
@@ -536,7 +530,10 @@ class ContactMap(Entity):
            Matplotlib not installed
 
         """
-        if not MATPLOTLIB:
+        # Import better suited here to avoid importing it every time ConKit is loaded
+        try:
+            import matplotlib.pyplot
+        except ImportError:
             raise RuntimeError('Dependency not found: matplotlib')
 
         fig, ax = matplotlib.pyplot.subplots(figsize=(5, 5), dpi=600)
