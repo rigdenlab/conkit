@@ -21,7 +21,9 @@ from conkit.io.A3mIO import A3mIO
 from conkit.io.FastaIO import FastaIO
 from conkit.io.JonesIO import JonesIO
 from conkit.io.StockholmIO import StockholmIO
+from conkit.io._iotools import open_f_handle
 
+import sys
 
 CONTACT_FILE_PARSERS = {
     'casprr': CaspParser,
@@ -50,17 +52,15 @@ SEQUENCE_FILE_PARSERS = {
 }
 
 
-def convert(f_in, format_in, f_out, format_out):
+def convert(fname_in, format_in, fname_out, format_out):
     """Convert a file in format x to file in format y
 
     Parameters
     ----------
-    f_in
-       Open file handle for input file [read-permissions]
+    fname_in : filehandle, filename
     format_in : str
        File format of f_in
-    f_out
-       Open file handle for output file [write-permissions]
+    fname_out : filehandle, filename
     format_out : str
        File format of f_out
 
@@ -84,36 +84,30 @@ def convert(f_in, format_in, f_out, format_out):
     ...     io.convert(f_in, 'pconsc3', f_out, 'casprr'))
 
     """
-
+    # Check for the correct format and values provided
+    kwargs = {}
     if not (format_in in CONTACT_FILE_PARSERS or format_in in SEQUENCE_FILE_PARSERS):
         raise ValueError("Unrecognised input file format: '{selected}'".format(selected=format_in))
-
     elif not (format_out in CONTACT_FILE_PARSERS or format_out in SEQUENCE_FILE_PARSERS):
         raise ValueError("Unrecognised output file format: '{selected}'".format(selected=format_out))
-
     elif format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
-
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
-
     elif format_in in CONTACT_FILE_PARSERS:
         parser_in = CONTACT_FILE_PARSERS[format_in]()
         parser_out = CONTACT_FILE_PARSERS[format_out]()
-        hierarchy = parser_in.read(f_in)
-        parser_out.write(f_out, hierarchy)
-
     elif format_in in SEQUENCE_FILE_PARSERS:
         parser_in = SEQUENCE_FILE_PARSERS[format_in]()
         parser_out = SEQUENCE_FILE_PARSERS[format_out]()
         if format_in == 'a3m-inserts':
-            hierarchy = parser_in.read(f_in, remove_inserts=False)
-        else:
-            hierarchy = parser_in.read(f_in)
-        parser_out.write(f_out, hierarchy)
-
+            kwargs['remove_inserts'] = False
     else:
         raise Exception("Should never be here")
+
+    with open_f_handle(fname_in, 'read') as f_in, open_f_handle(fname_out, 'write') as f_out: 
+        hierarchy = parser_in.read(f_in, **kwargs)
+        parser_out.write(f_out, hierarchy)
 
     return
 
@@ -150,29 +144,28 @@ def read(f_in, format, f_id='conkit'):
     ...     hierarchy = io.read(f_in, 'ccmpred')
 
     """
-
+    # Check for the correct format and values provided
     if not (format in CONTACT_FILE_PARSERS or format in SEQUENCE_FILE_PARSERS):
         raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
-
     elif format in CONTACT_FILE_PARSERS:
         parser = CONTACT_FILE_PARSERS[format]()
-
     elif format in SEQUENCE_FILE_PARSERS:
         parser = SEQUENCE_FILE_PARSERS[format]()
-
     else:
         raise Exception("Should never be here")
+    
+    with open_f_handle(f_in, 'read') as f_in:
+        hierarchy = parser.read(f_in, f_id=f_id)
 
-    return parser.read(f_in, f_id=f_id)
+    return hierarchy
 
 
-def write(f_out, format, hierarchy):
+def write(fname, format, hierarchy):
     """Parse a file handle to read into structure
 
     Parameters
     ----------
-    f_out
-       Open file handle for output file [write-permissions]
+    fname : filehandle, filename
     format : str
        File format of handle
     hierarchy
@@ -195,19 +188,17 @@ def write(f_out, format, hierarchy):
     ...     io.write(f_out, 'casprr', hierarchy)
 
     """
-
+    # Check for the correct format and values provided
     if not (format in CONTACT_FILE_PARSERS or format in SEQUENCE_FILE_PARSERS):
         raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
-
     elif format in CONTACT_FILE_PARSERS:
         parser = CONTACT_FILE_PARSERS[format]()
-
     elif format in SEQUENCE_FILE_PARSERS:
         parser = SEQUENCE_FILE_PARSERS[format]()
-
     else:
         raise Exception("Should never be here")
-
-    parser.write(f_out, hierarchy)
+    
+    with open_f_handle(fname, 'write') as f_out:
+        parser.write(f_out, hierarchy)
 
     return

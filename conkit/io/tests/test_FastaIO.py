@@ -4,7 +4,7 @@ __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
 
 from conkit.io.FastaIO import FastaIO
-from conkit._util import create_tmp_f
+from conkit.io._iotools import create_tmp_f
 
 import os
 import unittest

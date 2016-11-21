@@ -4,7 +4,7 @@ __author__ = "Felix Simkovic"
 __date__ = "12 Sep 2016"
 
 from conkit.io.StockholmIO import StockholmIO
-from conkit._util import create_tmp_f
+from conkit.io._iotools import create_tmp_f
 
 import os
 import unittest

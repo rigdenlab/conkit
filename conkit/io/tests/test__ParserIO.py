@@ -8,7 +8,8 @@ from conkit.core import ContactFile
 from conkit.core import ContactMap
 from conkit.core import Sequence
 from conkit.core import SequenceFile
-from conkit.io._ParserIO import _ContactFileParser, _SequenceFileParser
+from conkit.io._ParserIO import _ContactFileParser
+from conkit.io._ParserIO import _SequenceFileParser
 
 import unittest
 
