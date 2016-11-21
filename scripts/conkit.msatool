@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+__author__ = "Felix Simkovic"
+__date__ = "21 Nov 2016"
+__version__ = 0.1
+
+import argparse
+import conkit
+import logging
+import sys
+
+logging.basicConfig(format='%(message)s', level=logging.INFO)
+
+
+def main():
+    text = """
+Analyse a Multiple Sequence Alignment
+
+File format options are:
+
+    Sequence files: [{0}]
+
+"""
+    options = sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys())
+    text = text.format(' '.join(options))
+    parser = argparse.ArgumentParser(description=text, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-id', default=0.7, type=float, help='sequence identity [default: 0.7]')
+    parser.add_argument('msafile')
+    parser.add_argument('msaformat')
+    args = parser.parse_args()
+    
+    # Compute all the data
+    hierarchy = conkit.io.read(args.msafile, args.msaformat)
+    seq_len = hierarchy.top_sequence.seq_len
+    nseqs = hierarchy.nseqs
+    meff = hierarchy.calculate_meff(identity=args.id)
+    
+    logging.info('File: {0}'.format(args.msafile))
+    logging.info('Format: {0}'.format(args.msaformat))
+    logging.info('Seq ID: {0}'.format(args.id))
+    logging.info('Seq Len: {0}'.format(seq_len))
+    logging.info('N seqs: {0}'.format(nseqs))
+    logging.info('M eff: {0}'.format(meff))
+
+
+if __name__ == "__main__":
+    sys.exit(main())
