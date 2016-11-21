@@ -10,6 +10,7 @@ The following scripts are currently shipped with ConKit:
 
 - :obj:`conkit.convert` - script to convert file formats
 - :obj:`conkit.msatool` - script to analyse a Multiple Sequence Alignment 
+- :obj:`conkit.precision` - script to calculate the contact prediction precision value
 - :obj:`conkit.predict` - simple contact prediction pipeline using HHblits, HHfilter and CCMpred
 
 All scripts can be invoked from the command line using the name listed above, i.e to convert a prediction file to the Casp RR format you can call
