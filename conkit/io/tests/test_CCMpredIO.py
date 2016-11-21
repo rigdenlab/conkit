@@ -11,6 +11,7 @@ from conkit.io.CCMpredIO import CCMpredParser
 from conkit._util import create_tmp_f
 
 import os
+import sys
 import unittest
 
 
@@ -66,7 +67,9 @@ class Test(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
+        mode = 'wb' if sys.version_info.major == 3 else 'w'
+        with open(f_name, mode) as f_out:
             CCMpredParser().write(f_out, contact_file)
         content = """0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 6.999999999999999556e-01 6.999999999999999556e-01 0.000000000000000000e+00 0.000000000000000000e+00
 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 9.000000000000000222e-01 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00 0.000000000000000000e+00
@@ -85,6 +88,23 @@ class Test(unittest.TestCase):
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
         os.unlink(f_name)
+        # ======================================================
+        # Test Case 2
+        contact_file = ContactFile('test')
+        contact_map = ContactMap('1')
+        contact_file.add(contact_map)
+        for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
+            contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
+            contact_map.add(contact)
+        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        f_name = create_tmp_f()
+        # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
+        with open(f_name, 'w') as f_out:
+            if sys.version_info.major == 3:
+                with self.assertRaises(TypeError):
+                    CCMpredParser().write(f_out, contact_file)
+            else:
+                self.assertTrue(True)
 
 
 if __name__ == "__main__":
