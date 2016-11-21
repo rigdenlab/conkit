@@ -1,6 +1,5 @@
 """Testing facility for conkit.core.entity"""
 
-from builtins import range
 __author__ = "Felix Simkovic"
 __date__ = "12 Aug 2016"
 
