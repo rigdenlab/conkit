@@ -26,8 +26,8 @@ ConKit provides the following simple syntax to do exactly that.
 
 .. code-block:: python
   
-   >>> f_in = open('query.pconsc3.txt', 'r')
-   >>> contact_hierarchy = io.read(f_in, 'pconsc3')
+   >>> with open('query.pconsc3.txt', 'r') as f_in:
+   ...     contact_hierarchy = io.read(f_in, 'pconsc3')
 
 File writing
 ^^^^^^^^^^^^
@@ -36,8 +36,8 @@ Now, you've manipulated the file from the previous example and you now want to w
 
 .. code-block:: python
    
-   >>> f_out = open('query.pconsc3.new.txt', 'w')
-   >>> io.write(f_out, contact_hierarchy, 'pconsc3')
+   >>> with open('query.pconsc3.new.txt', 'w') as f_out:
+   ...     io.write(f_out, contact_hierarchy, 'pconsc3')
 
 File conversion
 ^^^^^^^^^^^^^^^
@@ -47,10 +47,9 @@ Imagine the following scenario: you have just used an online server, let's say `
 Assuming our PconsC3 contact file is called ``query.pconsc3.txt`` and you want to write it to a file called ``query.rr.txt``, you can convert it using the following code:
 
 .. code-block:: python
-
-   >>> f_in = open('query.pconsc3.txt', 'r')
-   >>> f_out = open('query.casp.rr', 'w')
-   >>> io.convert(f_in, 'pconsc3', f_out, 'casprr')
+   
+   >>> with open('query.pconsc3.txt', 'r') as f_in, open('query.casp.rr', 'w') as f_out:
+   ...     io.convert(f_in, 'pconsc3', f_out, 'casprr')
 
 This is it, you now have converted your contact file from PconsC3 format to Casp format.
 

@@ -69,7 +69,8 @@ def convert(f_in, format_in, f_out, format_out):
     1) Convert a sequence file from A3M format to FASTA format:
 
     >>> from conkit import io
-    >>> io.convert(open('example.a3m', 'r'), 'a3m', open('example.fas', 'w'), 'fasta')
+    >>> with open('example.a3m', 'r') as f_in, open('example.fas', 'w') as f_out:
+    ...     io.convert(f_in, 'a3m', f_out, 'fasta')
 
     Notes
     -----
@@ -79,7 +80,8 @@ def convert(f_in, format_in, f_out, format_out):
     2) Convert a PconsC3 contact prediction file to the standard Casp RR format:
 
     >>> from conkit import io
-    >>> io.convert(open('example.out', 'r'), 'pconsc3', open('example.rr', 'w'), 'casprr'))
+    >>> with open('example.out', 'r') as f_in, open('example.rr', 'w') as f_out:
+    ...     io.convert(f_in, 'pconsc3', f_out, 'casprr'))
 
     """
 
@@ -116,12 +118,12 @@ def convert(f_in, format_in, f_out, format_out):
     return
 
 
-def read(handle, format, f_id='conkit'):
+def read(f_in, format, f_id='conkit'):
     """Parse a file handle to read into structure
 
     Parameters
     ----------
-    handle
+    f_in
        Open file handle for input file [read-permissions]
     format : str
        File format of handle
@@ -138,12 +140,14 @@ def read(handle, format, f_id='conkit'):
     1) Read a Multiple Sequence Alignment file into a ConKit hierarchy:
 
     >>> from conkit import io
-    >>> hierarchy = io.read(open('example.a3m', 'r'), 'a3m')
+    >>> with open('example.a3m', 'r') as f_in:
+    ...     hierarchy = io.read(f_in, 'a3m')
 
     2) Read a contact prediction file into a conkit hierarchy:
 
     >>> from conkit import io
-    >>> hierarchy = io.read(open('example.mat', 'r'), 'ccmpred')
+    >>> with open('example.mat', 'r') as f_in:
+    ...     hierarchy = io.read(f_in, 'ccmpred')
 
     """
 
@@ -159,15 +163,15 @@ def read(handle, format, f_id='conkit'):
     else:
         raise Exception("Should never be here")
 
-    return parser.read(handle, f_id=f_id)
+    return parser.read(f_in, f_id=f_id)
 
 
-def write(handle, format, hierarchy):
+def write(f_out, format, hierarchy):
     """Parse a file handle to read into structure
 
     Parameters
     ----------
-    handle
+    f_out
        Open file handle for output file [write-permissions]
     format : str
        File format of handle
@@ -179,14 +183,16 @@ def write(handle, format, hierarchy):
     1) Write a ConKit hierarchy into a Multiple Sequence Alignment file:
 
     >>> from conkit import io
-    >>> fasta_hierarchy = io.read(open('example.fas', 'r'), 'fasta')
-    >>> io.write(open('example.a3m', 'w'), 'a3m', fasta_hierarchy)
+    >>> with open('example.fas', 'r') as f_in, open('example.a3m', 'w') as f_out:
+    ...     hierarchy = io.read(f_in, 'fasta')
+    ...     io.write(f_out, 'a3m', hierarchy)
 
     2) Write a ConKit hierarchy into a contact prediction file:
 
     >>> from conkit import io
-    >>> psicov_hierarchy = io.read(open('example.txt', 'r'), 'psicov')
-    >>> io.write(open('example.rr', 'w'), 'casprr')
+    >>> with open('example.txt', 'r') as f_in, open('example.rr', 'w') as f_out:
+    ...     hierarchy = io.read(f_in, 'psicov')
+    ...     io.write(f_out, 'casprr', hierarchy)
 
     """
 
@@ -202,6 +208,6 @@ def write(handle, format, hierarchy):
     else:
         raise Exception("Should never be here")
 
-    parser.write(handle, hierarchy)
+    parser.write(f_out, hierarchy)
 
     return
