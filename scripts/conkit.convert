@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 
-"""
-Simple convenience script to convert contact files to Casp RR format
-"""
-
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from conkit import io
-from sys import exit
-
 __author__ = "Felix Simkovic"
 __date__ = "01 Oct 2016"
-__version__ = "0.1"
+__version__ = 0.1
 
-_OPTIONS = sorted(io.CONTACT_FILE_PARSERS.keys() + io.SEQUENCE_FILE_PARSERS.keys())
+import argparse
+import conkit
+import sys
 
+_OPTIONS = sorted(
+    conkit.io.CONTACT_FILE_PARSERS.keys() 
+    + conkit.io.SEQUENCE_FILE_PARSERS.keys()
+)
 
 
 def main():
@@ -30,9 +28,10 @@ File format options are:
 Please do not attempt to mix formats, i.e. convert from a contact file format
 to a sequence file format.
 
-""".format(
-        " | ".join(sorted(io.CONTACT_FILE_PARSERS.keys())),
-        " | ".join(sorted(io.SEQUENCE_FILE_PARSERS.keys()))
+"""
+    text = text.format(
+        " ".join(sorted(io.CONTACT_FILE_PARSERS.keys())),
+        " ".join(sorted(io.SEQUENCE_FILE_PARSERS.keys()))
     )
 
     parser = ArgumentParser(description=text, formatter_class=RawDescriptionHelpFormatter)
@@ -41,9 +40,9 @@ to a sequence file format.
     parser.add_argument('outfile')
     parser.add_argument('outformat')
     args = parser.parse_args()
-
-    return io.convert(open(args.infile, 'r'), args.informat,
-                      open(args.outfile, 'w'), args.outformat)
+    
+    # Perform the conversion
+    conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
 
 
 if __name__ == "__main__":
