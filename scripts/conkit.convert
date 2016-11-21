@@ -30,11 +30,11 @@ to a sequence file format.
 
 """
     text = text.format(
-        " ".join(sorted(io.CONTACT_FILE_PARSERS.keys())),
-        " ".join(sorted(io.SEQUENCE_FILE_PARSERS.keys()))
+        " ".join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())),
+        " ".join(sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys()))
     )
 
-    parser = ArgumentParser(description=text, formatter_class=RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=text, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('infile')
     parser.add_argument('informat')
     parser.add_argument('outfile')
@@ -46,4 +46,4 @@ to a sequence file format.
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
