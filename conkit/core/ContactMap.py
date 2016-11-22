@@ -312,31 +312,6 @@ class ContactMap(Entity):
             c.res1 = self.sequence.seq[res1_index - 1]
             c.res2 = self.sequence.seq[res2_index - 1]
 
-    def calculate_scalar_score(self):
-        """Calculate a scaled score for the :obj:`ContactMap`
-
-        This score is a scaled score for all raw scores in a contact
-        map. It is defined by the formula
-
-        .. math::
-
-           {x}'=\\frac{x}{\\overline{d}}
-
-        where :math:`x` corresponds to the raw score of each predicted
-        contact and :math:`\overline{d}` to the mean of all raw scores.
-
-        The score is saved in a separate :obj:`Contact` attribute called
-        ``scalar_score``
-
-        This score is described in more detail in Ovchinnikov et al. (2015).
-
-        """
-        raw_scores = numpy.asarray([c.raw_score for c in self])
-        sca_scores = raw_scores / numpy.mean(raw_scores)
-        for contact, sca_score in zip(self, sca_scores):
-            contact.scalar_score = sca_score
-        return
-
     def calculate_jaccard_index(self, other):
         """Calculate the Jaccard index between two :obj:`ContactMap` instances
 
@@ -352,7 +327,7 @@ class ContactMap(Entity):
         :math:`\\left|x \\cup y\\right|` represents the number of elements in the 
         union of :math:`x` and :math:`y`.
 
-        The J-score has values in the range of :match:`[0, 1]`, with a value of :math:`1` 
+        The J-score has values in the range of :math:`[0, 1]`, with a value of :math:`1` 
         corresponding to identical contact maps and :math:`0` to dissimilar ones.
 
         Parameters
@@ -369,16 +344,19 @@ class ContactMap(Entity):
         --------
         match, precision
         
-        Notes
-        -----
-        The Jaccard index is different from the Jaccard distance mentioned in 
-        `Wuyun et al. (2016) <https://dx.doi.org/10.1093/bib/bbw106>`_. The Jaccard 
-        distance corresponds to :math:`1-Jaccard_{index}`.
+        Note
+        ----
+        The Jaccard index is different from the Jaccard distance mentioned in [1]_. The 
+        Jaccard distance corresponds to :math:`1-Jaccard_{index}`.
 
-        Warnings
-        --------
+        Warning
+        -------
         The Jaccard distance ranges from :math:`[0, 1]`, where :math:`1` means 
         the maps contain identical contacts pairs.
+
+        .. [1] Q. Wuyun, W. Zheng, Z. Peng, J. Yang, "A large-scale comparative assessment 
+           of methods for residue-residue contact prediction," Briefings in Bioinformatics,
+           [doi: 10.1093/bib/bbw106], 2016.
 
         """
         intersection = numpy.sum([1 for contact in self if contact.id in other])
@@ -387,6 +365,36 @@ class ContactMap(Entity):
         if union == 0:
             return 1.0
         return float(intersection) / union
+
+    def calculate_scalar_score(self):
+        """Calculate a scaled score for the :obj:`ContactMap`
+
+        This score is a scaled score for all raw scores in a contact
+        map. It is defined by the formula
+
+        .. math::
+
+           {x}'=\\frac{x}{\\overline{d}}
+
+        where :math:`x` corresponds to the raw score of each predicted
+        contact and :math:`\overline{d}` to the mean of all raw scores.
+
+        The score is saved in a separate :obj:`Contact` attribute called
+        ``scalar_score``
+
+        This score is described in more detail in [2]_.
+        
+        .. [2] S. Ovchinnikov, L. Kinch, H. Park, Y. Liao, J. Pei, D.E. Kim, 
+           H. Kamisetty, N.V. Grishin, D. Baker, "Large-scale determination 
+           of previously unsolved protein structures using evolutionary information," 
+           Elife, vol. 4, pp. e09248, 2015.
+
+        """
+        raw_scores = numpy.asarray([c.raw_score for c in self])
+        sca_scores = raw_scores / numpy.mean(raw_scores)
+        for contact, sca_score in zip(self, sca_scores):
+            contact.scalar_score = sca_score
+        return
 
     def find(self, indexes, altloc=False):
         """Find all contacts associated with ``index``
