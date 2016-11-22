@@ -337,6 +337,57 @@ class ContactMap(Entity):
             contact.scalar_score = sca_score
         return
 
+    def calculate_jaccard_index(self, other):
+        """Calculate the Jaccard index between two :obj:`ContactMap` instances
+
+        This score analyzes the difference of the predicted contacts from two maps,
+
+        .. math::
+
+           J_{x,y}=\\frac{\\left|x \\cap y\\right|}{\\left|x \\cup y\\right|}
+    
+        where :math:`x` and :math:`y` are the sets of predicted contacts from two 
+        different predictors, :math:`\\left|x \\cap y\\right|` is the number of 
+        elements in the intersection of :math:`x` and :math:`y`, and the 
+        :math:`\\left|x \\cup y\\right|` represents the number of elements in the 
+        union of :math:`x` and :math:`y`.
+
+        The J-score has values in the range of :match:`[0, 1]`, with a value of :math:`1` 
+        corresponding to identical contact maps and :math:`0` to dissimilar ones.
+
+        Parameters
+        ----------
+        other : :obj:`ContactMap`
+           A ConKit :obj:`ContactMap`
+        
+        Returns
+        -------
+        float
+           The Jaccard distance
+
+        See Also
+        --------
+        match, precision
+        
+        Notes
+        -----
+        The Jaccard index is different from the Jaccard distance mentioned in 
+        `Wuyun et al. (2016) <https://dx.doi.org/10.1093/bib/bbw106>`_. The Jaccard 
+        distance corresponds to :math:`1-Jaccard_{index}`.
+
+        Warnings
+        --------
+        The Jaccard distance ranges from :math:`[0, 1]`, where :math:`1` means 
+        the maps contain identical contacts pairs.
+
+        """
+        intersection = numpy.sum([1 for contact in self if contact.id in other])
+        union = len(self) + numpy.sum([1 for contact in other if contact.id not in self])
+        # If self and other are both empty, we define J(x,y) = 1
+        if union == 0:
+            return 1.0
+        return float(intersection) / union
+
     def find(self, indexes, altloc=False):
         """Find all contacts associated with ``index``
 

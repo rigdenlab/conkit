@@ -198,6 +198,44 @@ class Test(unittest.TestCase):
         contact_map.calculate_scalar_score()
         self.assertListEqual([2.352941, 0.941176, 0.235294, 0.470588], [round(c.scalar_score, 6) for c in contact_map])
 
+    def test_calculate_jaccard_score(self):
+        # ======================================================
+        # Test Case 1
+        contact_map1 = ContactMap('foo')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map1.add(c)
+        contact_map2 = ContactMap('bar')
+        for c in [Contact(1, 7, 1.0), Contact(3, 3, 0.4), Contact(2, 5, 0.1), Contact(5, 1, 0.2)]:
+            contact_map2.add(c)
+        jindex = contact_map1.calculate_jaccard_index(contact_map2)
+        self.assertEqual(0.333333, round(jindex, 6))
+        # ======================================================
+        # Test Case 2
+        contact_map1 = ContactMap('foo')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map1.add(c)
+        contact_map2 = ContactMap('bar')
+        for c in [Contact(1, 7, 1.0), Contact(3, 2, 0.4), Contact(2, 5, 0.1), Contact(5, 2, 0.2)]:
+            contact_map2.add(c)
+        jindex = contact_map1.calculate_jaccard_index(contact_map2)
+        self.assertEqual(0.0, jindex)
+        # ======================================================
+        # Test Case 3
+        contact_map1 = ContactMap('foo')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map1.add(c)
+        contact_map2 = ContactMap('bar')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map2.add(c)
+        jindex = contact_map1.calculate_jaccard_index(contact_map2)
+        self.assertEqual(1.0, jindex)
+        # ======================================================
+        # Test Case 2
+        contact_map1 = ContactMap('foo')
+        contact_map2 = ContactMap('bar')
+        jindex = contact_map1.calculate_jaccard_index(contact_map2)
+        self.assertEqual(1.0, jindex)
+
     def test_find(self):
         # ======================================================
         # Test Case 1
