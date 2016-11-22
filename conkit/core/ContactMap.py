@@ -344,19 +344,19 @@ class ContactMap(Entity):
         --------
         match, precision
         
-        Note
-        ----
+        Notes
+        -----
         The Jaccard index is different from the Jaccard distance mentioned in [1]_. The 
         Jaccard distance corresponds to :math:`1-Jaccard_{index}`.
 
-        Warning
-        -------
+        Warnings
+        --------
         The Jaccard distance ranges from :math:`[0, 1]`, where :math:`1` means 
         the maps contain identical contacts pairs.
 
-        .. [1] Q. Wuyun, W. Zheng, Z. Peng, J. Yang, "A large-scale comparative assessment 
-           of methods for residue-residue contact prediction," Briefings in Bioinformatics,
-           [doi: 10.1093/bib/bbw106], 2016.
+        .. [1] Q. Wuyun, W. Zheng, Z. Peng, J. Yang (2016). A large-scale comparative assessment 
+           of methods for residue-residue contact prediction. *Briefings in Bioinformatics*,
+           [doi: 10.1093/bib/bbw106].
 
         """
         intersection = numpy.sum([1 for contact in self if contact.id in other])
@@ -383,11 +383,11 @@ class ContactMap(Entity):
         ``scalar_score``
 
         This score is described in more detail in [2]_.
-        
-        .. [2] S. Ovchinnikov, L. Kinch, H. Park, Y. Liao, J. Pei, D.E. Kim, 
-           H. Kamisetty, N.V. Grishin, D. Baker, "Large-scale determination 
-           of previously unsolved protein structures using evolutionary information," 
-           Elife, vol. 4, pp. e09248, 2015.
+
+        .. [2] S. Ovchinnikov, L. Kinch, H. Park, Y. Liao, J. Pei, D.E. Kim,
+           H. Kamisetty, N.V. Grishin, D. Baker (2015). Large-scale determination
+           of previously unsolved protein structures using evolutionary information.
+           *Elife* **4**, e09248.
 
         """
         raw_scores = numpy.asarray([c.raw_score for c in self])
