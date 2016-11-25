@@ -32,8 +32,8 @@ class Entity(object):
        The ID of the selected entity
     full_id : tuple
        A traceback id including all parent classes
-    parent : :obj:`Entity`
-       An attribute to store the reference to the parent :obj:`Entity`
+    parent : :obj:`conkit.core.Entity`
+       An attribute to store the reference to the parent :obj:`conkit.core.Entity`
     child_list : list
        A list storing the child entities
     child_dict : dict
@@ -41,14 +41,14 @@ class Entity(object):
 
     Notes
     -----
-    It is strongly advised against the use of the :obj:`Entity` class directly.
+    It is strongly advised against the use of the :obj:`conkit.core.Entity` class directly.
     Instead, use one or more of the the remaining data models.
 
     """
     __slots__ = ['_id', '_parent', '_child_list', '_child_dict']
 
     def __init__(self, id):
-        """Initialise a generic :obj:`Entity`
+        """Initialise a generic :obj:`conkit.core.Entity`
 
         Parameters
         ----------
@@ -141,15 +141,15 @@ class Entity(object):
         """A traceback id including all parent classes
 
         The full id is a tuple containing all id's starting from
-        the top object (:obj:`ContactFile`) down to the current object.
-        A full id for a :obj:`Contact` e.g. is something like:
+        the top object (:obj:`conkit.core.ContactFile`) down to the current object.
+        A full id for a :obj:`conkit.core.Contact` e.g. is something like:
         ('1aa', 1, (1, 10))
 
         This corresponds to:
 
-        :obj:`ContactFile` identifier => 1aaa
-        :obj:`ContactMap` identifier => 1
-        :obj:`Contact` identifier => (1, 10)
+        :obj:`conkit.core.ContactFile` identifier => 1aaa
+        :obj:`conkit.core.ContactMap` identifier => 1
+        :obj:`conkit.core.Contact` identifier => (1, 10)
 
         """
         traceback = [self.id]
@@ -171,7 +171,7 @@ class Entity(object):
         Parameters
         ----------
         id : str, list, tuple
-           The unique ID for an :obj:`Entity`
+           The unique ID for an :obj:`conkit.core.Entity`
 
         Warnings
         --------
@@ -186,16 +186,16 @@ class Entity(object):
 
     @property
     def parent(self):
-        """An attribute to store the reference to the parent :obj:`Entity`"""
+        """An attribute to store the reference to the parent :obj:`conkit.core.Entity`"""
         return self._parent
 
     @parent.setter
     def parent(self, parent):
-        """Define the reference to the parent :obj:`Entity`
+        """Define the reference to the parent :obj:`conkit.core.Entity`
 
         Parameters
         ----------
-        parent : :obj:`Entity`
+        parent : :obj:`conkit.core.Entity`
 
         """
         self._parent = parent
@@ -214,7 +214,7 @@ class Entity(object):
             return self.copy()
 
     def _sort(self, kword, reverse):
-        """Sort the :obj:`Entity`"""
+        """Sort the :obj:`conkit.core.Entity`"""
         if any(not hasattr(e, kword) for e in self._child_list):
             raise ValueError('Attribute not defined')
         self.child_list.sort(key=operator.attrgetter(kword), reverse=reverse)
@@ -224,7 +224,7 @@ class Entity(object):
 
         Parameters
         ----------
-        entity : :obj:`Entity`
+        entity : :obj:`conkit.core.Entity`
 
         """
         if entity.id in self:
@@ -234,7 +234,7 @@ class Entity(object):
         self.child_dict[entity.id] = entity
 
     def copy(self):
-        """Create a shallow copy of :obj:`Entity`"""
+        """Create a shallow copy of :obj:`conkit.core.Entity`"""
         shallow = copy.copy(self)
 
         shallow.child_list = []
@@ -246,7 +246,7 @@ class Entity(object):
         return shallow
 
     def deepcopy(self):
-        """Create a deep copy of :obj:`Entity`"""
+        """Create a deep copy of :obj:`conkit.core.Entity`"""
         deep = copy.deepcopy(self)
 
         deep.child_list = []

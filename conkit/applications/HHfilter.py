@@ -30,7 +30,7 @@ class HHfilterCommandLine(AbstractCommandline):
     >>> print(hhfilter_cline)
     hhfilter -i test.a3m -o test.filtered.a3m
 
-    You would typically run the command line with :obj:`hhfilter_cline()` or via
+    You would typically run the command line with :func:`hhfilter_cline` or via
     the Python subprocess module.
 
     Citations

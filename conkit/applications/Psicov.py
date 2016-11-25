@@ -31,7 +31,7 @@ class PsicovCommandLine(AbstractCommandline):
     >>> print(ccmpred_cline)
     psicov test.aln
 
-    You would typically run the command line with :obj:`psicov_cline()` or via
+    You would typically run the command line with :func:`psicov_cline` or via
     the Python subprocess module.
 
     Citations

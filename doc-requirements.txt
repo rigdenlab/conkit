@@ -1,0 +1,9 @@
+# The requirements needed by ConKit
+#       
+# You can install all dependencies in one go:
+#     pip install -r doc-requirements.txt
+#
+sphinx>1.0
+ipython
+numpydoc
+sphinx_bootstrap_theme

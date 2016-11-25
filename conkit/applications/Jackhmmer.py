@@ -32,7 +32,7 @@ class JackhmmerCommandLine(AbstractCommandline):
     >>> print(jackhmmer_cline)
     jackhmmer test.fasta uniref100.fasta
 
-    You would typically run the command line with :obj:`jackhmmer_cline()` or via
+    You would typically run the command line with :func:`jackhmmer_cline` or via
     the Python subprocess module.
 
     Citations

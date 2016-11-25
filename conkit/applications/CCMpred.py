@@ -35,7 +35,7 @@ class CCMpredCommandLine(AbstractCommandline):
     >>> print(ccmpred_cline)
     ccmpred test.aln output.mat
 
-    You would typically run the command line with :obj:`ccmpred_cline()` or via
+    You would typically run the command line with :func:`ccmpred_cline` or via
     the Python subprocess module.
 
     Citations

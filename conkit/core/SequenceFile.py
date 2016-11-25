@@ -24,9 +24,9 @@ class SequenceFile(Entity):
 
     Description
     -----------
-    The :obj:`SequenceFile` class represents a data structure to hold :obj:`Sequence`
-    instances in a single sequence file. It contains functions to store and analyze
-    sequences.
+    The :obj:`conkit.core.SequenceFile` class represents a data structure to hold 
+    :obj:`conkit.core.Sequence` instances in a single sequence file. It contains 
+    functions to store and analyze sequences.
 
     Attributes
     ----------
@@ -35,13 +35,13 @@ class SequenceFile(Entity):
     is_alignment : bool
        A boolean status for the alignment
     nseqs : int
-       The number of sequences in the :obj:`SequenceFile`
+       The number of sequences in the :obj:`conkit.core.SequenceFile`
     remark : list
-       The :obj:`SequenceFile`-specific remarks
+       The :obj:`conkit.core.SequenceFile`-specific remarks
     status : int
        An indication of the sequence file, i.e alignment, no alignment, or unknown
-    top_sequence : :obj:`Sequence`, None
-       The first :obj:`Sequence` entry in the file
+    top_sequence : :obj:`conkit.core.Sequence`, None
+       The first :obj:`conkit.core.Sequence` entry in the file
 
 
     Examples
@@ -95,24 +95,24 @@ class SequenceFile(Entity):
 
     @property
     def nseqs(self):
-        """The number of :obj:`Sequence` instances in the :obj:`SequenceFile`
+        """The number of :obj:`conkit.core.Sequence` instances in the :obj:`conkit.core.SequenceFile`
 
         Returns
         -------
         nseqs : int
-           The number of sequences in the :obj:`SequenceFile`
+           The number of sequences in the :obj:`conkit.core.SequenceFile`
 
         """
         return len(self)
 
     @property
     def remark(self):
-        """The :obj:`SequenceFile`-specific remarks"""
+        """The :obj:`conkit.core.SequenceFile`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`SequenceFile` remark
+        """Set the :obj:`conkit.core.SequenceFile` remark
 
         Parameters
         ----------
@@ -154,12 +154,12 @@ class SequenceFile(Entity):
 
     @property
     def top_sequence(self):
-        """The first :obj:`Sequence` entry in :obj:`SequenceFile`
+        """The first :obj:`conkit.core.Sequence` entry in :obj:`conkit.core.SequenceFile`
 
         Returns
         -------
-        top_sequence : :obj:`Sequence`, None
-           The first :obj:`Sequence` entry in :obj:`SequenceFile`
+        top_sequence : :obj:`conkit.core.Sequence`, None
+           The first :obj:`conkit.core.Sequence` entry in :obj:`conkit.core.SequenceFile`
 
         """
         if len(self) > 0:
@@ -196,7 +196,7 @@ class SequenceFile(Entity):
         RuntimeError
            SciPy package not installed
         ValueError
-           :obj:`SequenceFile` is not an alignment
+           :obj:`conkit.core.SequenceFile` is not an alignment
 
         """
         if not SCIPY:
@@ -239,7 +239,7 @@ class SequenceFile(Entity):
         MemoryError
            Too many sequences in the alignment
         RuntimeError
-           :obj:`SequenceFile` is not an alignment
+           :obj:`conkit.core.SequenceFile` is not an alignment
 
         """
         if not self.is_alignment:
@@ -256,7 +256,7 @@ class SequenceFile(Entity):
         return (gap_counts / len(msa_mat.T[0])).tolist()
 
     def sort(self, kword, reverse=False, inplace=False):
-        """Sort the :obj:`SequenceFile`
+        """Sort the :obj:`conkit.core.SequenceFile`
 
         Parameters
         ----------
@@ -269,13 +269,13 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        contact_map : :obj:`ContactMap`
-           The reference to the :obj:`ContactMap`, regardless of inplace
+        contact_map : :obj:`conkit.core.ContactMap`
+           The reference to the :obj:`conkit.core.ContactMap`, regardless of inplace
 
         Raises
         ------
         ValueError
-           ``kword`` not in :obj:`SequenceFile`
+           ``kword`` not in :obj:`conkit.core.SequenceFile`
 
         """
         sequence_file = self._inplace(inplace)

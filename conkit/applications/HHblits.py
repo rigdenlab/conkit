@@ -33,7 +33,7 @@ class HHblitsCommandLine(AbstractCommandline):
     >>> print(hhblits_cline)
     hhblits -i test.fasta -d uniprot20_29Feb2012
 
-    You would typically run the command line with :obj:`hhblits_cline()` or via
+    You would typically run the command line with :func:`hhblits_cline` or via
     the Python subprocess module.
 
     Citations

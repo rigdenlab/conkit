@@ -45,7 +45,7 @@ class CaspParser(_ContactFileParser):
         super(CaspParser, self).__init__()
 
     def read(self, f_handle, f_id="casp"):
-        """Read a contact file into a :obj:`ContactFile` instance
+        """Read a contact file into a :obj:`conkit.core.ContactFile` instance
 
         Parameters
         ----------
@@ -56,7 +56,7 @@ class CaspParser(_ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile`
+        :obj:`conkit.core.ContactFile`
 
         """
         lines = [l.strip() for l in f_handle.readlines()]
@@ -156,7 +156,7 @@ class CaspParser(_ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile`, `:obj:`ContactMap` or :obj:`Contact`
+        hierarchy : :obj:`conkit.core.ContactFile`, :obj:`conkit.core.ContactMap` or :obj:`conkit.core.Contact`
 
         """
 

@@ -39,9 +39,9 @@ class PdbParser(_ContactFileParser):
 
         Parameters
         ----------
-        chain1 : Bio.PDB.Chain()
+        chain1 : :obj:`Bio.PDB.Chain`
            A first chain object
-        chain2 : Bio.PDB.Chain()
+        chain2 : :obj:`Bio.PDB.Chain`
            A second chain object
 
         Yields
@@ -121,7 +121,7 @@ class PdbParser(_ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile`
+        :obj:`conkit.core.ContactFile`
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
@@ -200,11 +200,12 @@ class PdbParser(_ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile`, `:obj:`ContactMap` or :obj:`Contact`
+        hierarchy : :obj:`conkit.core.ContactFile`, :obj:`conkit.core.ContactMap` or :obj:`conkit.core.Contact`
 
         Raises
         ------
         RuntimeError
+           Not available
 
         """
         raise RuntimeError("Not available")

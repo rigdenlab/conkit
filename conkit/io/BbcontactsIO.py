@@ -36,7 +36,7 @@ class BbcontactsParser(_ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile`
+        :obj:`conkit.core.ContactFile`
 
         """
 
@@ -70,15 +70,15 @@ class BbcontactsParser(_ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile`, `:obj:`ContactMap` or :obj:`Contact`
+        hierarchy : :obj:`conkit.core.ContactFile`, :obj:`conkit.core.ContactMap` or :obj:`conkit.core.Contact`
 
         Notes
         -----
-        Creating a :obj`write()` function for the Bbcontacts parser
+        Creating a :func`write` function for the Bbcontacts parser
         would come with a lot of issues, such as the parallel/antiparallel
         direction, scoring etc.
 
-        Thus, no :obj:`write()` method is available.
+        Thus, no :func:`write` method is available.
 
         Raises
         ------

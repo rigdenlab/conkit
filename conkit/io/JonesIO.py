@@ -44,7 +44,7 @@ class JonesIO(_SequenceFileParser):
 
         Returns
         -------
-        :obj:`SequenceFile`
+        :obj:`conkit.core.SequenceFile`
 
         """
 
@@ -73,7 +73,7 @@ class JonesIO(_SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`SequenceFile` or :obj:`Sequence`
+        hierarchy : :obj:`conkit.core.SequenceFile` or :obj:`conkit.core.Sequence`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary

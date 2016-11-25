@@ -36,7 +36,7 @@ class BbcontactsCommandLine(AbstractCommandline):
     >>> print(bbcontacts_cline)
     bbcontacts
 
-    You would typically run the command line with :obj:`bbcontacts_cline()` or via
+    You would typically run the command line with :func:`bbcontacts_cline` or via
     the Python subprocess module.
 
     Notes

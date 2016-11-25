@@ -30,39 +30,13 @@ Found a Bug?
 ~~~~~~~~~~~~
 Please use the `GitHub Issue Tracker`_.
 
---------------------------------------------------------------------------------
-
-Documentation
-~~~~~~~~~~~~~
-
-.. toctree::
-   :caption: Table of Contents
-   :maxdepth: 1
-
-   installation
-   examples
-   scripts
-   pythonapi
-
---------------------------------------------------------------------------------
-
-Links
-~~~~~
-
-- `ConKit GitHub Repository`_
-
---------------------------------------------------------------------------------
-
 Ackowledgements
 ~~~~~~~~~~~~~~~
-- `Jens Thomas`_
 - `Stefan Seemayer`_
 - `BioPython`_
 
 
 
 .. _BioPython: https://www.biopython.org
-.. _ConKit GitHub Repository: https://github.com/fsimkovic/conkit
 .. _GitHub Issue Tracker: https://github.com/fsimkovic/conkit/issues
-.. _Jens Thomas: http://www.farmurban.co.uk/about
 .. _Stefan Seemayer: https://github.com/sseemayer

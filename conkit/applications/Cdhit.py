@@ -35,7 +35,7 @@ class CdhitCommandLine(AbstractCommandline):
     >>> cdhit_cline = CdhitCommandLine()
     >>> print(cdhit_cline)
 
-    You would typically run the command line with :obj:`cdhit_cline()` or via
+    You would typically run the command line with :func:`cdhit_cline` or via
     the Python subprocess module.
 
     Citations
