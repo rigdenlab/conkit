@@ -45,8 +45,14 @@ extensions = [
 
 try:
     import numpydoc
-except:
-    msg = "Error: Numpydoc must be installed before generating this documentation"
+except ImportError:
+    msg = "Error: numpydoc must be installed before generating this documentation"
+    raise ImportError(msg)
+
+try:
+    import sphinx_bootstrap_theme
+except ImportError:
+    msg = "Error: sphinx_bootstrap_thememust be installed before generating this documentation"
     raise ImportError(msg)
 
 try:
@@ -131,14 +137,13 @@ autodoc_docstring_signature = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-import sphinx_bootstrap_theme
 html_theme = 'bootstrap'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'navbar_title': 'ConKit',
+    'navbar_title': None,
     # Tab name for entire site.
     'navbar_site_name': 'Home',
     # A list of tuples containing pages or urls to link to.
@@ -163,7 +168,7 @@ html_theme_options = {
     'navbar_fixed_top': "false",
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
-    'source_link_position': "nav",
+    'source_link_position': "footer",
     # Bootswatch (http://bootswatch.com/) theme.
     'bootswatch_theme': "spacelab",
     # Choose Bootstrap version.
@@ -182,7 +187,7 @@ html_short_title = 'ConKit'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'logo.png'
+#html_logo = 'logo.png'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
