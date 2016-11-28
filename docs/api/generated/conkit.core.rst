@@ -1,6 +1,11 @@
 conkit.core package
 ===================
 
+.. automodule:: conkit.core
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Submodules
 ----------
 
@@ -13,10 +18,3 @@ Submodules
    conkit.core.Sequence
    conkit.core.SequenceFile
 
-Module contents
----------------
-
-.. automodule:: conkit.core
-    :members:
-    :undoc-members:
-    :show-inheritance:

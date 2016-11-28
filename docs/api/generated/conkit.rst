@@ -1,6 +1,11 @@
 conkit package
 ==============
 
+.. automodule:: conkit
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Subpackages
 -----------
 
@@ -17,10 +22,3 @@ Submodules
 
    conkit.constants
 
-Module contents
----------------
-
-.. automodule:: conkit
-    :members:
-    :undoc-members:
-    :show-inheritance:

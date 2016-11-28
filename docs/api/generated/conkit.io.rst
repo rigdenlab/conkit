@@ -1,6 +1,11 @@
 conkit.io package
 =================
 
+.. automodule:: conkit.io
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Submodules
 ----------
 
@@ -23,10 +28,3 @@ Submodules
    conkit.io.PsicovIO
    conkit.io.StockholmIO
 
-Module contents
----------------
-
-.. automodule:: conkit.io
-    :members:
-    :undoc-members:
-    :show-inheritance:

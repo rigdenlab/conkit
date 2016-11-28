@@ -156,7 +156,7 @@ html_theme_options = {
     'navbar_links': [
         ('Installation', 'installation'),
         ('Examples', 'examples'),
-        ('Documentation', 'pythonapi'),
+        ('Documentation', 'documentation'),
     ],
     # Render the next and previous page links in navbar. 
     'navbar_sidebarrel': False,

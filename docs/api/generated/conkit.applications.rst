@@ -1,6 +1,11 @@
 conkit.applications package
 ===========================
 
+.. automodule:: conkit.applications
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Submodules
 ----------
 
@@ -14,10 +19,3 @@ Submodules
    conkit.applications.Jackhmmer
    conkit.applications.Psicov
 
-Module contents
----------------
-
-.. automodule:: conkit.applications
-    :members:
-    :undoc-members:
-    :show-inheritance:
