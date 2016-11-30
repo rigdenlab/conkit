@@ -2,7 +2,7 @@
 
 # Maintain sematantic versioning. Further information can
 # be found here [http://semver.org/]
-__version_info__ = (0, 1, 2)
+__version_info__ = (0, 2, 0)
 
 # ======================================================
 # Do __NOT__ change anything below here
