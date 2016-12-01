@@ -186,7 +186,7 @@ class CaspParser(_ContactFileParser):
             if any(c.raw_score > 1.0 or c.raw_score < 0.0 for c in contact_map):
                 contact_map.rescale(inplace=True)
             for contact in contact_map:
-                s = '{res1_chain: <}{res1_seq: <4}{res2_chain: <}{res2_seq:<4}{lb: <3}{ub: <3}{raw_score: <.6f}'
+                s = '{res1_chain: <} {res1_seq: <4} {res2_chain: <} {res2_seq:<4} {lb: <3} {ub: <3} {raw_score: <.6f}'
                 if contact.res1_chain == contact.res2_chain:
                     res1_chain = res2_chain = ""
                 else:
