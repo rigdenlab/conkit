@@ -30,7 +30,6 @@ CONTACT_FILE_PARSERS = {
     'ccmpred': CCMpredParser,
     'comsat': ComsatParser,
     'bbcontacts': BbcontactsParser,
-    'evfold': None,
     'freecontact': FreeContactParser,
     'gremlin': GremlinParser,
     'membrain': MemBrainParser,
