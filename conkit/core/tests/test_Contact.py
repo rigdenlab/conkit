@@ -19,7 +19,7 @@ class Test(unittest.TestCase):
         # ======================================================
         # Test Case 2
         contact = Contact(1, 2, 1.0)
-        contact.distance_bound = [0, 8]
+        contact.distance_bound = (0, 8)
         self.assertEqual((0, 8), contact.distance_bound)
         self.assertTrue(isinstance(contact.distance_bound, tuple))
         # ======================================================
@@ -49,6 +49,70 @@ class Test(unittest.TestCase):
         contact.define_true_positive()
         self.assertTrue(contact.is_true_positive)
         self.assertFalse(contact.is_false_positive)
+
+    def test_lower_bound(self):
+        # ======================================================
+        # Test Case 1
+        contact = Contact(1, 2, 1.0)
+        self.assertEqual(0, contact.lower_bound)
+        # ======================================================
+        # Test Case 2
+        contact = Contact(1, 2, 1.0)
+        with self.assertRaises(ValueError):
+            contact.lower_bound = -1
+        # ======================================================
+        # Test Case 3
+        contact = Contact(1, 2, 1.0)
+        contact.lower_bound = 1
+        self.assertEqual(1, contact.lower_bound)
+        # ======================================================
+        # Test Case 4
+        contact = Contact(1, 2, 1.0)
+        contact.lower_bound = 7
+        self.assertEqual(7, contact.lower_bound)
+        # ======================================================
+        # Test Case 5
+        contact = Contact(1, 2, 1.0)
+        contact.lower_bound = 1
+        contact.upper_bound = 8
+        self.assertEqual(8, contact.upper_bound)
+        with self.assertRaises(ValueError):
+            contact.lower_bound = 8
+        with self.assertRaises(ValueError):
+            contact.lower_bound = 10
+        self.assertEqual(1, contact.lower_bound)
+
+    def test_upper_bound(self):
+        # ======================================================
+        # Test Case 1
+        contact = Contact(1, 2, 1.0)
+        self.assertEqual(8, contact.upper_bound)
+        # ======================================================
+        # Test Case 2
+        contact = Contact(1, 2, 1.0)
+        with self.assertRaises(ValueError):
+            contact.upper_bound = -1
+        # ======================================================
+        # Test Case 3
+        contact = Contact(1, 2, 1.0)
+        contact.upper_bound = 10
+        self.assertEqual(10, contact.upper_bound)
+        # ======================================================
+        # Test Case 4
+        contact = Contact(1, 2, 1.0)
+        contact.upper_bound = 7
+        self.assertEqual(7, contact.upper_bound)
+        # ======================================================
+        # Test Case 5
+        contact = Contact(1, 2, 1.0)
+        contact.lower_bound = 4
+        contact.upper_bound = 8
+        self.assertEqual(4, contact.lower_bound)
+        with self.assertRaises(ValueError):
+            contact.upper_bound = 4
+        with self.assertRaises(ValueError):
+            contact.upper_bound = 3
+        self.assertEqual(8, contact.upper_bound)
 
     def test_raw_score(self):
         # ======================================================
@@ -201,6 +265,30 @@ class Test(unittest.TestCase):
         contact.define_true_positive()
         self.assertTrue(contact.is_true_positive)
         self.assertFalse(contact.is_false_positive)
+
+    def test__to_dict(self):
+        # ======================================================
+        # Test Case 1
+        contact = Contact(1, 2, 1.0)
+        dict = {
+            'id': (1, 2), 'is_false_positive': False, 'is_true_positive': False, 'distance_bound': (0, 8),
+            'lower_bound': 0, 'upper_bound': 8, 'raw_score': 1.0, 'res1': 'X', 'res2': 'X', 'res1_chain': '',
+            'res2_chain': '', 'res1_seq': 1, 'res2_seq': 2, 'res1_altseq': 0, 'res2_altseq': 0, 'scalar_score': 0.0,
+            'status': 0, 'weight': 1.0,
+        }
+        self.assertEqual(dict, contact._to_dict())
+        # ======================================================
+        # Test Case 2
+        contact = Contact(1, 2, 1.0)
+        contact.define_true_positive()
+        contact.lower_bound = 4
+        dict = {
+            'id': (1, 2), 'is_false_positive': False, 'is_true_positive': True, 'distance_bound': (4, 8),
+            'lower_bound': 4, 'upper_bound': 8, 'raw_score': 1.0, 'res1': 'X', 'res2': 'X', 'res1_chain': '',
+            'res2_chain': '', 'res1_seq': 1, 'res2_seq': 2, 'res1_altseq': 0, 'res2_altseq': 0, 'scalar_score': 0.0,
+            'status': 1, 'weight': 1.0,
+        }
+        self.assertEqual(dict, contact._to_dict())
 
     def test__set_residue(self):
         self.assertEqual("A", Contact._set_residue("ALA"))

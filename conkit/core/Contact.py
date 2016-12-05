@@ -24,6 +24,8 @@ class Contact(Entity):
        A boolean status for the contact
     is_true_positive : bool
        A boolean status for the contact
+    lower_bound : int
+       The lower distance boundary value
     raw_score : float
        The prediction score for the contact pair
     res1 : str
@@ -46,6 +48,8 @@ class Contact(Entity):
        The raw_score scaled according to the average ``raw_score``
     status : int
        An indication of the residue status, i.e true positive, false positive, or unknown
+    upper_bound : int
+       The upper distance boundary value
     weight : float
        A separate internal weight factor for the contact pair
 
@@ -81,7 +85,7 @@ class Contact(Entity):
            The residue sequence number of residue 2
 
         """
-        self._distance_bound = (0, 8)
+        self._distance_bound = [0, 8]
         self._raw_score = 1.0
         self._res1 = 'X'
         self._res2 = 'X'
@@ -114,7 +118,7 @@ class Contact(Entity):
     @property
     def distance_bound(self):
         """The lower and upper distance boundary values of a contact pair in Ångstrom [Default: 0-8Å]."""
-        return self._distance_bound
+        return tuple(self._distance_bound)
 
     @distance_bound.setter
     def distance_bound(self, distance_bound):
@@ -127,9 +131,9 @@ class Contact(Entity):
 
         """
         if isinstance(distance_bound, tuple):
-            self._distance_bound = distance_bound
+            self._distance_bound = list(distance_bound)
         elif isinstance(distance_bound, list):
-            self._distance_bound = tuple(distance_bound)
+            self._distance_bound = distance_bound
         else:
             raise TypeError("Data of type list or tuple required")
 
@@ -164,6 +168,60 @@ class Contact(Entity):
 
         """
         return True if self.status == Contact._TRUE_POSITIVE else False
+
+    @property
+    def lower_bound(self):
+        """The lower distance boundary value"""
+        return self.distance_bound[0]
+
+    @lower_bound.setter
+    def lower_bound(self, value):
+        """Set the lower distance boundary value
+
+        Parameters
+        ----------
+        value : int
+
+        Raises
+        ------
+        ValueError
+           Lower bound must be positive
+        ValueError
+           Lower bound must be smaller than upper bound
+
+        """
+        if value < 0:
+            raise ValueError('Lower bound must be positive')
+        elif value >= self.upper_bound:
+            raise ValueError('Lower bound must be smaller than upper bound')
+        self._distance_bound[0] = value
+
+    @property
+    def upper_bound(self):
+        """The upper distance boundary value"""
+        return self.distance_bound[1]
+
+    @upper_bound.setter
+    def upper_bound(self, value):
+        """Set the upper distance boundary value
+
+        Parameters
+        ----------
+        value : int
+
+        Raises
+        ------
+        ValueError
+           Upper bound must be positive
+        ValueError
+           Upper bound must be larger than lower bound
+
+        """
+        if value < 0:
+            raise ValueError('Upper bound must be positive')
+        elif value <= self.lower_bound:
+            raise ValueError('Upper bound must be larger than lower bound')
+        self._distance_bound[1] = value
 
     @property
     def raw_score(self):
@@ -399,6 +457,29 @@ class Contact(Entity):
 
         """
         self._status = Contact._TRUE_POSITIVE
+
+    def _to_dict(self):
+        """Convert the object into a dictionary"""
+        return {
+            'id': self.id,
+            'is_false_positive': self.is_false_positive,
+            'is_true_positive': self.is_true_positive,
+            'distance_bound': self.distance_bound,
+            'lower_bound': self.lower_bound,
+            'upper_bound': self.upper_bound,
+            'raw_score': self.raw_score,
+            'res1': self.res1,
+            'res2': self.res2,
+            'res1_chain': self.res1_chain,
+            'res2_chain': self.res2_chain,
+            'res1_seq': self.res1_seq,
+            'res2_seq': self.res2_seq,
+            'res1_altseq': self.res1_altseq,
+            'res2_altseq': self.res2_altseq,
+            'scalar_score': self.scalar_score,
+            'status': self.status,
+            'weight': self.weight,
+        }
 
     @staticmethod
     def _set_residue(amino_acid):
