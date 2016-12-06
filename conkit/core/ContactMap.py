@@ -685,6 +685,10 @@ class ContactMap(Entity):
         raw_scores = numpy.asarray([c.raw_score for c in contact_map])
         norm_raw_scores = (raw_scores - raw_scores.min()) / (raw_scores.max() - raw_scores.min())
 
+        # Important to not end up with raw scores == numpy.nan
+        if numpy.isnan(norm_raw_scores).all():
+            norm_raw_scores = numpy.where(norm_raw_scores == numpy.isnan, 0, 1)
+
         for contact, norm_raw_score in zip(contact_map, norm_raw_scores):
             contact.raw_score = norm_raw_score
 
