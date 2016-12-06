@@ -30,6 +30,7 @@ CONTACT_FILE_PARSERS = {
     'ccmpred': CCMpredParser,
     'comsat': ComsatParser,
     'bbcontacts': BbcontactsParser,
+    'evfold': EVfoldParser,
     'freecontact': FreeContactParser,
     'gremlin': GremlinParser,
     'membrain': MemBrainParser,
@@ -37,7 +38,7 @@ CONTACT_FILE_PARSERS = {
     'pconsc': PconsParser,
     'pconsc2': PconsParser,
     'pconsc3': PconsParser,
-    'pdb' : PdbParser,
+    'pdb': PdbParser,
     'plmdca': PlmDCAParser,
     'psicov': PsicovParser,
 }
