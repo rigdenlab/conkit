@@ -15,7 +15,6 @@ import os
 import re
 
 RE_COMMENT = re.compile(r'^#+.*$')
-RE_SPLIT = re.compile(r'\s+')
 
 
 class BbcontactsParser(_ContactFileParser):
@@ -55,8 +54,8 @@ class BbcontactsParser(_ContactFileParser):
 
             else:
                 # bbcontacts reverse residue numbering so swap
-                _, _, _, raw_score, _, _, res2_seq, res1_seq = RE_SPLIT.split(line)
-                contact = Contact(int(res1_seq),int(res2_seq), float(raw_score))
+                _, _, _, raw_score, _, _, res2_seq, res1_seq = line.split()
+                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact_map.add(contact)
 
         contact_file.method = 'Contact map predicted using Bbcontacts'
