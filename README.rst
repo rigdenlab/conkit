@@ -32,6 +32,10 @@ This project is a result of the continuous struggle using residue-residue contac
    :target: https://landscape.io/github/fsimkovic/conkit/master
    :alt: Code Health
 
+.. note::
+
+   ConKit v0.2.1 is shipped with `CCP4`_ and `CCP-EM`_ with CCP4 v7.0.26!
+
 Key Features
 ~~~~~~~~~~~~
 
@@ -58,5 +62,7 @@ Ackowledgements
 
 
 .. _BioPython: https://www.biopython.org
+.. _CCP4: http://www.ccp4.ac.uk
+.. _CCP-EM: http://www.ccpem.ac.uk
 .. _GitHub Issue Tracker: https://github.com/fsimkovic/conkit/issues
 .. _Stefan Seemayer: https://github.com/sseemayer

@@ -111,7 +111,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README', '**.ipynb_chec
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -180,14 +180,14 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-html_title = 'ConKit'
+html_title = 'ConKit v{0}'.format(version)
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = 'ConKit'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'logo.svg'
+#html_logo = 'logo.svg'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
