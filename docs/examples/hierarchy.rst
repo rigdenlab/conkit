@@ -41,14 +41,14 @@ The following blocks of code a purely an outline on how each instance can be cre
    >>> contact = Contact('res1_seq', 'res2_seq', 'raw_score')
 
 .. note::
-   The :obj:`Contact` ID is automatically assigned based on `res1_seq` and `res2_seq` attributes.
+   The :obj:`conkit.core.Contact` ID is automatically assigned based on ``res1_seq`` and ``res2_seq`` attributes.
 
 2. Assembling the hierarchy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To assemble a hierarchy, you want to add :obj:`Contact` instances to a :obj:`ContactMap` instance. Then, you can add one or more :obj:`ContactMap` instances to a single :obj:`ContactFile`.
+To assemble a hierarchy, you want to add :obj:`conkit.core.Contact` instances to a :obj:`conkit.core.ContactMap` instance. Then, you can add one or more :obj:`conkit.core.ContactMap` instances to a single :obj:`conkit.core.ContactFile`.
 
-Be aware, the IDs for all instances need to be unique at their level, but can be repeated across multiple instances in higher levels. I.e. a :obj:`Contact(1, 2, 0.1)` can be added only once to :obj:`ContactMap('map_1')` but added to :obj:`ContactMap('map_2')` if desired.
+Be aware, the IDs for all instances need to be unique at their level, but can be repeated across multiple instances in higher levels. I.e. a ``Contact(1, 2, 0.1)`` can be added only once to ``ContactMap('map_1')`` but added to ``ContactMap('map_2')`` if desired.
 
 .. code-block:: python
 

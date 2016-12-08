@@ -1,5 +1,4 @@
-.. _example_pipeline:
-
+.. _example_pipeline_creation:
 
 Pipeline Design
 ===============
@@ -70,7 +69,7 @@ Above, we defined all filenames required in this pipeline, so let us continue an
 
 The above code looks more complex than the previous ones. However, this design gives us great flexibility when it comes to trialing different options.
 
-First, we create a new :obj:`HHblitsCommandLine` instance and provide certain options, which instruct HHblits on which parameters to use during execution. Most of them are pretty self-explanatory, but as you can see the filenames we created earlier are now provided to this instance.
+First, we create a new :obj:`conkit.applications.HHblitsCommandLine` instance and provide certain options, which instruct HHblits on which parameters to use during execution. Most of them are pretty self-explanatory, but as you can see the filenames we created earlier are now provided to this instance.
 
 .. note::
 
@@ -94,7 +93,7 @@ Great, now we have generated a sequence alignment, which is stored in the filena
 4. Filtering the MSA to remove redundant sequences
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Next, we would like to remove some of the redundancy in the sequence alignment file to reduce the prediction bias. Luckily, the HH-suite provides us with a filtering algorithm that does exactly that. Let us create a command line instance just like before, only using the :obj:`HHfilterCommandLine` class this time.
+Next, we would like to remove some of the redundancy in the sequence alignment file to reduce the prediction bias. Luckily, the HH-suite provides us with a filtering algorithm that does exactly that. Let us create a command line instance just like before, only using the :obj:`conkit.applications.HHfilterCommandLine` class this time.
 
 .. code-block:: python
 
@@ -102,7 +101,7 @@ Next, we would like to remove some of the redundancy in the sequence alignment f
    ...     input=a3m_fname, output=a3m_filtered_fname, pairwise_identity=90
    ... )
 
-The above command follows the identical style as the :obj:`HHblitsCommandLine` wrapper. Note, we have defined our pairwise sequence identity to be 90%, i.e. all sequences with a higher sequence identity will be removed. Finally, let us invoke this command and filter our alignment.
+The above command follows the identical style as the :obj:`conkit.applications.HHblitsCommandLine` wrapper. Note, we have defined our pairwise sequence identity to be 90%, i.e. all sequences with a higher sequence identity will be removed. Finally, let us invoke this command and filter our alignment.
 
 .. code-block:: python
 

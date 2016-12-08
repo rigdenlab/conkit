@@ -1,4 +1,4 @@
-.. _example_parsers:
+.. _example_file_conversion:
 
 File Conversions
 ================
@@ -10,7 +10,7 @@ In order to convert files in ConKit, we need to import the ConKit I/O framework.
    >>> from conkit import io
 
 .. note::
-   ConKit I/O framework consists of three main functions that handle the relevant parsers: :obj:`read()`, :obj:`write()`` and :obj:`convert()`. The latter effectively uses the former but handles everything in one step.
+   ConKit I/O framework consists of three main functions that handle the relevant parsers: :func:`conkit.io.read`, :func:`conkit.io.write` and :func:`conkit.io.convert`. The latter effectively uses the former but handles everything in one step.
 
 --------------------------------------------------------
 
