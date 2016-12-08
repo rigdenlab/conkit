@@ -100,7 +100,7 @@ class Entity(object):
         return len(self.child_list)
 
     def __reversed__(self):
-        """Reversed list of the childred"""
+        """Reversed list of the children"""
         for child in reversed(self.child_list):
             yield child
 
