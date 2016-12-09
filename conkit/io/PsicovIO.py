@@ -45,7 +45,7 @@ class PsicovParser(_ContactFileParser):
 
             elif line[0].isdigit():
                 _contact = Contact(int(line[0]), int(line[1]), float(line[4]),
-                                   distance_bound=(float(line[2]), float(line[3])))
+                                   distance_bound=(int(line[2]), int(line[3])))
                 _map.add(_contact)
 
         hierarchy.method = 'Contact map predicted using PSICOV'
