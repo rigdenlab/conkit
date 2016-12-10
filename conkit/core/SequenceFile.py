@@ -197,6 +197,14 @@ class SequenceFile(Entity):
            SciPy package not installed
         ValueError
            :obj:`conkit.core.SequenceFile` is not an alignment
+        ValueError
+           Sequence Identity needs to be between 0 and 1
+
+        Todo
+        ----
+        Faster implementation for calculating the Hamming distance matrix. SciPy's
+        :obj:`scipy.spatial.distance.cdist` module raises a ``MemoryError`` in
+        alignments with many sequences.
 
         """
         if not SCIPY:
@@ -205,22 +213,24 @@ class SequenceFile(Entity):
         if not self.is_alignment:
             raise ValueError('This is not an alignment')
 
+        if identity < 0 or identity > 1:
+            raise ValueError("Sequence Identity needs to be between 0 and 1")
+
+        # Alignment to unsigned integer matrix
         msa_mat = numpy.asarray(
             [numpy.fromstring(sequence_entry.seq, dtype='uint8') for sequence_entry in self], dtype='uint8'
         )
-        # all-by-all matrix of Hamming distances
-        try:
-            hamming_dist = scipy.spatial.distance.cdist(msa_mat, msa_mat, 'hamming')
-        except MemoryError:
-            print('Too many sequences, MemoryError')
-            return 0.0
-        # set all values < identity to 1, else 0
-        # Note, need to calculate 1 - identity as hamming describes difference not identity
-        hamming_dist = numpy.where(hamming_dist < (1 - identity), 1, 0)
-        # sum all values per row
-        hamming_sum = numpy.sum(hamming_dist, axis=0)
-        # divide all values by 1
-        return int(numpy.sum(1.0 / hamming_sum))
+
+        hamming_sum = numpy.zeros(msa_mat.shape[0], dtype=numpy.float64)
+        hamming_dist = numpy.zeros(msa_mat.shape[0], dtype=numpy.float64)
+        for i, row1 in enumerate(msa_mat):
+            hamming_dist.fill(0)
+            for j, row2 in enumerate(msa_mat):
+                if i != j:
+                    hamming_dist[j] = scipy.spatial.distance.hamming(row1, row2)
+                    hamming_sum[i] = numpy.sum(numpy.where(hamming_dist < (1 - identity), 1, 0), axis=0)
+
+        return (1.0 / hamming_sum).sum().astype(int).item()
 
     def calculate_freq(self):
         """Calculate the gap frequency in each alignment column

@@ -144,6 +144,16 @@ class Test(unittest.TestCase):
         self.assertEqual(4, m_eff)
         self.assertNotEqual(3, m_eff)
         self.assertNotEqual(3, m_eff)
+        # ======================================================
+        # Test Case 5
+        sequence_file = SequenceFile('test')
+        for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AA-ABA-'),
+                  Sequence('cho', 'AAACBAA'), Sequence('doo', 'B-BAA--'),
+                  Sequence('miu', 'BBBBBBB'), Sequence('nop', 'AAAAAAB')]:
+            sequence_file.add(s)
+        m_eff = sequence_file.calculate_meff(identity=0.6)
+        self.assertTrue(isinstance(m_eff, int))
+        self.assertEqual(4, m_eff)
 
     def test_calculate_freq(self):
         # ======================================================
