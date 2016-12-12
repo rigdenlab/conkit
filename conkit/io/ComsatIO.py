@@ -54,7 +54,7 @@ class ComsatParser(_ContactFileParser):
                 contact = Contact(
                     int(res1_seq),
                     int(res2_seq),
-                    1.0
+                    0.0
                 )
                 contact.res1 = res1
                 contact.res2 = res2
