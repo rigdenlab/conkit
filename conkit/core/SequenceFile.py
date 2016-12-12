@@ -200,12 +200,6 @@ class SequenceFile(Entity):
         ValueError
            Sequence Identity needs to be between 0 and 1
 
-        Todo
-        ----
-        Faster implementation for calculating the Hamming distance matrix. SciPy's
-        :obj:`scipy.spatial.distance.cdist` module raises a ``MemoryError`` in
-        alignments with many sequences.
-
         """
         if not SCIPY:
             raise RuntimeError('Cannot find SciPy package')
@@ -218,19 +212,27 @@ class SequenceFile(Entity):
 
         # Alignment to unsigned integer matrix
         msa_mat = numpy.asarray(
-            [numpy.fromstring(sequence_entry.seq, dtype='uint8') for sequence_entry in self], dtype='uint8'
+            [numpy.fromstring(sequence_entry.seq, dtype=numpy.uint8) for sequence_entry in self], dtype=numpy.uint8
         )
 
-        hamming_sum = numpy.zeros(msa_mat.shape[0], dtype=numpy.float64)
-        hamming_dist = numpy.zeros(msa_mat.shape[0], dtype=numpy.float64)
-        for i, row1 in enumerate(msa_mat):
-            hamming_dist.fill(0)
-            for j, row2 in enumerate(msa_mat):
-                if i != j:
-                    hamming_dist[j] = scipy.spatial.distance.hamming(row1, row2)
-                    hamming_sum[i] = numpy.sum(numpy.where(hamming_dist < (1 - identity), 1, 0), axis=0)
+        # Pre-define some variables
+        n = msa_mat.shape[0]                        # size of the data
+        batch_size = min(n, 250)                    # size of the batches
+        hamming = numpy.zeros(n, dtype=numpy.int)   # storage for data
 
-        return (1.0 / hamming_sum).sum().astype(int).item()
+        # Separate the distance calculations into batches to avoid MemoryError exceptions.
+        # This answer was provided by a StackOverflow user. The corresponding suggestion by
+        # user @WarrenWeckesser: http://stackoverflow.com/a/41090953/3046533
+        num_full_batches, last_batch = divmod(n, batch_size)
+        batches = [batch_size] * num_full_batches
+        if last_batch != 0:
+            batches.append(last_batch)
+        for k, batch in enumerate(batches):
+            i = batch_size * k
+            dists = scipy.spatial.distance.cdist(msa_mat[i:i+batch], msa_mat, metric='hamming')
+            hamming[i:i+batch] = (dists < (1 - identity)).sum(axis=1)
+
+        return (1. / hamming).sum().astype(int).item()
 
     def calculate_freq(self):
         """Calculate the gap frequency in each alignment column
