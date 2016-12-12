@@ -8,6 +8,7 @@ from conkit.io.CaspIO import CaspParser
 from conkit.io.CCMpredIO import CCMpredParser
 from conkit.io.ComsatIO import ComsatParser
 from conkit.io.BbcontactsIO import BbcontactsParser
+from conkit.io.BCLContactIO import BCLContactParser
 from conkit.io.EVfoldIO import EVfoldParser
 from conkit.io.FreeContactIO import FreeContactParser
 from conkit.io.GremlinIO import GremlinParser
@@ -23,13 +24,13 @@ from conkit.io.JonesIO import JonesIO
 from conkit.io.StockholmIO import StockholmIO
 from conkit.io._iotools import open_f_handle
 
-import sys
 
 CONTACT_FILE_PARSERS = {
     'casprr': CaspParser,
     'ccmpred': CCMpredParser,
     'comsat': ComsatParser,
     'bbcontacts': BbcontactsParser,
+    'bclcontact': BCLContactParser,
     'evfold': EVfoldParser,
     'freecontact': FreeContactParser,
     'gremlin': GremlinParser,
