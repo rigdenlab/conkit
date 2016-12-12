@@ -9,6 +9,7 @@ from conkit.io.CCMpredIO import CCMpredParser
 from conkit.io.ComsatIO import ComsatParser
 from conkit.io.BbcontactsIO import BbcontactsParser
 from conkit.io.BCLContactIO import BCLContactParser
+from conkit.io.EPCMapIO import EPCMapParser
 from conkit.io.EVfoldIO import EVfoldParser
 from conkit.io.FreeContactIO import FreeContactParser
 from conkit.io.GremlinIO import GremlinParser
@@ -31,6 +32,7 @@ CONTACT_FILE_PARSERS = {
     'comsat': ComsatParser,
     'bbcontacts': BbcontactsParser,
     'bclcontact': BCLContactParser,
+    'epcmap': EPCMapParser,
     'evfold': EVfoldParser,
     'freecontact': FreeContactParser,
     'gremlin': GremlinParser,
