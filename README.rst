@@ -32,9 +32,6 @@ This project is a result of the continuous struggle using residue-residue contac
    :target: https://landscape.io/github/fsimkovic/conkit/master
    :alt: Code Health
 
-.. note::
-
-   ConKit v0.2.1 is shipped with `CCP4`_ and `CCP-EM`_ with CCP4 v7.0.26!
 
 Key Features
 ~~~~~~~~~~~~
