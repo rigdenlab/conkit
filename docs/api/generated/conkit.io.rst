@@ -12,10 +12,12 @@ Submodules
 .. toctree::
 
    conkit.io.A3mIO
+   conkit.io.BCLContactIO
    conkit.io.BbcontactsIO
    conkit.io.CCMpredIO
    conkit.io.CaspIO
    conkit.io.ComsatIO
+   conkit.io.EPCMapIO
    conkit.io.EVfoldIO
    conkit.io.FastaIO
    conkit.io.FreeContactIO
