@@ -3,7 +3,6 @@ Parser module specific to CASP-RR predictions
 """
 
 __author__ = "Felix Simkovic"
-__credits__ = "Stefan Seemayer"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 

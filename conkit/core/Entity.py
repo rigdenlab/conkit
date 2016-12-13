@@ -1,14 +1,8 @@
 """
 Base class for all entities used in this interface.
-
-Credits
----------
-Thomas Hamelryck (thamelry@binf.ku.dk) for providing a
-baseline in Biopython's Bio.PDB.Entity module.
 """
 
 __author__ = "Felix Simkovic"
-__credits__ = "Thomas Hamelryck"
 __date__ = "17 Aug 2016"
 __version__ = 0.1
 
