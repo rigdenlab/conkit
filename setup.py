@@ -12,7 +12,7 @@ setup(
     version=__version__,
     author='Felix Simkovic',
     author_email='felixsimkovic@me.com',
-    license='GNU General Public License',
+    license='BSD License',
     url='https://github.com/fsimkovic/conkit',
     download_url='https://github.com/fsimkovic/conkit/tarball/' + __version__,
     package_dir={'conkit': 'conkit'},
@@ -23,7 +23,7 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
