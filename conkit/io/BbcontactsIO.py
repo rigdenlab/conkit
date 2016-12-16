@@ -11,7 +11,6 @@ from conkit.core import ContactMap
 from conkit.core import ContactFile
 from conkit.io._ParserIO import _ContactFileParser
 
-import os
 import re
 
 RE_COMMENT = re.compile(r'^#+.*$')
