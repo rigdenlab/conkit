@@ -128,7 +128,7 @@ class CaspParser(_ContactFileParser):
                         contact = Contact(int(res1_seq), int(res2_seq), float(raw_score),
                                           distance_bound=(int(lb), int(ub)))
                         contact.res1_chain = res1_chain
-                        contact.res2_chain = res1_chain
+                        contact.res2_chain = res2_chain
                         contact.res1_altseq = int(res1_seq)
                         contact.res2_altseq = int(res2_seq)
                         contact_map.add(contact)
