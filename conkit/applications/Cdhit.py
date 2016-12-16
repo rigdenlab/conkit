@@ -7,9 +7,7 @@ __author__ = "Felix Simkovic"
 __date__ = "04 Aug 2016"
 __version__ = 0.1
 
-from Bio.Application import _Argument
 from Bio.Application import _Option
-from Bio.Application import _Switch
 from Bio.Application import AbstractCommandline
 
 

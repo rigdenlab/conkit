@@ -93,7 +93,6 @@ class MemBrainParser(_ContactFileParser):
         for contact_map in contact_file:
             f_handle.write('Helix   Position        Residue Helix   Position        Residue Probability' + os.linesep)
             for contact in contact_map:
-                "H1      30      F       H2      55      F       1.000000"
                 line = "Hx      {res1_seq: <7} {res1: <7} Hx      {res2_seq: <7} {res2: <7} {raw_score: <.6f}"
                 line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq,
                                    res1=contact.res1, res2=contact.res2, raw_score=contact.raw_score)

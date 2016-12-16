@@ -68,8 +68,6 @@ class PconsParser(_ContactFileParser):
         seq = ''
         seq_id = 'seq_1'
 
-        status = 0
-
         while line is not done:
 
             if not line:
