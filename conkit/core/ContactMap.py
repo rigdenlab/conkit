@@ -587,6 +587,8 @@ class ContactMap(Entity):
         """
         # Import better suited here to avoid importing it every time ConKit is loaded
         try:
+            import matplotlib
+            matplotlib.use('Agg')
             import matplotlib.pyplot
         except ImportError:
             raise RuntimeError('Dependency not found: matplotlib')
