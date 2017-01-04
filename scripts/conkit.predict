@@ -13,73 +13,158 @@ import sys
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
+class MyArgumentParser(argparse.ArgumentParser):
+    def format_help(self):
+        return """
+usage: conkit.predict [-h] {alignment,sequence} ...
+
+positional arguments:
+  alignment     -       Start the prediction pipeline from an alignment
+  sequence      -       Start the prediction pipeline from a sequence
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+"""
+
+
+def add_default_args(parser):
+    """Define default arguments"""
+    parser.add_argument('-prefix', default='conkit', help='Job ID')
+    parser.add_argument('-wdir', default=os.getcwd(), help='Working directory')
+
+
+def add_alignment_args(subparsers):
+    """Parser with alignment as starting point"""
+    from_alignment_subparser = subparsers.add_parser('alignment')
+    add_default_args(from_alignment_subparser)
+    from_alignment_subparser.add_argument('alignment_file', help='Path to alignment file')
+    from_alignment_subparser.add_argument('alignment_format', help='Alignment format')
+    from_alignment_subparser.set_defaults(which='alignment')
+
+
+def add_sequence_args(subparsers):
+    """Parser with sequence as starting point"""
+    from_sequence_subparser = subparsers.add_parser('sequence')
+    add_default_args(from_sequence_subparser)
+    from_sequence_subparser.add_argument('--nodca', default=False, action='store_true',
+                                         help='Disable Direct Coupling Analysis')
+    from_sequence_subparser.add_argument('hhblitsdb', help='Path to HHblits database')
+    from_sequence_subparser.add_argument('sequence_file', help='Path to sequence file')
+    from_sequence_subparser.add_argument('sequence_format', help='Sequence format')
+    from_sequence_subparser.set_defaults(which='sequence')
+
+
 def main():
 
-    p = argparse.ArgumentParser()
-    p.add_argument('-prefix', default='conkit', help='Job ID')
-    p.add_argument('-wdir', default=os.getcwd(), help='working directory')
-    p.add_argument('hhblitsdb', help='HHblits database')
-    p.add_argument('fasta', help="fasta file")
-    args = p.parse_args()
+    # ==========================
+    # Obtain options
+    # ==========================
+    parser = MyArgumentParser()
+    subparsers = parser.add_subparsers()
+    # Add the subparsers
+    add_alignment_args(subparsers)
+    add_sequence_args(subparsers)
+    # Parse all arguments
+    args = parser.parse_args()
 
-    logging.info('File prefix: {0}'.format(args.prefix))
+    # ==========================
+    # Start processing
+    # ==========================
+    logging.info('Prefix: {0}'.format(args.prefix))
     logging.info('Working dir: {0}'.format(args.wdir))
-    logging.info('HHblits DB: {0}'.format(args.hhblitsdb))
-    logging.info('FASTA file: {0}'.format(args.fasta))
 
-    # Set the database variable
-    hhblits_db = os.path.abspath(args.hhblitsdb)
+    if args.which == 'alignment':
+        aln_fname = os.path.abspath(args.alignment_file)
+        aln_format = args.alignment_format.lower()
 
-    # Set the sequence file variable
-    name = args.prefix
+        logging.info('Input alignment file: {0}'.format(aln_fname))
+        logging.info('Input alignment format: {0}'.format(aln_format))
 
-    seq_fname = os.path.abspath(args.fasta)
-    a3m_fname = os.path.join(args.wdir, name+'.a3m')
-    hhr_fname = os.path.join(args.wdir, name+'.hhr')
-    jon_fname = os.path.join(args.wdir, name+'.jones')
-    matrix_fname = os.path.join(args.wdir, name+'.mat')
-    casprr_fname = os.path.join(args.wdir, name+'.rr')
+        # Check that we can handle the alignment file
+        if aln_format not in conkit.io.SEQUENCE_FILE_PARSERS:
+            msg = 'Sequence format not yet implemented: {0}'.format(aln_fname)
+            logging.critical(msg)
+            raise ValueError(msg)
 
-    # Generate a multiple sequence alignment
-    hhblits_cline = conkit.applications.HHblitsCommandLine(input=seq_fname, output=hhr_fname,
-                                                           database=hhblits_db, oa3m=a3m_fname,
-                                                           niterations=3,  id=99, show_all=True,
-                                                           cov=60, diff='inf', maxfilt=500000)
-    logging.info('Executing: {0}'.format(hhblits_cline))
-    hhblits_cline()
+        # Convert our alignment file to JONES format
+        if aln_format != 'jones':
+            jon_fname = os.path.join(args.wdir, args.prefix + '.jones')
+            conkit.io.convert(aln_fname, aln_format, jon_fname, 'jones')
+        else:
+            jon_fname = aln_fname
+
+    elif args.which == 'sequence':
+        hhblitsdb = os.path.abspath(args.hhblitsdb)
+        seq_fname = os.path.abspath(args.sequence_file)
+        seq_format = args.sequence_format.lower()
+        a3m_fname = os.path.join(args.wdir, args.prefix + '.a3m')
+        hhr_fname = os.path.join(args.wdir, args.prefix + '.hhr')
+
+        logging.info('HHblits DB: {0}'.format(hhblitsdb))
+        logging.info('Input sequence file: {0}'.format(seq_fname))
+        logging.info('Input sequence format: {0}'.format(seq_format))
+
+        # Check that we can handle the sequence file
+        if seq_format not in conkit.io.SEQUENCE_FILE_PARSERS:
+            msg = 'Sequence format not yet implemented: {0}'.format(seq_format)
+            logging.critical(msg)
+            raise ValueError(msg)
+
+        # Convert our sequence file to FASTA format
+        if seq_format != 'fasta':
+            seq_fname_tmp = seq_fname.rsplit('.', 1)[0] + '.fasta'
+            conkit.io.convert(seq_fname, seq_format, seq_fname_tmp, 'fasta')
+            seq_fname = seq_fname_tmp
+
+        # Generate a multiple sequence alignment
+        hhblits_cline = conkit.applications.HHblitsCommandLine(input=seq_fname, output=hhr_fname,
+                                                               database=hhblitsdb, oa3m=a3m_fname,
+                                                               niterations=3, id=99, show_all=True,
+                                                               cov=60, diff='inf', maxfilt=500000)
+        logging.info('Executing: {0}'.format(hhblits_cline))
+        hhblits_cline()
+
+        jon_fname = seq_fname.rsplit('.', 1)[0] + '.jones'
+        conkit.io.convert(a3m_fname, 'a3m', jon_fname, 'jones')
+
+    else:
+        raise RuntimeError('Should never get to here')
 
     # CCMpred requires alignments to be in the *jones* format - i.e. the format created
     # and used by David Jones in PSICOV
-    msa_h = conkit.io.read(a3m_fname, 'a3m')
-    logging.info('Total Number of sequences: {0}'.format(msa_h.nseqs))
-    try:
-        logging.info('Number of effective sequences: {0}'.format(msa_h.calculate_meff()))
-    except MemoryError:
-        logging.info('Cannot calculate number of effective sequences: MemoryError')
-    conkit.io.write(jon_fname, 'jones', msa_h)
+    logging.info('Final alignment file: {0}'.format(jon_fname))
+    msa_h = conkit.io.read(jon_fname, 'jones')
+    logging.info('|- Total Number of sequences: {0}'.format(msa_h.nseqs))
+    logging.info('|- Number of effective sequences: {0}'.format(msa_h.calculate_meff()))
+
+    # Kill switch to not run CCMpred DCA
+    if args.which == 'sequence' and args.nodca:
+        return 0
 
     # Use the re-formatted alignment for contact prediction
+    matrix_fname = os.path.join(args.wdir, args.prefix + '.mat')
     ccmpred_cline = conkit.applications.CCMpredCommandLine(alnfile=jon_fname, matfile=matrix_fname, 
                                                            threads=2, renormalize=True)
     logging.info('Executing: {0}'.format(ccmpred_cline))
     ccmpred_cline()
 
     # Add sequence information to contact hierarchy
-    con_h = conkit.io.read(matrix_fname, 'ccmpred')
-    seq_h = conkit.io.read(seq_fname, 'fasta')
-    # Do some post-prediction processing for visualisation and analysis
-    for cmap, seq in zip(con_h, seq_h):
-        cmap.sequence = seq
-        cmap.remove_neighbors(min_distance=5, inplace=True)
-        cmap.sort('raw_score', reverse=True, inplace=True)
-        cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
-        plot_fname = os.path.join(args.wdir, name + '.' + cmap.id +'.pdf')
-        cmap.plot_map(file_format='pdf', file_name=plot_fname)
-        logging.info('Plotted contact map: {0}'.format(plot_fname))
+    cmap = conkit.io.read(matrix_fname, 'ccmpred').top_map
+    cmap.sequence = conkit.io.read(jon_fname, 'jones').top_sequence
+    cmap.remove_neighbors(min_distance=5, inplace=True)
+    cmap.sort('raw_score', reverse=True, inplace=True)
+    cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
+    plot_fname = os.path.join(args.wdir, args.prefix + '.pdf')
+    cmap.plot_map(file_format='pdf', file_name=plot_fname)
+    logging.info('Plotted contact map: {0}'.format(plot_fname))
 
     # Use the ccmpred parser to write a contact file
-    conkit.io.write(casprr_fname, 'casprr', con_h)
+    casprr_fname = os.path.join(args.wdir, args.prefix + '.rr')
+    conkit.io.write(casprr_fname, 'casprr', cmap)
     logging.info('Final prediction file: {0}'.format(casprr_fname))
+
+    return 0
 
 
 if __name__ == "__main__":
