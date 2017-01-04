@@ -10,6 +10,7 @@ The following scripts are currently shipped with ConKit:
 
 - :obj:`conkit.convert` - script to convert file formats
 - :obj:`conkit.msatool` - script to analyse a Multiple Sequence Alignment 
+- :obj:`conkit.plot_map` - script to plot a contact map
 - :obj:`conkit.precision` - script to calculate the contact prediction precision value
 - :obj:`conkit.predict` - simple contact prediction pipeline using HHblits, HHfilter and CCMpred
 

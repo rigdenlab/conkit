@@ -40,6 +40,11 @@ Key Features
 - Easy-to-use wrappers for the most-commonly used software, e.g. HHblits, Jackhmmer, CCMpred, PSICOV, ...
 - Many convenience functions for prediction-structure matching, determination of True Positive contacts, calculation of MSA and contact prediction statistics, etc.
 
+News
+~~~~
+
+ConKit was presented at the CCP4 Study Weekend 2017. To view the presentation slides, `click here <https://fsimkovic.github.io/Presentations/ccp4_sw2017.html#/>`_.
+
 Contributing
 ~~~~~~~~~~~~
 There are two ways by which you can contribute to ConKit:
