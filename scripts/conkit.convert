@@ -13,9 +13,7 @@ _OPTIONS = sorted(
     + conkit.io.SEQUENCE_FILE_PARSERS.keys()
 )
 
-
-def main():
-    text = """
+DESCRIPTION = """
 This script serves for file conversions for either contact prediction
 files or sequence (alignment) files.
 
@@ -28,13 +26,14 @@ File format options are:
 Please do not attempt to mix formats, i.e. convert from a contact file format
 to a sequence file format.
 
-"""
-    text = text.format(
-        " ".join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())),
-        " ".join(sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys()))
-    )
+""".format(
+    " ".join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())),
+    " ".join(sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys()))
+)
 
-    parser = argparse.ArgumentParser(description=text, formatter_class=argparse.RawDescriptionHelpFormatter)
+
+def main():
+    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('infile')
     parser.add_argument('informat')
     parser.add_argument('outfile')
@@ -43,6 +42,8 @@ to a sequence file format.
     
     # Perform the conversion
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
+
+    return 0
 
 
 if __name__ == "__main__":

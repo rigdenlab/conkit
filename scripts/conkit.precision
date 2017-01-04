@@ -11,22 +11,26 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-
-def main():
-    text = """
+DESCRIPTION = """
 Calculate the contact precision value
 
 File format options are:
 
     Contact files: [{0}]
 
-"""
-    options = sorted(conkit.io.CONTACT_FILE_PARSERS.keys())
-    text = text.format(' '.join(options))
-    parser = argparse.ArgumentParser(description=text, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-c', dest='pdbchain', default=None, help='PDB chain to use [default: first in file]. Inter-molecular predictions use two letter convention, i.e AD for contacts between A and D.')
-    parser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
-    parser.add_argument('-f', dest='dfactor', default=1.0, type=float, help='number of contacts to include relative to sequence length [default: 1.0]')
+""".format(' '.join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-c', dest='pdbchain', default=None,
+                        help='PDB chain to use [default: first in file]. '
+                             'Inter-molecular predictions use two letter '
+                             'convention, i.e AD for contacts between A and D.')
+    parser.add_argument('-d', dest='dtn', default=5, type=int,
+                        help='Minimum sequence separation [default: 5]')
+    parser.add_argument('-f', dest='dfactor', default=1.0, type=float,
+                        help='number of contacts to include relative to sequence length [default: 1.0]')
     parser.add_argument('pdbfile')
     parser.add_argument('seqfile')
     parser.add_argument('seqformat')

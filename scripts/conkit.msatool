@@ -11,19 +11,18 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-
-def main():
-    text = """
+DESCRIPTION = """
 Analyse a Multiple Sequence Alignment
 
 File format options are:
 
     Sequence files: [{0}]
 
-"""
-    options = sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys())
-    text = text.format(' '.join(options))
-    parser = argparse.ArgumentParser(description=text, formatter_class=argparse.RawDescriptionHelpFormatter)
+""".format(' '.join(sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys())))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-id', default=0.7, type=float, help='sequence identity [default: 0.7]')
     parser.add_argument('msafile')
     parser.add_argument('msaformat')
@@ -41,6 +40,8 @@ File format options are:
     logging.info('Seq Len: {0}'.format(seq_len))
     logging.info('N seqs: {0}'.format(nseqs))
     logging.info('M eff: {0}'.format(meff))
+
+    return 0
 
 
 if __name__ == "__main__":
