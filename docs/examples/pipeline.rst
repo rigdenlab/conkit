@@ -141,9 +141,8 @@ Our final contact prediction matrix is now stored in the file with the name ``co
 
 .. code-block:: python
 
-   >>> f_in = open(matrix_fname, 'r')
-   >>> f_out = open(casprr_fname, 'w')
-   >>> io.convert(f_in, 'ccmpred', f_out, 'casprr')
+   >>> with open(matrix_fname, 'r') as f_in, open(casprr_fname, 'w') as f_out:
+   ...    io.convert(f_in, 'ccmpred', f_out, 'casprr')
 
 This will produce your final contact prediction in Casp RR format in the file ``conkit_example.rr``
 
