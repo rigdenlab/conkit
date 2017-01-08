@@ -20,19 +20,6 @@ THREE_TO_ONE = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CME': 'C', 'CYS
                 'ASX': 'B', 'GLX': 'Z', 'XAA': 'X', 'XLE': 'J'}
 
 # ================================================
-# Constants for easier instance detection
-# ================================================
-CONTACTFILE = 1
-CONTACTMAP = 2
-CONTACT = 3
-SEQUENCEFILE = 4
-SEQUENCE = 5
-UNKNOWN = 999
-MATCHED = 0
-UNMATCHED = -1
-UNREGISTERED = -2
-
-# ================================================
 # Constants defining Contact().status color coding
 # ================================================
 TPCOLOR = '#2D9D00'     # color true positive
