@@ -38,4 +38,4 @@ UNREGISTERED = -2
 TPCOLOR = '#2D9D00'     # color true positive
 FPCOLOR = '#AB0000'     # color false positive
 NTCOLOR = '#0482ff'     # color undefined
-RFCOLOR = '#A0A0A0'     # color structure
+RFCOLOR = '#B5B5B5'     # color structure
