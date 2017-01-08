@@ -594,6 +594,7 @@ class ContactMap(Entity):
             raise RuntimeError('Dependency not found: matplotlib')
 
         fig, ax = matplotlib.pyplot.subplots(figsize=(5, 5), dpi=600)
+        markersize = 10 
 
         # Plot the other_ref contacts
         if reference:
@@ -605,9 +606,9 @@ class ContactMap(Entity):
                                                 for c in reference if c.is_true_positive])
             reference_colors = [constants.RFCOLOR for _ in range(len(reference_data))]
             ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
-                       marker='.', s=10, edgecolor='none', linewidths=0.0)
+                       marker='.', s=markersize, edgecolor='none', linewidths=0.0)
             ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
-                       marker='.', s=10, edgecolor='none', linewidths=0.0)
+                       marker='.', s=markersize, edgecolor='none', linewidths=0.0)
 
         # Plot the self contacts
         self_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in self])
@@ -618,7 +619,7 @@ class ContactMap(Entity):
         ]
         # This is the bottom triangle
         ax.scatter(self_data.T[1], self_data.T[0], color=self_colors,
-                   marker='.', s=10, edgecolor='none', linewidths=0.0)
+                   marker='.', s=markersize, edgecolor='none', linewidths=0.0)
 
         # Plot the other contacts
         if other:
@@ -630,11 +631,11 @@ class ContactMap(Entity):
             ]
             # This is the upper triangle
             ax.scatter(other_data.T[0], other_data.T[1], color=other_colors,
-                    marker='.', s=10, edgecolor='none', linewidths=0.0)
+                    marker='.', s=markersize, edgecolor='none', linewidths=0.0)
         else:
             # This is the upper triangle
             ax.scatter(self_data.T[0], self_data.T[1], color=self_colors,
-                               marker='.', s=10, edgecolor='none', linewidths=0.0)
+                               marker='.', s=markersize, edgecolor='none', linewidths=0.0)
 
         # Prettify the plot
         label = 'Residue number'

@@ -9,30 +9,16 @@ import conkit
 import logging
 import os
 import sys
+import time
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
-
-
-class MyArgumentParser(argparse.ArgumentParser):
-    def format_help(self):
-        return """
-usage: conkit.predict [-h] {alignment,sequence} ...
-
-positional arguments:
-  alignment     -       Start the prediction pipeline from an alignment
-  sequence      -       Start the prediction pipeline from a sequence
-
-optional arguments:
-  -h, --help            show this help message and exit
-
-"""
 
 
 def add_default_args(parser):
     """Define default arguments"""
     parser.add_argument('-prefix', default='conkit', help='Job ID')
     parser.add_argument('-wdir', default=os.getcwd(), help='Working directory')
-
+    parser.add_argument('--demo', default=False, action="store_true", help=argparse.SUPPRESS)
 
 def add_alignment_args(subparsers):
     """Parser with alignment as starting point"""
@@ -60,7 +46,7 @@ def main():
     # ==========================
     # Obtain options
     # ==========================
-    parser = MyArgumentParser()
+    parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_alignment_args(subparsers)
@@ -123,9 +109,13 @@ def main():
                                                                niterations=3, id=99, show_all=True,
                                                                cov=60, diff='inf', maxfilt=500000)
         logging.info('Executing: {0}'.format(hhblits_cline))
-        hhblits_cline()
+        if args.demo:
+            assert os.path.isfile(a3m_fname)
+            time.sleep(5)
+        else:
+            hhblits_cline()
 
-        jon_fname = seq_fname.rsplit('.', 1)[0] + '.jones'
+        jon_fname = os.path.join(args.wdir, args.prefix + '.jones') 
         conkit.io.convert(a3m_fname, 'a3m', jon_fname, 'jones')
 
     else:
@@ -147,7 +137,11 @@ def main():
     ccmpred_cline = conkit.applications.CCMpredCommandLine(alnfile=jon_fname, matfile=matrix_fname, 
                                                            threads=2, renormalize=True)
     logging.info('Executing: {0}'.format(ccmpred_cline))
-    ccmpred_cline()
+    if args.demo:
+        assert os.path.isfile(matrix_fname)
+        time.sleep(5)
+    else:
+        ccmpred_cline()
 
     # Add sequence information to contact hierarchy
     cmap = conkit.io.read(matrix_fname, 'ccmpred').top_map
