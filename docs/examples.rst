@@ -15,5 +15,7 @@ Please check the list below, and if you would like an example for a different as
 +-----------------------------------------+---------------------------------------------------------------------------+
 | :ref:`example_constructing_a_hierarchy` | Do you want to include contact distance restraints in *your* application? |
 +-----------------------------------------+---------------------------------------------------------------------------+
+| :ref:`example_plotting a map`           | How can I plot a contact map using ConKit?                                |
++-----------------------------------------+---------------------------------------------------------------------------+
 
 .. _GitHub Issue Tracker: https://github.com/fsimkovic/conkit/issues
