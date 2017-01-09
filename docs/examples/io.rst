@@ -3,14 +3,13 @@
 File Conversions
 ================
 
-In order to convert files in ConKit, we need to import the ConKit I/O framework.
-
-.. code-block:: python
-
-   >>> from conkit import io
+In order to convert files in ConKit, we need to use the ConKit I/O framework.
 
 .. note::
    ConKit I/O framework consists of three main functions that handle the relevant parsers: :func:`conkit.io.read`, :func:`conkit.io.write` and :func:`conkit.io.convert`. The latter effectively uses the former but handles everything in one step.
+
+.. note::
+   ConKit provides a script that allows you to convert files from the command line. The script is called ``conkit.convert`` and installed automatically.
 
 --------------------------------------------------------
 
@@ -26,8 +25,9 @@ ConKit provides the following simple syntax to do exactly that.
 
 .. code-block:: python
   
+   >>> import conkit
    >>> with open('query.pconsc3.txt', 'r') as f_in:
-   ...     contact_hierarchy = io.read(f_in, 'pconsc3')
+   ...     contact_hierarchy = conkit.io.read(f_in, 'pconsc3')
 
 File writing
 ^^^^^^^^^^^^
@@ -36,8 +36,9 @@ Now, you've manipulated the file from the previous example and you now want to w
 
 .. code-block:: python
    
+   >>> import conkit
    >>> with open('query.pconsc3.new.txt', 'w') as f_out:
-   ...     io.write(f_out, contact_hierarchy, 'pconsc3')
+   ...     conkit.io.write(f_out, contact_hierarchy, 'pconsc3')
 
 File conversion
 ^^^^^^^^^^^^^^^
@@ -48,8 +49,9 @@ Assuming our PconsC3 contact file is called ``query.pconsc3.txt`` and you want t
 
 .. code-block:: python
    
+   >>> import conkit
    >>> with open('query.pconsc3.txt', 'r') as f_in, open('query.casp.rr', 'w') as f_out:
-   ...     io.convert(f_in, 'pconsc3', f_out, 'casprr')
+   ...     conkit.io.convert(f_in, 'pconsc3', f_out, 'casprr')
 
 This is it, you now have converted your contact file from PconsC3 format to Casp format.
 

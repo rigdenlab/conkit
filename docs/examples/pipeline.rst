@@ -21,17 +21,11 @@ Before we are getting started, please ensure that you have the following depende
 
 At the top of our pipeline script, we need to import ConKit Python modules to be able to run a contact prediction
 
-To handle file conversions, we need the ConKit I/O package.
+To handle file conversions, we need to import ConKit.
 
 .. code-block:: python
 
-   >>> from conkit import io
-
-We also need to import the command line application wrappers so we can execute our applications from within Python.
-
-.. code-block:: python
-
-   >>> from conkit import applications
+   >>> import conkit
 
 2. Creating I/O filenames
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -63,8 +57,10 @@ Above, we defined all filenames required in this pipeline, so let us continue an
 
 .. code-block:: python
 
-   >>> hhblits_cline = HHblitsCommandLine(
-   ...     input=seq_fname, database=hhblits_db, niterations=2, evalue=0.001, oa3m=a3m_fname
+   >>> hhblits_cline = conkit.applications.HHblitsCommandLine(input=seq_fname, maxfilt=500000,
+   ...                                                        database=hhblits_db, oa3m=a3m_fname,
+   ...                                                        niterations=3, id=99, show_all=True,
+   ...                                                        cov=60, diff='inf' 
    ... )
 
 The above code looks more complex than the previous ones. However, this design gives us great flexibility when it comes to trialing different options.
@@ -90,42 +86,19 @@ Finally, to invoke HHblits, run the following command.
 
 Great, now we have generated a sequence alignment, which is stored in the filename defined in the ``a3m_fname`` variable.
 
-4. Filtering the MSA to remove redundant sequences
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Next, we would like to remove some of the redundancy in the sequence alignment file to reduce the prediction bias. Luckily, the HH-suite provides us with a filtering algorithm that does exactly that. Let us create a command line instance just like before, only using the :obj:`conkit.applications.HHfilterCommandLine` class this time.
-
-.. code-block:: python
-
-   >>> hhfilter_cline = HHfilterCommandLine(
-   ...     input=a3m_fname, output=a3m_filtered_fname, pairwise_identity=90
-   ... )
-
-The above command follows the identical style as the :obj:`conkit.applications.HHblitsCommandLine` wrapper. Note, we have defined our pairwise sequence identity to be 90%, i.e. all sequences with a higher sequence identity will be removed. Finally, let us invoke this command and filter our alignment.
-
-.. code-block:: python
-
-   >>> hhfilter_cline()
-
-5. Converting the sequence alignment
+4. Converting the sequence alignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This command results in a final, filtered alignment which is nearly ready to be subjected to CCMpred for contact prediction. However, CCMpred does not like the A3M format the HHblits and HHfilter produced. Thus, we need to convert it into a format that CCMpred recognises. This is the point where ConKit main functionality comes in, the conversion of files.
+The above command results in a final alignment which is nearly ready to be subjected to CCMpred for contact prediction. However, CCMpred does not like the A3M format the HHblits produced. Thus, we need to convert it into a format that CCMpred recognizes. This is the point where ConKit's main functionality comes in, the conversion of files.
 
-First, we need to create file handlers for the input and output files:
-
-.. code-block:: python
-
-   >>> f_in = open(a3m_filtered_fname, 'r')
-   >>> f_out = open(jones_filtered_fname, 'w')
-
-Once these files are open, we can parse them to the ConKit I/O package for conversion, whereby we need to specify the input format, here ``a3m`` and output format ``jones``. For a full list of file formats available, head over to the :ref:`file_formats`.
+First, we need to create file handlers for the input and output files. Then we can parse them to the ConKit I/O package for conversion, whereby we need to specify the input format, here ``a3m`` and output format ``jones``. For a full list of file fo    rmats available, head over to the :ref:`file_formats`.
 
 .. code-block:: python
+  
+   >>> with open(a3m_filtered_fname, 'r') as f_in, open(jones_filtered_fname, 'w') as f_out:
+   ...     io.convert(f_in, 'a3m', f_out, 'jones')
 
-   >>> io.convert(f_in, 'a3m', f_out, 'jones')
-
-6. Predicting contacts
+5. Predicting contacts
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Finally, we can predict contacts using our generated alignment file. To do this, we use CCMpred [note: the syntax is always the same for command line applications].
@@ -145,10 +118,6 @@ Our final contact prediction matrix is now stored in the file with the name ``co
    ...    io.convert(f_in, 'ccmpred', f_out, 'casprr')
 
 This will produce your final contact prediction in Casp RR format in the file ``conkit_example.rr``
-
-.. note::
-
-   Did you notice that the function call for converting files is identical for sequence and contact files?
 
 
 .. _CCMpred Repo: https://github.com/soedinglab/ccmpred

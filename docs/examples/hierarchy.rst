@@ -14,7 +14,7 @@ If you wish to construct it as part of a new development to store your contact i
 1. Constructing instances
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following blocks of code a purely an outline on how each instance can be created.
+The following blocks of code are purely an outline on how each instance can be created.
 
 1.1 ContactFile
 ...............
