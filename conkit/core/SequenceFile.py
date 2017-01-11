@@ -82,7 +82,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        is_alignment : bool
+        bool
            A boolean status for the alignment
         """
         seq_length = self.top_sequence.seq_len
@@ -99,7 +99,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        nseqs : int
+        int
            The number of sequences in the :obj:`conkit.core.SequenceFile`
 
         """
@@ -158,7 +158,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        top_sequence : :obj:`conkit.core.Sequence`, None
+        :obj:`conkit.core.Sequence`, None
            The first :obj:`conkit.core.Sequence` entry in :obj:`conkit.core.SequenceFile`
 
         """
@@ -186,7 +186,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        meff : int
+        int
            The number of effective sequences
 
         Raises
@@ -242,7 +242,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        frequency : list
+        list
            A list containing the per alignment-column amino acid
            frequency count
 
@@ -281,8 +281,8 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        contact_map : :obj:`conkit.core.ContactMap`
-           The reference to the :obj:`conkit.core.ContactMap`, regardless of inplace
+        :obj:`conkit.core.SequenceFile`
+           The reference to the :obj:`conkit.core.SequenceFile`, regardless of inplace
 
         Raises
         ------
@@ -293,3 +293,33 @@ class SequenceFile(Entity):
         sequence_file = self._inplace(inplace)
         sequence_file._sort(kword, reverse)
         return sequence_file
+
+    def trim(self, start, end, inplace=False):
+        """Trim the :obj:`conkit.core.SequenceFile`
+
+        Parameters
+        ----------
+        start : int
+           First residue to include
+        end : int
+           Final residue to include
+        inplace : bool, optional
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        :obj:`conkit.core.SequenceFile`
+           The reference to the :obj:`conkit.core.SequenceFile`, regardless of inplace
+
+        """
+        sequence_file = self._inplace(inplace)
+
+        if not self.is_alignment:
+            raise ValueError('This is not an alignment')
+
+        i, j = start-1, end
+        for sequence in sequence_file:
+            sequence.seq = sequence.seq[i:j]
+
+        return sequence_file
+

@@ -169,7 +169,7 @@ class Sequence(Entity):
         -------
         :obj:`conkit.core.Sequence`
            The reference to the :obj:`conkit.core.Sequence`, regardless of inplace
-        :obj:`Sequence`
+        :obj:`conkit.core.Sequence`
            The reference to the :obj:`conkit.core.Sequence`, regardless of inplace
 
         """

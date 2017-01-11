@@ -216,6 +216,44 @@ class Test(unittest.TestCase):
         self.assertEqual(['CCCCC', 'BBBBB', 'AAAAA'], [s.seq for s in sequence_file_sorted])
         self.assertEqual(sequence_file, sequence_file_sorted)
 
+    def test_trim(self):
+        # ======================================================
+        # Test Case 1
+        sequence_file = SequenceFile('test')
+        for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
+            sequence_file.add(seq)
+        sequence_file_trimmed = sequence_file.trim(1, 5)
+        self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
+        self.assertEqual(['AAAAA', 'BBBBB', 'CCCCC'], [s.seq for s in sequence_file_trimmed])
+        self.assertNotEqual(sequence_file, sequence_file_trimmed)
+        # ======================================================
+        # Test Case 2
+        sequence_file = SequenceFile('test')
+        for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
+            sequence_file.add(seq)
+        sequence_file_trimmed = sequence_file.trim(3, 5)
+        self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
+        self.assertEqual(['AAA', 'BBB', 'CCC'], [s.seq for s in sequence_file_trimmed])
+        self.assertNotEqual(sequence_file, sequence_file_trimmed)
+        # ======================================================
+        # Test Case 3
+        sequence_file = SequenceFile('test')
+        for seq in [Sequence('foo', 'ABCDE'), Sequence('bar', 'BCDEF'), Sequence('doe', 'CDEFG')]:
+            sequence_file.add(seq)
+        sequence_file_trimmed = sequence_file.trim(1, 3)
+        self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
+        self.assertEqual(['ABC', 'BCD', 'CDE'], [s.seq for s in sequence_file_trimmed])
+        self.assertNotEqual(sequence_file, sequence_file_trimmed)
+        # ======================================================
+        # Test Case 4
+        sequence_file = SequenceFile('test')
+        for seq in [Sequence('foo', 'ABCDE'), Sequence('bar', 'BCDEF'), Sequence('doe', 'CDEFG')]:
+            sequence_file.add(seq)
+        sequence_file_trimmed = sequence_file.trim(2, 3)
+        self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
+        self.assertEqual(['BC', 'CD', 'DE'], [s.seq for s in sequence_file_trimmed])
+        self.assertNotEqual(sequence_file, sequence_file_trimmed)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
