@@ -273,11 +273,11 @@ class SequenceFile(Entity):
         Parameters
         ----------
         kword : str
-           The dictionary key to sort contacts by
+           The dictionary key to sort sequences by
         reverse : bool, optional
-           Sort the contact pairs in descending order [default: False]
+           Sort the sequences in reverse order [default: False]
         inplace : bool, optional
-           Replace the saved order of contacts [default: False]
+           Replace the saved order of sequences [default: False]
 
         Returns
         -------
@@ -304,7 +304,7 @@ class SequenceFile(Entity):
         end : int
            Final residue to include
         inplace : bool, optional
-           Replace the saved order of contacts [default: False]
+           Replace the saved order of sequences [default: False]
 
         Returns
         -------

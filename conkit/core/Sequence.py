@@ -36,7 +36,7 @@ class Sequence(Entity):
     __slots__ = ['_remark', '_seq']
 
     def __init__(self, id, seq):
-        """Initialise a generic contact pair
+        """Initialise a generic sequence 
 
         Parameters
         ----------
@@ -130,7 +130,7 @@ class Sequence(Entity):
         gap_open_pen : float, optional
         gap_ext_pen : float, optional
         inplace : bool, optional
-           Replace the saved order of contacts [default: False]
+           Replace the saved order of residues [default: False]
 
         Returns
         -------
@@ -163,7 +163,7 @@ class Sequence(Entity):
         gap_open_pen : float, optional
         gap_ext_pen : float, optional
         inplace : bool, optional
-           Replace the saved order of contacts [default: False]
+           Replace the saved order of residues [default: False]
 
         Returns
         -------
