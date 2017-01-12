@@ -76,8 +76,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ConKit'
-copyright = '2016  Felix Simkovic'
-author = 'Felix Simkovic'
+copyright = '2016-2017 University of Liverpool'
+author = 'Felix Simkovic & Jens Thomas'
 
 # The short X.Y version.
 version = conkit.__version__
@@ -147,13 +147,8 @@ html_theme_options = {
     # Tab name for entire site.
     'navbar_site_name': 'Home',
     # A list of tuples containing pages or urls to link to.
-    # Valid tuples should be in the following forms:
-    #    (name, page)                 # a link to a page
-    #    (name, "/aa/bb", 1)          # a link to an arbitrary relative url
-    #    (name, "http://example.com", True) # arbitrary absolute url
-    # Note the "1" or "True" value above as the third argument to indicate
-    # an arbitrary url.
     'navbar_links': [
+        ('Home', 'index'),
         ('Installation', 'installation'),
         ('Examples', 'examples'),
         ('Documentation', 'documentation'),
@@ -165,9 +160,8 @@ html_theme_options = {
     # Global TOC depth for "site" navbar tab.
     'globaltoc_depth': 2,
     # Fix navigation bar to top of page?
-    'navbar_fixed_top': "false",
+    'navbar_fixed_top': False,
     # Location of link to source.
-    # Options are "nav" (default), "footer" or anything else to exclude.
     'source_link_position': "footer",
     # Bootswatch (http://bootswatch.com/) theme.
     'bootswatch_theme': "spacelab",
@@ -187,7 +181,7 @@ html_short_title = 'ConKit'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = 'logo.svg'
+html_logo = 'logo_conkit.svg'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
