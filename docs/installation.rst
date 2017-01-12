@@ -11,6 +11,12 @@ The easiest way to install ConKit is via ``easy_install`` or ``pip``. To do so, 
 
    $> pip install conkit
 
+If you would like to install ConKit manually into a project with a custom Python interpreter, then install it into using the command below. I.e., to manually install ConKit into the CCP4 distribution:
+
+.. code-block:: bash
+
+   $> ccp4-python -m pip install conkit
+
 
 Source Code
 -----------
@@ -37,10 +43,6 @@ If this has completed successfully, you are good to go and you can now install C
    $> sudo python setup.py build install
 
 ConKit is now successfully installed in your Python's site-packages directory.
-
-.. note::
-
-   The ConKit project has recently been added to the CCP4 and CCP-EM devtools distributions. This means that they will most likely be shipped with the full releases in the near future.
 
 
 .. _latest version: https://github.com/fsimkovic/conkit/releases
