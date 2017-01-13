@@ -1,10 +1,21 @@
 """Python Interface for Residue-Residue Contact Predictions"""
 
-from conkit._version import __version__
 from setuptools import setup, find_packages
+from distutils.util import convert_path
 import glob
 
+def get_version():
+    # Credits to http://stackoverflow.com/a/24517154
+    main_ns = {}
+    ver_path = convert_path('conkit/_version.py')
+    with open(ver_path) as f_in:
+        exec(f_in.read(), main_ns)
+    return main_ns['__version__']
 
+# Obtain the current version of ConKit
+__version__ = get_version()
+
+# Do the actual setup below
 setup(
     name='conkit',
     description=__doc__.replace("\n", ""),
