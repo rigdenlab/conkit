@@ -43,7 +43,7 @@ Key Features
 News
 ~~~~
 
-ConKit was presented at the CCP4 Study Weekend 2017. To view the presentation slides, `click here <https://fsimkovic.github.io/Presentations/ccp4_sw2017.html#/>`_.
+ConKit was presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_ and the slides are available `here <https://fsimkovic.github.io/Presentations/ccp4_sw2017.html#/>`_.
 
 Contributing
 ~~~~~~~~~~~~
