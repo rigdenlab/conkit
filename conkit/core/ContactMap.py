@@ -14,6 +14,7 @@ from conkit.core.Entity import Entity
 from conkit.core.Sequence import Sequence
 
 import collections
+import itertools
 import numpy
 import warnings
 
@@ -511,11 +512,10 @@ class ContactMap(Entity):
         # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
         # Adjust true and false positive statuses
-        for other_contact in contact_map2:
-            for self_contact in contact_map1:
-                if self_contact.res1_seq == other_contact.res1_altseq \
-                        and self_contact.res2_seq == other_contact.res2_altseq:
-                    self_contact.status = other_contact.status
+        for self_contact, other_contact in itertools.product(contact_map1, contact_map2):
+            if self_contact.res1_seq == other_contact.res1_altseq \
+                    and self_contact.res2_seq == other_contact.res2_altseq:
+                self_contact.status = other_contact.status
 
         # ================================================================
         # 3. Remove unmatched contacts
