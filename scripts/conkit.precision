@@ -53,15 +53,16 @@ def main():
     con.remove_neighbors(min_distance=args.dtn, inplace=True)
 
     ncontacts = int(seq.seq_len * args.dfactor)
-    logging.info('Number of contacts: {0}'.format(ncontacts))
+    logging.info('Max number of contacts: {0}'.format(ncontacts))
     con.sort('raw_score', reverse=True, inplace=True)
     con_sliced = con[:ncontacts]
-    
+
     con_matched = con_sliced.match(pdb)
     precision = con_matched.precision
     
     logging.info('Precision score: {0}'.format(precision))
 
+    return 0 
 
 if __name__ == "__main__":
     sys.exit(main())
