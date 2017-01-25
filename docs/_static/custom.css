@@ -1,0 +1,8 @@
+.navbar-collapse {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+.nav > li > a {
+    padding: 15px 30px 15px 0px !important;
+}

@@ -4,7 +4,7 @@
 Contact Prediction ToolKit
 **************************
 
-**A Python Interface to contact predictions**
+**A Python Interface to Contact Predictions**
 
 This project is a result of the continuous struggle using residue-residue contact prediction pipelines, visualisation tools and related software. The aim was to reduce this complexity and provide one unified interface as a basic platform. The resulting platform is the Contact Prediction ToolKit, or ConKit in short.
 
@@ -40,21 +40,26 @@ Key Features
 - Easy-to-use wrappers for the most-commonly used software, e.g. HHblits, Jackhmmer, CCMpred, PSICOV, ...
 - Many convenience functions for prediction-structure matching, determination of True Positive contacts, calculation of MSA and contact prediction statistics, etc.
 
+
 News
 ~~~~
 
 ConKit was presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_ and the slides are available `here <https://fsimkovic.github.io/Presentations/ccp4_sw2017.html#/>`_.
 
+
 Contributing
 ~~~~~~~~~~~~
+
 There are two ways by which you can contribute to ConKit:
 
 1. Submit any suggestions to the `GitHub Issue Tracker`_, or
 2. Fork this repository, commit your changes and submit a pull request.
 
+
 Found a Bug?
 ~~~~~~~~~~~~
 Please use the `GitHub Issue Tracker`_.
+
 
 Ackowledgements
 ~~~~~~~~~~~~~~~

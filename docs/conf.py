@@ -76,7 +76,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ConKit'
-copyright = '2016-2017 University of Liverpool'
+copyright = '2016-2017, University of Liverpool'
 author = 'Felix Simkovic & Jens Thomas'
 
 # The short X.Y version.
@@ -143,7 +143,6 @@ html_theme = 'bootstrap'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'navbar_title': None,
     # Tab name for entire site.
     'navbar_site_name': 'Home',
     # A list of tuples containing pages or urls to link to.
@@ -191,7 +190,7 @@ html_favicon = 'favicon.ico'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path
-# html_style = 'custom.css'
+html_style = 'custom.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
