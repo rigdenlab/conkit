@@ -168,6 +168,12 @@ html_theme_options = {
     'bootstrap_version': "3",
 }
 
+# Additional variables to be passed to templates
+html_context = {
+    # URL to the GitHub repository - None if unwanted
+    'github_url': 'https://github.com/fsimkovic/conkit.git',
+}
+
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
