@@ -34,48 +34,35 @@ This project is a result of the continuous struggle using residue-residue contac
 
 
 Key Features
-~~~~~~~~~~~~
+++++++++++++
 
 - Parsers for Multiple Sequence Alignment and contact prediction files
 - Easy-to-use wrappers for the most-commonly used software, e.g. HHblits, Jackhmmer, CCMpred, PSICOV, ...
 - Many convenience functions for prediction-structure matching, determination of True Positive contacts, calculation of MSA and contact prediction statistics, etc.
 
+.. note::
+
+   ConKit was recently presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_.
+
 Installation & Usage
-~~~~~~~~~~~~~~~~~~~~
-
-Please refer to `ConKit's documentation`_.
-
-
-News
-~~~~
-
-ConKit was presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_ and the slides are available `here <https://fsimkovic.github.io/Presentations/ccp4_sw2017.html#/>`_.
-
+++++++++++++++++++++
+Please refer to `ConKit's documentation <http://www.conkit.org>`_.
 
 Contributing
-~~~~~~~~~~~~
-
+++++++++++++
 There are two ways by which you can contribute to ConKit:
 
 1. Submit any suggestions to the `GitHub Issue Tracker`_, or
 2. Fork this repository, commit your changes and submit a pull request.
 
-
 Found a Bug?
-~~~~~~~~~~~~
+++++++++++++
 Please use the `GitHub Issue Tracker`_.
 
-
 Ackowledgements
-~~~~~~~~~~~~~~~
-- `Stefan Seemayer`_
-- `BioPython`_
++++++++++++++++
+- `Stefan Seemayer <https://github.com/sseemayer>`_
+- `BioPython <https://www.biopython.org>`_
 
 
-
-.. _BioPython: https://www.biopython.org
-.. _CCP4: http://www.ccp4.ac.uk
-.. _CCP-EM: http://www.ccpem.ac.uk
-.. _ConKit's documentation: http://www.conkit.org
 .. _GitHub Issue Tracker: https://github.com/fsimkovic/conkit/issues
-.. _Stefan Seemayer: https://github.com/sseemayer
