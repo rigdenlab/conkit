@@ -644,15 +644,18 @@ class ContactMap(Entity):
         ax.set_ylabel(label)
 
         # Allow dynamic x and y limits
-        min_res_seq = numpy.min(self_data.ravel()) - 5
-        max_res_seq = numpy.max(self_data.ravel()) + 5
+        min_res_seq = numpy.min(self_data.ravel())
+        max_res_seq = numpy.max(self_data.ravel())
         if other:
-            min_res_seq = numpy.min(numpy.append(self_data.ravel(), other_data.ravel())) - 5
-            max_res_seq = numpy.max(numpy.append(self_data.ravel(), other_data.ravel())) + 5
-        ax.set_xlim(min_res_seq, max_res_seq)
-        ax.set_ylim(min_res_seq, max_res_seq)
+            min_res_seq = numpy.min(numpy.append(self_data.ravel(), other_data.ravel()))
+            max_res_seq = numpy.max(numpy.append(self_data.ravel(), other_data.ravel()))
+        ax.set_xlim(min_res_seq - 0.5, max_res_seq + 0.5)
+        ax.set_ylim(min_res_seq - 0.5, max_res_seq + 0.5)
 
-        # fig.tight_layout()
+        # Set the xticks and yticks dynamically
+        tick_range = numpy.arange(min_res_seq, max_res_seq, 10)
+        ax.set_xticks(tick_range)
+        ax.set_yticks(tick_range)
 
         _, file_extension = file_name.rsplit('.', 1)
         if file_extension != file_format:
