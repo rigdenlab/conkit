@@ -1,7 +1,7 @@
 .. _file_formats:
 
-Table of File Formats
-=====================
+Table of available file formats
+===============================
 
 The following table contains the various different file formats currently implemented in ConKit.
 
@@ -51,7 +51,7 @@ The following table contains the various different file formats currently implem
 +                    +------------------------+-----------------------------------------------------------+
 |                    | Stockholm              | ``stockholm``                                             |
 +--------------------+------------------------+-----------------------------------------------------------+
-| :sup:`*` These formats do not have a :func:`write` function.                                            |
+| :sup:`*` These formats do not have a :func:`conkit.io.write` function.                                  |
 |                                                                                                         |
 | :sup:`a` The ``a3m-inserts`` keyword stores the alignment including insert states.                      |
 |                                                                                                         |
