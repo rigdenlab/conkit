@@ -8,6 +8,10 @@ Documentation
    :Release: |version|
    :Date: |today|
 
+.. toctree::
+   :maxdepth: 1
+
+   formats
 
 .. toctree:: 
    :maxdepth: 2
