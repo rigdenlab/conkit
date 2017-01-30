@@ -91,7 +91,7 @@ Great, now we have generated a sequence alignment, which is stored in the filena
 
 The above command results in a final alignment which is nearly ready to be subjected to CCMpred for contact prediction. However, CCMpred does not like the A3M format the HHblits produced. Thus, we need to convert it into a format that CCMpred recognizes. This is the point where ConKit's main functionality comes in, the conversion of files.
 
-First, we need to create file handlers for the input and output files. Then we can parse them to the ConKit I/O package for conversion, whereby we need to specify the input format, here ``a3m`` and output format ``jones``. For a full list of file fo    rmats available, head over to the :ref:`file_formats`.
+First, we need to create file handlers for the input and output files. Then we can parse them to the ConKit I/O package for conversion, whereby we need to specify the input format, here ``a3m`` and output format ``jones``. For a full list of file formats available, head over to the :ref:`file_formats`.
 
 .. code-block:: python
   
