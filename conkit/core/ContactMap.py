@@ -511,11 +511,12 @@ class ContactMap(Entity):
 
         # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
+
         # Adjust true and false positive statuses
-        for self_contact, other_contact in itertools.product(contact_map1, contact_map2):
-            if self_contact.res1_seq == other_contact.res1_altseq \
-                    and self_contact.res2_seq == other_contact.res2_altseq:
-                self_contact.status = other_contact.status
+        for other_contact in contact_map2:
+            id = (other_contact.res1_altseq, other_contact.res2_altseq)
+            if id in contact_map1:
+                contact_map1[id].status = other_contact.status
 
         # ================================================================
         # 3. Remove unmatched contacts
