@@ -33,6 +33,7 @@ needs_sphinx = '1.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.autosummary', 
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
@@ -149,8 +150,9 @@ html_theme_options = {
     'navbar_links': [
         ('Home', 'index'),
         ('Installation', 'install'),
-        ('Examples', 'examples'),
+#        ('Examples', 'examples'),
         ('Documentation', 'contents'),
+        ('Formats', 'formats'),
     ],
     # Render the next and previous page links in navbar. 
     'navbar_sidebarrel': False,
