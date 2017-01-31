@@ -13,6 +13,21 @@ import time
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
+DESCRIPTION = """
+Run a simple contact prediction pipeline using
+
+   - HHblits for Sequence Alignment generation, and
+   - CCMpred for Direct Coupling Analysis.
+
+*** The two programs above need to be installed separately ***
+
+File format options are:
+
+    Contact files: [{0}]
+
+""".format(' '.join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())))
+
+
 
 def add_default_args(parser):
     """Define default arguments"""
@@ -24,6 +39,7 @@ def add_alignment_args(subparsers):
     """Parser with alignment as starting point"""
     from_alignment_subparser = subparsers.add_parser('alignment')
     add_default_args(from_alignment_subparser)
+    from_alignment_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
     from_alignment_subparser.add_argument('alignment_file', help='Path to alignment file')
     from_alignment_subparser.add_argument('alignment_format', help='Alignment format')
     from_alignment_subparser.set_defaults(which='alignment')
@@ -34,7 +50,9 @@ def add_sequence_args(subparsers):
     from_sequence_subparser = subparsers.add_parser('sequence')
     add_default_args(from_sequence_subparser)
     from_sequence_subparser.add_argument('--nodca', default=False, action='store_true',
-                                         help='Disable Direct Coupling Analysis')
+                                         help=argparse.SUPPRESS)
+    from_sequence_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
+    from_sequence_subparser.add_argument('hhblits', help='Path to the HHblits executable')
     from_sequence_subparser.add_argument('hhblitsdb', help='Path to HHblits database')
     from_sequence_subparser.add_argument('sequence_file', help='Path to sequence file')
     from_sequence_subparser.add_argument('sequence_format', help='Sequence format')
@@ -46,7 +64,7 @@ def main():
     # ==========================
     # Obtain options
     # ==========================
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_alignment_args(subparsers)
@@ -81,6 +99,7 @@ def main():
             jon_fname = aln_fname
 
     elif args.which == 'sequence':
+        hhblits = os.path.abspath(args.hhblits)
         hhblitsdb = os.path.abspath(args.hhblitsdb)
         seq_fname = os.path.abspath(args.sequence_file)
         seq_format = args.sequence_format.lower()
@@ -104,7 +123,8 @@ def main():
             seq_fname = seq_fname_tmp
 
         # Generate a multiple sequence alignment
-        hhblits_cline = conkit.applications.HHblitsCommandLine(input=seq_fname, output=hhr_fname,
+        hhblits_cline = conkit.applications.HHblitsCommandLine(cmd=hhblits,
+                                                               input=seq_fname, output=hhr_fname,
                                                                database=hhblitsdb, oa3m=a3m_fname,
                                                                niterations=3, id=99, show_all=True,
                                                                cov=60, diff='inf', maxfilt=500000)
@@ -133,8 +153,10 @@ def main():
         return 0
 
     # Use the re-formatted alignment for contact prediction
+    ccmpred = args.ccmpred
     matrix_fname = os.path.join(args.wdir, args.prefix + '.mat')
-    ccmpred_cline = conkit.applications.CCMpredCommandLine(alnfile=jon_fname, matfile=matrix_fname, 
+    ccmpred_cline = conkit.applications.CCMpredCommandLine(cmd=ccmpred,
+                                                           alnfile=jon_fname, matfile=matrix_fname,
                                                            threads=2, renormalize=True)
     logging.info('Executing: {0}'.format(ccmpred_cline))
     if args.demo:
