@@ -46,7 +46,7 @@ Key Features
 
 Installation & Usage
 ++++++++++++++++++++
-Please refer to `ConKit's documentation <http://www.conkit.org>`_.
+Please refer to `ConKit's documentation <http://www.conkit.org/en/latest/install.html>`_.
 
 Contributing
 ++++++++++++
