@@ -12,6 +12,10 @@ The following table contains the various different file formats currently implem
 *Keyword*
     the keyword to be used in ConKit
 
+.. note::
+
+   If you would like your data format to appear in the table below, please contact us via `GitHub <https://github.com/fsimkovic/conkit/issues>`_.
+
 +--------------------+------------------------+-----------------------------------------------------------+
 | Type               | Format                 | Keyword                                                   |
 +====================+========================+===========================================================+
@@ -58,6 +62,3 @@ The following table contains the various different file formats currently implem
 | :sup:`b` The ``jones`` format corresponds to one sequence per line without sequence header information. |
 |                                                                                                         |
 +--------------------+------------------------+-----------------------------------------------------------+
-
-.. note::
-   If you would like your data format to appear in the list above, please contact us via `GitHub <https://github.com/fsimkovic/conkit/issues>`_.
