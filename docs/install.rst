@@ -3,8 +3,10 @@
 Installation
 ============
 
-Python Package Index (PyPi)
----------------------------
+This page contains information on how to install ConKit on your local machine or server. A number of different options exist; however, note that the installation via the :ref:`Python Package Index` remains to be the recommended and simplest.
+
+Python Package Index
+~~~~~~~~~~~~~~~~~~~~
 The easiest way to install ConKit is via `easy_install` or `pip`. To do so, simply run the following command on your command line and you are ready to go.
 
 To install using `easy_install`:
@@ -20,10 +22,11 @@ To install using `pip`:
    $> pip install conkit
 
 .. note::
+
    The executable scripts are automatically installed in your default ``bin`` directory. There is nothing more that you need to do.
 
 Source Code
------------
+~~~~~~~~~~~
 
 If you would like to install ConKit from source, download the `latest version <https://github.com/fsimkovic/conkit/releases>`_ from the GitHub repository. Then, use the following commands to install ConKit.
 
@@ -47,13 +50,15 @@ If this has completed successfully, you are good to go and you can now install C
 ConKit is now successfully installed in your system's default Python.
 
 .. note::
-   Similarly to the ``PyPi`` install, the executable scripts are automatically installed.
+
+   Similarly to the :ref:`Python Package Index` install, the executable scripts are automatically installed.
 
 External software
------------------
+~~~~~~~~~~~~~~~~~
 
 .. note::
-   If you install ConKit via PyPi, the dependencies are automatically installed for you!
+
+   If you install ConKit via the :ref:`Python Package Index`, the dependencies are automatically installed for you!
 
 Required dependencies
 +++++++++++++++++++++
@@ -78,4 +83,5 @@ CCMpred
    `Download CCMpred <https://github.com/soedinglab/CCMpred>`_
 
 .. warning::
+
    Without the optional dependencies, your ConKit installation will be limited. Features not available will include the calculation of the number of effective sequences, data visualisation and the execution of the ``conkit.predict`` script.
