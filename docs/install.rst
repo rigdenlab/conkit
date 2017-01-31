@@ -3,19 +3,21 @@
 Installation
 ============
 
-PyPi
-----
-The easiest way to install ConKit is via ``easy_install`` or ``pip``. To do so, simply run the following command on your command line and you are ready to go.
+Python Package Index (PyPi)
+---------------------------
+The easiest way to install ConKit is via `easy_install` or `pip`. To do so, simply run the following command on your command line and you are ready to go.
+
+To install using `easy_install`:
+
+.. code-block:: bash
+
+   $> easy_install conkit
+
+To install using `pip`:
 
 .. code-block:: bash
 
    $> pip install conkit
-
-If you would like to install ConKit manually into a project with a custom Python interpreter, then install it using the command below. For example, if you would want to manually install ConKit into your CCP4 distribution:
-
-.. code-block:: bash
-
-   $> ccp4-python -m pip install conkit
 
 .. note::
    The executable scripts are automatically installed in your default ``bin`` directory. There is nothing more that you need to do.
@@ -70,6 +72,10 @@ SciPy 0.16 (or later)
   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
 Matplotlib 1.3.1 (or later)
   `Download matplotlib <http://matplotlib.org/users/installing.html>`_
+HHblits
+   `Download HHblits <https://github.com/soedinglab/hh-suite>`_
+CCMpred
+   `Download CCMpred <https://github.com/soedinglab/CCMpred>`_
 
 .. warning::
-   Without the optional dependencies, your ConKit installation will be limited. Features not available will include the calculation of the number of effective sequences and data visualisation.
+   Without the optional dependencies, your ConKit installation will be limited. Features not available will include the calculation of the number of effective sequences, data visualisation and the execution of the ``conkit.predict`` script.
