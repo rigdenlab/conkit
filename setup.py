@@ -30,7 +30,7 @@ setup(
     packages=find_packages(exclude="tests"),
     scripts=[script for script in glob.glob("scripts/*")],
     platforms=['Linux', 'Mac OS-X', 'Unix'],
-    install_requires=['biopython >=1.64', 'matplotlib >=1.3.1', 'numpy >=1.8.2', 'scipy >=0.16.0'],
+    install_requires=['numpy >=1.8.2', 'scipy >=0.16.0', 'biopython >=1.64', 'matplotlib >=1.3.1'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
@@ -40,6 +40,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     test_suite='nose.collector',
