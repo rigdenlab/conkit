@@ -12,7 +12,9 @@ import sys
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 DESCRIPTION = """
-Analyse a Multiple Sequence Alignment
+This script analyses a Multiple Sequence Alignment. It provides you estimates
+about the quality, which will allow you to determine its usefulness for covariance-
+based contact prediction.
 
 File format options are:
 
@@ -24,8 +26,8 @@ File format options are:
 def main():
     parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-id', default=0.7, type=float, help='sequence identity [default: 0.7]')
-    parser.add_argument('msafile')
-    parser.add_argument('msaformat')
+    parser.add_argument('msafile', help='Multiple Sequence Alignment file')
+    parser.add_argument('msaformat', help='Multiple Sequence Alignment format')
     args = parser.parse_args()
     
     # Compute all the data
@@ -33,13 +35,16 @@ def main():
     seq_len = hierarchy.top_sequence.seq_len
     nseqs = hierarchy.nseqs
     meff = hierarchy.calculate_meff(identity=args.id)
+    plot = args.msafile.rsplit('.', 1)[0] + '.png'
+    hierarchy.plot_freq(file_format='png', file_name=plot)
     
-    logging.info('File: {0}'.format(args.msafile))
-    logging.info('Format: {0}'.format(args.msaformat))
-    logging.info('Seq ID: {0}'.format(args.id))
-    logging.info('Seq Len: {0}'.format(seq_len))
-    logging.info('N seqs: {0}'.format(nseqs))
-    logging.info('M eff: {0}'.format(meff))
+    logging.info('Input MSA File:                   {0}'.format(args.msafile))
+    logging.info('Input MSA Format:                 {0}'.format(args.msaformat))
+    logging.info('Sequence Identity Threshold:      {0}'.format(args.id))
+    logging.info('Length of the Target Sequence:    {0}'.format(seq_len))
+    logging.info('Total Number of Sequences:        {0}'.format(nseqs))
+    logging.info('Number of Effective Sequences:    {0}'.format(meff))
+    logging.info('Sequence Coverage Plot:           {0}'.format(plot))
 
     return 0
 
