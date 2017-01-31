@@ -1,15 +1,5 @@
-# The requirements needed by ConKit
-#       
-# You can install all dependencies in one go:
-#     pip install -r requirements.txt
-#
-biopython>=1.64
-matplotlib>=1.3.1
-numpy>=1.8.2
-scipy>=0.16.0
-
 # Required for documentation
-sphinx==1.4.1
+sphinx>=1.5.1
 ipython
 numpydoc
 sphinx_bootstrap_theme
