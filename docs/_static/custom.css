@@ -6,3 +6,7 @@
 .nav > li > a {
     padding: 15px 30px 15px 0px !important;
 }
+
+dd {
+    margin-left: 30px !important;
+}
