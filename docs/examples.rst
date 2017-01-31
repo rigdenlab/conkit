@@ -31,11 +31,19 @@ This folder contains pre-computed data to illustrate the use of ConKit.
 Examples
 --------
 
-:ref:`example_file_conversion`
-   An example to illustrate how to convert file formats using ConKit
++-------------------------------------------------------------------------------------------------+
+| :ref:`example_file_conversion`                                                                  |
+|    An example to illustrate how to convert file formats using ConKit                            |
++-------------------------------------------------------------------------------------------------+
+| :ref:`example_analyse_msa`                                                                      |
+|    An example to illustrate how to analyse a Multiple Sequence Alignment using ConKit           |
++-------------------------------------------------------------------------------------------------+
+| :ref:`example_predict_pipeline`                                                                 |
+|    An example to illustrate how to predict contacts using ConKit                                |
++-------------------------------------------------------------------------------------------------+
 
-:ref:`example_analyse_msa`
-   An example to illustrate how to analyse a Multiple Sequence Alignment using ConKit
+
+
 
 .. note::
    If you would like an example for a different aspect of ConKit, please let us know in the `GitHub Issue Tracker <https://github.com/fsimkovic/conkit/issues>`_.
