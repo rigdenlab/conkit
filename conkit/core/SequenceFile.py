@@ -314,26 +314,27 @@ class SequenceFile(Entity):
         residues = numpy.arange(1, self.top_sequence.seq_len + 1)
         aa_frequencies = numpy.asarray(self.calculate_freq()) * self.top_sequence.seq_len
 
-        fig, ax = matplotlib.pyplot.subplots(figsize=(8, 3), dpi=600)
-        ax.plot(residues, aa_frequencies, color='#000000', marker='.', linestyle='-')
+        fig, ax = matplotlib.pyplot.subplots(dpi=600)
+        ax.plot(residues, aa_frequencies, color='#000000', marker='.', linestyle='-',
+                label='Amino acid count')
 
-        ax.axhline(self.top_sequence.seq_len * 0.3, color='r')
-        ax.annotate('30%', xy=(residues[-10], self.top_sequence.seq_len * 0.27),
-                    xytext=(residues[-1] + 2, self.top_sequence.seq_len * 0.27))
-
-        ax.axhline(self.top_sequence.seq_len * 0.6, color='g')
-        ax.annotate('60%', xy=(residues[-10], self.top_sequence.seq_len * 0.67),
-                    xytext=(residues[-1] + 2, self.top_sequence.seq_len * 0.67))
+        ax.axhline(self.top_sequence.seq_len * 0.3, color='r', label='30% Coverage')
+        ax.axhline(self.top_sequence.seq_len * 0.6, color='g', label='60% Coverage')
 
         # Prettify the plot
         ax.set_xlabel('Residue number')
         ax.set_ylabel('Sequence Count')
+        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                  ncol=3, mode="expand", borderaxespad=0., frameon=None)
+
+        ax.set(aspect=0.3)
+        fig.tight_layout()
 
         _, file_extension = file_name.rsplit('.', 1)
         if file_extension != file_format:
             raise ValueError('File extension and file format have to be identical: '
                              '{0} - {1} are not'.format(file_extension, file_format))
-        fig.savefig(file_name, format=file_format.lower())
+        fig.savefig(file_name, format=file_format.lower(), bbox_inches='tight')
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`conkit.core.SequenceFile`
