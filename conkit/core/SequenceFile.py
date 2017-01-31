@@ -253,6 +253,10 @@ class SequenceFile(Entity):
         RuntimeError
            :obj:`conkit.core.SequenceFile` is not an alignment
 
+        See Also
+        --------
+        plot_freq
+
         """
         if not self.is_alignment:
             raise ValueError('This is not an alignment')
@@ -261,11 +265,75 @@ class SequenceFile(Entity):
             [numpy.fromstring(sequence_entry.seq, dtype='uint8') for sequence_entry in self], dtype='uint8'
         )
         # matrix of 0s and 1s; 1 if char is '-'
-        frequencies = numpy.where(msa_mat != 45, 1, 0)
+        aa_frequencies = numpy.where(msa_mat != 45, 1, 0)
         # sum all values per row
-        gap_counts = numpy.sum(frequencies, axis=0)
+        aa_counts = numpy.sum(aa_frequencies, axis=0)
         # divide all by sequence length
-        return (gap_counts / len(msa_mat.T[0])).tolist()
+        return (aa_counts / len(msa_mat.T[0])).tolist()
+
+    def plot_freq(self, file_format='png', file_name='freqcount.png'):
+        """Plot the gap frequency in each alignment column
+
+        This function calculates and plots the frequence of gaps at
+        each position in the Multiple Sequence Alignment.
+
+        Parameters
+        ----------
+        file_format : str, optional
+           Plot figure format. See :func:`matplotlib.pyplot.savefig` for options  [default: png]
+        file_name : str, optional
+           File name to which the alignment frequency plot will be printed  [default: freqcount.png]
+
+        Warnings
+        --------
+        If the ``file_name`` variable is not changed, the current file will be
+        continuously overwritten.
+
+        Raises
+        ------
+        MemoryError
+           Too many sequences in the alignment
+        RuntimeError
+           :obj:`conkit.core.SequenceFile` is not an alignment
+        RuntimeError
+           Matplotlib not installed
+
+        See Also
+        --------
+        calculate_freq
+
+        """
+        # Import better suited here to avoid importing it every time ConKit is loaded
+        try:
+            import matplotlib
+            matplotlib.use('Agg')
+            import matplotlib.pyplot
+        except ImportError:
+            raise RuntimeError('Dependency not found: matplotlib')
+
+        residues = numpy.arange(1, self.top_sequence.seq_len + 1)
+        aa_frequencies = numpy.asarray(self.calculate_freq()) * self.top_sequence.seq_len
+
+        fig, ax = matplotlib.pyplot.subplots(figsize=(8, 3), dpi=600)
+        ax.plot(residues, aa_frequencies, color='#000000', marker='.', linestyle='-')
+
+        ax.axhline(self.top_sequence.seq_len * 0.3, color='r')
+        ax.annotate('30%', xy=(residues[-10], self.top_sequence.seq_len * 0.27),
+                    xytext=(residues[-1] + 2, self.top_sequence.seq_len * 0.27))
+
+        ax.axhline(self.top_sequence.seq_len * 0.6, color='g')
+        ax.annotate('60%', xy=(residues[-10], self.top_sequence.seq_len * 0.67),
+                    xytext=(residues[-1] + 2, self.top_sequence.seq_len * 0.67))
+
+        # Prettify the plot
+        ax.set_xlabel('Residue number')
+        ax.set_ylabel('Sequence Count')
+
+        _, file_extension = file_name.rsplit('.', 1)
+        if file_extension != file_format:
+            raise ValueError('File extension and file format have to be identical: '
+                             '{0} - {1} are not'.format(file_extension, file_format))
+        fig.savefig(file_name, format=file_format.lower())
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`conkit.core.SequenceFile`
