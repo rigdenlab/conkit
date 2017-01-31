@@ -79,6 +79,8 @@ Matplotlib 1.3.1 (or later)
   `Download matplotlib <http://matplotlib.org/users/installing.html>`_
 HHblits
    `Download HHblits <https://github.com/soedinglab/hh-suite>`_
+HHblits Database
+   `Download HHblits Database <http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs>`_
 CCMpred
    `Download CCMpred <https://github.com/soedinglab/CCMpred>`_
 
