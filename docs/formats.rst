@@ -3,18 +3,20 @@
 Table of available file formats
 ===============================
 
-The following table contains the various different file formats currently implemented in ConKit.
-
-*Type*
-    the type of information the file contains
-*Format*
-    the source of the file
-*Keyword*
-    the keyword to be used in ConKit
-
 .. note::
 
    If you would like your data format to appear in the table below, please contact us via `GitHub <https://github.com/fsimkovic/conkit/issues>`_.
+
+
+The following table contains the various different file formats currently implemented in ConKit.
+
+*Type*
+    The type of information the file contains
+*Format*
+    The source of the file
+*Keyword*
+    The keyword to be used in ConKit
+
 
 +--------------------+------------------------+-----------------------------------------------------------+
 | Type               | Format                 | Keyword                                                   |
