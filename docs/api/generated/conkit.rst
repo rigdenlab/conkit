@@ -21,4 +21,5 @@ Submodules
 .. toctree::
 
    conkit.constants
+   conkit.plot
 

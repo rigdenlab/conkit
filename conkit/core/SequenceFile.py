@@ -271,7 +271,7 @@ class SequenceFile(Entity):
         # divide all by sequence length
         return (aa_counts / len(msa_mat.T[0])).tolist()
 
-    def plot_freq(self, file_format='png', file_name='freqcount.png'):
+    def plot_freq(self, **kwargs):
         """Plot the gap frequency in each alignment column
 
         This function calculates and plots the frequence of gaps at
@@ -282,12 +282,13 @@ class SequenceFile(Entity):
         file_format : str, optional
            Plot figure format. See :func:`matplotlib.pyplot.savefig` for options  [default: png]
         file_name : str, optional
-           File name to which the alignment frequency plot will be printed  [default: freqcount.png]
+           File name to which the plot will be printed  [default: seqcov.png]
 
         Warnings
         --------
-        If the ``file_name`` variable is not changed, the current file will be
-        continuously overwritten.
+        * If the ``file_name`` variable is not changed, the current file will be
+          continuously overwritten.
+        * This function has been moved to :func:`conkit.plot.sequence_coverage`.
 
         Raises
         ------
@@ -303,38 +304,10 @@ class SequenceFile(Entity):
         calculate_freq
 
         """
-        # Import better suited here to avoid importing it every time ConKit is loaded
-        try:
-            import matplotlib
-            matplotlib.use('Agg')
-            import matplotlib.pyplot
-        except ImportError:
-            raise RuntimeError('Dependency not found: matplotlib')
-
-        residues = numpy.arange(1, self.top_sequence.seq_len + 1)
-        aa_frequencies = numpy.asarray(self.calculate_freq()) * self.top_sequence.seq_len
-
-        fig, ax = matplotlib.pyplot.subplots(dpi=600)
-        ax.plot(residues, aa_frequencies, color='#000000', marker='.', linestyle='-',
-                label='Amino acid count')
-
-        ax.axhline(self.top_sequence.seq_len * 0.3, color='r', label='30% Coverage')
-        ax.axhline(self.top_sequence.seq_len * 0.6, color='g', label='60% Coverage')
-
-        # Prettify the plot
-        ax.set_xlabel('Residue number')
-        ax.set_ylabel('Sequence Count')
-        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                  ncol=3, mode="expand", borderaxespad=0., frameon=None)
-
-        ax.set(aspect=0.3)
-        fig.tight_layout()
-
-        _, file_extension = file_name.rsplit('.', 1)
-        if file_extension != file_format:
-            raise ValueError('File extension and file format have to be identical: '
-                             '{0} - {1} are not'.format(file_extension, file_format))
-        fig.savefig(file_name, format=file_format.lower(), bbox_inches='tight')
+        import warnings
+        warnings.warn("This method will be removed in a future release, use conkit.plot.sequence_coverage() instead")
+        import conkit.plot
+        conkit.plot.sequence_coverage(self, **kwargs)
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`conkit.core.SequenceFile`

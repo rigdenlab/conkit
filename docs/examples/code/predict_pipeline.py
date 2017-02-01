@@ -35,9 +35,9 @@ print("Total Number of Sequences:        %d" % msa.nseqs)
 print("Number of Effective Sequences:    %d" % msa.calculate_meff())
 
 # Plot the amino acid coverage per position in the alignment
-freq_plot_file = "toxd/toxd.freq.png"
-msa.plot_freq(file_name=freq_plot_file)
-print("Sequence Coverage Plot:           %s" % freq_plot_file)
+seq_cov_file = "toxd/toxd.freq.png"
+conkit.plot.sequence_coverage(msa, file_name=seq_cov_file)
+print("Sequence Coverage Plot:           %s" % seq_cov_file)
 
 # Convert the alignment into a CCMpred-readable format
 jones_file = "toxd/toxd.jones"
@@ -56,7 +56,7 @@ conpred.remove_neighbors(inplace=True)                  # Remove contacts of nei
 conpred.sort("raw_score", reverse=True, inplace=True)   # Sort the list of contacts by their score
 conpred = conpred[:30]                                  # Slice the contact map
 contact_map_file = "toxd/toxd.map.png"
-conpred.plot_map(file_name=contact_map_file)
+conkit.plot.contact_map(conpred, file_name=contact_map_file)
 
 # Convert the contact prediction to a standardised format
 casp_file = "toxd/toxd.rr"

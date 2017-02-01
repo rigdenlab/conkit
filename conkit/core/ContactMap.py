@@ -9,12 +9,10 @@ __credits__ = "Jens Thomas"
 __date__ = "03 Aug 2016"
 __version__ = 0.1
 
-from conkit import constants
 from conkit.core.Entity import Entity
 from conkit.core.Sequence import Sequence
 
 import collections
-import itertools
 import numpy
 import warnings
 
@@ -559,7 +557,7 @@ class ContactMap(Entity):
 
         return contact_map
 
-    def plot_map(self, other=None, reference=None, altloc=False, file_format='png', file_name='contactmap.png'):
+    def plot_map(self, **kwargs):
         """Produce a 2D contact map plot
 
         Parameters
@@ -577,8 +575,9 @@ class ContactMap(Entity):
 
         Warnings
         --------
-        If the ``file_name`` variable is not changed, the current file will be
-        continuously overwritten.
+        * If the ``file_name`` variable is not changed, the current file will be
+          continuously overwritten.
+        * This function has been moved to :func:`conkit.plot.contact_map`.
 
         Raises
         ------
@@ -586,82 +585,10 @@ class ContactMap(Entity):
            Matplotlib not installed
 
         """
-        # Import better suited here to avoid importing it every time ConKit is loaded
-        try:
-            import matplotlib
-            matplotlib.use('Agg')
-            import matplotlib.pyplot
-        except ImportError:
-            raise RuntimeError('Dependency not found: matplotlib')
-
-        fig, ax = matplotlib.pyplot.subplots(figsize=(5, 5), dpi=600)
-        markersize = 10 
-
-        # Plot the other_ref contacts
-        if reference:
-            if altloc:
-                reference_data = numpy.asarray([(c.res1_altseq, c.res2_altseq)
-                                                for c in reference if c.is_true_positive])
-            else:
-                reference_data = numpy.asarray([(c.res1_seq, c.res2_seq)
-                                                for c in reference if c.is_true_positive])
-            reference_colors = [constants.RFCOLOR for _ in range(len(reference_data))]
-            ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
-                       marker='.', s=markersize, edgecolor='none', linewidths=0.0)
-            ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
-                       marker='.', s=markersize, edgecolor='none', linewidths=0.0)
-
-        # Plot the self contacts
-        self_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in self])
-        self_colors = [
-            constants.TPCOLOR if contact.is_true_positive
-            else constants.FPCOLOR if contact.is_false_positive
-            else constants.NTCOLOR for contact in self
-        ]
-        # This is the bottom triangle
-        ax.scatter(self_data.T[1], self_data.T[0], color=self_colors,
-                   marker='.', s=markersize, edgecolor='none', linewidths=0.0)
-
-        # Plot the other contacts
-        if other:
-            other_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in other])
-            other_colors = [
-                constants.TPCOLOR if contact.is_true_positive
-                else constants.FPCOLOR if contact.is_false_positive
-                else constants.NTCOLOR for contact in other
-            ]
-            # This is the upper triangle
-            ax.scatter(other_data.T[0], other_data.T[1], color=other_colors,
-                    marker='.', s=markersize, edgecolor='none', linewidths=0.0)
-        else:
-            # This is the upper triangle
-            ax.scatter(self_data.T[0], self_data.T[1], color=self_colors,
-                               marker='.', s=markersize, edgecolor='none', linewidths=0.0)
-
-        # Prettify the plot
-        label = 'Residue number'
-        ax.set_xlabel(label)
-        ax.set_ylabel(label)
-
-        # Allow dynamic x and y limits
-        min_res_seq = numpy.min(self_data.ravel())
-        max_res_seq = numpy.max(self_data.ravel())
-        if other:
-            min_res_seq = numpy.min(numpy.append(self_data.ravel(), other_data.ravel()))
-            max_res_seq = numpy.max(numpy.append(self_data.ravel(), other_data.ravel()))
-        ax.set_xlim(min_res_seq - 0.5, max_res_seq + 0.5)
-        ax.set_ylim(min_res_seq - 0.5, max_res_seq + 0.5)
-
-        # Set the xticks and yticks dynamically
-        tick_range = numpy.arange(min_res_seq, max_res_seq, 10)
-        ax.set_xticks(tick_range)
-        ax.set_yticks(tick_range)
-
-        _, file_extension = file_name.rsplit('.', 1)
-        if file_extension != file_format:
-            raise ValueError('File extension and file format have to be identical: '
-                             '{0} - {1} are not'.format(file_extension, file_format))
-        fig.savefig(file_name, format=file_format.lower())
+        import warnings
+        warnings.warn("This method will be removed in a future release, use conkit.plot.frequency() instead")
+        import conkit.plot
+        conkit.plot.contact_map(self, **kwargs)
 
     def rescale(self, inplace=False):
         """Rescale the raw scores in :obj:`conkit.core.ContactMap`

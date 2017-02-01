@@ -8,6 +8,7 @@ from conkit import applications
 from conkit import constants
 from conkit import core
 from conkit import io
+from conkit import plot
 from conkit import _version
 
 __author__ = "Felix Simkovic"
