@@ -38,12 +38,15 @@ Examples
 | :ref:`example_analyse_msa`                                                                      |
 |    An example to illustrate how to analyse a Multiple Sequence Alignment using ConKit           |
 +-------------------------------------------------------------------------------------------------+
+| :ref:`example_plotting_a_map`                                                                   |
+|    An example to illustrate how to produce a contact map using ConKit                           |
++-------------------------------------------------------------------------------------------------+
 | :ref:`example_predict_pipeline`                                                                 |
 |    An example to illustrate how to predict contacts using ConKit                                |
 +-------------------------------------------------------------------------------------------------+
-
-
-
+| :ref:`example_construct_hierarchy`                                                              |
+|    An example to illustrate how to manually construct a ConKit hierarchy                        |
++-------------------------------------------------------------------------------------------------+
 
 .. note::
    If you would like an example for a different aspect of ConKit, please let us know in the `GitHub Issue Tracker <https://github.com/fsimkovic/conkit/issues>`_.
