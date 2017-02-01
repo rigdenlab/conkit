@@ -180,7 +180,7 @@ def main():
 
     # Use the ccmpred parser to write a contact file
     casprr_fname = os.path.join(args.wdir, args.prefix + '.rr')
-    conkit.io.write(casprr_fname, 'casprr', cmap)
+    conkit.io.convert(matrix_fname, 'ccmpred', casprr_fname, 'casprr')
     logging.info('Final prediction file: {0}'.format(casprr_fname))
 
     return 0

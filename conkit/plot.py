@@ -118,7 +118,7 @@ def contact_map(hierarchy, other=None, reference=None, altloc=False, dpi=300,
     # Allow dynamic x and y limits
     min_res_seq = numpy.min(self_data.ravel())
     max_res_seq = numpy.max(self_data.ravel())
-    if other and other_data:
+    if other:
         min_res_seq = numpy.min(numpy.append(self_data.ravel(), other_data.ravel()))
         max_res_seq = numpy.max(numpy.append(self_data.ravel(), other_data.ravel()))
     ax.set_xlim(min_res_seq - 0.5, max_res_seq + 0.5)

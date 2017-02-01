@@ -1,7 +1,7 @@
 .. _example_constructing_a_hierarchy:
 
 Hierarchy Construction
-======================
+----------------------
 
 .. note::
    The easiest way to construct a contact file hierarchy is to choose the corresponding parser.

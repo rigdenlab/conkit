@@ -63,5 +63,5 @@ print("Contact Map Plot:                 %s" % contact_map_file)
 
 # Convert the contact prediction to a standardised format
 casp_file = "toxd/toxd.rr"
-conkit.io.write(casp_file, "casprr", conpred)
+conkit.io.convert(mat_file, "ccmpred", casp_file, "casprr")
 print("Final Contact Prediction File:    %s" % casp_file)

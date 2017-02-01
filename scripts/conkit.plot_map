@@ -12,8 +12,17 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-DESCRIPTION = """
-Plot a simple contact map
+DESCRIPTION = u"""
+This script will plot a contact map using the provided contacts
+alongside any additional information.
+
+If you provide a reference structure, the true positive contacts
+are identified by a distance of <8\u212B between C\u03B2-C\u03B2 atoms.
+
+!!! IMPORTANT
+=============
+If contacts cannot be matched between your prediction and the
+reference structure, they will not be plotted.
 
 File format options are:
 
@@ -24,60 +33,93 @@ File format options are:
 
 def main():
     parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-c', dest='pdbchain', default=None, help='PDB chain to use [default: first in file]. Inter-molecular predictions use two letter convention, i.e AD for contacts between A and D.')
-    parser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
-    parser.add_argument('-f', dest='dfactor', default=1.0, type=float, help='number of contacts to include relative to sequence length [default: 1.0]')
-    parser.add_argument('-p', dest='pdbfile', default=None, type=str)
-    parser.add_argument('--interchain', action="store_true", default=False, help='Plot inter-chain contacts')
-    parser.add_argument('seqfile')
-    parser.add_argument('seqformat')
-    parser.add_argument('confile')
-    parser.add_argument('conformat')
+    parser.add_argument('-c', dest='pdbchain', default=None,
+                        help='PDB chain to use [default: first in file]. Inter-molecular '
+                             'predictions use two letter convention, i.e AD for contacts between A and D.')
+    parser.add_argument('-d', dest='dtn', default=5, type=int,
+                        help='Minimum sequence separation [default: 5]')
+    parser.add_argument('-e', dest='otherfile', default=None,
+                        help='a second contact map to plot for comparison')
+    parser.add_argument('-ef', dest='otherformat', default=None,
+                        help='the format of the second contact map')
+    parser.add_argument('-f', dest='dfactor', default=1.0, type=float,
+                        help='number of contacts to include relative to sequence length [default: 1.0]')
+    parser.add_argument('-p', dest='pdbfile', default=None, type=str,
+                        help="A reference PDB file")
+    parser.add_argument('--interchain', action="store_true", default=False,
+                        help='Plot inter-chain contacts')
+    parser.add_argument('seqfile',
+                        help="Path to the sequence file")
+    parser.add_argument('seqformat',
+                        help="Format of the sequence file")
+    parser.add_argument('confile',
+                        help="Path to the contact file")
+    parser.add_argument('conformat',
+                        help="Format of the contact file")
     args = parser.parse_args()
     
-    logging.info('This script is experimental for inter-chain contact plotting')
-    
-    seq = conkit.io.read(args.seqfile, args.seqformat)[0]
-    con = conkit.io.read(args.confile, args.conformat)[0]
-    
-    con.sequence = seq
-    con.assign_sequence_register()
+    if args.interchain:
+        logging.info('This script is experimental for inter-chain contact plotting')
 
     logging.info('Distance to neighbors: {0}'.format(args.dtn))
-    con.remove_neighbors(min_distance=args.dtn, inplace=True)
+    logging.info('Contact list cutoff factor: {0}'.format(args.dfactor))
 
+    seq = conkit.io.read(args.seqfile, args.seqformat)[0]
+    con = conkit.io.read(args.confile, args.conformat)[0]
+
+    con.sequence = seq
+    con.assign_sequence_register()
+    con.remove_neighbors(min_distance=args.dtn, inplace=True)
     ncontacts = int(seq.seq_len * args.dfactor)
-    logging.info('Number of contacts: {0}'.format(ncontacts))
     con.sort('raw_score', reverse=True, inplace=True)
     con_sliced = con[:ncontacts]
-    
+
+    if args.otherfile:
+        other = conkit.io.read(args.otherfile, args.otherformat)[0]
+        other.sequence = seq
+        other.assign_sequence_register()
+        other.remove_neighbors(min_distance=args.dtn, inplace=True)
+        other.sort('raw_score', reverse=True, inplace=True)
+        other_sliced = other[:ncontacts]
+    else:
+        other_sliced = None
+
     if args.pdbfile:
         if args.pdbchain:
             pdb = conkit.io.read(args.pdbfile, 'pdb')[args.pdbchain]
         elif args.pdbfile:
             pdb = conkit.io.read(args.pdbfile, 'pdb')[0]
         reference = pdb
-        logging.info('Potentially removing unmatched contact pairs')
         con_matched = con_sliced.match(pdb, renumber=True, remove_unmatched=True)
+        if other_sliced:
+            other_matched = other_sliced.match(pdb, renumber=True, remove_unmatched=True)
+        else:
+            other_matched = other_sliced
     else:
         reference = None
         con_matched = con_sliced
+        other_matched = other_sliced
 
-    altloc=False
-    for contact in con_matched.copy():
-        if contact.res1_chain != contact.res2_chain:
-            logging.debug('Setting altloc to True')
-            altloc = True
-            break
-        if contact.res1_chain == contact.res2_chain and args.interchain:
-            con_matched.remove(contact.id)
-        elif contact.res1_chain != contact.res2_chain and not args.interchain:
-            con_matched.remove(contact.id)
+    def altloc_remove(map):
+        altloc=False
+        for contact in map.copy():
+            if contact.res1_chain != contact.res2_chain:
+                altloc = True
+                break
+            if contact.res1_chain == contact.res2_chain and args.interchain:
+                map.remove(contact.id)
+            elif contact.res1_chain != contact.res2_chain and not args.interchain:
+                map.remove(contact.id)
+        return altloc
+    altloc = altloc_remove(con_matched)
+    if other_matched:
+        altloc = altloc_remove(other_matched)
 
     mapformat = 'pdf'
-    mapfile = os.path.basename(args.confile).rsplit('.', 1)[0] + '.' + mapformat
+    mapfile = args.confile.rsplit('.', 1)[0] + '.' + mapformat
     logging.info('Contact map written in {0} format to: {1}'.format(mapformat.upper(), mapfile))
-    con_matched.plot_map(reference=reference, file_format=mapformat, file_name=mapfile, altloc=altloc)
+    conkit.plot.contact_map(con_matched, other=other_matched, reference=reference,
+                            file_format=mapformat, file_name=mapfile, altloc=altloc)
 
     return 0
 
