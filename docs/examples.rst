@@ -16,20 +16,9 @@ All applicable examples will outline both approaches. However, please do note th
 
    In all examples, we assume that all required and optional dependencies are installed. For a full list, view the :ref:`Installation` page.
 
-Pre-requisite
--------------
-Please download the example data `here <https://github.com/rigdenlab/conkit-examples/archive/master.zip>`_.
+.. note::
 
-Unzip the directory and then move into the directory using the Terminal.
-
-.. code-block:: bash
-
-   $> cd path/to/conkit-examples-master
-
-This folder contains pre-computed data to illustrate the use of ConKit.
-
-Examples
---------
+   Please download the example data `here <https://github.com/rigdenlab/conkit-examples/archive/master.zip>`_. This data will be used throughout all examples described here.
 
 +-------------------------------------------------------------------------------------------------+
 | :ref:`example_file_conversion`                                                                  |
