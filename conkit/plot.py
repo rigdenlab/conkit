@@ -67,7 +67,6 @@ def contact_map(hierarchy, other=None, reference=None, altloc=False, dpi=300,
         raise RuntimeError("Provided reference hierarchy is not a ContactMap")
 
     fig, ax = matplotlib.pyplot.subplots(dpi=dpi)
-    markersize = 10
 
     # Plot the other_ref contacts
     if reference:
@@ -79,9 +78,9 @@ def contact_map(hierarchy, other=None, reference=None, altloc=False, dpi=300,
                                             for c in reference if c.is_true_positive])
         reference_colors = [constants.RFCOLOR for _ in range(len(reference_data))]
         ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
-                   marker='.', s=markersize, edgecolor='none', linewidths=0.0)
+                   marker='.', edgecolor='none', linewidths=0.0)
         ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
-                   marker='.', s=markersize, edgecolor='none', linewidths=0.0)
+                   marker='.', edgecolor='none', linewidths=0.0)
 
     # Plot the self contacts
     self_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in hierarchy])
@@ -92,7 +91,7 @@ def contact_map(hierarchy, other=None, reference=None, altloc=False, dpi=300,
     ]
     # This is the bottom triangle
     ax.scatter(self_data.T[1], self_data.T[0], color=self_colors,
-               marker='.', s=markersize, edgecolor='none', linewidths=0.0)
+               marker='.', edgecolor='none', linewidths=0.0)
 
     # Plot the other contacts
     if other:
@@ -104,16 +103,11 @@ def contact_map(hierarchy, other=None, reference=None, altloc=False, dpi=300,
         ]
         # This is the upper triangle
         ax.scatter(other_data.T[0], other_data.T[1], color=other_colors,
-                   marker='.', s=markersize, edgecolor='none', linewidths=0.0)
+                   marker='.', edgecolor='none', linewidths=0.0)
     else:
         # This is the upper triangle
         ax.scatter(self_data.T[0], self_data.T[1], color=self_colors,
-                   marker='.', s=markersize, edgecolor='none', linewidths=0.0)
-
-    # Prettify the plot
-    label = 'Residue number'
-    ax.set_xlabel(label)
-    ax.set_ylabel(label)
+                   marker='.', edgecolor='none', linewidths=0.0)
 
     # Allow dynamic x and y limits
     min_res_seq = numpy.min(self_data.ravel())
@@ -129,6 +123,27 @@ def contact_map(hierarchy, other=None, reference=None, altloc=False, dpi=300,
     ax.set_xticks(tick_range)
     ax.set_yticks(tick_range)
 
+    # Prettify the plot
+    ax.set_xlabel('Residue number')
+    ax.set_ylabel('Residue number')
+
+    # Create a custom legend
+    if reference:
+        tp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.TPCOLOR,
+                                             marker='o', linestyle='', label='True positive')
+        fp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.FPCOLOR,
+                                             marker='o', linestyle='', label='False positive')
+        rf_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.RFCOLOR,
+                                             marker='o', linestyle='', label='Reference')
+        artists = [tp_artist, fp_artist, rf_artist]
+    else:
+        nt_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.NTCOLOR,
+                                             marker='o', linestyle='', label='Contact')
+        artists = [nt_artist]
+    ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102),
+              loc=3, ncol=3, mode="expand", borderaxespad=0.)
+
+    # Make both axes identical in length and remove whitespace around the plot
     ax.set(aspect=1.0)
     fig.tight_layout()
 
@@ -193,9 +208,9 @@ def sequence_coverage(hierarchy, dpi=300, file_name='seqcov.png', file_format='p
     # Prettify the plot
     ax.set_xlabel('Residue number')
     ax.set_ylabel('Sequence Count')
-    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-              ncol=3, mode="expand", borderaxespad=0., frameon=None)
+    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
 
+    # Make axes length proportional and remove whitespace around the plot
     ax.set(aspect=0.3)
     fig.tight_layout()
 

@@ -1,6 +1,6 @@
 .. _example_construct_hierarchy:
 
-Constructing a ConKit ContactFile Hierarchy
+Constructing a ConKit ContactFile hierarchy
 -------------------------------------------
 
 .. warning::

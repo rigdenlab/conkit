@@ -115,7 +115,7 @@ def main():
     if other_matched:
         altloc = altloc_remove(other_matched)
 
-    mapformat = 'pdf'
+    mapformat = 'png'
     mapfile = args.confile.rsplit('.', 1)[0] + '.' + mapformat
     logging.info('Contact map written in {0} format to: {1}'.format(mapformat.upper(), mapfile))
     conkit.plot.contact_map(con_matched, other=other_matched, reference=reference,

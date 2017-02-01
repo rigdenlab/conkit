@@ -1,7 +1,7 @@
 .. _example_plotting_a_map:
 
-Contact Map Plotting
---------------------
+Plotting a contact map
+----------------------
 
 .. warning::
    You require the `Matplotlib <http://matplotlib.org/>`_ package to use this script. If you are unsure if it is installed on your system, refer to the :ref:`installation` documentation
@@ -10,8 +10,6 @@ Using a script
 ^^^^^^^^^^^^^^
 
 If you would like to plot a contact map using ConKit without the overhead of using Python, you can simply use the ``conkit.plot_map`` script.
-
---------------------------------------------------------------
 
 .. code-block:: bash
 
@@ -62,8 +60,6 @@ Using Python
 ^^^^^^^^^^^^
 
 Two simplified versions of the ``conkit.plot_map`` script is shown below to illustrate how you can plot your own contact map using Python.
-
---------------------------------------------------------------
 
 .. only:: html
 
