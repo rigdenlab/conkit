@@ -22,6 +22,7 @@ hhblits_database = "path/to/hhblits_database"   # <-- MODIFY THIS
 ccmpred_exe = "path/to/ccmpred"                 # <-- MODIFY THIS
 
 # Generate a Multiple Sequence Alignment
+print("Generating the Multiple Sequence Alignment")
 a3m_file = "toxd/toxd.a3m"
 hhblits_cline = conkit.applications.HHblitsCommandLine(
     cmd=hhblits_exe, database=hhblits_database, input=sequence_file, oa3m=a3m_file
@@ -44,6 +45,7 @@ jones_file = "toxd/toxd.jones"
 conkit.io.write(jones_file, "jones", msa)
 
 # Predict the contacts
+print("Predicting contacts")
 mat_file = "toxd/toxd.mat"
 ccmpred_cline = conkit.applications.CCMpredCommandLine(
     alnfile=jones_file, matfile=mat_file
@@ -57,7 +59,9 @@ conpred.sort("raw_score", reverse=True, inplace=True)   # Sort the list of conta
 conpred = conpred[:30]                                  # Slice the contact map
 contact_map_file = "toxd/toxd.map.png"
 conkit.plot.contact_map(conpred, file_name=contact_map_file)
+print("Contact Map Plot:                 %s" % contact_map_file)
 
 # Convert the contact prediction to a standardised format
 casp_file = "toxd/toxd.rr"
 conkit.io.write(casp_file, "casprr", conpred)
+print("Final Contact Prediction File:    %s" % casp_file)
