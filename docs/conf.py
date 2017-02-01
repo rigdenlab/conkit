@@ -150,6 +150,7 @@ html_theme_options = {
     'navbar_links': [
         ('Home', 'index'),
         ('Installation', 'install'),
+        ('Examples', 'examples'),
         ('Documentation', 'contents'),
         ('Formats', 'formats'),
     ],
