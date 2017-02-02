@@ -16,6 +16,8 @@ from conkit.core import SequenceFile
 import numpy
 
 try:
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot
     MATPLOTLIB = True
 except ImportError:
