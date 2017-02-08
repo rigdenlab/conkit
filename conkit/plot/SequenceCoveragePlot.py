@@ -75,7 +75,8 @@ class SequenceCoverageFigure(Figure):
 
 
         # Prettify the plot
-        xticks = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1, 5)
+        step = int((self._hierarchy.top_sequence.seq_len + 1) / 10)
+        xticks = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1)[::step]
         ax.set_xticks(xticks)
         ax.set_xticklabels(xticks)
 
