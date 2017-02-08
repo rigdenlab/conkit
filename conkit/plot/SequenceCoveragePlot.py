@@ -26,10 +26,12 @@ class SequenceCoverageFigure(Figure):
         **kwargs
            General :obj:`conkit.plot._Figure.Figure` keyword arguments
 
-
         """
         super(SequenceCoverageFigure, self).__init__(**kwargs)
-        self._hierarchy = hierarchy
+        self._hierarchy = None
+
+        self.hierarchy = hierarchy
+
         self._draw()
 
     @property

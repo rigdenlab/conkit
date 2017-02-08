@@ -67,6 +67,42 @@ reference structure, they will not be plotted.
     contact_map_subparser.set_defaults(which='contact_map')
 
 
+def add_precision_evaluation_args(subparsers):
+    description = u"""
+This command will plot an evaluation plot illustrating the precision score of
+the provided contact prediction compared against a protein structure at different
+cutoff thresholds.
+
+"""
+    precision_evaluation_subparser = subparsers.add_parser('peval', help="Plot the precision evaluation plot",
+                                                           description=description,
+                                                           formatter_class=argparse.RawDescriptionHelpFormatter)
+    add_default_args(precision_evaluation_subparser)
+    precision_evaluation_subparser.add_argument('-c', dest='pdbchain', default=None,
+                                                help='PDB chain to use [default: first in file]. Inter-molecular '
+                                                     'predictions use two letter convention, i.e AD for contacts '
+                                                     'between A and D.')
+    precision_evaluation_subparser.add_argument('-d', dest='dtn', default=5, type=int,
+                                                help='Minimum sequence separation [default: 5]')
+    precision_evaluation_subparser.add_argument('-j', dest='cutoff_step', default=0.2, type=float,
+                                                help='The cutoff step for contact selection [default: 0.2]')
+    precision_evaluation_subparser.add_argument('--interchain', action="store_true", default=False,
+                                                help='Plot inter-chain contacts')
+    precision_evaluation_subparser.add_argument('pdbfile',
+                                                help="A reference PDB file")
+    precision_evaluation_subparser.add_argument('pdbformat',
+                                                help="A reference PDB file")
+    precision_evaluation_subparser.add_argument('seqfile',
+                                                help="Path to the sequence file")
+    precision_evaluation_subparser.add_argument('seqformat',
+                                                help="Format of the sequence file")
+    precision_evaluation_subparser.add_argument('confile',
+                                                help="Path to the contact file")
+    precision_evaluation_subparser.add_argument('conformat',
+                                                help="Format of the contact file")
+    precision_evaluation_subparser.set_defaults(which='precision_evaluation')
+
+
 def add_sequence_coverage_args(subparsers):
     description = u"""
 This command will plot a coverage plot for every position in your alignment.
@@ -96,6 +132,7 @@ You are provided with a single access point to many different kinds of plots.
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_contact_map_args(subparsers)
+    add_precision_evaluation_args(subparsers)
     add_sequence_coverage_args(subparsers)
     # Parse all arguments
     args = parser.parse_args()
@@ -144,6 +181,7 @@ You are provided with a single access point to many different kinds of plots.
             other_matched = other_sliced
 
         def altloc_remove(map):
+            """Remove alternative locations"""
             altloc = False
             for contact in map.copy():
                 if contact.res1_chain != contact.res2_chain:
@@ -161,17 +199,43 @@ You are provided with a single access point to many different kinds of plots.
 
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
-        conkit.plot.ContactMapFigure(con_matched, other=other_matched, reference=reference,
-                                     file_name=outfile, altloc=altloc, use_conf=args.confidence,
-                                     dpi=args.dpi)
+        plot = conkit.plot.ContactMapFigure(con_matched, other=other_matched, reference=reference,
+                                            file_name=outfile, altloc=altloc, use_conf=args.confidence,
+                                            dpi=args.dpi)
+
+    elif args.which == 'precision_evaluation':
+        if args.interchain:
+            logging.info('This script is experimental for inter-chain contact plotting')
+
+        logging.info('Distance to neighbors: {0}'.format(args.dtn))
+        logging.info('Contact list cutoff factor step: {0}'.format(args.cutoff_step))
+
+        seq = conkit.io.read(args.seqfile, args.seqformat)[0]
+        con = conkit.io.read(args.confile, args.conformat)[0]
+
+        con.sequence = seq
+        con.assign_sequence_register()
+        con.remove_neighbors(min_distance=args.dtn, inplace=True)
+        con.sort('raw_score', reverse=True, inplace=True)
+
+        if args.pdbchain:
+            pdb = conkit.io.read(args.pdbfile, 'pdb')[args.pdbchain]
+        else:
+            pdb = conkit.io.read(args.pdbfile, 'pdb')[0]
+        con_matched = con.match(pdb, renumber=True, remove_unmatched=True)
+
+        outformat = 'png'
+        outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
+        plot = conkit.plot.PrecisionEvaluationFigure(con_matched, cutoff_step=args.cutoff_step, file_name=outfile,
+                                                     dpi=args.dpi)
 
     elif args.which == 'sequence_coverage':
         hierarchy = conkit.io.read(args.msafile, args.msaformat)
         outformat = 'png'
         outfile = args.output if args.output else args.msafile.rsplit('.', 1)[0] + '.' + outformat
-        conkit.plot.SequenceCoverageFigure(hierarchy, file_name=outfile, dpi=args.dpi)
+        plot = conkit.plot.SequenceCoverageFigure(hierarchy, file_name=outfile, dpi=args.dpi)
 
-    logging.info('Final plot written in {0} format to: {1}'.format(outformat.upper(), outfile))
+    logging.info('Final plot written in {0} format to: {1}'.format(plot.format.upper(), plot.file_name))
     return 0
 
 

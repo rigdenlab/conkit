@@ -1,0 +1,149 @@
+"""
+A module to produce a not sure plot
+"""
+
+from __future__ import division
+
+__author__ = "Felix Simkovic"
+__date__ = "07 Feb 2017"
+__version__ = 0.1
+
+import matplotlib.pyplot
+import numpy
+
+from conkit.plot._Figure import Figure
+
+
+class PrecisionEvaluationFigure(Figure):
+
+    def __init__(self, hierarchy, cutoff_step=0.2, **kwargs):
+        """A precision evaluation figure
+
+        Parameters
+        ----------
+        hierarchy : :obj:`conkit.core.ContactMap`
+           The contact map hierarchy
+        step : float, optional
+           The cutoff step
+        **kwargs
+           General :obj:`conkit.plot._Figure.Figure` keyword arguments
+
+        """
+        super(PrecisionEvaluationFigure, self).__init__(**kwargs)
+        self._hierarchy = None
+        self._cutoff_boundaries = [0.0, 100.0]
+        self._cutoff_step = 0.2
+
+        self.hierarchy = hierarchy
+        self.cutoff_step = cutoff_step
+
+        self._draw()
+
+    @property
+    def cutoff_step(self):
+        """The cutoff step"""
+        return self._cutoff_step
+
+    @cutoff_step.setter
+    def cutoff_step(self, cutoff_step):
+        """Define the cutoff step"""
+        self._cutoff_step = cutoff_step
+
+    @property
+    def hierarchy(self):
+        """A ConKit :obj:`conkit.core.ContactMap`"""
+        return self._hierarchy
+
+    @hierarchy.setter
+    def hierarchy(self, hierarchy):
+        """Define the ConKit :obj:`conkit.core.ContactMap`
+
+        Raises
+        ------
+        RuntimeError
+           The hierarchy is not an alignment
+
+        """
+        if hierarchy:
+            Figure._check_hierarchy(hierarchy, "ContactMap")
+        self._hierarchy = hierarchy
+
+    @property
+    def min_cutoff(self):
+        """The minimum cutoff factor
+
+        Raises
+        ------
+        ValueError
+           The minimum cutoff value is larger than or equal to the maximum
+
+        """
+        if self._cutoff_boundaries[0] >= self._cutoff_boundaries[1]:
+            msg = "The minimum cutoff value is larger than or equal to the maximum"
+            raise ValueError(msg)
+        return self._cutoff_boundaries[0]
+
+    @min_cutoff.setter
+    def min_cutoff(self, min_cutoff):
+        """Define the minimum cutoff factor"""
+        self._cutoff_boundaries[0] = min_cutoff
+
+    @property
+    def max_cutoff(self):
+        """The maximum cutoff factor
+
+        Raises
+        ------
+        ValueError
+           The maximum cutoff value is smaller than the the minimum
+
+        """
+        if self._cutoff_boundaries[1] < self._cutoff_boundaries[0]:
+            msg = "The maximum cutoff value is smaller than the the minimum"
+            raise ValueError(msg)
+        return self._cutoff_boundaries[1]
+
+    @max_cutoff.setter
+    def max_cutoff(self, max_cutoff):
+        """Define the maximum cutoff factor"""
+        self._cutoff_boundaries[1] = max_cutoff
+
+    def redraw(self):
+        """Re-draw the plot with updated parameters"""
+        self._draw()
+
+    def _draw(self):
+        """Draw the actual plot"""
+
+        factors = numpy.arange(self.min_cutoff, self.max_cutoff + 0.1, self.cutoff_step)
+        precisions = numpy.zeros(factors.shape[0])
+        for i, factor in enumerate(factors):
+            ncontacts = int(self._hierarchy.sequence.seq_len * factor)
+            m = self._hierarchy[:ncontacts]
+            precisions[i] = m.precision
+
+        fig, ax = matplotlib.pyplot.subplots(dpi=self.dpi)
+
+        ax.axhline(0.5, color='g', label='50% Precision')
+
+        ax.plot(factors, precisions, color='#000000', marker='o', linestyle='-',
+                markersize=2, label='Precision score')
+
+        # Prettify the plot
+        step = int(factors.shape[0] / 6)
+        xticklabels = (factors * self._hierarchy.sequence.seq_len).astype(dtype=numpy.int64)
+        ax.set_xticks(factors[::step])
+        ax.set_xticklabels(xticklabels[::step])
+
+        yticks = numpy.arange(0, 1.01, 0.2)
+        ax.set_yticks(yticks)
+        ax.set_yticklabels(yticks)
+
+        ax.set_xlabel('Number of Contacts')
+        ax.set_ylabel('Precision')
+        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+
+        # Make axes length proportional and remove whitespace around the plot
+        fig.tight_layout()
+
+        fig.savefig(self.file_name, bbox_inches='tight')
