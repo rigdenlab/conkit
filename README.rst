@@ -20,16 +20,16 @@ This project is a result of the continuous struggle using residue-residue contac
    :target: http://conkit.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://travis-ci.org/fsimkovic/conkit.svg?branch=master
-   :target: https://travis-ci.org/fsimkovic/conkit
+.. image:: https://travis-ci.org/rigdenlab/conkit.svg?branch=master
+   :target: https://travis-ci.org/rigdenlab/conkit
    :alt: Travis Build
 
-.. image:: https://coveralls.io/repos/github/fsimkovic/conkit/badge.svg?branch=master
-   :target: https://coveralls.io/github/fsimkovic/conkit?branch=master
+.. image:: https://coveralls.io/repos/github/rigdenlab/conkit/badge.svg?branch=master
+   :target: https://coveralls.io/github/rigdenlab/conkit?branch=master
    :alt: Coveralls Status
 
-.. image:: https://landscape.io/github/fsimkovic/conkit/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/fsimkovic/conkit/master
+.. image:: https://landscape.io/github/rigdenlab/conkit/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/rigdenlab/conkit/master
    :alt: Code Health
 
 
@@ -65,4 +65,4 @@ Ackowledgements
 - `BioPython <https://www.biopython.org>`_
 
 
-.. _GitHub Issue Tracker: https://github.com/fsimkovic/conkit/issues
+.. _GitHub Issue Tracker: https://github.com/rigdenlab/conkit/issues

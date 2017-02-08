@@ -38,4 +38,4 @@ All applicable examples will outline both approaches. However, please do note th
 +-------------------------------------------------------------------------------------------------+
 
 .. note::
-   If you would like an example for a different aspect of ConKit, please let us know in the `GitHub Issue Tracker <https://github.com/fsimkovic/conkit/issues>`_.
+   If you would like an example for a different aspect of ConKit, please let us know in the `GitHub Issue Tracker <https://github.com/rigdenlab/conkit/issues>`_.

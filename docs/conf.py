@@ -173,7 +173,7 @@ html_theme_options = {
 # Additional variables to be passed to templates
 html_context = {
     # URL to the GitHub repository - None if unwanted
-    'github_url': 'https://github.com/fsimkovic/conkit.git',
+    'github_url': 'https://github.com/rigdenlab/conkit.git',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

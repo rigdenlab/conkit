@@ -28,11 +28,11 @@ To install using `pip`:
 Source Code
 ~~~~~~~~~~~
 
-If you would like to install ConKit from source, download the `latest version <https://github.com/fsimkovic/conkit/releases>`_ from the GitHub repository. Then, use the following commands to install ConKit.
+If you would like to install ConKit from source, download the `latest version <https://github.com/rigdenlab/conkit/releases>`_ from the GitHub repository. Then, use the following commands to install ConKit.
 
 .. code-block:: bash
 
-   $> git clone https://github.com/fsimkovic/conkit
+   $> git clone https://github.com/rigdenlab/conkit
    $> cd conkit
 
 Once downloaded, you might want to check that all functions are available on your system. Run the following command:

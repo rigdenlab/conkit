@@ -5,7 +5,7 @@ Table of available file formats
 
 .. note::
 
-   If you would like your data format to appear in the table below, please contact us via `GitHub <https://github.com/fsimkovic/conkit/issues>`_.
+   If you would like your data format to appear in the table below, please contact us via `GitHub <https://github.com/rigdenlab/conkit/issues>`_.
 
 
 The following table contains the various different file formats currently implemented in ConKit.
