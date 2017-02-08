@@ -14,6 +14,7 @@ Subpackages
     conkit.applications
     conkit.core
     conkit.io
+    conkit.plot
 
 Submodules
 ----------
@@ -21,5 +22,4 @@ Submodules
 .. toctree::
 
    conkit.constants
-   conkit.plot
 

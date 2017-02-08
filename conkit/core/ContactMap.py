@@ -557,39 +557,6 @@ class ContactMap(Entity):
 
         return contact_map
 
-    def plot_map(self, **kwargs):
-        """Produce a 2D contact map plot
-
-        Parameters
-        ----------
-        other : :obj:`conkit.core.ContactMap`, optional
-           A ConKit :obj:`conkit.core.ContactMap`
-        reference : :obj:`conkit.core.ContactMap`, optional
-           A ConKit :obj:`conkit.core.ContactMap` [this map refers to the reference contacts]
-        altloc : bool
-           Use the res_altloc positions [default: False]
-        file_format : str, optional
-           Plot figure format. See :func:`matplotlib.pyplot.savefig` for options  [default: png]
-        file_name : str, optional
-           File name to which the contact map will be printed  [default: contactmap.png]
-
-        Warnings
-        --------
-        * If the ``file_name`` variable is not changed, the current file will be
-          continuously overwritten.
-        * This function has been moved to :func:`conkit.plot.contact_map`.
-
-        Raises
-        ------
-        RuntimeError
-           Matplotlib not installed
-
-        """
-        import warnings
-        warnings.warn("This method will be removed in a future release, use conkit.plot.frequency() instead")
-        import conkit.plot
-        conkit.plot.contact_map(self, **kwargs)
-
     def rescale(self, inplace=False):
         """Rescale the raw scores in :obj:`conkit.core.ContactMap`
 
@@ -698,9 +665,7 @@ class ContactMap(Entity):
     def _find_single(contact_map, index):
         """Find all contacts associated with ``index`` based on id property"""
         for c in contact_map:
-            if c.id[0] == index:
-                yield c
-            elif c.id[1] == index:
+            if c.id[0] == index or c.id[1] == index:
                 yield c
 
     @staticmethod

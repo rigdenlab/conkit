@@ -4,7 +4,7 @@ Analysing a Multiple Sequence Alignment
 ---------------------------------------
 
 .. warning::
-   You require the `Matplotlib <http://matplotlib.org/>`_ and `SciPy <http://scipy.org/>`_ packages to use this script. If you are unsure if it is installed on your system, refer to the :ref:`installation` documentation
+   You require the optional dependency `SciPy <http://scipy.org/>`_ package to use this script. If you are unsure if it is installed on your system, refer to the :ref:`Installation` documentation
 
 Using a script
 ^^^^^^^^^^^^^^
@@ -77,6 +77,6 @@ This tells you the first sequence in the alignment has 59 residues, i.e. the cha
 .. code-block:: python
 
    >>> file_name = 'toxd/toxd.png'
-   >>> msa.plot_freq(file_name=file_name)
+   >>> conkit.plot.SequenceCoverageFigure(msa, file_name=file_name)
 
 This will this `Toxd Frequence Plot`_, identical to the one from the script.

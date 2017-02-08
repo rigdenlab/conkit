@@ -7,7 +7,6 @@ __version__ = "0.1"
 import argparse
 import conkit
 import logging
-import os
 import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
@@ -118,8 +117,8 @@ def main():
     mapformat = 'png'
     mapfile = args.confile.rsplit('.', 1)[0] + '.' + mapformat
     logging.info('Contact map written in {0} format to: {1}'.format(mapformat.upper(), mapfile))
-    conkit.plot.contact_map(con_matched, other=other_matched, reference=reference,
-                            file_format=mapformat, file_name=mapfile, altloc=altloc)
+    conkit.plot.ContactMapFigure(con_matched, other=other_matched, reference=reference,
+                                 file_name=mapfile, altloc=altloc)
 
     return 0
 

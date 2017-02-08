@@ -45,4 +45,4 @@ map_matched = map.match(pdb, remove_unmatched=True, renumber=True)
 
 # Then we can plot the map
 contact_plot = "toxd/toxd.png"
-conkit.plot.contact_map(map_matched, reference=pdb, file_name=contact_plot)
+conkit.plot.ContactMapFigure(map_matched, reference=pdb, file_name=contact_plot)

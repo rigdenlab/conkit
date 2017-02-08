@@ -36,8 +36,8 @@ def main():
     nseqs = hierarchy.nseqs
     meff = hierarchy.calculate_meff(identity=args.id)
     plot = args.msafile.rsplit('.', 1)[0] + '.png'
-    hierarchy.plot_freq(file_format='png', file_name=plot)
-    
+    conkit.plot.SequenceCoverageFigure(hierarchy, file_name=plot)
+
     logging.info('Input MSA File:                   {0}'.format(args.msafile))
     logging.info('Input MSA Format:                 {0}'.format(args.msaformat))
     logging.info('Sequence Identity Threshold:      {0}'.format(args.id))

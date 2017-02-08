@@ -148,7 +148,7 @@ def main():
     logging.info('|- Total Number of sequences: {0}'.format(msa_h.nseqs))
     logging.info('|- Number of effective sequences: {0}'.format(msa_h.calculate_meff()))
     freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.pdf')
-    conkit.plot.sequence_coverage(msa_h, file_name=freq_plot_fname, file_format="pdf")
+    conkit.plot.SequenceCoverageFigure(msa_h, file_name=freq_plot_fname)
     logging.info('|- Plotted sequence coverage: {0}'.format(freq_plot_fname))
 
     # Kill switch to not run CCMpred DCA
@@ -175,7 +175,7 @@ def main():
     cmap.sort('raw_score', reverse=True, inplace=True)
     cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
     contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.pdf')
-    conkit.plot.contact_map(cmap, file_name=contact_map_fname, file_format='pdf')
+    conkit.plot.ContactMapFigure(cmap, file_name=contact_map_fname)
     logging.info('Plotted contact map: {0}'.format(contact_map_fname))
 
     # Use the ccmpred parser to write a contact file

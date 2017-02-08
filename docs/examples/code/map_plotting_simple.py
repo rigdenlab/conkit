@@ -35,4 +35,4 @@ map = conpred[:conpred.sequence.seq_len]
 
 # Then we can plot the map
 contact_plot = "toxd/toxd.png"
-conkit.plot.contact_map(map, file_name=contact_plot)
+conkit.plot.ContactMapFigure(map, file_name=contact_plot)

@@ -26,12 +26,12 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   api/core
+   api/plot
 
 .. toctree::
    :maxdepth: 2
 
-   api/generated/conkit.plot.rst
+   api/core
 
 
 .. only:: html

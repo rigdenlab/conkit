@@ -3,9 +3,6 @@
 Plotting a contact map
 ----------------------
 
-.. warning::
-   You require the `Matplotlib <http://matplotlib.org/>`_ package to use this script. If you are unsure if it is installed on your system, refer to the :ref:`installation` documentation
-
 Using a script
 ^^^^^^^^^^^^^^
 

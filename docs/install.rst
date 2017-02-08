@@ -68,6 +68,8 @@ NumPy 1.8.2 (or later)
   `Download NumPy <http://www.scipy.org/scipylib/download.html>`_
 BioPython 1.64 (or later)
   `Download BioPython <http://biopython.org/wiki/Documentation>`_
+Matplotlib 1.3.1 (or later)
+  `Download matplotlib <http://matplotlib.org/users/installing.html>`_
 setuptools
   `Documentation <https://setuptools.readthedocs.io/en/latest/>`_    
 
@@ -75,8 +77,6 @@ Optional dependencies
 +++++++++++++++++++++
 SciPy 0.16 (or later)
   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
-Matplotlib 1.3.1 (or later)
-  `Download matplotlib <http://matplotlib.org/users/installing.html>`_
 HHblits
    `Download HHblits <https://github.com/soedinglab/hh-suite>`_
 HHblits Database

@@ -253,10 +253,6 @@ class SequenceFile(Entity):
         RuntimeError
            :obj:`conkit.core.SequenceFile` is not an alignment
 
-        See Also
-        --------
-        plot_freq
-
         """
         if not self.is_alignment:
             raise ValueError('This is not an alignment')
@@ -270,44 +266,6 @@ class SequenceFile(Entity):
         aa_counts = numpy.sum(aa_frequencies, axis=0)
         # divide all by sequence length
         return (aa_counts / len(msa_mat.T[0])).tolist()
-
-    def plot_freq(self, **kwargs):
-        """Plot the gap frequency in each alignment column
-
-        This function calculates and plots the frequence of gaps at
-        each position in the Multiple Sequence Alignment.
-
-        Parameters
-        ----------
-        file_format : str, optional
-           Plot figure format. See :func:`matplotlib.pyplot.savefig` for options  [default: png]
-        file_name : str, optional
-           File name to which the plot will be printed  [default: seqcov.png]
-
-        Warnings
-        --------
-        * If the ``file_name`` variable is not changed, the current file will be
-          continuously overwritten.
-        * This function has been moved to :func:`conkit.plot.sequence_coverage`.
-
-        Raises
-        ------
-        MemoryError
-           Too many sequences in the alignment
-        RuntimeError
-           :obj:`conkit.core.SequenceFile` is not an alignment
-        RuntimeError
-           Matplotlib not installed
-
-        See Also
-        --------
-        calculate_freq
-
-        """
-        import warnings
-        warnings.warn("This method will be removed in a future release, use conkit.plot.sequence_coverage() instead")
-        import conkit.plot
-        conkit.plot.sequence_coverage(self, **kwargs)
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`conkit.core.SequenceFile`
