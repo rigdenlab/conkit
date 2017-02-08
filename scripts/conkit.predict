@@ -28,12 +28,12 @@ File format options are:
 """.format(' '.join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())))
 
 
-
 def add_default_args(parser):
     """Define default arguments"""
     parser.add_argument('-prefix', default='conkit', help='Job ID')
     parser.add_argument('-wdir', default=os.getcwd(), help='Working directory')
     parser.add_argument('--demo', default=False, action="store_true", help=argparse.SUPPRESS)
+
 
 def add_alignment_args(subparsers):
     """Parser with alignment as starting point"""

@@ -64,11 +64,13 @@ class SequenceCoverageFigure(Figure):
         aa_frequencies = numpy.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.top_sequence.seq_len
 
         fig, ax = matplotlib.pyplot.subplots(dpi=self.dpi)
-        ax.plot(residues, aa_frequencies, color='#000000', marker='o', linestyle='-',
-                markersize=5, label='Amino acid count')
 
         ax.axhline(self._hierarchy.top_sequence.seq_len * 0.3, color='r', label='30% Coverage')
         ax.axhline(self._hierarchy.top_sequence.seq_len * 0.6, color='g', label='60% Coverage')
+
+        ax.plot(residues, aa_frequencies, color='#000000', marker='o', linestyle='-',
+                markersize=5, label='Amino acid count')
+
 
         # Prettify the plot
         xticks = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1, 5)

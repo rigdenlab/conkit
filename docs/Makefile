@@ -181,8 +181,9 @@ pseudoxml:
 figures:
 	mkdir _tmp
 	git clone https://github.com/rigdenlab/conkit-examples.git _tmp/conkit-examples 
-	conkit.plot_map -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot_map -o examples/images/toxd_cmap_reference.png -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot_map -o examples/images/toxd_cmap_advanced.png -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot_map -o examples/images/toxd_cmap_confidence.png --confidence -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot cmap -dpi 200 -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot cmap -dpi 200 -o examples/images/toxd_cmap_reference.png -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot cmap -dpi 200 -o examples/images/toxd_cmap_advanced.png -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot cmap -dpi 200 -o examples/images/toxd_cmap_confidence.png --confidence -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot scov -dpi 200 -o examples/images/toxd_freq_plot.png _tmp/conkit-examples/toxd/toxd.a3m a3m
 	rm -rf _tmp

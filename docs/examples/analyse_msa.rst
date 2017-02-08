@@ -35,6 +35,10 @@ The output tells you the file and format you have provided. It also prints which
 .. image:: images/toxd_freq_plot.png
    :alt: Toxd Frequency Plot
 
+.. note::
+
+   You can also generate the final plot using the ``conkit.plot`` script.
+
 --------------------------------------------------------
 
 Using Python
