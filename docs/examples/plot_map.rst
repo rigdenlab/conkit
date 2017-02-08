@@ -36,7 +36,7 @@ The call above produces a contact map plot looking like this. The gray points ar
 
 --------------------------------------------------------------
 
-Finally, you could also add a second contact prediction file to the call to compare two maps against each other.
+You could also add a second contact prediction file to the call to compare two maps against each other.
 
 .. code-block:: bash
 
@@ -47,9 +47,22 @@ The call above produces a contact map plot looking like this. The gray points ar
 .. image:: images/toxd_cmap_advanced.png
    :alt: Toxd CMap Advanced
 
+--------------------------------------------------------------
+
+Finally, you could also illustrate the confidence with which each contact was predicted.
+
+.. code-block:: bash
+
+   $> conkit.plot_map --confidence -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+
+The call above produces a contact map plot looking like this. All parameters and settings are identical to the previous map except the ``--confidence`` flag, which will show more confidently predicted contacts as larger markers.
+
+.. image:: images/toxd_cmap_confidence.png
+   :alt: Toxd CMap Confidence
+
 .. note::
 
-   You can use the last example also **without** a reference structure!
+   You can use the last two examples also **without** a reference structure!
 
 --------------------------------------------------------
 

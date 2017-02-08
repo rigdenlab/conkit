@@ -43,8 +43,12 @@ def main():
                         help='the format of the second contact map')
     parser.add_argument('-f', dest='dfactor', default=1.0, type=float,
                         help='number of contacts to include relative to sequence length [default: 1.0]')
+    parser.add_argument('-o', dest='output', default=None, type=str,
+                        help='the output file; note, the format is determined by the suffix')
     parser.add_argument('-p', dest='pdbfile', default=None, type=str,
                         help="A reference PDB file")
+    parser.add_argument('--confidence', action="store_true", default=False,
+                        help='Plot the confidence scores')
     parser.add_argument('--interchain', action="store_true", default=False,
                         help='Plot inter-chain contacts')
     parser.add_argument('seqfile',
@@ -115,10 +119,10 @@ def main():
         altloc = altloc_remove(other_matched)
 
     mapformat = 'png'
-    mapfile = args.confile.rsplit('.', 1)[0] + '.' + mapformat
+    mapfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + mapformat
     logging.info('Contact map written in {0} format to: {1}'.format(mapformat.upper(), mapfile))
     conkit.plot.ContactMapFigure(con_matched, other=other_matched, reference=reference,
-                                 file_name=mapfile, altloc=altloc)
+                                 file_name=mapfile, altloc=altloc, use_conf=args.confidence)
 
     return 0
 

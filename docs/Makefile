@@ -46,6 +46,7 @@ help:
 	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+	@echo "  figures    to create all figures used in the documentation"
 
 clean:
 	rm -rf $(BUILDDIR)/*
@@ -176,3 +177,12 @@ pseudoxml:
 	$(SPHINXBUILD) -b pseudoxml $(ALLSPHINXOPTS) $(BUILDDIR)/pseudoxml
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
+
+figures:
+	mkdir _tmp
+	git clone https://github.com/rigdenlab/conkit-examples.git _tmp/conkit-examples 
+	conkit.plot_map -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot_map -o examples/images/toxd_cmap_reference.png -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot_map -o examples/images/toxd_cmap_advanced.png -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit.plot_map -o examples/images/toxd_cmap_confidence.png --confidence -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	rm -rf _tmp

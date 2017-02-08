@@ -3,6 +3,12 @@ __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
 __version__ = 0.1
 
+from conkit.core import Contact
+from conkit.core import ContactMap
+from conkit.core import ContactFile
+from conkit.core import Sequence
+from conkit.core import SequenceFile
+
 
 class Figure(object):
     """A Figure class to store common features
@@ -100,3 +106,22 @@ class Figure(object):
     def prefix(self, prefix):
         """Define the prefix of the figure file"""
         self._prefix = prefix
+
+    @staticmethod
+    def _check_hierarchy(h, t):
+        """Check the hierarchy is of a specific type
+
+        Raises
+        ------
+        TypeError
+           Provided hierarchy is not of specified type
+        ValueError
+           Type is unknown
+
+        """
+        dict = {'Contact': Contact, 'ContactMap': ContactMap, 'ContactFile': ContactFile,
+                'Sequence': Sequence, 'SequenceFile': SequenceFile}
+        if t not in dict.keys():
+            raise ValueError("Type {0} is unknown".format(t))
+        elif not isinstance(h, dict[t]):
+            raise TypeError("Provided hierarchy is not a {0}".format(t))
