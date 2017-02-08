@@ -11,16 +11,12 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-DESCRIPTION = """
+DESCRIPTION = u"""
 This script analyses a Multiple Sequence Alignment. It provides you estimates
 about the quality, which will allow you to determine its usefulness for covariance-
 based contact prediction.
 
-File format options are:
-
-    Sequence files: [{0}]
-
-""".format(' '.join(sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys())))
+"""
 
 
 def main():

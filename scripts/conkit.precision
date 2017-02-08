@@ -11,14 +11,11 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-DESCRIPTION = """
-Calculate the contact precision value
+DESCRIPTION = u"""
+This script calculates the precision score for a contact prediction
+when compared against contacts extracted from a protein structure.
 
-File format options are:
-
-    Contact files: [{0}]
-
-""".format(' '.join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())))
+"""
 
 
 def main():

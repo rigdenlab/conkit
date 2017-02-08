@@ -127,6 +127,8 @@ def main():
 This script provides a command-line interface to ConKit's plotting functionality.
 You are provided with a single access point to many different kinds of plots.
 
+For more specific descriptions, call each subcommand's help menu directly.
+
 """
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()

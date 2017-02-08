@@ -13,23 +13,19 @@ _OPTIONS = sorted(
     + conkit.io.SEQUENCE_FILE_PARSERS.keys()
 )
 
-DESCRIPTION = """
-This script serves for file conversions for either contact prediction
-files or sequence (alignment) files.
+DESCRIPTION = u"""
+This script provides direct access to ConKit's conversion algorithms.
 
-File format options are:
+This script can convert either contact prediction files or sequence files.
+In case of the latter, a file with a single or multiple sequences can be
+converted.
 
-    Contact files: [{0}]
-
-    Sequence files: [{1}]
-
-Please do not attempt to mix formats, i.e. convert from a contact file format
+!!! IMPORTANT
+=============
+Do not attempt to mix formats, i.e. convert from a contact file format
 to a sequence file format.
 
-""".format(
-    " ".join(sorted(conkit.io.CONTACT_FILE_PARSERS.keys())),
-    " ".join(sorted(conkit.io.SEQUENCE_FILE_PARSERS.keys()))
-)
+"""
 
 
 def main():
