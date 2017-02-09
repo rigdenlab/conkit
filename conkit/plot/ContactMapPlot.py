@@ -17,6 +17,36 @@ from conkit.plot._Figure import Figure
 
 
 class ContactMapFigure(Figure):
+    """A Figure object specifically for a Contact Map
+
+    Description
+    -----------
+    This figure will illustrate the contacts in a contact
+    map. This plot is a very common representation of contacts.
+    With this figure, you can illustrate either your contact 
+    map by itself, compared against a second contact map, and/or
+    matched against contacts extracted from a contact map.
+
+    Attributes
+    ----------
+    hierarchy : :obj:`conkit.core.ContactMap`
+       The default contact map hierarchy
+    other : :obj:`conkit.core.ContactMap`
+       The second contact map hierarchy
+    reference : :obj:`conkit.core.ContactMap`
+       The reference contact map hierarchy
+    altloc : bool
+       Use the res_altloc positions [default: False]
+    use_conf : bool
+       The marker size will correspond to the raw score [default: False]
+    
+    Examples
+    --------
+    >>> import conkit
+    >>> cmap = conkit.io.read('toxd/toxd.mat', 'ccmpred').top_map
+    >>> conkit.plot.ContactMapFigure(cmap)
+
+    """
 
     def __init__(self, hierarchy, other=None, reference=None, altloc=False, use_conf=False, **kwargs):
         """A new contact map plot
@@ -51,6 +81,9 @@ class ContactMapFigure(Figure):
         self.reference = reference
 
         self._draw()
+
+    def __repr__(self):
+        return "ContactMapFigure(file_name=\"{0}\")".format(self.file_name)
 
     @property
     def hierarchy(self):

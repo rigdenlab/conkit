@@ -1,3 +1,6 @@
+"""
+A module containing generic Figure related objects
+"""
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
@@ -23,6 +26,11 @@ class Figure(object):
        The format of the figure file [default: png]
     prefix : str
        The prefix of the figure file name [default: conkit]
+
+    Warnings
+    --------
+    Do not instantiate this class directly. Instead use the 
+    sub-classes designed for specific plots.
 
     """
 

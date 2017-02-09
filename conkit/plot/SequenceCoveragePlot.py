@@ -15,6 +15,31 @@ from conkit.plot._Figure import Figure
 
 
 class SequenceCoverageFigure(Figure):
+    """A Figure object specifically for a Sequence coverage illustration.
+
+    Description
+    -----------
+    This figure will illustrate the coverage of sequences at each position
+    in the provided alignment. It counts the frequency of sequences at which
+    a residue is present and plots it.
+
+    This figure can be particularly useful in cases where domain boundaries
+    could be redefined. It is also useful in cases where only parts of your
+    alignment are well covered, and thus trimming the alignment might produce
+    much more accurate Evoluationary Covariance predictions.
+
+    Attributes
+    ----------
+    hierarchy : :obj:`conkit.core.SequenceFile`
+       The Multiple Sequence Alignment hierarchy
+
+    Examples
+    --------
+    >>> import conkit
+    >>> msa = conkit.io.read('toxd/toxd.a3m', 'a3m')
+    >>> conkit.plot.SequenceCoverageFigure(msa)
+    
+    """
 
     def __init__(self, hierarchy, **kwargs):
         """A new sequence coverage plot
@@ -33,6 +58,9 @@ class SequenceCoverageFigure(Figure):
         self.hierarchy = hierarchy
 
         self._draw()
+
+    def __repr__(self):
+        return "SequenceCoverageFigure(file_name=\"{0}\")".format(self.file_name)
 
     @property
     def hierarchy(self):

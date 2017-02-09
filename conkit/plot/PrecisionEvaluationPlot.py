@@ -1,5 +1,5 @@
 """
-A module to produce a not sure plot
+A module to produce a precision evaluation plot
 """
 
 from __future__ import division
@@ -15,6 +15,36 @@ from conkit.plot._Figure import Figure
 
 
 class PrecisionEvaluationFigure(Figure):
+    """A Figure object specifically for a Precision evaluation.
+
+    Description
+    -----------
+    This figure will illustrate the precision scores of a contact
+    map at different precision scores. These can be determined at
+    various start and end points with different stepwise increases
+    in between. 
+
+    Attributes
+    ----------
+    hierarchy : :obj:`conkit.core.ContactMap`
+       The contact map hierarchy
+    cutoff_step : float
+       The cutoff step
+    min_cutoff : float
+       The minimum cutoff factor
+    max_cutoff : float
+       The maximum cutoff factor
+
+    Examples
+    --------
+    >>> import conkit
+    >>> cmap = conkit.io.read('toxd/toxd.mat', 'ccmpred').top_map
+    >>> cmap.sequence = conkit.io.read('toxd/toxd.fasta', 'fasta').top_sequence
+    >>> pdb = conkit.io.read('toxd/toxd.pdb', 'pdb').top_map
+    >>> cmap.match(pdb, inplace=True)
+    >>> conkit.plot.PrecisionEvaluationFigure(cmap)
+
+    """
 
     def __init__(self, hierarchy, cutoff_step=0.2, **kwargs):
         """A precision evaluation figure
@@ -23,7 +53,7 @@ class PrecisionEvaluationFigure(Figure):
         ----------
         hierarchy : :obj:`conkit.core.ContactMap`
            The contact map hierarchy
-        step : float, optional
+        cutoff_step : float, optional
            The cutoff step
         **kwargs
            General :obj:`conkit.plot._Figure.Figure` keyword arguments
@@ -38,6 +68,9 @@ class PrecisionEvaluationFigure(Figure):
         self.cutoff_step = cutoff_step
 
         self._draw()
+
+    def __repr__(self):
+        return "PrecisionEvaluationFigure(file_name=\"{0}\")".format(self.file_name)
 
     @property
     def cutoff_step(self):
