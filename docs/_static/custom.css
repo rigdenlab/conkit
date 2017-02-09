@@ -1,28 +1,28 @@
 .navbar-collapse {
-    padding-right: 0px !important;
-    padding-left: 0px !important;
+    padding-right: 0px;
+    padding-left: 0px;
 }
 
 .nav > li > a {
-    padding: 15px 30px 15px 0px !important;
+    padding: 15px 30px 15px 0px;
 }
 
 dd {
-    margin-left: 30px !important;
+    margin-left: 30px;
 }
 
 h1 {
-    font-size: 2.0em !important;
+    font-size: 2.0em;
 }
 h2 {
-    font-size: 1.8em !important;
+    font-size: 1.8em;
 }
 h3 {
-    font-size: 1.6em !important;
+    font-size: 1.6em;
 }
 h4 {
-    font-size: 1.4em !important;
+    font-size: 1.4em;
 }
 h5 {
-    font-size: 1.2em !important;
+    font-size: 1.2em;
 }
