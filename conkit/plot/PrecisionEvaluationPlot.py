@@ -56,7 +56,7 @@ class PrecisionEvaluationFigure(Figure):
         cutoff_step : float, optional
            The cutoff step
         **kwargs
-           General :obj:`conkit.plot._Figure.Figure` keyword arguments
+           General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
 
         """
         super(PrecisionEvaluationFigure, self).__init__(**kwargs)

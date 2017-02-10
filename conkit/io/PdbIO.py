@@ -121,7 +121,7 @@ class PdbParser(_ContactFileParser):
 
         Returns
         -------
-        :obj:`conkit.core.ContactFile`
+        :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
@@ -200,7 +200,8 @@ class PdbParser(_ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`conkit.core.ContactFile`, :obj:`conkit.core.ContactMap` or :obj:`conkit.core.Contact`
+        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
+                    or :obj:`ContactMap <conkit.core.Contact>`
 
         Raises
         ------

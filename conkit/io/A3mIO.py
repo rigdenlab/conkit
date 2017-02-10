@@ -41,7 +41,7 @@ class A3mIO(_SequenceFileParser):
 
         Returns
         -------
-        :obj:`conkit.core.SequenceFile`
+        :obj:`SequenceFile <conkit.core.SequenceFile>`
 
         """
 
@@ -156,7 +156,7 @@ class A3mIO(_SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`conkit.core.SequenceFile`, :obj:`conkit.coreSequence`
+        hierarchy : :obj:`SequenceFile <conkit.core.SequenceFile>`, :obj:`Sequence <conkit.core.Sequence>`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary

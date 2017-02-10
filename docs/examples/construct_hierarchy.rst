@@ -27,7 +27,7 @@ The example above creates a contact between residues ``1`` and ``10`` and assign
    >>> import conkit
    >>> cmap = conkit.core.ContactMap('example')
 
-This example shows you how to create a :obj:`conkit.core.ContactMap` which can store a :obj:`conkit.core.Contact`.
+This example shows you how to create a :obj:`ContactMap <conkit.core.ContactMap>` which can store a :obj:`Contact <conkit.core.Contact>`.
 
 3. How to create a ContactFile?
 
@@ -36,16 +36,16 @@ This example shows you how to create a :obj:`conkit.core.ContactMap` which can s
    >>> import conkit
    >>> cmap = conkit.core.ContactFile('example')
 
-This example shows you how to create a :obj:`conkit.core.ContactFile` which can store a :obj:`conkit.core.ContactMap`.
+This example shows you how to create a :obj:`ContactFile <conkit.core.ContactFile>` which can store a :obj:`ContactMap <conkit.core.ContactMap>`.
 
 .. note::
 
-   In general terms the entities for sequence-related objects are identical, except that they are :obj:`conkit.core.Sequence` and :obj:`conkit.core.SequenceFile`.
+   In general terms the entities for sequence-related objects are identical, except that they are :obj:`Sequence <conkit.core.Sequence>` and :obj:`SequenceFile <conkit.core.SequenceFile>`.
 
 Hierarchy
 +++++++++
 
-Above is an outline for the different contact-related entities. Each higher entity allows you to store one or more lower-level ones, i.e. you can store one or more :obj:`conkit.core.ContactMap` entities in a single :obj:`conkit.core.ContactFile`. Similarly, you could many :obj:`conkit.core.Contact` entities in a :obj:`conkit.core.ContactMap`; however, be aware that all **must** have unique IDs.
+Above is an outline for the different contact-related entities. Each higher entity allows you to store one or more lower-level ones, i.e. you can store one or more :obj:`ContactMap <conkit.core.ContactMap>` entities in a single :obj:`ContactFile <conkit.core.ContactFile>`. Similarly, you could many :obj:`Contact <conkit.core.Contact>` entities in a :obj:`ContactMap <conkit.core.ContactMap>`; however, be aware that all **must** have unique IDs.
 
 To illustrate how you can combine the entities, look at the following:
 
