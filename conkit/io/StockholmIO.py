@@ -74,8 +74,8 @@ class StockholmIO(_SequenceFileParser):
             elif GR_RECORD.match(line):
                 pass
 
-            elif SEQ_RECORD.match(line):
-                ident, seq = SEQ_RECORD.match(line).groups()
+            elif len(line.split()) == 2 and line.split()[0] in sequence_file:
+                ident, seq = line.replace('.', '-').split()
                 sequence_file[ident].seq = sequence_file[ident].seq + seq
 
             line = f_handle.readline().rstrip()
