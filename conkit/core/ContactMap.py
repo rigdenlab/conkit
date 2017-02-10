@@ -167,11 +167,15 @@ class ContactMap(Entity):
         uk_count = numpy.sum(numpy.where(status_array == 0, 1, 0))
         tp_count = numpy.sum(numpy.where(status_array == 1, 1, 0))
 
-        if fp_count == 0.0 and tp_count == 0.0:
-            warnings.warn('Contact status unknown. Match two contact maps first!')
+        # ContactMap is empty
+        if len(self) == 0:
+            return 0.0
+        elif fp_count == 0.0 and tp_count == 0.0:
+            warnings.warn("No matches or mismatches found in your contact map. Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
-            warnings.warn('Some contacts in your map are unmatched - Precision value might be inaccurate')
+            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical "
+                          "sequences. The precision value might be inaccurate.")
 
         return tp_count / (tp_count + fp_count)
 
@@ -562,7 +566,7 @@ class ContactMap(Entity):
 
         Warnings
         --------
-        'This function has been deprecated. Please use conkit.plot.ContactMapFigure() instead.'
+        This function has been deprecated. Please use :obj:`conkit.plot.ContactMapFigure` instead.
 
         """
         warnings.warn('This function has been deprecated. Please use conkit.plot.ContactMapFigure() instead.')
