@@ -8,6 +8,12 @@ from conkit.core.SequenceFile import SequenceFile
 
 import unittest
 
+try:
+    import scipy
+    SCIPY_AVAILABLE = True 
+except ImportError:
+    SCIPY_AVAILABLE = False
+
 
 class Test(unittest.TestCase):
 
@@ -96,6 +102,7 @@ class Test(unittest.TestCase):
         sequence_file.add(sequence2)
         self.assertEqual(sequence1, sequence_file.top_sequence)
 
+    @unittest.skipUnless(SCIPY_AVAILABLE, "SciPy not installed")
     def test_calculate_meff(self):
         # ======================================================
         # Test Case 1
