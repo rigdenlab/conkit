@@ -54,7 +54,7 @@ class PconsParser(_ContactFileParser):
 
         Returns
         -------
-        :obj:`conkit.core.ContactFile`
+        :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
         contact_file = ContactFile(f_id)
@@ -118,7 +118,8 @@ class PconsParser(_ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`conkit.core.ContactFile`, :obj:`conkit.core.ContactMap` or :obj:`conkit.core.Contact`
+        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
+                    or :obj:`Contact <conkit.core.Contact>`
 
         Raises
         ------

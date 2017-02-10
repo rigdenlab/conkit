@@ -29,11 +29,11 @@ class ContactMapFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`conkit.core.ContactMap`
+    hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
        The default contact map hierarchy
-    other : :obj:`conkit.core.ContactMap`
+    other : :obj:`ContactMap <conkit.core.ContactMap>`
        The second contact map hierarchy
-    reference : :obj:`conkit.core.ContactMap`
+    reference : :obj:`ContactMap <conkit.core.ContactMap>`
        The reference contact map hierarchy
     altloc : bool
        Use the res_altloc positions [default: False]
@@ -53,18 +53,18 @@ class ContactMapFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`conkit.core.ContactMap`
+        hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
            The default contact map hierarchy
-        other : :obj:`conkit.core.ContactMap`, optional
+        other : :obj:`ContactMap <conkit.core.ContactMap>`, optional
            The second contact map hierarchy
-        reference : :obj:`conkit.core.ContactMap`, optional
+        reference : :obj:`ContactMap <conkit.core.ContactMap>`, optional
            The reference contact map hierarchy
         altloc : bool, optional
            Use the res_altloc positions [default: False]
         use_conf : bool, optional
            The marker size will correspond to the raw score [default: False]
         **kwargs
-           General :obj:`conkit.plot._Figure.Figure` keyword arguments
+           General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
 
         """
         super(ContactMapFigure, self).__init__(**kwargs)

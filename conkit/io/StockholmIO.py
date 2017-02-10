@@ -39,7 +39,7 @@ class StockholmIO(_SequenceFileParser):
 
         Returns
         -------
-        :obj:`conkit.core.SequenceFile`
+        :obj:`SequenceFile <conkit.core.SequenceFile>`
 
         """
 
@@ -74,8 +74,8 @@ class StockholmIO(_SequenceFileParser):
             elif GR_RECORD.match(line):
                 pass
 
-            elif SEQ_RECORD.match(line):
-                ident, seq = SEQ_RECORD.match(line).groups()
+            elif len(line.split()) == 2 and line.split()[0] in sequence_file:
+                ident, seq = line.replace('.', '-').split()
                 sequence_file[ident].seq = sequence_file[ident].seq + seq
 
             line = f_handle.readline().rstrip()
@@ -93,7 +93,7 @@ class StockholmIO(_SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`conkit.core.SequenceFile` or :obj:`conkit.core.Sequence`
+        hierarchy : :obj:`SequenceFile <conkit.core.SequenceFile>` or :obj:`Sequence <conkit.core.Sequence>`
 
         """
         # Double check the type of sequence_file and reconstruct if necessary

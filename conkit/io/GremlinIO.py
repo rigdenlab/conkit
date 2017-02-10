@@ -38,7 +38,7 @@ class GremlinParser(_ContactFileParser):
 
         Returns
         -------
-        :obj:`conkit.core.ContactFile`
+        :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
         hierarchy = ContactFile(f_id)
@@ -118,7 +118,8 @@ class GremlinParser(_ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`conkit.core.ContactFile`, :obj:`conkit.core.ContactMap` or :obj:`conkit.core.Contact`
+        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
+                    or :obj:`Contact <conkit.core.Contact>`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary

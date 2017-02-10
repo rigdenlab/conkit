@@ -21,15 +21,15 @@ class ContactFile(Entity):
     Attributes
     ----------
     author : str
-       The author of the :obj:`conkit.core.ContactFile`
+       The author of the :obj:`ContactFile <conkit.core.ContactFile>`
     method : list, str
-       The :obj:`conkit.core.ContactFile`-specific method
+       The :obj:`ContactFile <conkit.core.ContactFile>`-specific method
     remark : list, str
-       The :obj:`conkit.core.ContactFile`-specific remarks
+       The :obj:`ContactFile <conkit.core.ContactFile>`-specific remarks
     target : str
        The target name
-    top_map : :obj:`conkit.core.ContactMap`
-       The first :obj:`conkit.core.ContactMap` entry in :obj:`conkit.core.ContactFile`
+    top_map : :obj:`ContactMap <conkit.core.ContactMap>`
+       The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
 
     Examples
     --------
@@ -63,12 +63,12 @@ class ContactFile(Entity):
 
     @property
     def author(self):
-        """The author of the :obj:`conkit.core.ContactFile`"""
+        """The author of the :obj:`ContactFile <conkit.core.ContactFile>`"""
         return self._author
 
     @author.setter
     def author(self, author):
-        """Define the author of the :obj:`conkit.core.ContactFile`
+        """Define the author of the :obj:`ContactFile <conkit.core.ContactFile>`
 
         Parameters
         ----------
@@ -79,12 +79,12 @@ class ContactFile(Entity):
 
     @property
     def method(self):
-        """The :obj:`conkit.core.ContactFile`-specific method"""
+        """The :obj:`ContactFile <conkit.core.ContactFile>`-specific method"""
         return self._method
 
     @method.setter
     def method(self, method):
-        """Set the :obj:`conkit.core.ContactFile` method
+        """Set the :obj:`ContactFile <conkit.core.ContactFile>` method
 
         Parameters
         ----------
@@ -101,12 +101,12 @@ class ContactFile(Entity):
 
     @property
     def remark(self):
-        """The :obj:`conkit.core.ContactFile`-specific remarks"""
+        """The :obj:`ContactFile <conkit.core.ContactFile>`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`conkit.core.ContactFile` remark
+        """Set the :obj:`ContactFile <conkit.core.ContactFile>` remark
 
         Parameters
         ----------
@@ -139,12 +139,12 @@ class ContactFile(Entity):
 
     @property
     def top_map(self):
-        """The first :obj:`conkit.core.ContactMap` entry in :obj:`conkit.core.ContactFile`
+        """The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
 
         Returns
         -------
-        top_map : :obj:`conkit.core.ContactMap`, None
-           The first :obj:`conkit.core.ContactMap` entry in :obj:`conkit.core.ContactFile`
+        top_map : :obj:`ContactMap <conkit.core.ContactMap>`, None
+           The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
         if len(self) > 0:
@@ -153,7 +153,7 @@ class ContactFile(Entity):
             return None
 
     def sort(self, kword, reverse=False, inplace=False):
-        """Sort the :obj:`conkit.core.ContactFile`
+        """Sort the :obj:`ContactFile <conkit.core.ContactFile>`
 
         Parameters
         ----------
@@ -166,13 +166,13 @@ class ContactFile(Entity):
 
         Returns
         -------
-        contact_map : :obj:`conkit.core.ContactMap`
-           The reference to the :obj:`conkit.core.ContactMap`, regardless of inplace
+        contact_map : :obj:`ContactMap <conkit.core.ContactMap>`
+           The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
 
         Raises
         ------
         ValueError
-           ``kword`` not in :obj:`conkit.core.ContactFile`
+           ``kword`` not in :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
         contact_file = self._inplace(inplace)

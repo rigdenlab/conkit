@@ -62,7 +62,6 @@ Please use the `GitHub Issue Tracker`_.
 Ackowledgements
 +++++++++++++++
 - `Stefan Seemayer <https://github.com/sseemayer>`_
-- `BioPython <https://www.biopython.org>`_
 
 
 .. _GitHub Issue Tracker: https://github.com/rigdenlab/conkit/issues
