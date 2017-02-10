@@ -133,3 +133,11 @@ class Figure(object):
             raise ValueError("Type {0} is unknown".format(t))
         elif not isinstance(h, dict[t]):
             raise TypeError("Provided hierarchy is not a {0}".format(t))
+
+    @staticmethod
+    def _correct_aspect(ax, aspectratio):
+        """Adjust the aspect ratio"""
+        # Credits to http://stackoverflow.com/q/4747051/3046533
+        #     !!! Works only for non-logarithmic axes !!!
+        ratio_default = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
+        return float(ratio_default * aspectratio)

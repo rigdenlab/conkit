@@ -219,7 +219,8 @@ class ContactMapFigure(Figure):
                   loc=3, ncol=3, mode="expand", borderaxespad=0.)
 
         # Make both axes identical in length and remove whitespace around the plot
-        ax.set(aspect=1.0)
+        aspectratio = Figure._correct_aspect(ax, 1.0)
+        ax.set(aspect=aspectratio)
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight')

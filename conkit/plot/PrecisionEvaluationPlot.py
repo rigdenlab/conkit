@@ -177,6 +177,8 @@ class PrecisionEvaluationFigure(Figure):
         ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
 
         # Make axes length proportional and remove whitespace around the plot
+        aspectratio = Figure._correct_aspect(ax, 0.3)
+        ax.set(aspect=aspectratio)
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight')

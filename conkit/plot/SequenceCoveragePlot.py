@@ -91,16 +91,17 @@ class SequenceCoverageFigure(Figure):
         """Draw the actual plot"""
 
         residues = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1)
-        aa_frequencies = numpy.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.top_sequence.seq_len
+        aa_counts = numpy.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseqs
 
         fig, ax = matplotlib.pyplot.subplots(dpi=self.dpi)
 
-        ax.axhline(self._hierarchy.top_sequence.seq_len * 0.3, color='r', label='30% Coverage')
-        ax.axhline(self._hierarchy.top_sequence.seq_len * 0.6, color='g', label='60% Coverage')
+        # Add lines as quality indicators
+        ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color='r', label='5 x Nresidues')
+        if any(x > self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
+            ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color='g', label='20 x Nresidues')
 
-        ax.plot(residues, aa_frequencies, color='#000000', marker='o', linestyle='-',
+        ax.plot(residues, aa_counts, color='#000000', marker='o', linestyle='-',
                 markersize=5, label='Amino acid count')
-
 
         # Prettify the plot
         step = int((self._hierarchy.top_sequence.seq_len + 1) / 10)
@@ -113,7 +114,8 @@ class SequenceCoverageFigure(Figure):
         ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
 
         # Make axes length proportional and remove whitespace around the plot
-        ax.set(aspect=0.3)
+        aspectratio = Figure._correct_aspect(ax, 0.3)
+        ax.set(aspect=aspectratio)
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight')
