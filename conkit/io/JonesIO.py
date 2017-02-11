@@ -13,7 +13,6 @@ from conkit.io._ParserIO import _SequenceFileParser
 import os
 import re
 
-SEQ_RECORD = re.compile(r'^([A-Z0-9~-]+)$')
 
 class JonesIO(_SequenceFileParser):
     """Parser class for Jones sequence files
@@ -53,13 +52,10 @@ class JonesIO(_SequenceFileParser):
 
         for i, line in enumerate(f_handle):
 
-            if not line:
+            if not line.rstrip():
                 continue
 
-            if not SEQ_RECORD.match(line):
-                raise ValueError('Unknown entry in line {0}: {1}'.format(i+1, line))
-
-            sequence = SEQ_RECORD.match(line).group(1)
+            sequence = line.rstrip()
             sequence_entry = Sequence('seq_{i}'.format(i=i), sequence)
 
             hierarchy.add(sequence_entry)
