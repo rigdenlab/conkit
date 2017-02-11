@@ -62,11 +62,14 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
     def test_write(self):
         # ==================================================
         # Multiple sequence alignment
-        msa = """GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF
-EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
-EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
-EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
-"""
+        msa = [
+            "GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF",
+            "EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA",
+            "EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF",
+            "EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF",
+            "",
+        ]
+        msa = os.linesep.join(msa)
         f_name_in = create_tmp_f(content=msa)
         f_name_out = create_tmp_f()
         parser = JonesIO()

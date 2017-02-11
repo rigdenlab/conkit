@@ -129,12 +129,15 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             GremlinParser().write(f_out, contact_file)
-        content = """i	j	i_id	j_id	r_sco	s_sco	prob
-1	9	1_H	9_L	0.7	1.0	1.0
-1	10	1_H	10_L	0.7	1.0	1.0
-2	8	2_L	8_I	0.9	1.3	1.0
-3	12	3_E	12_K	0.4	0.6	1.0
-""".format(sep="\t")
+        content = [
+            "i	j	i_id	j_id	r_sco	s_sco	prob",
+            "1	9	1_H	9_L	0.7	1.0	1.0",
+            "1	10	1_H	10_L	0.7	1.0	1.0",
+            "2	8	2_L	8_I	0.9	1.3	1.0",
+            "3	12	3_E	12_K	0.4	0.6	1.0",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -151,12 +154,15 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             GremlinParser().write(f_out, contact_file)
-        content = """i	j	i_id	j_id	r_sco	s_sco	prob
-1	9	1_X	9_X	0.7	1.0	1.0
-1	10	1_X	10_X	0.7	1.0	1.0
-2	8	2_X	8_X	0.9	1.3	1.0
-3	12	3_X	12_X	0.4	0.6	1.0
-""".format(sep="\t")
+        content = [
+            "i	j	i_id	j_id	r_sco	s_sco	prob",
+            "1	9	1_X	9_X	0.7	1.0	1.0",
+            "1	10	1_X	10_X	0.7	1.0	1.0",
+            "2	8	2_X	8_X	0.9	1.3	1.0",
+            "3	12	3_X	12_X	0.4	0.6	1.0",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -181,20 +187,23 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             GremlinParser().write(f_out, contact_file)
-        content = """i	j	gene	i_id	j_id	r_sco	s_sco	prob	I_prob
-1	9	A	1_H	9_L	0.7	1.0	1.0	N/A
-1	10	A	1_H	10_L	0.7	1.0	1.0	N/A
-2	8	A	2_L	8_I	0.9	1.3	1.0	N/A
-3	12	A	3_E	12_K	0.4	0.6	1.0	N/A
-1	9	AB	1_H	9_L	0.7	1.0	1.0	N/A
-1	10	AB	1_H	10_L	0.7	1.0	1.0	N/A
-2	8	AB	2_L	8_I	0.9	1.3	1.0	N/A
-3	12	AB	3_E	12_K	0.4	0.6	1.0	N/A
-1	9	B	1_H	9_L	0.7	1.0	1.0	N/A
-1	10	B	1_H	10_L	0.7	1.0	1.0	N/A
-2	8	B	2_L	8_I	0.9	1.3	1.0	N/A
-3	12	B	3_E	12_K	0.4	0.6	1.0	N/A
-""".format(sep="\t")
+        content = [
+            "i	j	gene	i_id	j_id	r_sco	s_sco	prob	I_prob",
+            "1	9	A	1_H	9_L	0.7	1.0	1.0	N/A",
+            "1	10	A	1_H	10_L	0.7	1.0	1.0	N/A",
+            "2	8	A	2_L	8_I	0.9	1.3	1.0	N/A",
+            "3	12	A	3_E	12_K	0.4	0.6	1.0	N/A",
+            "1	9	AB	1_H	9_L	0.7	1.0	1.0	N/A",
+            "1	10	AB	1_H	10_L	0.7	1.0	1.0	N/A",
+            "2	8	AB	2_L	8_I	0.9	1.3	1.0	N/A",
+            "3	12	AB	3_E	12_K	0.4	0.6	1.0	N/A",
+            "1	9	B	1_H	9_L	0.7	1.0	1.0	N/A",
+            "1	10	B	1_H	10_L	0.7	1.0	1.0	N/A",
+            "2	8	B	2_L	8_I	0.9	1.3	1.0	N/A",
+            "3	12	B	3_E	12_K	0.4	0.6	1.0	N/A",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)

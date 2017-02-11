@@ -84,11 +84,14 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
     def test_write(self):
         # ==================================================
         # Normal sequence mode
-        seq = """>00FAF_A|<unknown description>
-GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
-EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
-SSEHP
-"""
+        seq = [
+            ">00FAF_A|<unknown description>",
+            "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK",
+            "EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA",
+            "SSEHP",
+            "",
+        ]
+        seq = os.linesep.join(seq)
         f_name_in = create_tmp_f(content=seq)
         f_name_out = create_tmp_f()
         parser = FastaIO()
@@ -103,10 +106,13 @@ SSEHP
         os.unlink(f_name_out)
         # ==================================================
         # Normal sequence mode - with comment
-        seq = """# Hello World
->00FAF_A|<unknown description>
-GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
-"""
+        seq = [
+            "# Hello World",
+            ">00FAF_A|<unknown description>",
+            "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK",
+            "",
+        ]
+        seq = os.linesep.join(seq)
         f_name_in = create_tmp_f(content=seq)
         f_name_out = create_tmp_f()
         parser = FastaIO()
@@ -121,15 +127,18 @@ GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
         os.unlink(f_name_out)
         # ==================================================
         # Multiple sequence alignment
-        msa = """#foo
-#bar
->seq1
-GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYF
->seq2
-EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA
->seq3
-EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
-"""
+        msa = [
+            "#foo",
+            "#bar",
+            ">seq1",
+            "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYF",
+            ">seq2",
+            "EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA",
+            ">seq3",
+            "EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF",
+            "",
+        ]
+        msa = os.linesep.join(msa)
         f_name_in = create_tmp_f(content=msa)
         f_name_out = create_tmp_f()
         parser = FastaIO()

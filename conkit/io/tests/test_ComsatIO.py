@@ -78,11 +78,14 @@ class Test(unittest.TestCase):
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             ComsatParser().write(f_out, contact_file)
-        content = """1	H	9	L	Hx-Hx
-1	H	10	L	Hx-Hx
-2	L	8	I	Hx-Hx
-3	E	12	K	Hx-Hx
-"""
+        content = [
+            "1	H	9	L	Hx-Hx",
+            "1	H	10	L	Hx-Hx",
+            "2	L	8	I	Hx-Hx",
+            "3	E	12	K	Hx-Hx",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)

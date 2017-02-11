@@ -66,12 +66,15 @@ H1      19      L       H2      55      F       0.782741
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             MemBrainParser().write(f_out, contact_file)
-        content = """Helix   Position        Residue Helix   Position        Residue Probability
-Hx      1       H       Hx      9       L       0.700000
-Hx      1       H       Hx      10      L       0.700000
-Hx      2       L       Hx      8       I       0.900000
-Hx      3       E       Hx      12      K       0.400000
-"""
+        content = [
+            "Helix   Position        Residue Helix   Position        Residue Probability",
+            "Hx      1       H       Hx      9       L       0.700000",
+            "Hx      1       H       Hx      10      L       0.700000",
+            "Hx      2       L       Hx      8       I       0.900000",
+            "Hx      3       E       Hx      12      K       0.400000",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)

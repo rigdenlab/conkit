@@ -63,11 +63,14 @@ class Test(unittest.TestCase):
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             FreeContactParser().write(f_out, contact_file)
-        content = """1 H 9 L 0.7 0
-1 H 10 L 0.7 0
-2 L 8 I 0.9 0
-3 E 12 K 0.4 0
-"""
+        content = [
+            "1 H 9 L 0.7 0",
+            "1 H 10 L 0.7 0",
+            "2 L 8 I 0.9 0",
+            "3 E 12 K 0.4 0",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)

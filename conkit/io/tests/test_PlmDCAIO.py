@@ -62,11 +62,14 @@ class Test(unittest.TestCase):
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             PlmDCAParser().write(f_out, contact_file)
-        content = """1,9,0.700000
-1,10,0.700000
-2,8,0.900000
-3,12,0.400000
-"""
+        content = [
+            "1,9,0.700000",
+            "1,10,0.700000",
+            "2,8,0.900000",
+            "3,12,0.400000",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)

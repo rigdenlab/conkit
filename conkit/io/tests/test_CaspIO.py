@@ -271,21 +271,24 @@ END
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             CaspParser().write(f_out, contact_file)
-        content = """PFRMAT RR
-TARGET R9999
-AUTHOR 1234-5678-9000
-REMARK Predictor remarks
-METHOD Description of methods used
-METHOD Description of methods used
-MODEL  1
-HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD
-1    9    0   8   0.700000
-1    10   0   8   0.700000
-2    8    0   8   0.900000
-3    12   0   8   0.400000
-ENDMDL
-END
-"""
+        content = [
+            "PFRMAT RR",
+            "TARGET R9999",
+            "AUTHOR 1234-5678-9000",
+            "REMARK Predictor remarks",
+            "METHOD Description of methods used",
+            "METHOD Description of methods used",
+            "MODEL  1",
+            "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD",
+            "1    9    0   8   0.700000",
+            "1    10   0   8   0.700000",
+            "2    8    0   8   0.900000",
+            "3    12   0   8   0.400000",
+            "ENDMDL",
+            "END",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -303,16 +306,19 @@ END
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             CaspParser().write(f_out, contact_file)
-        content = """PFRMAT RR
-MODEL  1
-HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD
-1    9    0   8   0.700000
-1    10   0   8   0.700000
-2    8    0   8   0.900000
-3    12   0   8   0.400000
-ENDMDL
-END
-"""
+        content = [
+            "PFRMAT RR",
+            "MODEL  1",
+            "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD",
+            "1    9    0   8   0.700000",
+            "1    10   0   8   0.700000",
+            "2    8    0   8   0.900000",
+            "3    12   0   8   0.400000",
+            "ENDMDL",
+            "END",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -329,15 +335,18 @@ END
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             CaspParser().write(f_out, contact_file)
-        content = """PFRMAT RR
-MODEL  1
-1    9    0   8   0.700000
-1    10   0   8   0.700000
-2    8    0   8   0.900000
-3    12   0   8   0.400000
-ENDMDL
-END
-"""
+        content = [
+            "PFRMAT RR",
+            "MODEL  1",
+            "1    9    0   8   0.700000",
+            "1    10   0   8   0.700000",
+            "2    8    0   8   0.900000",
+            "3    12   0   8   0.400000",
+            "ENDMDL",
+            "END",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -355,17 +364,20 @@ END
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             CaspParser().write(f_out, contact_file)
-        content = """PFRMAT RR
-MODEL  1
-HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF
-DGCHDFGRTYIWQMSD
-1    9    0   8   0.700000
-1    10   0   8   0.700000
-2    8    0   8   0.900000
-3    12   0   8   0.400000
-ENDMDL
-END
-"""
+        content = [
+            "PFRMAT RR",
+            "MODEL  1",
+            "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF",
+            "DGCHDFGRTYIWQMSD",
+            "1    9    0   8   0.700000",
+            "1    10   0   8   0.700000",
+            "2    8    0   8   0.900000",
+            "3    12   0   8   0.400000",
+            "ENDMDL",
+            "END",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -383,17 +395,20 @@ END
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             CaspParser().write(f_out, contact_file)
-        content = """PFRMAT RR
-MODEL  1
-HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF
-DGCHDFGRTYIWQMSD
-1    9    0   8   1.000000
-1    10   0   8   0.000000
-2    8    0   8   0.666667
-3    12   0   8   0.388889
-ENDMDL
-END
-"""
+        content = [
+            "PFRMAT RR",
+            "MODEL  1",
+            "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF",
+            "DGCHDFGRTYIWQMSD",
+            "1    9    0   8   1.000000",
+            "1    10   0   8   0.000000",
+            "2    8    0   8   0.666667",
+            "3    12   0   8   0.388889",
+            "ENDMDL",
+            "END",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
@@ -416,19 +431,23 @@ END
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             CaspParser().write(f_out, contact_file)
-        content = """PFRMAT RR
-MODEL  1
-HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF
-DGCHDFGRTYIWQMSD
-A1    B9    0   8   0.700000
-A1    B10   0   8   0.700000
-A2    B8    0   8   0.900000
-A3    B12   0   8   0.400000
-ENDMDL
-END
-"""
+        content = [
+            "PFRMAT RR",
+            "MODEL  1",
+            "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVF",
+            "DGCHDFGRTYIWQMSD",
+            "A1    B9    0   8   0.700000",
+            "A1    B10   0   8   0.700000",
+            "A2    B8    0   8   0.900000",
+            "A3    B12   0   8   0.400000",
+            "ENDMDL",
+            "END",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
+        self.assertEqual(content, data)
         os.unlink(f_name)
 
 

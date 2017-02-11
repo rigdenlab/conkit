@@ -198,26 +198,29 @@ Res1 Res2 Score
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             PconsParser().write(f_out, contact_file)
-        content = """##############################################################################
-PconsC3 result file
-Generated from ConKit
-##############################################################################
-Sequence number: 1
-Sequence name: sequence_1
-Sequence length: 33 aa.
-Sequence:
-HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD
-
-
-Predicted contacts:
-Res1 Res2 Score
-   1    9 0.700000
-   1   10 0.700000
-   2    8 0.900000
-   3   12 0.400000
-
-##############################################################################
-"""
+        content = [
+            "##############################################################################",
+            "PconsC3 result file",
+            "Generated from ConKit",
+            "##############################################################################",
+            "Sequence number: 1",
+            "Sequence name: sequence_1",
+            "Sequence length: 33 aa.",
+            "Sequence:",
+            "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD",
+            "",
+            "",
+            "Predicted contacts:",
+            "Res1 Res2 Score",
+            "   1    9 0.700000",
+            "   1   10 0.700000",
+            "   2    8 0.900000",
+            "   3   12 0.400000",
+            "",
+            "##############################################################################",
+            "",
+        ]
+        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
             data = "".join(f_in.readlines())
         self.assertEqual(content, data)
