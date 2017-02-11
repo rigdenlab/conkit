@@ -52,10 +52,20 @@ class JonesIO(_SequenceFileParser):
 
         for i, line in enumerate(f_handle):
 
-            if not line.rstrip():
+            line = line.rstrip()
+            if not line:
                 continue
 
-            sequence = line.rstrip()
+            for a, c in enumerate(line):
+                if c.isalpha() or c == '-':
+                    continue
+                else:
+                    indicator = ['-'] * len(line)
+                    indicator[a] = '^'
+                    msg = "Unknown character in line {0}:{1}{1}{2}{1}{3}"
+                    msg = msg.format(i+1, os.linesep, line, ''.join(indicator))
+                    raise ValueError(msg)
+            sequence = line
             sequence_entry = Sequence('seq_{i}'.format(i=i), sequence)
 
             hierarchy.add(sequence_entry)
