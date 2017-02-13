@@ -155,7 +155,7 @@ class PrecisionEvaluationFigure(Figure):
             m = self._hierarchy[:ncontacts]
             precisions[i] = m.precision
 
-        fig, ax = matplotlib.pyplot.subplots(dpi=self.dpi)
+        fig, ax = matplotlib.pyplot.subplots()
 
         ax.axhline(0.5, color='g', label='50% Precision')
 
@@ -181,4 +181,4 @@ class PrecisionEvaluationFigure(Figure):
         ax.set(aspect=aspectratio)
         fig.tight_layout()
 
-        fig.savefig(self.file_name, bbox_inches='tight')
+        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)

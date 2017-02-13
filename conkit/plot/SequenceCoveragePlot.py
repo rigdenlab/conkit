@@ -93,7 +93,7 @@ class SequenceCoverageFigure(Figure):
         residues = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1)
         aa_counts = numpy.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseqs
 
-        fig, ax = matplotlib.pyplot.subplots(dpi=self.dpi)
+        fig, ax = matplotlib.pyplot.subplots()
 
         # Add lines as quality indicators
         ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color='r', label='5 x Nresidues')
@@ -118,4 +118,4 @@ class SequenceCoverageFigure(Figure):
         ax.set(aspect=aspectratio)
         fig.tight_layout()
 
-        fig.savefig(self.file_name, bbox_inches='tight')
+        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)

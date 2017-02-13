@@ -128,7 +128,7 @@ class ContactMapFigure(Figure):
     def _draw(self):
         """Draw the actual plot"""
 
-        fig, ax = matplotlib.pyplot.subplots(dpi=self.dpi)
+        fig, ax = matplotlib.pyplot.subplots()
 
         # Plot the other_ref contacts
         if self._reference:
@@ -223,4 +223,4 @@ class ContactMapFigure(Figure):
         ax.set(aspect=aspectratio)
         fig.tight_layout()
 
-        fig.savefig(self.file_name, bbox_inches='tight')
+        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
