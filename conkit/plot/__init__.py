@@ -8,5 +8,6 @@ import matplotlib
 matplotlib.use('Agg')
 
 from conkit.plot.ContactMapPlot import ContactMapFigure
+from conkit.plot.ContactMapChordPlot import ContactMapChordFigure
 from conkit.plot.PrecisionEvaluationPlot import PrecisionEvaluationFigure
 from conkit.plot.SequenceCoveragePlot import SequenceCoverageFigure
