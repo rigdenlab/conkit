@@ -36,8 +36,8 @@ class Figure(object):
 
     # From matplotlib.Figure.savefig documentation:
     #     One of the file extensions supported by the active
-    #     backend. Most backends support png, pdf, ps, eps and svg.
-    FORMATS = ('png', 'pdf', 'ps', 'eps', 'svg')
+    #     backend. Most backends support png, pdf, ps, eps, svg and jpg.
+    FORMATS = ('eps', 'jpg', 'pdf', 'png', 'ps', 'svg')
 
     def __init__(self, **kwargs):
         """Initialise a new :obj:`conkit.plot.Figure` object"""
@@ -101,7 +101,7 @@ class Figure(object):
 
         """
         if format not in Figure.FORMATS:
-            msg = "Figure format not supported, please use one of {0}".format(' '.join(Figure.FORMATS))
+            msg = "Figure format not supported, please use one of [ {0} ]".format(' | '.join(Figure.FORMATS))
             raise ValueError(msg)
         self._format = format
 
