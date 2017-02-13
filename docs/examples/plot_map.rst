@@ -18,6 +18,7 @@ The call above uses the contact prediction file ``toxd.mat`` file, which is in `
 
 .. image:: images/toxd_cmap_simple.png
    :alt: Toxd CMap Simple
+   :width: 500px
 
 --------------------------------------------------------------
 
@@ -33,6 +34,7 @@ The call above produces a contact map plot looking like this. The gray points ar
 
 .. image:: images/toxd_cmap_reference.png
    :alt: Toxd CMap Reference
+   :width: 500px
 
 --------------------------------------------------------------
 
@@ -46,6 +48,7 @@ The call above produces a contact map plot looking like this. The gray points ar
 
 .. image:: images/toxd_cmap_advanced.png
    :alt: Toxd CMap Advanced
+   :width: 500px
 
 --------------------------------------------------------------
 
@@ -59,6 +62,7 @@ The call above produces a contact map plot looking like this. All parameters and
 
 .. image:: images/toxd_cmap_confidence.png
    :alt: Toxd CMap Confidence
+   :width: 500px
 
 .. note::
 
