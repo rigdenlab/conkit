@@ -16,9 +16,6 @@ This script analyses a Multiple Sequence Alignment. It provides you estimates
 about the quality, which will allow you to determine its usefulness for covariance-
 based contact prediction.
 
-The Number of Effective Sequences is calculated using the definition of Morcos et al., 2011.
-We use a pairwise sequence identity threshold of 70% to define the binary value of similarity.
-
 """
 
 
