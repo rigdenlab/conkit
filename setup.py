@@ -29,7 +29,7 @@ setup(
     package_dir={'conkit': 'conkit'},
     packages=find_packages(exclude="tests"),
     scripts=[script for script in glob.glob("scripts/*")],
-    platforms=['Linux', 'Mac OS-X', 'Unix'],
+    platforms=['Linux', 'Mac OS-X', 'Unix', 'Windows'],
     install_requires=['numpy >=1.8.2', 'scipy >=0.16.0', 'biopython >=1.64', 'matplotlib >=1.3.1'],
     classifiers=[
         "Development Status :: 4 - Beta",
