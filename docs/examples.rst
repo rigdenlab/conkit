@@ -41,7 +41,7 @@ All applicable examples will outline both approaches. However, please do note th
 |    _static/medium.png |     An example to illustrate how to manually construct a ConKit hierarchy             |
 |    :width: 40px       |                                                                                       |
 +-----------------------+---------------------------------------------------------------------------------------+
-| The colors in this table indicate the difficulty of each of the examples.                                     |
+| The colors in this table indicate the difficulty of each example.                                             |
 +---------------------------------------------------------------------------------------------------------------+
 
 
