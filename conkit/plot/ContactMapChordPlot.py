@@ -44,7 +44,7 @@ class ContactMapChordFigure(Figure):
         'K': '#008856', 'L': '#E68FAC', 'M': '#0067A5', 'N': '#F99379',
         'P': '#604E97', 'Q': '#F6A600', 'R': '#B3446C', 'S': '#DCD300',
         'T': '#8DB600', 'V': '#654522', 'W': '#E25822', 'Y': '#2B3D26',
-        'X': '#F2F3F4'
+        'X': '#000000'
     }
 
     def __init__(self, hierarchy, use_conf=False, **kwargs):
@@ -111,46 +111,46 @@ class ContactMapChordFigure(Figure):
         for i in numpy.arange(npoints):
             verts[i] = [npoints * numpy.cos(space * i), npoints * numpy.sin(space * i)]
 
+        # Instantiate the figure
         fig, ax = matplotlib.pyplot.subplots()
 
         # Calculate and plot the Bezier curves
         bezier_path = numpy.arange(0, 1.01, 0.01)
         for c in self_data:
-            x1, y1 = verts[int(c[1]) - self_data_range[0]]
-            x2, y2 = verts[int(c[3]) - self_data_range[0]]
+            x1, y1 = verts[int(c[1]) - self_data_range.min()]
+            x2, y2 = verts[int(c[3]) - self_data_range.min()]
             xb, yb = [0, 0]                  # Midpoint the curve is supposed to approach
-
             x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path ** 2 * x2
             y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path ** 2 * y2
-
             ax.plot(x, y, color="#000000", alpha=float(c[4]), linestyle="-", zorder=0)
 
         # Get the amino acids if available
         #     - get the residue data from the original data array
-        residue_data = numpy.append(
-            self_data[:, [1, 0]], self_data[:, [3, 2]]
-        ).reshape(self_data.T[0].shape[0] * 2, 2)
+        residue_data = numpy.append(self_data[:, [1, 0]], self_data[:, [3, 2]]).reshape(self_data.T[0].shape[0] * 2, 2)
+
         #     - compute a default color list
         color_codes = {
             k: ContactMapChordFigure.AA_ENCODING['X']
             for k in self_data_range
         }
+
         #     - fill default list with data we have
         for k, v in numpy.vstack({tuple(row) for row in residue_data}):
             color_codes[int(k)] = ContactMapChordFigure.AA_ENCODING[v]
+
         #     - create a color list
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
-        # Determine the residue point size\
-        #     TODO: Figure out a way to make this proportional to the number of points
-        size = 20
-
         # Plot the residue points
-        edgecolor = ["#000000"] * npoints
-        ax.scatter(verts.T[0], verts.T[1], marker='o', s=size, color=colors, edgecolors=edgecolor, zorder=1)
+        ax.scatter(verts.T[0], verts.T[1], marker='o', color=colors, edgecolors="#000000", zorder=1)
 
-        ax.set_xlim(-npoints - 10, npoints + 11)
-        ax.set_ylim(-npoints - 10, npoints + 11)
+        # # Annotate every residue
+        # for c in numpy.vstack({tuple(row) for row in residue_data}):
+        #     i = int(c[0]) - self_data_range.min()
+        #     angle = numpy.rad2deg(space) * i
+        #     xy = verts[i]
+        #     label = "{0} {1}".format(c[0], c[1])
+        #     ax.annotate(label, xy=xy, xytext=xy, rotation=angle)
 
         # Prettify the plot
         ax.set_xlim(-npoints - 10, npoints + 11)
