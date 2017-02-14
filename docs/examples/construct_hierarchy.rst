@@ -11,7 +11,7 @@ If you wish to construct it as part of a new development to store your contact i
 Entities
 ++++++++
 
-1. How to create a Contact?
+1. **How to create a Contact?**
 
 .. code-block:: python
 
@@ -20,7 +20,7 @@ Entities
 
 The example above creates a contact between residues ``1`` and ``10`` and assigns a ``raw_score`` of ``1.0`` to it. By default, this contact has many more default attributes assigned, such as the distance value often seen in columns 3 and 4 in the Casp RR format.
 
-2. How to create a ContactMap?
+2. **How to create a ContactMap?**
 
 .. code-block:: python
 
@@ -29,7 +29,7 @@ The example above creates a contact between residues ``1`` and ``10`` and assign
 
 This example shows you how to create a :obj:`ContactMap <conkit.core.ContactMap>` which can store a :obj:`Contact <conkit.core.Contact>`.
 
-3. How to create a ContactFile?
+3. **How to create a ContactFile?**
 
 .. code-block:: python
 

@@ -30,7 +30,7 @@ The call above analyses the ``toxd.a3m`` MSA file, which is in ``a3m`` format. T
 
 The output tells you the file and format you have provided. It also prints which identity threshold was used to compare sequences during the analysis. Furthermore, it tells you the total number of sequences in your alignment and the number of effective sequences, or depth, of your alignment. Finally, this script will produce a plot that illustrates the coverage of your alignment in individual positions. The plot is shown below:
 
-.. _Toxd Frequence Plot:
+.. _Toxd Frequency Plot:
 
 .. image:: images/toxd_freq_plot.png
    :alt: Toxd Frequency Plot
@@ -83,4 +83,4 @@ This tells you the first sequence in the alignment has 59 residues, i.e. the cha
    >>> file_name = 'toxd/toxd.png'
    >>> conkit.plot.SequenceCoverageFigure(msa, file_name=file_name)
 
-This will this `Toxd Frequence Plot`_, identical to the one from the script.
+This will this `Toxd Frequency Plot`_, identical to the one from the script.
