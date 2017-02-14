@@ -80,5 +80,17 @@ The output from this final ``print`` statement tells us that the precision score
 
 We could also ask for the first 30 contacts only or the last 20. Each contact map understands Python slices, and thus any fraction can be successfully extracted.
 
+.. code-block:: python
+
+   >>> # Calculate the precision scores for various L threshold contacts
+   >>> for factor in (0.5, 1.0, 1.5):
+   ...     ncontacts = int(conpred.sequence.seq_len * factor)
+   ...     precision = conpred[:ncontacts].precision
+   ...     print("Ncontacts %d at factor %.1f ==> precision score %.3f" % (ncontacts, factor, precision))
+   Ncontacts 29 at factor 0.5 ==> precision score 0.828
+   Ncontacts 59 at factor 1.0 ==> precision score 0.593
+   Ncontacts 88 at factor 1.5 ==> precision score 0.432
+
+As you can see, it's simple to calculate late it for the three different factors ``0.5``, ``1.0`` and ``1.5``, i.e. ``L/2``, ``L`` and ``3L/2``.
 
 .. |beta| unicode:: u03B2
