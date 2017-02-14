@@ -93,4 +93,21 @@ We could also ask for the first 30 contacts only or the last 20. Each contact ma
 
 As you can see, it's simple to calculate late it for the three different factors ``0.5``, ``1.0`` and ``1.5``, i.e. ``L/2``, ``L`` and ``3L/2``.
 
+If you would like to automate this process, or rather visualise the data, you can use the `PrecisionEvaluationFigure <conkit.plot.PrecisionEvaluationPlot.PrecisionEvaluationFigure>` class. It accepts a **matched** contact map and calculates the precision values at different thresholds to produce a plot.
+
+To produce a precision evaluation plot with factors between 0.0 and 5.0 with a stepwise increase of 0.1, use the following command.
+
+.. code-block:: python
+
+   >>> conkit.plot.PrecisionEvaluationFigure(conpred, min_cutoff=0.0, max_cutoff=5.0, cutoff_step=0.1)
+
+
+.. image:: images/toxd_peval_plot.png
+   :alt: Toxd Precision Evaluation Plot
+
+.. note::
+
+   You can also generate the final plot using the ``conkit.plot`` script.
+
+
 .. |beta| unicode:: u03B2

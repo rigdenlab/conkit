@@ -72,15 +72,15 @@ reference structure, they will not be plotted.
     contact_map_subparser.set_defaults(which='contact_map')
 
 
-def add_contact_map_chord_args(subparsers):
+def _add_contact_map_chord_args(subparsers):
     description = u"""
 This command will plot a contact map using the provided contacts
 in a Chord diagram. This will illustrate your sequence in circular
 style with residues being connected by their contacts
 """
     contact_map_chord_subparser = subparsers.add_parser('chord', help="Plot a contact map chord diagram",
-                                                  description=description,
-                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+                                                        description=description,
+                                                        formatter_class=argparse.RawDescriptionHelpFormatter)
     _add_default_args(contact_map_chord_subparser)
     contact_map_chord_subparser.add_argument('-d', dest='dtn', default=5, type=int,
                                              help='Minimum sequence separation [default: 5]')
@@ -118,6 +118,10 @@ cutoff thresholds.
                                                 help='Minimum sequence separation [default: 5]')
     precision_evaluation_subparser.add_argument('-j', dest='cutoff_step', default=0.2, type=float,
                                                 help='The cutoff step for contact selection [default: 0.2]')
+    precision_evaluation_subparser.add_argument('-min', dest='min_cutoff', default=0.0, type=float,
+                                                help='The minimum factor for contact selection [default: 0.0]')
+    precision_evaluation_subparser.add_argument('-max', dest='max_cutoff', default=100.0, type=float,
+                                                help='The maximum factor for contact selection [default: 100.0]')
     precision_evaluation_subparser.add_argument('--interchain', action="store_true", default=False,
                                                 help='Plot inter-chain contacts')
     precision_evaluation_subparser.add_argument('pdbfile',
@@ -286,6 +290,7 @@ For more specific descriptions, call each subcommand's help menu directly.
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
         plot = conkit.plot.PrecisionEvaluationFigure(con_matched, cutoff_step=args.cutoff_step, file_name=outfile,
+                                                     min_cutoff=args.min_cutoff, max_cutoff=args.max_cutoff,
                                                      dpi=args.dpi)
 
     elif args.which == 'sequence_coverage':

@@ -46,13 +46,17 @@ class PrecisionEvaluationFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, cutoff_step=0.2, **kwargs):
+    def __init__(self, hierarchy, min_cutoff=0.0, max_cutoff=100.0, cutoff_step=0.2, **kwargs):
         """A precision evaluation figure
 
         Parameters
         ----------
         hierarchy : :obj:`conkit.core.ContactMap`
            The contact map hierarchy
+        min_cutoff : float, optional
+           The minimum factor
+        max_cutoff : float, optional
+           The maximum facotr
         cutoff_step : float, optional
            The cutoff step
         **kwargs
@@ -66,6 +70,8 @@ class PrecisionEvaluationFigure(Figure):
 
         self.hierarchy = hierarchy
         self.cutoff_step = cutoff_step
+        self.min_cutoff = min_cutoff
+        self.max_cutoff = max_cutoff
 
         self._draw()
 
@@ -119,6 +125,8 @@ class PrecisionEvaluationFigure(Figure):
     @min_cutoff.setter
     def min_cutoff(self, min_cutoff):
         """Define the minimum cutoff factor"""
+        if min_cutoff < 0.0:
+            raise ValueError("Minimum factor cannot be negative")
         self._cutoff_boundaries[0] = min_cutoff
 
     @property
@@ -139,6 +147,8 @@ class PrecisionEvaluationFigure(Figure):
     @max_cutoff.setter
     def max_cutoff(self, max_cutoff):
         """Define the maximum cutoff factor"""
+        if max_cutoff > 100:
+            raise ValueError("Maximum factor cannot be greater than 100")
         self._cutoff_boundaries[1] = max_cutoff
 
     def redraw(self):
@@ -157,20 +167,20 @@ class PrecisionEvaluationFigure(Figure):
 
         fig, ax = matplotlib.pyplot.subplots()
 
-        ax.axhline(0.5, color='g', label='50% Precision')
+        # Add indicator lines for clarity of data
+        ax.axhline(0.5, color='#008E00', linestyle='-',  label='50% Precision', zorder=0)
+        # if self.min_cutoff <= 1.0:
+        #     ax.axvline(self._hierarchy.sequence.seq_len, color='#BDBDBD', linestyle='--', label='Factor L', zorder=0)
 
-        ax.plot(factors, precisions, color='#000000', marker='o', linestyle='-',
-                markersize=2, label='Precision score')
+        # Add data points itself
+        ax.plot(factors, precisions, color='#000000', marker='o', markersize=2, linestyle='-',
+                label='Precision score', zorder=1)
 
         # Prettify the plot
-        step = int(factors.shape[0] / 6)
-        xticklabels = (factors * self._hierarchy.sequence.seq_len).astype(dtype=numpy.int64)
-        ax.set_xticks(factors[::step])
-        ax.set_xticklabels(xticklabels[::step])
-
-        yticks = numpy.arange(0, 1.01, 0.2)
-        ax.set_yticks(yticks)
-        ax.set_yticklabels(yticks)
+        ax.set_xlim(self.min_cutoff, self.max_cutoff)
+        xticks = (ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(numpy.int64)
+        ax.set_xticklabels(xticks)
+        ax.set_ylim(0.0, 1.0)
 
         ax.set_xlabel('Number of Contacts')
         ax.set_ylabel('Precision')

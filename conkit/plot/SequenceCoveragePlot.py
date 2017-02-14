@@ -104,9 +104,8 @@ class SequenceCoverageFigure(Figure):
                 markersize=5, label='Amino acid count')
 
         # Prettify the plot
-        step = int((self._hierarchy.top_sequence.seq_len + 1) / 10)
-        xticks = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1)[::step]
-        ax.set_xticks(xticks)
+        ax.set_xlim(residues[0], residues[-1])
+        xticks = (ax.get_xticks()).astype(numpy.int64)
         ax.set_xticklabels(xticks)
 
         ax.set_xlabel('Residue number')
