@@ -194,7 +194,8 @@ class ContactMapFigure(Figure):
         ax.set_ylim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
 
         # Set the xticks and yticks dynamically
-        tick_range = numpy.arange(min_max_data.min(), min_max_data.max(), 10, dtype=numpy.int64)
+        gap = int(10 * (min_max_data.max() - min_max_data.min()) / 100)
+        tick_range = numpy.arange(min_max_data.min(), min_max_data.max(), gap, dtype=numpy.int64)
         ax.set_xticks(tick_range)
         ax.set_yticks(tick_range)
 
