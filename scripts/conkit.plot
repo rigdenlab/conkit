@@ -72,7 +72,7 @@ reference structure, they will not be plotted.
     contact_map_subparser.set_defaults(which='contact_map')
 
 
-def _add_contact_map_chord_args(subparsers):
+def add_contact_map_chord_args(subparsers):
     description = u"""
 This command will plot a contact map using the provided contacts
 in a Chord diagram. This will illustrate your sequence in circular

@@ -28,8 +28,6 @@ class ContactMapChordFigure(Figure):
     ----------
     hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
        The default contact map hierarchy
-    use_conf : bool
-       The marker size will correspond to the raw score [default: False]
 
     Examples
     --------
@@ -47,15 +45,13 @@ class ContactMapChordFigure(Figure):
         'X': '#000000'
     }
 
-    def __init__(self, hierarchy, use_conf=False, **kwargs):
+    def __init__(self, hierarchy, **kwargs):
         """A new contact map plot
 
         Parameters
         ----------
         hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
            The default contact map hierarchy
-        use_conf : bool, optional
-           The marker size will correspond to the raw score [default: False]
         **kwargs
            General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
 
@@ -64,8 +60,6 @@ class ContactMapChordFigure(Figure):
 
         self._hierarchy = None
         self.hierarchy = hierarchy
-
-        self.use_conf = use_conf
 
         self._draw()
 
@@ -132,7 +126,7 @@ class ContactMapChordFigure(Figure):
         color_codes = {
             k: ContactMapChordFigure.AA_ENCODING['X']
             for k in self_data_range
-        }
+            }
 
         #     - fill default list with data we have
         for k, v in numpy.vstack({tuple(row) for row in residue_data}):
@@ -142,19 +136,30 @@ class ContactMapChordFigure(Figure):
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
         # Plot the residue points
-        ax.scatter(verts.T[0], verts.T[1], marker='o', color=colors, edgecolors="#000000", zorder=1)
+        ax.scatter(verts.T[0], verts.T[1], marker='o', color=colors, edgecolors="none", zorder=1)
 
-        # # Annotate every residue
-        # for c in numpy.vstack({tuple(row) for row in residue_data}):
-        #     i = int(c[0]) - self_data_range.min()
-        #     angle = numpy.rad2deg(space) * i
-        #     xy = verts[i]
-        #     label = "{0} {1}".format(c[0], c[1])
-        #     ax.annotate(label, xy=xy, xytext=xy, rotation=angle)
+        # Annotate some residue
+        label_data = set([int(x) for x in zip(*residue_data)[0]])
+        label_verts = numpy.zeros((npoints, 2))
+        for i in numpy.arange(npoints):
+            label_verts[i] = [
+                (npoints + npoints / 10) * numpy.cos(space * i) - npoints / 20,
+                (npoints + npoints / 10) * numpy.sin(space * i) - npoints / 40
+            ]
+        for r in sorted(label_data)[::int(npoints / (npoints/10))]:
+            i = r - self_data_range.min()
+            xy = x, y = verts[i]
+            xytext = label_verts[i]
+            ax.annotate(r, xy=xy, xytext=xytext)
+            ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=2)
+
+        # Arrow for the start
+        arrow_x, arrow_y = (npoints + npoints / 5, 0)
+        ax.arrow(arrow_x, arrow_y, 0, npoints / 10, head_width=1.5, color="#000000")
 
         # Prettify the plot
-        ax.set_xlim(-npoints - 10, npoints + 11)
-        ax.set_ylim(-npoints - 10, npoints + 11)
+        ax.set_xlim(-arrow_x, arrow_x + 2)
+        ax.set_ylim(-arrow_x, arrow_x)
         ax.axis("off")
 
         # Make both axes identical in length and remove whitespace around the plot

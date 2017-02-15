@@ -6,7 +6,7 @@ Contact Prediction ToolKit
 
 **A Python Interface to Contact Predictions**
 
-This project is a result of the continuous struggle using residue-residue contact prediction pipelines, visualisation tools and related software. The aim was to reduce this complexity and provide one unified interface as a basic platform. The resulting platform is the Contact Prediction ToolKit, or ConKit in short.
+This project is a result of the continuous struggle using residue-residue contact prediction pipelines, visualisation tools and related software. The aim was to reduce this complexity and provide one unified interface as a basic platform. The resulting interface is the Contact Prediction ToolKit, or ConKit.
 
 .. image:: https://img.shields.io/pypi/v/conkit.svg
    :target: https://pypi.python.org/pypi/conkit
