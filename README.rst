@@ -37,8 +37,9 @@ Key Features
 ++++++++++++
 
 - Parsers for Multiple Sequence Alignment and contact prediction files
-- Easy-to-use wrappers for the most-commonly used software, e.g. HHblits, Jackhmmer, CCMpred, PSICOV, ...
-- Many convenience functions for prediction-structure matching, determination of True Positive contacts, calculation of MSA and contact prediction statistics, etc.
+- Analysis functions for Multiple Sequence Alignment and contact prediction data
+- Visualisation of Multiple Sequence Alignment and contact prediction data
+- Easy-to-use Python wrappers for the contact prediction related software
 
 .. note::
 
