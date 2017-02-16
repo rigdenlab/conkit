@@ -146,11 +146,7 @@ class ContactMapFigure(Figure):
 
         # Plot the self contacts
         self_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy])
-        self_colors = [
-            constants.TPCOLOR if contact.is_true_positive
-            else constants.FPCOLOR if contact.is_false_positive
-            else constants.NTCOLOR for contact in self._hierarchy
-            ]
+        self_colors = ContactMapFigure._determine_color(self._hierarchy)
         if self.use_conf:
             self_sizes = (self_data.T[2] - self_data.T[2].min()) / (self_data.T[2].max() - self_data.T[2].min())
             self_sizes = self_sizes * 20 + 10
@@ -164,11 +160,7 @@ class ContactMapFigure(Figure):
         # Plot the other contacts
         if self._other:
             other_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other])
-            other_colors = [
-                constants.TPCOLOR if contact.is_true_positive
-                else constants.FPCOLOR if contact.is_false_positive
-                else constants.NTCOLOR for contact in self._other
-                ]
+            other_colors = ContactMapFigure._determine_color(self._other)
             if self.use_conf:
                 other_sizes = (other_data.T[2] - other_data.T[2].min()) / (other_data.T[2].max() - other_data.T[2].min())
                 other_sizes = other_sizes * 20 + 10
@@ -225,3 +217,13 @@ class ContactMapFigure(Figure):
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
+
+    @staticmethod
+    def _determine_color(h):
+        """Determine the color of the contacts in order"""
+        return [
+            constants.TPCOLOR if contact.is_true_positive
+            else constants.FPCOLOR if contact.is_false_positive
+            else constants.NTCOLOR
+            for contact in h
+        ]

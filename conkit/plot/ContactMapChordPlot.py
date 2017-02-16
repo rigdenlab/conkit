@@ -13,6 +13,7 @@ import matplotlib.pyplot
 import numpy
 
 from conkit.plot._Figure import Figure
+from conkit.plot._plottools import points_on_circle
 
 
 class ContactMapChordFigure(Figure):
@@ -93,17 +94,12 @@ class ContactMapChordFigure(Figure):
         # Obtain the data from the hierarchy
         self_data = numpy.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score)
                                    for c in hierarchy])
-        min_max_data = numpy.append(self_data.T[1], self_data.T[3],).astype(numpy.int64)
-        self_data_range = numpy.arange(min_max_data.min(), min_max_data.max() + 1)
+        _drange = numpy.append(self_data.T[1], self_data.T[3]).astype(numpy.int64)
+        self_data_range = numpy.arange(_drange.min(), _drange.max() + 1)
 
-        # The number of points in the outer circle
+        # The number of points on the outer circle and their coordinates
         npoints = self_data_range.shape[0]
-
-        # Calculate the xy coords for each point on the circle
-        space = 2 * numpy.pi / npoints
-        verts = numpy.zeros((npoints, 2))
-        for i in numpy.arange(npoints):
-            verts[i] = [npoints * numpy.cos(space * i), npoints * numpy.sin(space * i)]
+        coords = numpy.asarray(points_on_circle(npoints))
 
         # Instantiate the figure
         fig, ax = matplotlib.pyplot.subplots()
@@ -111,8 +107,8 @@ class ContactMapChordFigure(Figure):
         # Calculate and plot the Bezier curves
         bezier_path = numpy.arange(0, 1.01, 0.01)
         for c in self_data:
-            x1, y1 = verts[int(c[1]) - self_data_range.min()]
-            x2, y2 = verts[int(c[3]) - self_data_range.min()]
+            x1, y1 = coords[int(c[1]) - self_data_range.min()]
+            x2, y2 = coords[int(c[3]) - self_data_range.min()]
             xb, yb = [0, 0]                  # Midpoint the curve is supposed to approach
             x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path ** 2 * x2
             y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path ** 2 * y2
@@ -120,15 +116,13 @@ class ContactMapChordFigure(Figure):
 
         # Get the amino acids if available
         #     - get the residue data from the original data array
-        residue_data = numpy.append(self_data[:, [1, 0]], self_data[:, [3, 2]]).reshape(self_data.T[0].shape[0] * 2, 2)
+        residue_data = numpy.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
+        residue_data = residue_data.reshape(self_data.T[0].shape[0] * 2, 2)
 
         #     - compute a default color list
-        color_codes = {
-            k: ContactMapChordFigure.AA_ENCODING['X']
-            for k in self_data_range
-            }
+        color_codes = dict([(k, ContactMapChordFigure.AA_ENCODING['X']) for k in self_data_range])
 
-        #     - fill default list with data we have
+        #     - fill default dict with data we have
         for k, v in numpy.vstack({tuple(row) for row in residue_data}):
             color_codes[int(k)] = ContactMapChordFigure.AA_ENCODING[v]
 
@@ -136,20 +130,22 @@ class ContactMapChordFigure(Figure):
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
         # Plot the residue points
-        ax.scatter(verts.T[0], verts.T[1], marker='o', color=colors, edgecolors="none", zorder=1)
+        ax.scatter(coords.T[0], coords.T[1], marker='o', color=colors, edgecolors="none", zorder=1)
 
         # Annotate some residue
+        # TODO: Use _plottools module to process this
         label_data = set([int(x) for x in zip(*residue_data)[0]])
-        label_verts = numpy.zeros((npoints, 2))
+        label_coords = numpy.zeros((npoints, 2))
+        space = 2 * numpy.pi / npoints
         for i in numpy.arange(npoints):
-            label_verts[i] = [
+            label_coords[i] = [
                 (npoints + npoints / 10) * numpy.cos(space * i) - npoints / 20,
                 (npoints + npoints / 10) * numpy.sin(space * i) - npoints / 40
             ]
-        for r in sorted(label_data)[::int(npoints / (npoints/10))]:
+        for r in sorted(label_data)[::int(npoints / (npoints / 10))]:
             i = r - self_data_range.min()
-            xy = x, y = verts[i]
-            xytext = label_verts[i]
+            xy = x, y = coords[i]
+            xytext = label_coords[i]
             ax.annotate(r, xy=xy, xytext=xytext)
             ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=2)
 
