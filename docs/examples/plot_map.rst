@@ -77,9 +77,7 @@ Two simplified versions of the ``conkit.plot`` script is shown below to illustra
 
 .. only:: html
 
-   .. note::
-
-      You can download this script :download:`here <code/map_plotting_simple.py>`.
+      (:download:`Source Code <code/map_plotting_simple.py>`)
 
 .. literalinclude:: /../docs/examples/code/map_plotting_simple.py
    :language: python
@@ -91,9 +89,7 @@ This will produce the `Toxd Simple Contact Map`_ plot.
 
 .. only:: html
 
-   .. note::
-
-      You can download this script :download:`here <code/map_plotting_reference.py>`.
+   (:download:`Source Code <code/map_plotting_reference.py>`)
 
 .. literalinclude:: /../docs/examples/code/map_plotting_reference.py
    :language: python

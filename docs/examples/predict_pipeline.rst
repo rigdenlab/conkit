@@ -44,9 +44,7 @@ A simplified version of the ``conkit.predict`` script is shown below to illustra
 
 .. only:: html
 
-   .. note::
-
-      You can download this script :download:`here <code/predict_pipeline.py>`. Be aware, you need to exchange the paths to the executables (lines 20-22) before running the script though!
+   (:download:`Source Code <code/predict_pipeline.py>`)
 
 .. literalinclude:: /../docs/examples/code/predict_pipeline.py
    :language: python
