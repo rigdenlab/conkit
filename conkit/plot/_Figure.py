@@ -135,9 +135,9 @@ class Figure(object):
             raise TypeError("Provided hierarchy is not a {0}".format(t))
 
     @staticmethod
-    def _correct_aspect(ax, aspectratio):
+    def _correct_aspect(ax, aspect_ratio):
         """Adjust the aspect ratio"""
         # Credits to http://stackoverflow.com/q/4747051/3046533
         #     !!! Works only for non-logarithmic axes !!!
-        ratio_default = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
-        return float(ratio_default * aspectratio)
+        default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
+        return float(default_ratio * aspect_ratio)
