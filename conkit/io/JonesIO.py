@@ -11,7 +11,6 @@ from conkit.core import SequenceFile
 from conkit.io._ParserIO import _SequenceFileParser
 
 import os
-import re
 
 
 class JonesIO(_SequenceFileParser):

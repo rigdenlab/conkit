@@ -53,7 +53,7 @@ class StockholmIO(_SequenceFileParser):
             if not line:
                 continue
             elif V_RECORD.match(line):
-                version = V_RECORD.match(line).group(1)
+                _ = V_RECORD.match(line).group(1)
                 # sequence_file.add_remark(version)
             elif GF_RECORD.match(line) or GS_RECORD.match(line):
                 break

@@ -561,7 +561,7 @@ class ContactMap(Entity):
 
         return contact_map
 
-    def plot_map(self, other=None, reference=None, altloc=False, file_format='png', file_name='contactmap.png'):
+    def plot_map(self, *args, **kwargs):
         """Produce a 2D contact map plot
 
         Warnings
@@ -571,7 +571,7 @@ class ContactMap(Entity):
         """
         warnings.warn('This function has been deprecated. Please use conkit.plot.ContactMapFigure() instead.')
         from conkit.plot import ContactMapFigure
-        ContactMapFigure(self, other, reference, altloc, file_name=file_name)
+        ContactMapFigure(self, *args, **kwargs)
 
     def rescale(self, inplace=False):
         """Rescale the raw scores in :obj:`ContactMap <conkit.core.ContactMap>`
