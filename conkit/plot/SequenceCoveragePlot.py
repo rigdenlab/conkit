@@ -97,7 +97,7 @@ class SequenceCoverageFigure(Figure):
 
         # Add lines as quality indicators
         ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color='r', label='5 x Nresidues')
-        if any(x > self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
+        if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
             ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color='g', label='20 x Nresidues')
 
         ax.plot(residues, aa_counts, color='#000000', marker='o', linestyle='-',
