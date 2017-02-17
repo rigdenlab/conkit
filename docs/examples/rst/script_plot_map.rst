@@ -1,3 +1,5 @@
+.. _example_plotting_a_map:
+
 
 Contact Map Plotting
 --------------------
@@ -21,6 +23,7 @@ You can also add a reference structure to determine which contacts are true and 
 .. code-block:: bash
 
    $> conkit.plot cmap -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+
 
 The call above produces a contact map plot looking like this. The gray points are the reference contacts, green show true positive contacts in your prediction and red false positive ones.
 
