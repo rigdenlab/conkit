@@ -1,12 +1,6 @@
-.. _example_analyse_conpred:
 
 Contact Prediction Analysis
-===========================
-
-The contact prediction analysis example will only outline Python code examples because the analyses depends on your personal interest. Thus, a pre-defined script would need to be customised for every single purpose. However, most analysis functionality is already exposed via individual commands through the ConKit scripts. Notes are created in the appropriate positions.
-
-Using Python
-^^^^^^^^^^^^
+---------------------------
 
 1. **Let's create the contact prediction hierarchy in ConKit**
 
@@ -25,7 +19,7 @@ Similar to the example on plotting a contact map, this is something you will alm
 
 Let's assume we have created the following contact map plot
 
-.. image:: images/toxd_cmap_simple.png
+.. image:: ../images/toxd_cmap_simple.png
    :alt: Toxd CMap Simple
    :width: 300px
 
@@ -102,7 +96,7 @@ To produce a precision evaluation plot with factors between 0.0 and 5.0 with a s
    >>> conkit.plot.PrecisionEvaluationFigure(conpred, min_cutoff=0.0, max_cutoff=5.0, cutoff_step=0.1)
 
 
-.. image:: images/toxd_peval_plot.png
+.. image:: ../images/toxd_peval_plot.png
    :alt: Toxd Precision Evaluation Plot
 
 .. note::
