@@ -83,7 +83,3 @@ HHblits Database
    `Download HHblits Database <http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs>`_
 CCMpred
    `Download CCMpred <https://github.com/soedinglab/CCMpred>`_
-
-.. warning::
-
-   Without the optional dependencies, your ConKit installation will be limited. Features not available will include the calculation of the number of effective sequences, data visualisation and the execution of the ``conkit.predict`` script.
