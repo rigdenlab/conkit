@@ -354,10 +354,10 @@ class ContactMap(Entity):
 
         Notes
         -----
-        The Jaccard index is different from the Jaccard distance mentioned in [1]_. The
+        The Jaccard index is different from the Jaccard distance mentioned in [#]_. The
         Jaccard distance corresponds to :math:`1-Jaccard_{index}`.
 
-        .. [1] Q. Wuyun, W. Zheng, Z. Peng, J. Yang (2016). A large-scale comparative assessment 
+        .. [#] Q. Wuyun, W. Zheng, Z. Peng, J. Yang (2016). A large-scale comparative assessment
            of methods for residue-residue contact prediction. *Briefings in Bioinformatics*,
            [doi: 10.1093/bib/bbw106].
 
@@ -385,9 +385,9 @@ class ContactMap(Entity):
         The score is saved in a separate :obj:`Contact <conkit.core.Contact>` attribute called
         ``scalar_score``
 
-        This score is described in more detail in [2]_.
+        This score is described in more detail in [#]_.
 
-        .. [2] S. Ovchinnikov, L. Kinch, H. Park, Y. Liao, J. Pei, D.E. Kim,
+        .. [#] S. Ovchinnikov, L. Kinch, H. Park, Y. Liao, J. Pei, D.E. Kim,
            H. Kamisetty, N.V. Grishin, D. Baker (2015). Large-scale determination
            of previously unsolved protein structures using evolutionary information.
            *Elife* **4**, e09248.

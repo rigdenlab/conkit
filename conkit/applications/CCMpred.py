@@ -15,7 +15,7 @@ from Bio.Application import AbstractCommandline
 
 class CCMpredCommandLine(AbstractCommandline):
     """
-    Command line object for CCMpred contact prediction application
+    Command line object for CCMpred [#]_ contact prediction application
 
     https://github.com/soedinglab/CCMpred
 
@@ -38,11 +38,9 @@ class CCMpredCommandLine(AbstractCommandline):
     You would typically run the command line with :func:`ccmpred_cline` or via
     the Python subprocess module.
 
-    Citations
-    ---------
-    Seemayer S, Gruber M, Söding J (2014). CCMpred--fast and precise
-    prediction of protein residue-residue contacts from correlated mutations.
-    Bioinformatics 30(21), 3128-3130.
+    .. [#] Seemayer S, Gruber M, Söding J (2014). CCMpred--fast and precise
+       prediction of protein residue-residue contacts from correlated mutations.
+       Bioinformatics 30(21), 3128-3130.
 
     """
     

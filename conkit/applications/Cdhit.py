@@ -13,7 +13,7 @@ from Bio.Application import AbstractCommandline
 
 class CdhitCommandLine(AbstractCommandline):
     """
-    Command line object for Cd-hit
+    Command line object for Cd-hit [#]_ [#]_
 
     http://cd-hit.org
 
@@ -38,11 +38,11 @@ class CdhitCommandLine(AbstractCommandline):
 
     Citations
     ---------
-    Li W, Jaroszewski L, Godzik A(2001). Clustering of highly homologous sequences
-    to reduce thesize of large protein database. Bioinformatics 17, 282-283.
+    .. [#] Li W, Jaroszewski L, Godzik A(2001). Clustering of highly homologous sequences
+       to reduce thesize of large protein database. Bioinformatics 17, 282-283.
 
-    Li W, Jaroszewski L, Godzik A (2002). Tolerating some redundancy significantly
-    speeds up clustering of large protein databases. Bioinformatics 18, 77-82.
+    .. [#] Li W, Jaroszewski L, Godzik A (2002). Tolerating some redundancy significantly
+       speeds up clustering of large protein databases. Bioinformatics 18, 77-82.
 
     """
 

@@ -15,7 +15,7 @@ from Bio.Application import AbstractCommandline
 
 class BbcontactsCommandLine(AbstractCommandline):
     """
-    Command line object for bbcontacts contact filtering application
+    Command line object for bbcontacts [#]_ contact filtering application
 
     https://github.com/soedinglab/bbcontacts
 
@@ -45,10 +45,8 @@ class BbcontactsCommandLine(AbstractCommandline):
     <https://github.com/soedinglab/bbcontacts>`_, download the latest version
     and install it using python setup.py install.
 
-    Citations
-    ---------
-    Andreani J., Söding J. (2015). bbcontacts: prediction of beta-strand
-    pairing from direct coupling patterns. Bioinformatics 31(11), 1729-1737.
+    .. [#] Andreani J., Söding J. (2015). bbcontacts: prediction of beta-strand
+       pairing from direct coupling patterns. Bioinformatics 31(11), 1729-1737.
 
     """
 

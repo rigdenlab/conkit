@@ -14,7 +14,7 @@ from Bio.Application import AbstractCommandline
 
 class PsicovCommandLine(AbstractCommandline):
     """
-    Command line object for PSICOV contact prediction application
+    Command line object for PSICOV [#]_ contact prediction application
 
     http://bioinfadmin.cs.ucl.ac.uk/downloads/PSICOV/
 
@@ -34,11 +34,9 @@ class PsicovCommandLine(AbstractCommandline):
     You would typically run the command line with :func:`psicov_cline` or via
     the Python subprocess module.
 
-    Citations
-    ---------
-    Jones, D.T., Buchan, D.W., Cozzetto, D. & Pontil, M. (2012). PSICOV:
-    Precise structural contact prediction using sparse inverse covariance
-    estimation on large multiple sequence alignments. Bioinformatics. 28, 184-190.
+    .. [#] Jones, D.T., Buchan, D.W., Cozzetto, D. & Pontil, M. (2012). PSICOV:
+       Precise structural contact prediction using sparse inverse covariance
+       estimation on large multiple sequence alignments. Bioinformatics. 28, 184-190.
 
     """
 

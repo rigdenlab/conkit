@@ -14,7 +14,7 @@ from Bio.Application import AbstractCommandline
 
 class JackhmmerCommandLine(AbstractCommandline):
     """
-    Command line object for Jackhmmer alignment generation
+    Command line object for Jackhmmer [#]_ alignment generation
 
     http://hmmer.org/
 
@@ -35,10 +35,8 @@ class JackhmmerCommandLine(AbstractCommandline):
     You would typically run the command line with :func:`jackhmmer_cline` or via
     the Python subprocess module.
 
-    Citations
-    ---------
-    Johnson L. S., Eddy S. R., Portugaly E. (2010). Hidden Markov
-    Model Speed Heuristic and Iterative HMM Search Procedure. BMC Bioinformatics 11, 431.
+    .. [#] Johnson L. S., Eddy S. R., Portugaly E. (2010). Hidden Markov
+       Model Speed Heuristic and Iterative HMM Search Procedure. BMC Bioinformatics 11, 431.
 
     """
 

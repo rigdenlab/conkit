@@ -13,7 +13,7 @@ from Bio.Application import AbstractCommandline
 
 class HHfilterCommandLine(AbstractCommandline):
     """
-    Command line object for HHfilter alignment filter application
+    Command line object for HHfilter [#]_ [#]_ alignment filter application
 
     https://toolkit.tuebingen.mpg.de/hhfilter
 
@@ -33,13 +33,11 @@ class HHfilterCommandLine(AbstractCommandline):
     You would typically run the command line with :func:`hhfilter_cline` or via
     the Python subprocess module.
 
-    Citations
-    ---------
-    Alva V., Nam SZ., Söding J., Lupas AN. (2016). The MPI bioinformatics Toolkit as an
-    integrative platform for advanced protein sequence and structure analysis. Nucleic Acids Res. pii: gkw348.
+    .. [#]_ Alva V., Nam SZ., Söding J., Lupas AN. (2016). The MPI bioinformatics Toolkit as an
+       integrative platform for advanced protein sequence and structure analysis. Nucleic Acids Res. pii: gkw348.
 
-    Remmert M., Biegert A., Hauser A., Söding J. (2011). HHblits: Lightning-fast iterative
-    protein sequence searching by HMM-HMM alignment. Nat Methods. 9(2):173-5.
+    .. [#]_ Remmert M., Biegert A., Hauser A., Söding J. (2011). HHblits: Lightning-fast iterative
+       protein sequence searching by HMM-HMM alignment. Nat Methods. 9(2):173-5.
 
     """
 

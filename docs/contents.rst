@@ -13,15 +13,15 @@ Documentation
 
    formats
 
-.. toctree:: 
-   :maxdepth: 2
-
-   api/applications
-
 .. toctree::
    :maxdepth: 2
 
    api/io
+
+.. toctree::
+   :maxdepth: 2
+
+   api/core
 
 .. toctree::
    :maxdepth: 2
@@ -31,8 +31,7 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   api/core
-
+   api/applications
 
 .. only:: html
 
