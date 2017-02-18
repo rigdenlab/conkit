@@ -46,13 +46,14 @@ def main():
     con.sequence = seq
     con.assign_sequence_register()
 
-    logging.info('Distance to neighbors: {0}'.format(args.dtn))
-    con.remove_neighbors(min_distance=args.dtn, inplace=True)
+    logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
+    logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
 
+    con.remove_neighbors(min_distance=args.dtn, inplace=True)
     ncontacts = int(seq.seq_len * args.dfactor)
-    logging.info('Max number of contacts: {0}'.format(ncontacts))
     con.sort('raw_score', reverse=True, inplace=True)
     con_sliced = con[:ncontacts]
+
 
     con_matched = con_sliced.match(pdb)
     precision = con_matched.precision

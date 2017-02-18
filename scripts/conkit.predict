@@ -146,7 +146,8 @@ def main():
     logging.info('Final alignment file: {0}'.format(jon_fname))
     msa_h = conkit.io.read(jon_fname, 'jones')
     logging.info('|- Total Number of sequences: {0}'.format(msa_h.nseqs))
-    logging.info('|- Number of effective sequences: {0}'.format(msa_h.calculate_meff()))
+    logging.info('|- Pairwise Sequence Identity Threshold: {0}'.format(0.7))
+    logging.info('|- Number of effective sequences: {0}'.format(msa_h.calculate_meff(identity=0.7)))
     freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.pdf')
     conkit.plot.SequenceCoverageFigure(msa_h, file_name=freq_plot_fname)
     logging.info('|- Plotted sequence coverage: {0}'.format(freq_plot_fname))
@@ -177,11 +178,14 @@ def main():
     contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.pdf')
     conkit.plot.ContactMapFigure(cmap, file_name=contact_map_fname)
     logging.info('Plotted contact map: {0}'.format(contact_map_fname))
+    logging.info('|- Min sequence separation for contacting residues: {0}'.format(args.dtn))
+    logging.info('|- Contact list cutoff factor: {0} * L'.format(args.dfactor))
 
     # Use the ccmpred parser to write a contact file
     casprr_fname = os.path.join(args.wdir, args.prefix + '.rr')
     conkit.io.convert(matrix_fname, 'ccmpred', casprr_fname, 'casprr')
     logging.info('Final prediction file: {0}'.format(casprr_fname))
+
 
     return 0
 

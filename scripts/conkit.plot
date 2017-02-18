@@ -185,8 +185,8 @@ For more specific descriptions, call each subcommand's help menu directly.
         if args.interchain:
             logging.info('This script is experimental for inter-chain contact plotting')
 
-        logging.info('Distance to neighbors: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor: {0}'.format(args.dfactor))
+        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
+        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
@@ -248,8 +248,8 @@ For more specific descriptions, call each subcommand's help menu directly.
                                             dpi=args.dpi)
 
     elif args.which == 'contact_map_chord':
-        logging.info('Distance to neighbors: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor: {0}'.format(args.dfactor))
+        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
+        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
@@ -268,8 +268,8 @@ For more specific descriptions, call each subcommand's help menu directly.
         if args.interchain:
             logging.info('This script is experimental for inter-chain contact plotting')
 
-        logging.info('Distance to neighbors: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor step: {0}'.format(args.cutoff_step))
+        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
+        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
