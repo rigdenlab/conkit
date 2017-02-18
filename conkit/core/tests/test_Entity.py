@@ -10,14 +10,12 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_contains(self):
-        # ======================================================
-        # Test Case 1
+    def test_contains_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         self.assertTrue('foo' in entity)
-        # ======================================================
-        # Test Case 2
+
+    def test_contains_2(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
@@ -25,15 +23,13 @@ class Test(unittest.TestCase):
         self.assertTrue('bar' in entity)
         self.assertFalse('cho' in entity)
 
-    def test_delitem(self):
-        # ======================================================
-        # Test Case 1
+    def test_delitem_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         del entity['foo']
         self.assertFalse('foo' in entity)
-        # ======================================================
-        # Test Case 2
+
+    def test_delitem_2(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
@@ -42,21 +38,19 @@ class Test(unittest.TestCase):
         self.assertTrue('bar' in entity)
         del entity['bar']
         self.assertFalse('bar' in entity)
-        # ======================================================
-        # Test Case 3
+
+    def test_delitem_3(self):
         entity = Entity('test')
         with self.assertRaises(KeyError):
             del entity['foo']
 
-    def test_getitem(self):
-        # ======================================================
-        # Test Case 1
+    def test_getitem_1(self):
         entity = Entity('test')
         child_entity = Entity('foo')
         entity.add(child_entity)
         self.assertEqual(child_entity, entity['foo'])
-        # ======================================================
-        # Test Case 2
+
+    def test_getitem_2(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         child_entity2 = Entity('bar')
@@ -64,8 +58,8 @@ class Test(unittest.TestCase):
         entity.add(child_entity2)
         self.assertEqual(child_entity1, entity['foo'])
         self.assertEqual(child_entity2, entity['bar'])
-        # ======================================================
-        # Test Case 3
+
+    def test_getitem_3(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         child_entity2 = Entity('bar')
@@ -73,14 +67,14 @@ class Test(unittest.TestCase):
         entity.add(child_entity2)
         self.assertEqual(child_entity1, entity['foo'])
         self.assertEqual(child_entity2, entity['bar'])
-        # ======================================================
-        # Test Case 4
+
+    def test_getitem_4(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         entity.add(child_entity1)
         self.assertEqual(child_entity1, entity[0])
-        # ======================================================
-        # Test Case 4
+
+    def test_getitem_5(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         child_entity2 = Entity('bar')
@@ -92,8 +86,8 @@ class Test(unittest.TestCase):
         self.assertEqual(child_entity2, entity[1])
         self.assertEqual(child_entity2, entity[-2])
         self.assertEqual(child_entity3, entity[-1])
-        # ======================================================
-        # Test Case 5
+
+    def test_getitem_6(self):
         entity = Entity('test')
         for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
@@ -101,8 +95,8 @@ class Test(unittest.TestCase):
         self.assertEqual(type(entity), type(new_entity))
         self.assertEqual(5, len(new_entity))
         self.assertEqual(['foo_0', 'foo_1', 'foo_2', 'foo_3', 'foo_4'], [e.id for e in new_entity])
-        # ======================================================
-        # Test Case 6
+
+    def test_getitem_7(self):
         entity = Entity('test')
         for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
@@ -111,30 +105,24 @@ class Test(unittest.TestCase):
         self.assertEqual(5, len(new_entity))
         self.assertEqual(['foo_1', 'foo_3', 'foo_5', 'foo_7', 'foo_9'], [e.id for e in new_entity])
 
-    def test_iter(self):
-        # ======================================================
-        # Test Case 1
+    def test_iter_1(self):
         entity = Entity('test')
         for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
         for i, e in enumerate(entity):
             self.assertEqual('foo_{0}'.format(i), e.id)
 
-    def test_len(self):
-        # ======================================================
-        # Test Case 1
+    def test_len_1(self):
         entity = Entity('test')
         for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
         self.assertEqual(10, len(entity))
-        # ======================================================
-        # Test Case 2
+
+    def test_len_2(self):
         entity = Entity('test')
         self.assertEqual(0, len(entity))
 
-    def test_reversed(self):
-        # ======================================================
-        # Test Case 1
+    def test_reversed_1(self):
         entity = Entity('test')
         for i in range(10):
             entity.add(Entity('foo_{0}'.format(i)))
@@ -143,16 +131,14 @@ class Test(unittest.TestCase):
             self.assertNotEqual('foo_{0}'.format(i), e.id)
             self.assertEqual('foo_{0}'.format(rev[i]), e.id)
 
-    def test_child_list(self):
-        # ======================================================
-        # Test Case 1
+    def test_child_list_1(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         entity.add(child_entity1)
         self.assertEqual(1, len(entity.child_list))
         self.assertEqual([child_entity1], entity.child_list)
-        # ======================================================
-        # Test Case 2
+
+    def test_child_list_2(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         child_entity2 = Entity('bar')
@@ -161,15 +147,13 @@ class Test(unittest.TestCase):
         self.assertEqual(2, len(entity.child_list))
         self.assertEqual([child_entity1, child_entity2], entity.child_list)
 
-    def test_child_dict(self):
-        # ======================================================
-        # Test Case 1
+    def test_child_dict_1(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         entity.add(child_entity1)
         self.assertDictEqual({'foo': child_entity1}, entity.child_dict)
-        # ======================================================
-        # Test Case 2
+
+    def test_child_dict_2(self):
         entity = Entity('test')
         child_entity1 = Entity('foo')
         child_entity2 = Entity('bar')
@@ -177,24 +161,22 @@ class Test(unittest.TestCase):
         entity.add(child_entity2)
         self.assertDictEqual({'foo': child_entity1, 'bar': child_entity2}, entity.child_dict)
 
-    def test_full_id(self):
-        # ======================================================
-        # Test Case 1
+    def test_full_id_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         self.assertEqual(('test', 'foo'), entity[0].full_id)
-        # ======================================================
-        # Test Case 2
+
+    def test_full_id_2(self):
         entity = Entity('test')
         self.assertEqual(('test',), entity.full_id)
-        # ======================================================
-        # Test Case 3
+
+    def test_full_id_3(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity[0].add(Entity('bar'))
         self.assertEqual(('test', 'foo', 'bar'), entity[0][0].full_id)
-        # ======================================================
-        # Test Case 4
+
+    def test_full_id_4(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity[0].add(Entity('bar'))
@@ -202,31 +184,23 @@ class Test(unittest.TestCase):
         self.assertEqual(('test', 'foo', 'bar'), entity[0][0].full_id)
         self.assertEqual(('test', 'foo', 'cho'), entity[0][1].full_id)
 
-    def test_id(self):
-        # ======================================================
-        # Test Case 1
+    def test_id_1(self):
         entity = Entity('test')
         self.assertEqual('test', entity.id)
-        # ======================================================
-        # Test Case 2
-        # self.assertRaises(TypeError, Entity, 3)
-        # self.assertRaises(TypeError, Entity, 1.0)
-        # ======================================================
-        # Test Case 3
+
+    def test_id_2(self):
         entity = Entity((1, 2))
         self.assertEqual((1, 2), entity.id)
-        # ======================================================
-        # Test Case 4
+
+    def test_id_3(self):
         entity = Entity([1, 2])
         self.assertEqual((1, 2), entity.id)
-        # ======================================================
-        # Test Case 5
+
+    def test_id_4(self):
         entity = Entity((1., 2.))
         self.assertEqual((1., 2.), entity.id)
 
-    def test_parent(self):
-        # ======================================================
-        # Test Case 1
+    def test_parent_1(self):
         entity = Entity('test')
         child_entity = Entity('foo')
         entity.add(child_entity)
@@ -238,52 +212,46 @@ class Test(unittest.TestCase):
         self.assertEqual(child_entity, entity[0][0].parent)
         self.assertEqual(child_entity, entity[0][1].parent)
 
-    def test__inplace(self):
-        # ======================================================
-        # Test Case 1
+    def test__inplace_1(self):
         entity = Entity('foo')
         entity_inplace = entity._inplace(True)
         self.assertEqual(entity, entity_inplace)
-        # ======================================================
-        # Test Case 2
+
+    def test__inplace_2(self):
         entity = Entity('foo')
         entity_inplace = entity._inplace(False)
         self.assertNotEqual(entity, entity_inplace)
 
-    def test__sort(self):
-        # ======================================================
-        # Test Case 1
+    def test__sort_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
         entity._sort('id', False)
         self.assertEqual(['bar', 'foo'], [e.id for e in entity])
-        # ======================================================
-        # Test Case 2
+
+    def test__sort_2(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
         entity._sort('id', True)
         self.assertEqual(['foo', 'bar'], [e.id for e in entity])
-        # ======================================================
-        # Test Case 3
+
+    def test__sort_3(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
         with self.assertRaises(ValueError):
             entity._sort('test', True)
 
-    def test_add(self):
-        # ======================================================
-        # Test Case 1
+    def test_add_1(self):
         entity = Entity('test')
         self.assertFalse('foo' in entity.child_dict)
         child_entity = Entity('foo')
         entity.add(child_entity)
         self.assertTrue(child_entity in entity.child_list)
         self.assertTrue('foo' in entity.child_dict)
-        # ======================================================
-        # Test Case 2
+
+    def test_add_2(self):
         entity = Entity('test')
         child_entity = Entity('foo')
         entity.add(child_entity)
@@ -292,9 +260,7 @@ class Test(unittest.TestCase):
         with self.assertRaises(ValueError):
             entity.add(Entity('foo'))
 
-    def test_copy(self):
-        # ======================================================
-        # Test Case 1
+    def test_copy_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         shallow = entity.copy()
@@ -302,8 +268,8 @@ class Test(unittest.TestCase):
         self.assertTrue(entity.id, shallow.id)
         self.assertNotEqual(entity[0], shallow[0])
         self.assertEqual(entity[0].id, shallow[0].id)
-        # ======================================================
-        # Test Case 2
+
+    def test_copy_2(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         shallow = entity[0].copy()
@@ -312,9 +278,7 @@ class Test(unittest.TestCase):
         self.assertIsNone(shallow.parent)
         self.assertEqual('foo', entity[0].id)
 
-    def test_deepcopy(self):
-        # ======================================================
-        # Test Case 1
+    def test_deepcopy_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         deep = entity.deepcopy()
@@ -322,8 +286,8 @@ class Test(unittest.TestCase):
         self.assertTrue(entity.id, deep.id)
         self.assertNotEqual(entity[0], deep[0])
         self.assertEqual(entity[0].id, deep[0].id)
-        # ======================================================
-        # Test Case 2
+
+    def test_deepcopy_2(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         deep = entity[0].deepcopy()
@@ -332,15 +296,13 @@ class Test(unittest.TestCase):
         self.assertIsNone(deep.parent)
         self.assertEqual('foo', entity[0].id)
 
-    def test_remove(self):
-        # ======================================================
-        # Test Case 1
+    def test_remove_1(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.remove('foo')
         self.assertFalse('foo' in entity)
-        # ======================================================
-        # Test Case 2
+
+    def test_remove_2(self):
         entity = Entity('test')
         entity.add(Entity('foo'))
         entity.add(Entity('bar'))
@@ -349,8 +311,8 @@ class Test(unittest.TestCase):
         self.assertTrue('bar' in entity)
         entity.remove('bar')
         self.assertFalse('bar' in entity)
-        # ======================================================
-        # Test Case 3
+
+    def test_remove_3(self):
         entity = Entity('test')
         with self.assertRaises(KeyError):
             entity.remove('foo')

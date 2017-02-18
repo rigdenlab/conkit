@@ -16,9 +16,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ======================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """1 2 0.93514
 1 3 0.67324
 1 4 0.23692
@@ -47,8 +45,7 @@ class Test(unittest.TestCase):
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 2
+    def test_read_2(self):
         content = """# Check one two
 Hello WOrld
 1 2 0.93514
@@ -79,8 +76,7 @@ Hello WOrld
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 3
+    def test_read_3(self):
         content = """##############################################################################
 PconsC3 result file
 Generated from test_remark
@@ -128,8 +124,7 @@ Res1 Res2 Score
         self.assertEqual('HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD', contact_map1.sequence.seq)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 4
+    def test_read_4(self):
         content = """##############################################################################
 PconsC3 result file
 Generated from test_remark
@@ -180,9 +175,7 @@ Res1 Res2 Score
                          contact_map1.sequence.seq)
         os.unlink(f_name)
 
-    def test_write(self):
-        # ======================================================
-        # Test Case 1
+    def test_write_1(self):
         contact_file = ContactFile('RR')
         contact_file.target = 'R9999'
         contact_file.author = '1234-5678-9000'

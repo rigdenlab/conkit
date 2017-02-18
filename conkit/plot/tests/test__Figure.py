@@ -10,12 +10,13 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test__init__(self):
+    def test__init__1(self):
         f = Figure()
         self.assertEqual(300, f.dpi)
         self.assertEqual("png", f.format)
         self.assertEqual("conkit", f.prefix)
 
+    def test__init__2(self):
         f = Figure(dpi=20, format="svg")
         self.assertEqual(20, f.dpi)
         self.assertEqual("svg", f.format)
@@ -23,13 +24,13 @@ class Test(unittest.TestCase):
 
         self.assertRaises(ValueError, Figure, format="ooo")
 
-    def test_dpi(self):
+    def test_dpi_1(self):
         f = Figure()
         self.assertEqual(300, f.dpi)
         f.dpi = 20
         self.assertEqual(20, f.dpi)
 
-    def test_filename(self):
+    def test_filename_1(self):
         f = Figure()
         self.assertEqual("conkit.png", f.file_name)
         f.file_name = "test.eps"
@@ -42,7 +43,7 @@ class Test(unittest.TestCase):
         self.assertEqual("test", f.prefix)
         self.assertRaises(ValueError, setattr, f, "file_name", "test.ooo")
 
-    def test_format(self):
+    def test_format_1(self):
         f = Figure()
         self.assertEqual("png", f.format)
         f.format = "pdf"
@@ -53,7 +54,7 @@ class Test(unittest.TestCase):
         self.assertEqual("png", f.format)
         self.assertRaises(ValueError, setattr, f, "format", "bbb")
 
-    def test_prefix(self):
+    def test_prefix_1(self):
         f = Figure()
         self.assertEqual("conkit", f.prefix)
         f.prefix = "test"

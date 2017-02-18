@@ -16,9 +16,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ======================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """PFRMAT RR
 TARGET R9999
 AUTHOR 1234-5678-9000
@@ -49,8 +47,7 @@ END
         self.assertEqual("HLEG-IGILL-K-E-------------------", contact_map1.repr_sequence.seq)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 2
+    def test_read_2(self):
         content = """PFRMAT RR
 TARGET R9999
 AUTHOR 1234-5678-9000
@@ -79,8 +76,7 @@ END
             _ = contact_map1.repr_sequence
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 3
+    def test_read_3(self):
         content = """PFRMAT RR
 MODEL  1
 1  9  0  8  0.70
@@ -105,8 +101,7 @@ END
             _ = contact_map1.repr_sequence
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 4
+    def test_read_4(self):
         content = """PFRMAT RR
 TARGET R9999
 AUTHOR 1234-5678-9000
@@ -154,8 +149,7 @@ END
         self.assertEqual("HLEG-IGILL-K-E-----------------", contact_map2.repr_sequence.seq)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 5
+    def test_read_5(self):
         content = """PFRMAT RR
 TARGET R9999
 MODEL  1
@@ -196,8 +190,7 @@ END
         self.assertEqual("HLEG-IGILL-K-E-------------------", contact_map2.repr_sequence.seq)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 6
+    def test_read_6(self):
         content = """1  9  0  8  0.70
 1 10  0  8  0.70
 1 12  0  8  0.60
@@ -215,47 +208,45 @@ END
                 CaspParser().read(f_in)
         os.unlink(f_name)
 
-#         # ======================================================
-#         # Test Case 7
-#         content = """PFRMAT RR
-# TARGET R9999
-# AUTHOR 1234-5678-9000
-# REMARK Predictor remarks
-# METHOD Description of methods used
-# METHOD Description of methods used
-# MODEL  1
-# HLEGSIGILLKKHEIVFDGC
-# HDFGRTYIWQMSD
-# A1 B9   0  8  0.70
-# A1 B10  0  8  0.70
-# A1 B12  0  8  0.60
-# A1 B14  0  8  0.20
-# A1 B15  0  8  0.10
-# A1 B17  0  8  0.30
-# A1 B19  0  8  0.50
-# A2 B8   0  8  0.90
-# A3 B7   0  8  0.70
-# A3 B12  0  8  0.40
-# A3 B14  0  8  0.70
-# A3 B15  0  8  0.30
-# A4 B6   0  8  0.90
-# A7 B14  0  8  0.30
-# A9 B14  0  8  0.50
-# END
-# """
-#         f_name = create_tmp_f(content=content)
-#         with open(f_name, 'r') as f_in:
-#             contact_file = CaspParser().read(f_in)
-#         contact_map1 = contact_file.top_map
-#         self.assertEqual(1, len(contact_file))
-#         self.assertEqual(15, len(contact_map1))
-#         self.assertEqual("HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD", contact_map1.sequence.seq)
-#         self.assertEqual("HLEG-IGILL-K-E-------------------", contact_map1.repr_sequence.seq)
-#         os.unlink(f_name)
+    @unittest.skip("Not yet implemented")
+    def test_read_7(self):
+        content = """PFRMAT RR
+TARGET R9999
+AUTHOR 1234-5678-9000
+REMARK Predictor remarks
+METHOD Description of methods used
+METHOD Description of methods used
+MODEL  1
+HLEGSIGILLKKHEIVFDGC
+HDFGRTYIWQMSD
+A1 B9   0  8  0.70
+A1 B10  0  8  0.70
+A1 B12  0  8  0.60
+A1 B14  0  8  0.20
+A1 B15  0  8  0.10
+A1 B17  0  8  0.30
+A1 B19  0  8  0.50
+A2 B8   0  8  0.90
+A3 B7   0  8  0.70
+A3 B12  0  8  0.40
+A3 B14  0  8  0.70
+A3 B15  0  8  0.30
+A4 B6   0  8  0.90
+A7 B14  0  8  0.30
+A9 B14  0  8  0.50
+END
+"""
+        f_name = create_tmp_f(content=content)
+        with open(f_name, 'r') as f_in:
+            contact_file = CaspParser().read(f_in)
+        contact_map1 = contact_file.top_map
+        self.assertEqual(1, len(contact_file))
+        self.assertEqual(15, len(contact_map1))
+        self.assertEqual("HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD", contact_map1.sequence.seq)
+        self.assertEqual("HLEG-IGILL-K-E-------------------", contact_map1.repr_sequence.seq)
+        os.unlink(f_name)
 
-    def test_write(self):
-        # ======================================================
-        # Test Case 1
+    def test_write_1(self):
         contact_file = ContactFile('RR')
         contact_file.target = 'R9999'
         contact_file.author = '1234-5678-9000'
@@ -294,8 +285,7 @@ END
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 2
+    def test_write_2(self):
         contact_file = ContactFile('RR')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
@@ -324,8 +314,7 @@ END
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 3
+    def test_write_3(self):
         contact_file = ContactFile('RR')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
@@ -352,8 +341,7 @@ END
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 4
+    def test_write_4(self):
         contact_file = ContactFile('RR')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
@@ -383,8 +371,7 @@ END
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 5
+    def test_write_5(self):
         contact_file = ContactFile('RR')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
@@ -414,8 +401,7 @@ END
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 6
+    def test_write_6(self):
         contact_file = ContactFile('RR')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)

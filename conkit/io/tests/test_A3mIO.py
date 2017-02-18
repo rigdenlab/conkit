@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Normal sequence only mode - remove_insert == TRUE
+    def test_read_1(self):
         msa = """>d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}
 PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL
 >gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]
@@ -91,11 +89,9 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
                                  sequence_entry.id)
                 self.assertEqual('---------PGFYEDEHHRLWMVAKLETCSHSPVHLWQMTRYPQEPAPYNPMNYNFL',
                                  sequence_entry.seq)
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-        # ==================================================
-        # Normal sequence only mode - remove_insert == FALSE
+    def test_read_2(self):
         msa = """>d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}
 PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL
 >gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]
@@ -174,11 +170,9 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
                                  sequence_entry.id)
                 self.assertEqual('---------PGFYEDEHHRLWMVAKLE--T--C--SH---------SPycnkietcvtVHLWQMTRYPQ-------EPAPYNPMNYN-----FL',
                                  sequence_entry.seq)
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-        # ==================================================
-        # Normal sequence only mode - Duplicate entries
+    def test_read_3(self):
         msa = """>d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}
 PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL
 >gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]
@@ -216,13 +210,9 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
                 self.assertGreater(79, len(sequence_entry.id))
                 self.assertEqual('HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL',
                                  sequence_entry.seq)
-
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-    def test_write(self):
-        # ==================================================
-        # Multiple sequence alignment - remove_insert == True
+    def test_write_1(self):
         msa = [
             ">d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}",
             "PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL",
@@ -279,12 +269,10 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(ref, output)
-        del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 
-        # ==================================================
-        # Multiple sequence alignment - remove_insert == False
+    def test_write_2(self):
         msa = [
             ">d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}",
             "PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL",
@@ -341,7 +329,6 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(ref, output)
-        del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 

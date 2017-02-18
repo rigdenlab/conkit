@@ -16,9 +16,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ======================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """19   A   41   A   H1-H2
 19   A   42   C   H1-H2
 11   L   47   L   H1-H2
@@ -60,9 +58,7 @@ class Test(unittest.TestCase):
         )
         os.unlink(f_name)
 
-    def test_write(self):
-        # ======================================================
-        # Test Case 1
+    def test_write_1(self):
         contact_file = ContactFile('RR')
         contact_file.target = 'R9999'
         contact_file.author = '1234-5678-9000'

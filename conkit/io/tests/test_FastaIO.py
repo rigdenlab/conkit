@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Normal sequence only mode
+    def test_read_1(self):
         seq = """>00FAF_A <unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
@@ -29,11 +27,9 @@ SSEHP
         self.assertEqual(ref_id, sequence_entry.id)
         ref_seq = "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLKEVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSASSEHP"
         self.assertEqual(ref_seq, sequence_entry.seq)
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-        # ==================================================
-        # Comments at the beginning of the file
+    def test_read_2(self):
         seq = """# Hello World
 >00FAF_A <unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
@@ -49,11 +45,9 @@ GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
         self.assertEqual(ref_id, sequence_entry.id)
         ref_seq = "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK"
         self.assertEqual(ref_seq, sequence_entry.seq)
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-        # ==================================================
-        # Multiple sequence alignment
+    def test_read_3(self):
         msa = """#foo
 #bar
 >seq1
@@ -78,12 +72,9 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             elif i == 2:
                 self.assertEqual('seq3', sequence_entry.id)
                 self.assertEqual('EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF', sequence_entry.seq)
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-    def test_write(self):
-        # ==================================================
-        # Normal sequence mode
+    def test_write_1(self):
         seq = [
             ">00FAF_A|<unknown description>",
             "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK",
@@ -101,11 +92,10 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(seq, output)
-        del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
-        # ==================================================
-        # Normal sequence mode - with comment
+
+    def test_write_2(self):
         seq = [
             "# Hello World",
             ">00FAF_A|<unknown description>",
@@ -122,11 +112,10 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(seq, output)
-        del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
-        # ==================================================
-        # Multiple sequence alignment
+
+    def test_write_3(self):
         msa = [
             "#foo",
             "#bar",
@@ -148,7 +137,6 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(msa, output)
-        del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 

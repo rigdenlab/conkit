@@ -16,9 +16,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """Helix   Position        Residue Helix   Position        Residue Probability
 H1      30      F       H2      55      F       1.000000
 H1      33      L       H2      51      A       0.944091
@@ -48,9 +46,7 @@ H1      19      L       H2      55      F       0.782741
         )
         os.unlink(f_name)
 
-    def test_write(self):
-        # ======================================================
-        # Test Case 1
+    def test_write_1(self):
         contact_file = ContactFile('RR')
         contact_file.target = 'R9999'
         contact_file.author = '1234-5678-9000'

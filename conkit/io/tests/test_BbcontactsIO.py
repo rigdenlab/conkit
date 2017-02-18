@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """#identifier diversity     direction viterbiscore indexpred        state  res1  res2
 1EAZ      0.65  Antiparallel     9.860725         1        first    29    24
 1EAZ      0.65  Antiparallel     9.860725         1     internal    30    23

@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Normal sequence only mode
+    def test_read_1(self):
         msa = """# STOCKHOLM 1.0
 #=GF ID 1EAZ:A|PDBID|CHAIN|SEQUENCE-i5
 
@@ -128,12 +126,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                                   'apsaspora owczarzaki (strain ATCC 30864) RepID=A0A0D2WIY8_CAPO3'],
                                  sequence_entry.remark)
 
-        del parser, hierarchy, sequence_entry
         os.unlink(f_name)
 
-    def test_write(self):
-        # ==================================================
-        # Multiple sequence alignment
+    def test_write_1(self):
         msa = [
             "# STOCKHOLM 1.0",
             "#=GF ID 1EAZ:A|PDBID|CHAIN|SEQUENCE-i5",
@@ -212,7 +207,6 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(ref, output)
-        del parser, hierarchy
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 

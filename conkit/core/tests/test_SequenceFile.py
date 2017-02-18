@@ -12,63 +12,57 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_is_alignment(self):
-        # ======================================================
-        # Test Case 1
+    def test_is_alignment_1(self):
         sequence_file = SequenceFile('test')
         sequence_file.add(Sequence('foo', 'AAAAA'))
         sequence_file.add(Sequence('bar', 'BBBBB'))
         self.assertTrue(sequence_file.is_alignment)
-        # ======================================================
-        # Test Case 2
+
+    def test_is_alignment_2(self):
         sequence_file = SequenceFile('test')
         sequence_file.add(Sequence('foo', 'AAAAA'))
         sequence_file.add(Sequence('bar', 'BBBB'))
         self.assertFalse(sequence_file.is_alignment)
 
-    def test_nseqs(self):
-        # ======================================================
-        # Test Case 1
+    def test_nseqs_1(self):
         sequence_file = SequenceFile('test')
         self.assertEqual(0, sequence_file.nseqs)
-        # ======================================================
-        # Test Case 2
+
+    def test_nseqs_2(self):
         sequence_file = SequenceFile('test')
         sequence_file.add(Sequence('foo', 'AAAAA'))
         self.assertEqual(1, sequence_file.nseqs)
-        # ======================================================
-        # Test Case 3
+
+    def test_nseqs_3(self):
         sequence_file = SequenceFile('test')
         sequence_file.add(Sequence('foo', 'AAAAA'))
         sequence_file.add(Sequence('bar', 'BBBBB'))
         self.assertEqual(2, sequence_file.nseqs)
 
-    def test_remark(self):
-        # ======================================================
-        # Test Case 1
+    def test_remark_1(self):
         sequence_file = SequenceFile('test')
         sequence_file.remark = 'Hello'
         self.assertEqual(['Hello'], sequence_file.remark)
-        # ======================================================
-        # Test Case 2
+
+    def test_remark_2(self):
         sequence_file = SequenceFile('test')
         sequence_file.remark = 'Hello'
         sequence_file.remark = 'World'
         self.assertEqual(['Hello', 'World'], sequence_file.remark)
-        # ======================================================
-        # Test Case 3
+
+    def test_remark_3(self):
         sequence_file = SequenceFile('test')
         sequence_file.remark = 'Hello'
         sequence_file.remark = '5'
         sequence_file.remark = 'World'
         sequence_file.remark = '!'
         self.assertEqual(['Hello', '5', 'World', '!'], sequence_file.remark)
-        # ======================================================
-        # Test Case 4
+
+    def test_remark_4(self):
         sequence_file = SequenceFile('test')
         self.assertEqual([], sequence_file.remark)
-        # ======================================================
-        # Test Case 5
+
+    def test_remark_5(self):
         sequence_file = SequenceFile('test')
         sequence_file.remark = 'hello'
         sequence = Sequence('foo', 'GSMFTPK')
@@ -77,19 +71,17 @@ class Test(unittest.TestCase):
         self.assertEqual(['hello'], sequence_file.remark)
         self.assertEqual(['bar'], sequence_file[0].remark)
 
-    def test_top_sequence(self):
-        # ======================================================
-        # Test Case 1
+    def test_top_sequence_1(self):
         sequence_file = SequenceFile('test')
         self.assertEqual(None, sequence_file.top_sequence)
-        # ======================================================
-        # Test Case 2
+
+    def test_top_sequence_2(self):
         sequence_file = SequenceFile('test')
         sequence1 = Sequence('foo', 'AAAAA')
         sequence_file.add(sequence1)
         self.assertEqual(sequence1, sequence_file.top_sequence)
-        # ======================================================
-        # Test Case 3
+
+    def test_top_sequence_3(self):
         sequence_file = SequenceFile('test')
         sequence1 = Sequence('foo', 'AAAAA')
         sequence2 = Sequence('bar', 'BBBBB')
@@ -98,9 +90,7 @@ class Test(unittest.TestCase):
         self.assertEqual(sequence1, sequence_file.top_sequence)
 
     @unittest.skipUnless(SCIPY, "SciPy not installed")
-    def test_calculate_meff(self):
-        # ======================================================
-        # Test Case 1
+    def test_calculate_meff_1(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'),
                   Sequence('cho', 'AAAAAAA'), Sequence('baz', 'AAAAAAA')]:
@@ -108,8 +98,9 @@ class Test(unittest.TestCase):
         m_eff = sequence_file.calculate_meff(identity=0.7)
         self.assertTrue(isinstance(m_eff, int))
         self.assertEqual(1, m_eff)
-        # ======================================================
-        # Test Case 2
+
+    @unittest.skipUnless(SCIPY, "SciPy not installed")
+    def test_calculate_meff_2(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'),
                   Sequence('cho', 'AAAAAAA'), Sequence('baz', 'BBBBBBB')]:
@@ -117,8 +108,9 @@ class Test(unittest.TestCase):
         m_eff = sequence_file.calculate_meff(identity=0.7)
         self.assertTrue(isinstance(m_eff, int))
         self.assertEqual(2, m_eff)
-        # ======================================================
-        # Test Case 3
+
+    @unittest.skipUnless(SCIPY, "SciPy not installed")
+    def test_calculate_meff_3(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AABA-'),
                   Sequence('cho', 'B-BAA--'), Sequence('baz', 'BBBBBBB')]:
@@ -126,8 +118,9 @@ class Test(unittest.TestCase):
         m_eff = sequence_file.calculate_meff(identity=0.7)
         self.assertTrue(isinstance(m_eff, int))
         self.assertEqual(4, m_eff)
-        # ======================================================
-        # Test Case 4
+
+    @unittest.skipUnless(SCIPY, "SciPy not installed")
+    def test_calculate_meff_4(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAABA-'),
                   Sequence('cho', 'B-BAA--'), Sequence('baz', 'BBBBBBB')]:
@@ -135,8 +128,9 @@ class Test(unittest.TestCase):
         m_eff = sequence_file.calculate_meff(identity=0.7)
         self.assertTrue(isinstance(m_eff, int))
         self.assertEqual(3, m_eff)
-        # ======================================================
-        # Test Case 5
+
+    @unittest.skipUnless(SCIPY, "SciPy not installed")
+    def test_calculate_meff_5(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AA-ABA-'),
                   Sequence('cho', 'B-BAA--'), Sequence('baz', 'BBBBBBB')]:
@@ -146,8 +140,9 @@ class Test(unittest.TestCase):
         self.assertEqual(4, m_eff)
         self.assertNotEqual(3, m_eff)
         self.assertNotEqual(3, m_eff)
-        # ======================================================
-        # Test Case 5
+
+    @unittest.skipUnless(SCIPY, "SciPy not installed")
+    def test_calculate_meff_6(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AA-ABA-'),
                   Sequence('cho', 'AAACBAA'), Sequence('doo', 'B-BAA--'),
@@ -157,32 +152,28 @@ class Test(unittest.TestCase):
         self.assertTrue(isinstance(m_eff, int))
         self.assertEqual(4, m_eff)
 
-    def test_calculate_freq(self):
-        # ======================================================
-        # Test Case 1
+    def test_calculate_freq_1(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AAAA-'), Sequence('cho', '--AAA--')]:
             sequence_file.add(s)
         calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
         self.assertEqual([0.666667, 0.333333, 1.0, 1.0, 1.0, 0.666667, 0.333333], calculated_freqs)
-        # ======================================================
-        # Test Case 2
+
+    def test_calculate_freq_2(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', '-------'), Sequence('bar', '-------'), Sequence('cho', '-------')]:
             sequence_file.add(s)
         calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
         self.assertEqual([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], calculated_freqs)
-        # ======================================================
-        # Test Case 3
+
+    def test_calculate_freq_3(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'), Sequence('cho', 'AAAAAAA')]:
             sequence_file.add(s)
         calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
         self.assertEqual([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], calculated_freqs)
 
-    def test_sort(self):
-        # ======================================================
-        # Test Case 1
+    def test_sort_1(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
             sequence_file.add(seq)
@@ -190,8 +181,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['bar', 'doe', 'foo'], [s.id for s in sequence_file_sorted])
         self.assertEqual(['BBBBB', 'CCCCC', 'AAAAA'], [s.seq for s in sequence_file_sorted])
         self.assertNotEqual(sequence_file, sequence_file_sorted)
-        # ======================================================
-        # Test Case 2
+
+    def test_sort_2(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
             sequence_file.add(seq)
@@ -199,8 +190,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['foo', 'doe', 'bar'], [s.id for s in sequence_file_sorted])
         self.assertEqual(['AAAAA', 'CCCCC', 'BBBBB'], [s.seq for s in sequence_file_sorted])
         self.assertNotEqual(sequence_file, sequence_file_sorted)
-        # ======================================================
-        # Test Case 3
+
+    def test_sort_3(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
             sequence_file.add(seq)
@@ -208,8 +199,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_sorted])
         self.assertEqual(['AAAAA', 'BBBBB', 'CCCCC'], [s.seq for s in sequence_file_sorted])
         self.assertEqual(sequence_file, sequence_file_sorted)
-        # ======================================================
-        # Test Case 4
+
+    def test_sort_4(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
             sequence_file.add(seq)
@@ -218,9 +209,7 @@ class Test(unittest.TestCase):
         self.assertEqual(['CCCCC', 'BBBBB', 'AAAAA'], [s.seq for s in sequence_file_sorted])
         self.assertEqual(sequence_file, sequence_file_sorted)
 
-    def test_trim(self):
-        # ======================================================
-        # Test Case 1
+    def test_trim_1(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
             sequence_file.add(seq)
@@ -228,8 +217,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
         self.assertEqual(['AAAAA', 'BBBBB', 'CCCCC'], [s.seq for s in sequence_file_trimmed])
         self.assertNotEqual(sequence_file, sequence_file_trimmed)
-        # ======================================================
-        # Test Case 2
+
+    def test_trim_2(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAA'), Sequence('bar', 'BBBBB'), Sequence('doe', 'CCCCC')]:
             sequence_file.add(seq)
@@ -237,8 +226,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
         self.assertEqual(['AAA', 'BBB', 'CCC'], [s.seq for s in sequence_file_trimmed])
         self.assertNotEqual(sequence_file, sequence_file_trimmed)
-        # ======================================================
-        # Test Case 3
+
+    def test_trim_3(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'ABCDE'), Sequence('bar', 'BCDEF'), Sequence('doe', 'CDEFG')]:
             sequence_file.add(seq)
@@ -246,8 +235,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in sequence_file_trimmed])
         self.assertEqual(['ABC', 'BCD', 'CDE'], [s.seq for s in sequence_file_trimmed])
         self.assertNotEqual(sequence_file, sequence_file_trimmed)
-        # ======================================================
-        # Test Case 4
+
+    def test_trim_4(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'ABCDE'), Sequence('bar', 'BCDEF'), Sequence('doe', 'CDEFG')]:
             sequence_file.add(seq)

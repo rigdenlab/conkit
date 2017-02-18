@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ======================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
 ATOM      2  CA  TYR A  36      38.300  50.814   2.204  0.50 41.80           C
 ATOM      3  O   TYR A  36      38.712  48.587   1.405  0.50 41.03           O
@@ -43,8 +41,8 @@ END
         self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.is_true_positive])
         self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.is_true_positive])
         os.unlink(f_name)
-        # ======================================================
-        # Test Case 2
+
+    def test_read_2(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
 ATOM      2  CA  TYR A  36      38.300  50.814   2.204  0.50 41.80           C
 ATOM      3  O   TYR A  36      38.712  48.587   1.405  0.50 41.03           O
@@ -73,8 +71,8 @@ END
         self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_true_positive])
         self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.is_true_positive])
         os.unlink(f_name)
-        # ======================================================
-        # Test Case 3
+
+    def test_read_3(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
 ATOM      2  CA  TYR A  36      38.300  50.814   2.204  0.50 41.80           C
 ATOM      3  O   TYR A  36      38.712  48.587   1.405  0.50 41.03           O
@@ -103,8 +101,8 @@ END
         self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_true_positive])
         self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.is_true_positive])
         os.unlink(f_name)
-        # ======================================================
-        # Test Case 4
+
+    def test_read_4(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
 ATOM      2  CA  TYR A  36      38.300  50.814   2.204  0.50 41.80           C
 ATOM      3  O   TYR A  36      38.712  48.587   1.405  0.50 41.03           O

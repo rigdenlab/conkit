@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Multiple sequence alignment
+    def test_read_1(self):
         msa = """GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF
 EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
@@ -37,11 +35,9 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             elif i == 3:
                 self.assertEqual('seq_3', sequence_entry.id)
                 self.assertEqual('EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF', sequence_entry.seq)
-        del parser, sequence_file, sequence_entry
         os.unlink(f_name)
 
-        # ==================================================
-        # Multiple sequence alignment - crash
+    def test_read_2(self):
         msa = """>header1
 GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF
 >header2
@@ -56,12 +52,9 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
         with open(f_name, 'r') as f_in:
             with self.assertRaises(ValueError):
                 parser.read(f_in)
-        del parser
         os.unlink(f_name)
 
-    def test_write(self):
-        # ==================================================
-        # Multiple sequence alignment
+    def test_write_1(self):
         msa = [
             "GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF",
             "EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA",
@@ -79,7 +72,6 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
         self.assertEqual(msa, output)
-        del parser, sequence_file
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 

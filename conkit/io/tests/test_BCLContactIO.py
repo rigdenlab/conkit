@@ -12,9 +12,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ==================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """5 I    9 Q 0.000 0.286 0.185 0.836 0.875 0.749
 5 I   10 R 0.000 0.000 0.105 0.875 0.482 0.634
 5 I   11 I 0.000 0.178 0.066 0.730 0.876 0.727

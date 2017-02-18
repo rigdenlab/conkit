@@ -14,9 +14,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_coverage(self):
-        # ======================================================
-        # Test Case 1
+    def test_coverage_1(self):
         contact_map = ContactMap('test')
         contact_map.add(Contact(1, 4, 1.0))
         contact_map.add(Contact(2, 4, 1.0))
@@ -24,8 +22,8 @@ class Test(unittest.TestCase):
         contact_map.add(Contact(3, 6, 1.0))
         contact_map.sequence = Sequence('TEST', 'ABCDEFGH')
         self.assertEqual(0.875, contact_map.coverage)
-        # ======================================================
-        # Test Case 2
+
+    def test_coverage_2(self):
         contact_map = ContactMap('test')
         contact_map.add(Contact(1, 4, 1.0))
         contact_map.add(Contact(2, 4, 1.0))
@@ -37,26 +35,22 @@ class Test(unittest.TestCase):
         contact_map.remove((3, 6))
         self.assertEqual(0.375, contact_map.coverage)
 
-    def test_ncontacts(self):
-        # ======================================================
-        # Test Case 1
+    def test_ncontacts_1(self):
         contact_map = ContactMap('test')
         self.assertEqual(0, contact_map.ncontacts)
-        # ======================================================
-        # Test Case 2
+
+    def test_ncontacts_2(self):
         contact_map = ContactMap('test')
         contact_map.add(Contact(1, 5, 1.0))
         self.assertEqual(1, contact_map.ncontacts)
-        # ======================================================
-        # Test Case 3
+
+    def test_ncontacts_3(self):
         contact_map = ContactMap('test')
         contact_map.add(Contact(1, 5, 1.0))
         contact_map.add(Contact(2, 10, 1.0))
         self.assertEqual(2, contact_map.ncontacts)
 
-    def test_precision(self):
-        # ======================================================
-        # Test Case 1
+    def test_precision_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
@@ -68,7 +62,7 @@ class Test(unittest.TestCase):
                 contact.define_false_positive()
         self.assertEqual(0.5, contact_map.precision)
 
-    def test_repr_sequence(self):
+    def test_repr_sequence_1(self):
         # ======================================================
         # Test Case 1
         contact_map = ContactMap('test')
@@ -77,8 +71,8 @@ class Test(unittest.TestCase):
         contact_map.sequence = Sequence('foo', 'ABCDE')
         self.assertEqual('AB-DE', contact_map.repr_sequence.seq)
         contact_map.remove((2, 4))
-        # ======================================================
-        # Test Case 2
+
+    def test_repr_sequence_2(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
@@ -87,9 +81,7 @@ class Test(unittest.TestCase):
         contact_map.remove((2, 4))
         self.assertEqual('A---E', contact_map.repr_sequence.seq)
 
-    def test_repr_sequence_altloc(self):
-        # ======================================================
-        # Test Case 1
+    def test_repr_sequence_altloc_1(self):
         contact_map = ContactMap('test')
         for contact, altseq in [(Contact(1, 5, 1.0), (3, 4)),
                                 (Contact(2, 4, 0.1), (1, 5)),
@@ -100,8 +92,8 @@ class Test(unittest.TestCase):
         contact_map.sequence = Sequence('foo', 'ABCDE')
         self.assertEqual('A-CDE', contact_map.repr_sequence_altloc.seq)
         self.assertEqual('AB-DE', contact_map.repr_sequence.seq)
-        # ======================================================
-        # Test Case 2
+
+    def test_repr_sequence_altloc_2(self):
         contact_map = ContactMap('test')
         for contact, altseq in [(Contact(1, 5, 1.0), (3, 4)),
                                 (Contact(2, 4, 0.1), (1, 5)),
@@ -116,17 +108,15 @@ class Test(unittest.TestCase):
         self.assertEqual('--CD-', contact_map.repr_sequence_altloc.seq)
         self.assertEqual('A---E', contact_map.repr_sequence.seq)
 
-    def test_sequence(self):
-        # ======================================================
-        # Test Case 1
+    def test_sequence_1(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
         seq_obj = Sequence('bar', 'ABCDE')
         contact_map.sequence = seq_obj
         self.assertEqual(seq_obj, contact_map.sequence)
-        # ======================================================
-        # Test Case 2
+
+    def test_sequence_2(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
@@ -135,19 +125,17 @@ class Test(unittest.TestCase):
         with self.assertRaises(TypeError):
             contact_map.sequence([sequence1, sequence2])
 
-    def test_top_contact(self):
-        # ======================================================
-        # Test Case 1
+    def test_top_contact_1(self):
         contact_map = ContactMap('test')
         self.assertEqual(None, contact_map.top_contact)
-        # ======================================================
-        # Test Case 2
+
+    def test_top_contact_2(self):
         contact_map = ContactMap('test')
         contact = Contact(1, 10, 1.0)
         contact_map.add(contact)
         self.assertEqual(contact, contact_map.top_contact)
-        # ======================================================
-        # Test Case 3
+
+    def test_top_contact_3(self):
         contact_map = ContactMap('test')
         contact1 = Contact(1, 10, 1.0)
         contact2 = Contact(2, 100, 1.0)
@@ -155,33 +143,31 @@ class Test(unittest.TestCase):
         contact_map.add(contact2)
         self.assertEqual(contact1, contact_map.top_contact)
 
-    def test__construct_repr_sequence(self):
-        # ======================================================
-        # Test Case 1
+    def test__construct_repr_sequence_1(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
         seq_obj = Sequence('bar', 'ABCDE')
         contact_map.sequence = seq_obj
         self.assertEqual('ABCDE', contact_map._construct_repr_sequence([1, 2, 3, 4, 5]).seq)
-        # ======================================================
-        # Test Case 2
+
+    def test__construct_repr_sequence_2(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
         seq_obj = Sequence('bar', 'ABCDE')
         contact_map.sequence = seq_obj
         self.assertEqual('AB-DE', contact_map._construct_repr_sequence([1, 2, 4, 5]).seq)
-        # ======================================================
-        # Test Case 3
+
+    def test__construct_repr_sequence_3(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
         seq_obj = Sequence('bar', 'ABCDE')
         contact_map.sequence = seq_obj
         self.assertEqual('A---E', contact_map._construct_repr_sequence([1, 5]).seq)
-        # ======================================================
-        # Test Case 4
+
+    def test__construct_repr_sequence_4(self):
         contact_map = ContactMap('test')
         for contact in [Contact(1, 5, 1.0), Contact(5, 1, 0.2)]:
             contact_map.add(contact)
@@ -189,18 +175,14 @@ class Test(unittest.TestCase):
         contact_map.sequence = seq_obj
         self.assertEqual('----E', contact_map._construct_repr_sequence([-1, 5]).seq)
 
-    def test_calculate_scalar_score(self):
-        # ======================================================
-        # Test Case 1
+    def test_calculate_scalar_score_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
         contact_map.calculate_scalar_score()
         self.assertListEqual([2.352941, 0.941176, 0.235294, 0.470588], [round(c.scalar_score, 6) for c in contact_map])
 
-    def test_calculate_jaccard_score(self):
-        # ======================================================
-        # Test Case 1
+    def test_calculate_jaccard_score_1(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map1.add(c)
@@ -209,8 +191,8 @@ class Test(unittest.TestCase):
             contact_map2.add(c)
         jindex = contact_map1.calculate_jaccard_index(contact_map2)
         self.assertEqual(0.333333, round(jindex, 6))
-        # ======================================================
-        # Test Case 2
+
+    def test_calculate_jaccard_score_2(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map1.add(c)
@@ -219,8 +201,8 @@ class Test(unittest.TestCase):
             contact_map2.add(c)
         jindex = contact_map1.calculate_jaccard_index(contact_map2)
         self.assertEqual(0.0, jindex)
-        # ======================================================
-        # Test Case 3
+
+    def test_calculate_jaccard_score_3(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map1.add(c)
@@ -229,16 +211,14 @@ class Test(unittest.TestCase):
             contact_map2.add(c)
         jindex = contact_map1.calculate_jaccard_index(contact_map2)
         self.assertEqual(1.0, jindex)
-        # ======================================================
-        # Test Case 2
+
+    def test_calculate_jaccard_score_4(self):
         contact_map1 = ContactMap('foo')
         contact_map2 = ContactMap('bar')
         jindex = contact_map1.calculate_jaccard_index(contact_map2)
         self.assertEqual(1.0, jindex)
 
-    def test_find(self):
-        # ======================================================
-        # Test Case 1
+    def test_find_1(self):
         contact_map1 = ContactMap('1')
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
             contact_map1.add(Contact(*comb))
@@ -248,8 +228,8 @@ class Test(unittest.TestCase):
         self.assertEqual(2, len(found))
         self.assertEqual([1, 1], [c.res1_seq for c in found])
         self.assertEqual([5, 4], [c.res2_seq for c in found])
-        # ======================================================
-        # Test Case 2
+
+    def test_find_2(self):
         contact_map1 = ContactMap('1')
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
             contact_map1.add(Contact(*comb))
@@ -259,8 +239,8 @@ class Test(unittest.TestCase):
         self.assertEqual(0, len(found))
         self.assertEqual([], [c.res1_seq for c in found])
         self.assertEqual([], [c.res2_seq for c in found])
-        # ======================================================
-        # Test Case 3
+
+    def test_find_3(self):
         contact_map1 = ContactMap('1')
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
             contact_map1.add(Contact(*comb))
@@ -270,8 +250,8 @@ class Test(unittest.TestCase):
         self.assertEqual(5, len(found))
         self.assertEqual([1, 2, 1, 3, 2], [c.res1_seq for c in found])
         self.assertEqual([5, 6, 4, 6, 5], [c.res2_seq for c in found])
-        # ======================================================
-        # Test Case 4
+
+    def test_find_4(self):
         contact_map1 = ContactMap('1')
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
             contact_map1.add(Contact(*comb))
@@ -282,9 +262,7 @@ class Test(unittest.TestCase):
         self.assertEqual([1, 2, 1, 3], [c.res1_seq for c in found])
         self.assertEqual([5, 6, 4, 6], [c.res2_seq for c in found])
 
-    def test_assign_sequence_register(self):
-        # ======================================================
-        # Test Case 1
+    def test_assign_sequence_register_1(self):
         contact_map1 = ContactMap('1')
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
             contact_map1.add(Contact(*comb))
@@ -294,8 +272,8 @@ class Test(unittest.TestCase):
             [('A', 'E'), ('B', 'F'), ('A', 'D'), ('C', 'F'), ('B', 'E')],
             [(c.res1, c.res2) for c in contact_map1]
         )
-        # ======================================================
-        # Test Case 2
+
+    def test_assign_sequence_register_2(self):
         contact_map1 = ContactMap('1')
         for comb, alt in [((101, 105, 1.0), (1, 5)),
                           ((102, 106, 1.0), (2, 6)),
@@ -313,9 +291,7 @@ class Test(unittest.TestCase):
             [(c.res1, c.res2) for c in contact_map1]
         )
 
-    def test_match(self):
-        # ======================================================
-        # Test Case 1
+    def test_match_1(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -342,8 +318,8 @@ class Test(unittest.TestCase):
              Contact._UNKNOWN],
             [c.status for c in contact_map1]
         )
-        # ======================================================
-        # Test Case 2
+
+    def test_match_2(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -369,8 +345,8 @@ class Test(unittest.TestCase):
             [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
             [c.status for c in contact_map1]
         )
-        # ======================================================
-        # Test Case 3
+
+    def test_match_3(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -397,8 +373,8 @@ class Test(unittest.TestCase):
             [Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
             [c.status for c in contact_map1]
         )
-        # ======================================================
-        # Test Case 4
+
+    def test_match_4(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -426,8 +402,8 @@ class Test(unittest.TestCase):
         )
         self.assertEqual([2, 2, 3], [c.res1_altseq for c in contact_map2])
         self.assertEqual([6, 7, 5], [c.res2_altseq for c in contact_map2])
-        # ======================================================
-        # Test Case 5
+
+    def test_match_5(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -470,8 +446,8 @@ class Test(unittest.TestCase):
              Contact._UNKNOWN],
             [c.status for c in contact_map1]
         )
-        # ======================================================
-        # Test Case 6
+
+    def test_match_6(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -513,8 +489,8 @@ class Test(unittest.TestCase):
             [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
             [c.status for c in contact_map1]
         )
-        # ======================================================
-        # Test Case 7
+
+    def test_match_7(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -561,8 +537,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['A', 'A', '', 'A', ''], [c.res1_chain for c in contact_map1])
         self.assertEqual([30, 31, 9999, 30, 9999], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', '', 'B', ''], [c.res2_chain for c in contact_map1])
-        # ======================================================
-        # Test Case 8
+
+    def test_match_8(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -608,8 +584,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['A', 'A', 'A'], [c.res1_chain for c in contact_map1])
         self.assertEqual([30, 31, 30], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', 'B'], [c.res2_chain for c in contact_map1])
-        # ======================================================
-        # Test Case 9
+
+    def test_match_9(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -672,8 +648,8 @@ class Test(unittest.TestCase):
         self.assertEqual(['A', 'A', 'A', 'A', 'A'], [c.res1_chain for c in contact_map1])
         self.assertEqual([30, 31, 32, 30, 33], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', 'B', 'B', 'B'], [c.res2_chain for c in contact_map1])
-        # ======================================================
-        # Test Case 10
+
+    def test_match_10(self):
         contact_map1 = ContactMap('foo')
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
@@ -746,17 +722,15 @@ class Test(unittest.TestCase):
                 [(c.res1_chain, c.res2_chain) for c in contact_map1]
         )
 
-    def test_remove_neighbors(self):
-        # ======================================================
-        # Test Case 1
+    def test_remove_neighbors_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
         contact_map_mod = contact_map.remove_neighbors(min_distance=2)
         self.assertListEqual([(1, 5), (2, 4), (5, 1)], [c.id for c in contact_map_mod])
         self.assertEqual([(1, 5), (2, 4), (5, 1)], sorted(contact_map_mod.child_dict.keys()))
-        # ======================================================
-        # Test Case 2
+
+    def test_remove_neighbors_2(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
@@ -765,17 +739,15 @@ class Test(unittest.TestCase):
         self.assertDictEqual({}, contact_map_mod.child_dict)
         self.assertEqual(contact_map, contact_map_mod)
 
-    def test_rescale(self):
-        # ======================================================
-        # Test Case 1
+    def test_rescale_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
         contact_map_rescaled = contact_map.rescale()
         self.assertListEqual([1.0, 0.333, 0.0, 0.111], [round(c.raw_score, 3) for c in contact_map_rescaled])
         self.assertNotEqual(contact_map, contact_map_rescaled)
-        # ======================================================
-        # Test Case 2
+
+    def test_rescale_2(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
@@ -783,33 +755,31 @@ class Test(unittest.TestCase):
         self.assertListEqual([1.0, 0.333, 0.0, 0.111], [round(c.raw_score, 3) for c in contact_map])
         self.assertEqual(contact_map, contact_map_rescaled)
 
-    def test_sort(self):
-        # ======================================================
-        # Test Case 1
+    def test_sort_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
         contact_map_sorted = contact_map.sort('res1_seq', reverse=False, inplace=False)
         self.assertEqual([(1, 5), (2, 4), (3, 3), (5, 1)], [c.id for c in contact_map_sorted])
         self.assertNotEqual(contact_map, contact_map_sorted)
-        # ======================================================
-        # Test Case 2
+
+    def test_sort_2(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
         contact_map_sorted = contact_map.sort('res1_seq', reverse=True, inplace=False)
         self.assertEqual([(5, 1), (3, 3), (2, 4), (1, 5)], [c.id for c in contact_map_sorted])
         self.assertNotEqual(contact_map, contact_map_sorted)
-        # ======================================================
-        # Test Case 3
+
+    def test_sort_3(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
         contact_map_sorted = contact_map.sort('raw_score', reverse=False, inplace=True)
         self.assertEqual([(2, 4), (5, 1), (3, 3), (1, 5)], [c.id for c in contact_map_sorted])
         self.assertEqual(contact_map, contact_map_sorted)
-        # ======================================================
-        # Test Case 4
+
+    def test_sort_4(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
             contact_map.add(c)
@@ -817,11 +787,9 @@ class Test(unittest.TestCase):
         self.assertEqual([(1, 5), (2, 4), (3, 3), (5, 1)], [c.id for c in contact_map_sorted])
         self.assertEqual(contact_map, contact_map_sorted)
 
-    def test__adjust(self):
-        # ======================================================
-        # Test Case 1
+    def test__adjust_1(self):
         contact_map = ContactMap("test")
-        for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), 
+        for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1),
                         Contact(1, 1, 0.2)]:
             contact_map.add(contact)
             contact.res1_altseq = contact.res1_seq
@@ -833,8 +801,8 @@ class Test(unittest.TestCase):
         adjusted = ContactMap._adjust(contact_map, contact_map_keymap)
         self.assertEqual([1, 3, 2, 1], [c.res1_altseq for c in adjusted])
         self.assertEqual([5, 3, 4, 1], [c.res2_altseq for c in adjusted])
-        # ======================================================
-        # Test Case 2
+
+    def test__adjust_2(self):
         contact_map = ContactMap("test")
         for contact in [Contact(1, 5, 1.0), Contact(2, 4, 0.1), Contact(1, 1, 0.2)]:
             contact_map.add(contact)
@@ -848,9 +816,7 @@ class Test(unittest.TestCase):
         self.assertEqual([1, 2, 1], [c.res1_altseq for c in adjusted])
         self.assertEqual([5, 4, 1], [c.res2_altseq for c in adjusted])
     
-    def test__create_keymap(self):
-        # ======================================================
-        # Test Case 1
+    def test__create_keymap_1(self):
         contact_map = ContactMap("test")
         for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), 
                         Contact(1, 1, 0.2)]:
@@ -861,8 +827,8 @@ class Test(unittest.TestCase):
         self.assertEqual([1, 2, 3, 4, 5], [c.res_seq for c in contact_map_keymap])
         self.assertEqual(['A', 'B', 'C', 'D', 'E'], [c.res_name for c in contact_map_keymap])
         self.assertEqual([0, 0, 0, 0, 0], [c.res_altseq for c in contact_map_keymap])
-        # ======================================================
-        # Test Case 2
+
+    def test__create_keymap_2(self):
         contact_map = ContactMap("test")
         for contact, res_altloc in [(Contact(1, 5, 1.0), (10, 20)),
                                     (Contact(3, 3, 0.4), (12, 12)),
@@ -877,8 +843,8 @@ class Test(unittest.TestCase):
         self.assertEqual([1, 2, 3, 4, 5], [c.res_seq for c in contact_map_keymap])
         self.assertEqual(['A', 'B', 'C', 'D', 'E'], [c.res_name for c in contact_map_keymap])
         self.assertEqual([10, 11, 12, 13, 20], [c.res_altseq for c in contact_map_keymap])
-        # ======================================================
-        # Test Case 3
+
+    def test__create_keymap_3(self):
         contact_map = ContactMap("test")
         for contact, res_altloc in [(Contact(1, 5, 1.0), (10, 20)),
                                     (Contact(2, 4, 0.1), (11, 13)),
@@ -893,9 +859,7 @@ class Test(unittest.TestCase):
         self.assertEqual(['A', 'B', 'D', 'E'], [c.res_name for c in contact_map_keymap])
         self.assertEqual([10, 11, 13, 20], [c.res_altseq for c in contact_map_keymap])
 
-    def test__find_single(self):
-        # ======================================================
-        # Test Case 1
+    def test__find_single_1(self):
         contact_map = ContactMap("test")
         for contact, res_altloc in [(Contact(1, 5, 1.0), (10, 20)),
                                     (Contact(2, 4, 0.1), (11, 13)),
@@ -909,8 +873,8 @@ class Test(unittest.TestCase):
         self.assertEqual([(2, 4)], [c.id for c in found_contacts])
         found_contacts = ContactMap._find_single(contact_map, 8)
         self.assertEqual([], list(found_contacts))
-        # ======================================================
-        # Test Case 2
+
+    def test__find_single_2(self):
         contact_map = ContactMap("test")
         for contact, res_altloc in [(Contact(1, 5, 1.0), (10, 20)),
                                     (Contact(2, 4, 0.1), (11, 13)),
@@ -927,26 +891,22 @@ class Test(unittest.TestCase):
         found_contacts = ContactMap._find_single(contact_map, 4)
         self.assertEqual([(2, 4)], [c.id for c in found_contacts])
 
-    def test__insert_states(self):
-        # ======================================================
-        # Test Case 1
+    def test__insert_states_1(self):
         keymap = [_Residue(1, 1, 'X', ''), _Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
         sequence = [ord(x) for x in 'XXX']
         inserts_added = ContactMap._insert_states(sequence, keymap)
         self.assertEqual(3, len(inserts_added))
         self.assertEqual([True, True, True], [isinstance(r, _Residue) for r in inserts_added])
-        # ======================================================
-        # Test Case 2
+
+    def test__insert_states_2(self):
         keymap = [_Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
         sequence = [ord(x) for x in '-XX']
         inserts_added = ContactMap._insert_states(sequence, keymap)
         self.assertEqual(3, len(inserts_added))
         self.assertEqual([False, True, True], [isinstance(r, _Residue) for r in inserts_added])
         self.assertEqual([True, False, False], [isinstance(r, _Gap) for r in inserts_added])
-        # ======================================================
-        # Test Case 3
+
+    def test__insert_states_3(self):
         keymap = [_Residue(2, 10, 'X', ''), _Residue(3, 11, 'X', '')]
         sequence = [ord(x) for x in '-X-X--']
         inserts_added = ContactMap._insert_states(sequence, keymap)
@@ -956,33 +916,31 @@ class Test(unittest.TestCase):
         self.assertEqual([2, 3], [r.res_seq for r in inserts_added if isinstance(r, _Residue)])
         self.assertEqual([10, 11], [r.res_altseq for r in inserts_added if isinstance(r, _Residue)])
 
-    def test__reindex(self):
-        # ======================================================
-        # Test Case 1
+    def test__reindex_1(self):
         keymap = [_Residue(1, 1, 'X', ''), _Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
         reindex = ContactMap._reindex(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
-        # ======================================================
-        # Test Case 2
+
+    def test__reindex_2(self):
         keymap = [_Residue(1, -5, 'X', ''), _Residue(2, -4, 'X', ''), _Residue(3, -3, 'X', '')]
         reindex = ContactMap._reindex(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
-        # ======================================================
-        # Test Case 3
+
+    def test__reindex_3(self):
         keymap = [_Gap(), _Residue(2, 1, 'X', ''), _Residue(3, 2, 'X', '')]
         reindex = ContactMap._reindex(keymap)
         self.assertEqual([9999, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([9999, 2, 3], [c.res_altseq for c in reindex])
-        # ======================================================
-        # Test Case 4
+
+    def test__reindex_4(self):
         keymap = [_Gap(), _Residue(200000, 10000, 'X', ''), _Gap(), _Gap()]
         reindex = ContactMap._reindex(keymap)
         self.assertEqual([9999, 200000, 9999, 9999], [c.res_seq for c in reindex])
         self.assertEqual([9999, 2, 9999, 9999], [c.res_altseq for c in reindex])
-        # ======================================================
-        # Test Case 5
+
+    def test__reindex_5(self):
         keymap = [_Gap(), _Gap(), _Gap(), _Gap()]
         reindex = ContactMap._reindex(keymap)
         self.assertEqual([9999, 9999, 9999, 9999], [c.res_seq for c in reindex])

@@ -16,9 +16,7 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_read(self):
-        # ======================================================
-        # Test Case 1
+    def test_read_1(self):
         content = """i	j	i_id	j_id	r_sco	s_sco	prob
 179	246	179_C	246_L	0.2019	4.740	1.000
 262	305	262_G	305_Y	0.1742	4.090	1.000
@@ -47,8 +45,7 @@ class Test(unittest.TestCase):
         )
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 2
+    def test_read_2(self):
         content = """# Some comments
 # That are here for whatever reason
 i	j	i_id	j_id	r_sco	s_sco	prob
@@ -79,8 +76,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         )
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 3
+    def test_read_3(self):
         content = """i	j	gene	i_id	j_id	r_sco	s_sco	prob	I_prob
 127	187	A	127_V	187_I	0.183	3.635	1.000	N/A
 83	87	A	83_E	87_Q	0.183	3.633	1.000	N/A
@@ -115,9 +111,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             self.assertEqual(raw_scores, [c.raw_score for c in cmap])
         os.unlink(f_name)
 
-    def test_write(self):
-        # ======================================================
-        # Test Case 1
+    def test_write_1(self):
         contact_file = ContactFile('test')
         contact_map = ContactMap('A')
         contact_file.add(contact_map)
@@ -143,8 +137,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 2
+    def test_write_2(self):
         contact_file = ContactFile('TEST')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
@@ -168,8 +161,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         self.assertEqual(content, data)
         os.unlink(f_name)
 
-        # ======================================================
-        # Test Case 3
+    def test_write_3(self):
         contact_file = ContactFile('TEST')
         contact_maps = [ContactMap('A'), ContactMap('AB'), ContactMap('B')]
         contacts = [(Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)),

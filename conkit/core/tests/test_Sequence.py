@@ -10,50 +10,44 @@ import unittest
 
 class Test(unittest.TestCase):
 
-    def test_remark(self):
-        # ======================================================
-        # Test Case 1
+    def test_remark_1(self):
         sequence = Sequence('foo', 'GSMFTPK')
         sequence.remark = 'bar'
         self.assertEqual(['bar'], sequence.remark)
-        # ======================================================
-        # Test Case 2
+
+    def test_remark_2(self):
         sequence = Sequence('foo', 'GSMFTPK')
         sequence.remark = 'bar'
         sequence.remark = 'baz'
         self.assertEqual(['bar', 'baz'], sequence.remark)
 
-    def test_seq(self):
-        # ======================================================
-        # Test Case 1
+    def test_seq_1(self):
         sequence = Sequence('foo', 'GSMFTPK')
         self.assertEqual('foo', sequence.id)
         self.assertEqual('GSMFTPK', sequence.seq)
-        # ======================================================
-        # Test Case 2
+
+    def test_seq_2(self):
         sequence = Sequence('foo', 'GSMFTPK')
         sequence.seq = 'AAAAAA'
         self.assertEqual('foo', sequence.id)
         self.assertEqual('AAAAAA', sequence.seq)
-        # ======================================================
-        # Test Case 3
+
+    def test_seq_3(self):
         sequence = Sequence('foo', 'GSMFTPK')
         with self.assertRaises(ValueError):
             sequence.seq = 'A2A'
-        # ======================================================
-        # Test Case 3
+
+    def test_seq_4(self):
         sequence = Sequence('foo', 'GSMFTPK')
         sequence.seq = '-------'
 
-    def test_seq_len(self):
-        # ======================================================
-        # Test Case 1
+    def test_seq_len_1(self):
         sequence = Sequence('foo', 'GSMFTPK')
         self.assertEqual('foo', sequence.id)
         self.assertEqual('GSMFTPK', sequence.seq)
         self.assertEqual(7, sequence.seq_len)
-        # ======================================================
-        # Test Case 2
+
+    def test_seq_len_2(self):
         sequence = Sequence('foo', 'GSMFTPK')
         self.assertEqual('foo', sequence.id)
         self.assertEqual('GSMFTPK', sequence.seq)
@@ -63,9 +57,7 @@ class Test(unittest.TestCase):
         self.assertEqual('AAAAAAAAAA', sequence.seq)
         self.assertEqual(10, sequence.seq_len)
 
-    def test_align_local(self):
-        # ======================================================
-        # Test Case 1
+    def test_align_local_1(self):
         sequence1 = Sequence('foo', 'GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTI'
                                     'GYFKSELEKEPLRVIPLKEVHKVQECKQSDIMMRDNLFEIVT'
                                     'TSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSASSEHP')
@@ -78,8 +70,8 @@ class Test(unittest.TestCase):
                    "----F----------VQADSPEEMHSWIKAVSGAIVAQR-----------"
         self.assertEqual(aligned1, sequence1.seq)
         self.assertEqual(aligned2, sequence2.seq)
-        # ======================================================
-        # Test Case 2
+
+    def test_align_local_2(self):
         sequence1 = Sequence('foo', 'DDLTISSLAKGETTKAAFNQMVQGHKLPAWVMKGGTYTPAQTV'
                                     'TLGDETYQVMSACKPHDCGSQRIAVMWSEKSNQMTGLFSTIDE'
                                     'KTSQEKLTWLNVNDALSIDGKTVLFAALTGSLENHPDGFNFKV'
@@ -103,8 +95,8 @@ class Test(unittest.TestCase):
                    "----NG--------------D----IRGC-"
         self.assertEqual(aligned1, sequence1.seq)
         self.assertEqual(aligned2, sequence2.seq)
-        # ======================================================
-        # Test Case 3
+
+    def test_align_local_3(self):
         sequence1 = Sequence('foo', '------------------------------------------'
                                     '------------------------------------------'
                                     '----------W------------TV-----------------'

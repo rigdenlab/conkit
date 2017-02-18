@@ -16,39 +16,33 @@ import unittest
 
 class Test1(unittest.TestCase):
     """Test for _ContactFileParser"""
-    def test__reconstruct(self):
-        parser = _ContactFileParser()
-        # ======================================================
-        # Test Case 1
-        hierarchy = parser._reconstruct(Contact(1, 3, 1.0))
+    def test__reconstruct_1(self):
+        hierarchy = _ContactFileParser()._reconstruct(Contact(1, 3, 1.0))
         self.assertTrue(isinstance(hierarchy, ContactFile))
         self.assertTrue(isinstance(hierarchy[0], ContactMap))
         self.assertTrue(isinstance(hierarchy[0][0], Contact))
         self.assertEqual((1, 3), (hierarchy[0][0].res1_seq, hierarchy[0][0].res2_seq))
-        # ======================================================
-        # Test Case 2
-        hierarchy = parser._reconstruct(ContactMap('test'))
+
+    def test__reconstruct_2(self):
+        hierarchy = _ContactFileParser()._reconstruct(ContactMap('test'))
         self.assertTrue(isinstance(hierarchy, ContactFile))
         self.assertTrue(isinstance(hierarchy[0], ContactMap))
         self.assertEqual('test', hierarchy[0].id)
-        # ======================================================
-        # Test Case 3
-        hierarchy = parser._reconstruct(ContactFile('test'))
+
+    def test__reconstruct_3(self):
+        hierarchy = _ContactFileParser()._reconstruct(ContactFile('test'))
         self.assertTrue(isinstance(hierarchy, ContactFile))
         self.assertEqual('test', hierarchy.id)
 
 
 class Test2(unittest.TestCase):
     """Test for _SequenceFileParser"""
-    def test__reconstruct(self):
-        parser = _SequenceFileParser()
-        # ======================================================
-        # Test Case 1
-        hierarchy = parser._reconstruct(SequenceFile('test'))
+    def test__reconstruct_1(self):
+        hierarchy = _SequenceFileParser()._reconstruct(SequenceFile('test'))
         self.assertTrue(isinstance(hierarchy, SequenceFile))
-        # ======================================================
-        # Test Case 2
-        hierarchy = parser._reconstruct(Sequence('test', 'AAA'))
+
+    def test__reconstruct_2(self):
+        hierarchy = _SequenceFileParser()._reconstruct(Sequence('test', 'AAA'))
         self.assertTrue(isinstance(hierarchy, SequenceFile))
 
 if __name__ == "__main__":
