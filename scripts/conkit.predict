@@ -37,7 +37,7 @@ def add_default_args(parser):
 
 def add_alignment_args(subparsers):
     """Parser with alignment as starting point"""
-    from_alignment_subparser = subparsers.add_parser('alignment')
+    from_alignment_subparser = subparsers.add_parser('aln')
     add_default_args(from_alignment_subparser)
     from_alignment_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
     from_alignment_subparser.add_argument('alignment_file', help='Path to alignment file')
@@ -47,7 +47,7 @@ def add_alignment_args(subparsers):
 
 def add_sequence_args(subparsers):
     """Parser with sequence as starting point"""
-    from_sequence_subparser = subparsers.add_parser('sequence')
+    from_sequence_subparser = subparsers.add_parser('seq')
     add_default_args(from_sequence_subparser)
     from_sequence_subparser.add_argument('--nodca', default=False, action='store_true',
                                          help=argparse.SUPPRESS)

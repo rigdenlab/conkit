@@ -12,7 +12,7 @@ The script to run contact prediction using `HHblits <https://github.com/soedingl
 
 .. code-block:: bash
 
-   $> conkit.predict sequence <path/to/hhblits> <path/to/hhblits_database> <path/to/ccmpred> toxd/toxd.fasta fasta
+   $> conkit.predict seq <path/to/hhblits> <path/to/hhblits_database> <path/to/ccmpred> toxd/toxd.fasta fasta
 
 The call above uses your sequence file ``toxd/toxd.fasta`` in ``fasta`` format to first generate a Multiple Sequence Alignment. It will then analyse your alignment identical to the ``conkit.msatool`` script. It will also sort out all the required conversions before executing CCMpred to run the contact prediction. Finally, it will analyse your contact prediciton and plot a contact map, just like the ``conkit.plot`` script does.
 
@@ -20,6 +20,6 @@ The call above uses your sequence file ``toxd/toxd.fasta`` in ``fasta`` format t
 
 .. code-block:: bash
 
-   $> conkit.predict alignment <path/to/ccmpred> toxd/toxd.a3m a3m
+   $> conkit.predict aln <path/to/ccmpred> toxd/toxd.a3m a3m
 
 This call performs identical operations to the full call under point 1, except that it skips the generation of the alignment. This might be particularly useful if you have limited disk space and cannot store the rather large sequence database that HHblits requires. You can generate your alignment using online servers, such as the `HHblits Server <https://toolkit.tuebingen.mpg.de/hhblits>`_ or the `Jackhmmer Server <https://www.ebi.ac.uk/Tools/hmmer/search/jackhmmer>`_. Both formats are accepted by ConKit, the keywords can be found in the :ref:`file_formats`.
