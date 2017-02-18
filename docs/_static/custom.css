@@ -6,18 +6,6 @@
  * Date:      01/01/2017
  * Copyright: University of Liverpool
  */
-.navbar-collapse {
-padding-right: 0px;
-padding-left: 0px;
-}
-
-.nav > li > a {
-padding: 15px 30px 15px 0px;
-}
-
-.headerlink {
-visibility: hidden;
-}
 
 dd {
 margin-left: 30px;
@@ -43,3 +31,39 @@ img {
 max-width: 100%;
 max-height: 100%;
 }
+
+.navbar-collapse {
+padding-right: 0px;
+padding-left: 0px;
+}
+
+.nav > li > a {
+padding: 15px 30px 15px 0px;
+}
+
+.headerlink {
+visibility: hidden;
+}
+
+/* Amino acid colors */
+.ala {color: #882D17;}
+.cys {color: #F3C300;}
+.asp {color: #875692;}
+.glu {color: #F38400;}
+.phe {color: #A1CAF1;}
+.gly {color: #BE0032;}
+.his {color: #C2B280;}
+.ile {color: #848482;}
+.lys {color: #008856;}
+.leu {color: #E68FAC;}
+.met {color: #0067A5;}
+.asn {color: #F99379;}
+.pro {color: #604E97;}
+.gln {color: #F6A600;}
+.arg {color: #B3446C;}
+.ser {color: #DCD300;}
+.thr {color: #8DB600;}
+.val {color: #654522;}
+.trp {color: #E25822;}
+.tyr {color: #2B3D26;}
+.unk {color: #000000;}
