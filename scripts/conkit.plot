@@ -298,6 +298,7 @@ For more specific descriptions, call each subcommand's help menu directly.
         plot = conkit.plot.SequenceCoverageFigure(hierarchy, file_name=outfile, dpi=args.dpi)
 
     logging.info('Final plot written in {0} format to: {1}'.format(plot.format.upper(), plot.file_name))
+
     return 0
 
 

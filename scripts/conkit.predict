@@ -186,7 +186,6 @@ def main():
     conkit.io.convert(matrix_fname, 'ccmpred', casprr_fname, 'casprr')
     logging.info('Final prediction file: {0}'.format(casprr_fname))
 
-
     return 0
 
 
