@@ -60,6 +60,16 @@ Found a Bug?
 ++++++++++++
 Please use the `GitHub Issue Tracker`_.
 
+Contributors
+++++++++++++
+
+- Felix Simkovic
+- Jens Thomas
+- Ronan Keegan
+- Adam Simpkin
+- Daniel Rigden
+
+
 Ackowledgements
 +++++++++++++++
 - `Stefan Seemayer <https://github.com/sseemayer>`_
