@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages
 from distutils.util import convert_path
 
+
 def get_version():
     # Credits to http://stackoverflow.com/a/24517154
     main_ns = {}
@@ -10,6 +11,7 @@ def get_version():
     with open(ver_path) as f_in:
         exec(f_in.read(), main_ns)
     return main_ns['__version__']
+
 
 def readme():
     with open('README.rst', 'r') as f_in:
@@ -29,7 +31,6 @@ setup(
     author_email='felixsimkovic@me.com',
     license='BSD License',
     url='https://github.com/rigdenlab/conkit',
-    download_url='https://github.com/rigdenlab/conkit/tarball/' + __version__,
     package_dir={'conkit': 'conkit'},
     packages=find_packages(exclude="tests"),
     scripts=[
