@@ -55,7 +55,7 @@ This shows that the most confidently predicted contact is between residues 21 an
 
 .. note::
 
-   You can use the ``conkit.precision`` script to achieve the same goal.
+   You can use the ``conkit-precision`` script to achieve the same goal.
 
 Finally, in some cases you either have already existing structural information, such as a crystal structure, or a predicted model and you want to assess how accurate or satisfied your contact prediction is. For this kind of analysis, the precision score is the ideal measure. It compares one set of contacts against a second and calculates the ratio between the matches and the total number of contacts compared.
 
@@ -101,7 +101,7 @@ To produce a precision evaluation plot with factors between 0.0 and 5.0 with a s
 
 .. note::
 
-   You can also generate the final plot using the ``conkit.plot`` script.
+   You can also generate the final plot using the ``conkit-plot`` script.
 
 
 .. |beta| unicode:: u03B2

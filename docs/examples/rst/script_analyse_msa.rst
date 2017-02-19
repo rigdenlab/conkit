@@ -6,11 +6,11 @@ Multiple Sequence Alignment Analysis
    You require the optional dependency `SciPy <http://scipy.org/>`_ package to use this script. If you are unsure if it is installed on your system, refer to the :ref:`Installation` documentation
 
 
-If you would like to analyse a Multiple Sequence Alignment (MSA) file, you can do so using ConKit's provided script, which is called ``conkit.msatool``.
+If you would like to analyse a Multiple Sequence Alignment (MSA) file, you can do so using ConKit's provided script, which is called ``conkit-msatool``.
 
 .. code-block:: bash
 
-   $> conkit.msatool toxd/toxd.a3m a3m
+   $> conkit-msatool toxd/toxd.a3m a3m
 
 The call above analyses the ``toxd.a3m`` MSA file, which is in ``a3m`` format. This call with will procude the following output:
 

@@ -268,7 +268,9 @@ def main():
             logging.info('This script is experimental for inter-chain contact plotting')
 
         logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
+        logging.info('Min contact list cutoff factor: {0} * L'.format(args.min_cutoff))
+        logging.info('Max contact list cutoff factor: {0} * L'.format(args.max_cutoff))
+        logging.info('Contact list cutoff factor step: {0}'.format(args.cutoff_step))
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]

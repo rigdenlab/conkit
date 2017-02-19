@@ -4,11 +4,11 @@
 Contact Map Plotting
 --------------------
 
-If you would like to plot a contact map using ConKit without the overhead of using Python, you can simply use the ``conkit.plot`` script.
+If you would like to plot a contact map using ConKit without the overhead of using Python, you can simply use the ``conkit-plot`` script.
 
 .. code-block:: bash
 
-   $> conkit.plot cmap toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 The call above uses the contact prediction file ``toxd.mat`` file, which is in ``ccmpred`` format, and plots the following 2D contact map stored in the file ``toxd/toxd.png``
 
@@ -22,7 +22,7 @@ You can also add a reference structure to determine which contacts are true and 
 
 .. code-block:: bash
 
-   $> conkit.plot cmap -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 
 The call above produces a contact map plot looking like this. The gray points are the reference contacts, green show true positive contacts in your prediction and red false positive ones.
@@ -37,7 +37,7 @@ You could also add a second contact prediction file to the call to compare two m
 
 .. code-block:: bash
 
-   $> conkit.plot cmap -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 The call above produces a contact map plot looking like this. The gray points are the reference contacts, green show true positive contacts in your prediction and red false positive ones. The top triangle is the second contact map from file ``toxd/toxd.psicov`` whereas the bottom one is from ``toxd/toxd.mat``.
 
@@ -51,7 +51,7 @@ Finally, you could also illustrate the confidence with which each contact was pr
 
 .. code-block:: bash
 
-   $> conkit.plot cmap --confidence -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap --confidence -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 The call above produces a contact map plot looking like this. All parameters and settings are identical to the previous map except the ``--confidence`` flag, which will show more confidently predicted contacts as larger markers.
 

@@ -159,11 +159,11 @@ pseudoxml:
 figures:
 	mkdir _tmp
 	git clone https://github.com/rigdenlab/conkit-examples.git _tmp/conkit-examples 
-	conkit.plot chord -o examples/images/toxd_chord_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot cmap -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot cmap -o examples/images/toxd_cmap_reference.png -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot cmap -o examples/images/toxd_cmap_advanced.png -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot cmap -o examples/images/toxd_cmap_confidence.png --confidence -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
-	conkit.plot scov -o examples/images/toxd_scov_plot.png _tmp/conkit-examples/toxd/toxd.a3m a3m
-	conkit.plot peval -o examples/images/toxd_peval_plot.png -j 0.1 -min 0 -max 5 _tmp/conkit-examples/toxd/toxd.pdb pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot chord -o examples/images/toxd_chord_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot cmap -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot cmap -o examples/images/toxd_cmap_reference.png -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot cmap -o examples/images/toxd_cmap_advanced.png -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot cmap -o examples/images/toxd_cmap_confidence.png --confidence -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot scov -o examples/images/toxd_scov_plot.png _tmp/conkit-examples/toxd/toxd.a3m a3m
+	conkit-plot peval -o examples/images/toxd_peval_plot.png -j 0.1 -min 0 -max 5 _tmp/conkit-examples/toxd/toxd.pdb pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
 	rm -rf _tmp

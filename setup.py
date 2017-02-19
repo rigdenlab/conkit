@@ -33,9 +33,9 @@ setup(
     package_dir={'conkit': 'conkit'},
     packages=find_packages(exclude="tests"),
     scripts=[
-        'bin/conkit.plot', 'bin/conkit.msatool',
-        'bin/conkit.predict', 'bin/conkit.precision',
-        'bin/conkit.convert',
+        'bin/conkit-plot', 'bin/conkit-msatool',
+        'bin/conkit-predict', 'bin/conkit-precision',
+        'bin/conkit-convert',
     ],
     platforms=['Linux', 'Mac OS-X', 'Unix', 'Windows'],
     install_requires=['numpy >=1.8.2', 'scipy >=0.16.0', 'biopython >=1.64', 'matplotlib >=1.3.1'],

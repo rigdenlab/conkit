@@ -2,11 +2,11 @@
 Sequence Coverage Plotting
 --------------------------
 
-The ``scov`` subcommand of the ``conkit.plot`` script is used to plot the coverage plot of the multiple sequence alignment.
+The ``scov`` subcommand of the ``conkit-plot`` script is used to plot the coverage plot of the multiple sequence alignment.
 
 .. code-block:: bash
 
-   $> conkit.plot scov toxd/toxd.a3m a3m
+   $> conkit-plot scov toxd/toxd.a3m a3m
 
 The following plot will be produced. Your alignment coverage is shown with the black line with each point corresponding to a residue in the alignment. The red and green lines give you indicators of how good your alignment is.
 
