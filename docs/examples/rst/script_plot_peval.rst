@@ -2,6 +2,8 @@
 Precision Evaluation Plotting
 -----------------------------
 
+The ``peval`` subcommand of the ``conkit-plot`` script is used to plot the precision evaluation plot of the contact prediction file **when compared against a second contact prediction or structure**.
+
 .. code-block:: bash
 
    $> conkit-plot peval -j 0.1 -min 0 -max 5 toxd/toxd.pdb pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
