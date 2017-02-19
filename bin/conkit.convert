@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+"""This script provides direct access to ConKit's conversion algorithms.
+
+This script can convert either contact prediction files or sequence files.
+In case of the latter, a file with a single or multiple sequences can be
+converted.
+
+!!! IMPORTANT
+=============
+Do not attempt to mix formats, i.e. convert from a contact file format
+to a sequence file format.
+
+"""
 
 __author__ = "Felix Simkovic"
 __date__ = "01 Oct 2016"
@@ -13,23 +25,9 @@ _OPTIONS = sorted(
     + conkit.io.SEQUENCE_FILE_PARSERS.keys()
 )
 
-DESCRIPTION = u"""
-This script provides direct access to ConKit's conversion algorithms.
-
-This script can convert either contact prediction files or sequence files.
-In case of the latter, a file with a single or multiple sequences can be
-converted.
-
-!!! IMPORTANT
-=============
-Do not attempt to mix formats, i.e. convert from a contact file format
-to a sequence file format.
-
-"""
-
 
 def main():
-    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('infile')
     parser.add_argument('informat')
     parser.add_argument('outfile')

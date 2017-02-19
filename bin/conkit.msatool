@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+"""This script analyses a Multiple Sequence Alignment.
+
+It provides you estimates about the quality, which will allow
+you to determine its usefulness for covariance-based contact
+prediction.
+
+"""
 
 __author__ = "Felix Simkovic"
 __date__ = "21 Nov 2016"
@@ -11,16 +18,9 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-DESCRIPTION = u"""
-This script analyses a Multiple Sequence Alignment. It provides you estimates
-about the quality, which will allow you to determine its usefulness for covariance-
-based contact prediction.
-
-"""
-
 
 def main():
-    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-id', default=0.7, type=float, help='sequence identity [default: 0.7]')
     parser.add_argument('msafile', help='Multiple Sequence Alignment file')
     parser.add_argument('msaformat', help='Multiple Sequence Alignment format')

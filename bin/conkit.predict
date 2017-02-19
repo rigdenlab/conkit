@@ -1,4 +1,17 @@
 #!/usr/bin/env python
+"""This script provides a simplified contact prediction pipeline. It will
+take either a sequence or alignment as starting point and predict, analyse
+and evaluate the final prediction and any intermediate results.
+
+It uses two external programs to perform this task.
+
+   - HHblits for Sequence Alignment generation, and
+   - CCMpred for Direct Coupling Analysis.
+
+*** The two programs above need to be installed separately ***
+
+"""
+
 
 __author__ = "Felix Simkovic"
 __date__ = "01 June 2016"
@@ -12,20 +25,6 @@ import sys
 import time
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
-
-DESCRIPTION = u"""
-This script provides a simplified contact prediction pipeline. It will
-take either a sequence or alignment as starting point and predict, analyse
-and evaluate the final prediction and any intermediate results.
-
-It uses two external programs to perform this task.
-
-   - HHblits for Sequence Alignment generation, and
-   - CCMpred for Direct Coupling Analysis.
-
-*** The two programs above need to be installed separately ***
-
-"""
 
 
 def add_default_args(parser):
@@ -60,11 +59,7 @@ def add_sequence_args(subparsers):
 
 
 def main():
-
-    # ==========================
-    # Obtain options
-    # ==========================
-    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_alignment_args(subparsers)
@@ -72,9 +67,6 @@ def main():
     # Parse all arguments
     args = parser.parse_args()
 
-    # ==========================
-    # Start processing
-    # ==========================
     logging.info('Prefix: {0}'.format(args.prefix))
     logging.info('Working dir: {0}'.format(args.wdir))
 

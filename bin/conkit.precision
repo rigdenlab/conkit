@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""This script calculates the precision score for a contact prediction
+when compared against contacts extracted from a protein structure.
+
+"""
 
 __author__ = "Felix Simkovic"
 __date__ = "21 Nov 2016"
@@ -11,15 +15,9 @@ import sys
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-DESCRIPTION = u"""
-This script calculates the precision score for a contact prediction
-when compared against contacts extracted from a protein structure.
-
-"""
-
 
 def main():
-    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-c', dest='pdbchain', default=None,
                         help='PDB chain to use [default: first in file]. '
                              'Inter-molecular predictions use two letter '

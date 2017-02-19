@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+"""This script provides a command-line interface to ConKit's plotting functionality.
+
+You are provided with a single access point to many different kinds of plots.
+
+For more specific descriptions, call each subcommand's help menu directly.
+
+"""
 
 __author__ = "Felix Simkovic"
 __date__ = "08 Feb 2017"
@@ -156,15 +163,7 @@ This command will plot a coverage plot for every position in your alignment.
 
 
 def main():
-
-    description = u"""
-This script provides a command-line interface to ConKit's plotting functionality.
-You are provided with a single access point to many different kinds of plots.
-
-For more specific descriptions, call each subcommand's help menu directly.
-
-"""
-    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
 
     # Add the subparsers
