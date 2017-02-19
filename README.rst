@@ -43,7 +43,7 @@ Key Features
 
 .. note::
 
-   ConKit was recently presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_.
+   ConKit was presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_.
 
 Installation & Usage
 ++++++++++++++++++++
