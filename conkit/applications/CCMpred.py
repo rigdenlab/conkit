@@ -22,6 +22,10 @@ class CCMpredCommandLine(AbstractCommandline):
     The CCMpred program is a very fast pseudo-likelihood maximisation
     implementation of covariance detection in a Multiple Sequence
     Alignment. This wrapper allows for easy-to-use Python implementation.
+    
+    .. [#] Seemayer S, Gruber M, Söding J (2014). CCMpred--fast and precise
+       prediction of protein residue-residue contacts from correlated mutations.
+       Bioinformatics 30(21), 3128-3130.
 
     Examples
     --------
@@ -37,10 +41,6 @@ class CCMpredCommandLine(AbstractCommandline):
 
     You would typically run the command line with :func:`ccmpred_cline` or via
     the Python subprocess module.
-
-    .. [#] Seemayer S, Gruber M, Söding J (2014). CCMpred--fast and precise
-       prediction of protein residue-residue contacts from correlated mutations.
-       Bioinformatics 30(21), 3128-3130.
 
     """
     

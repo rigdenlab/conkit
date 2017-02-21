@@ -21,6 +21,9 @@ class JackhmmerCommandLine(AbstractCommandline):
     Jackhmmer is an algorithm that uses iterative searches a protein sequence
     against a protein sequence database to find sequence homologs.
 
+    .. [#] Johnson L. S., Eddy S. R., Portugaly E. (2010). Hidden Markov
+       Model Speed Heuristic and Iterative HMM Search Procedure. BMC Bioinformatics 11, 431.
+
     Examples
     --------
     To generate a Multiple Sequence Alignment, use:
@@ -34,9 +37,6 @@ class JackhmmerCommandLine(AbstractCommandline):
 
     You would typically run the command line with :func:`jackhmmer_cline` or via
     the Python subprocess module.
-
-    .. [#] Johnson L. S., Eddy S. R., Portugaly E. (2010). Hidden Markov
-       Model Speed Heuristic and Iterative HMM Search Procedure. BMC Bioinformatics 11, 431.
 
     """
 

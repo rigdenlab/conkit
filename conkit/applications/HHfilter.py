@@ -19,6 +19,12 @@ class HHfilterCommandLine(AbstractCommandline):
 
     Filter an alignment by maximum sequence identity of match states and minimum coverage.
 
+    .. [#] Alva V., Nam SZ., Söding J., Lupas AN. (2016). The MPI bioinformatics Toolkit as an
+       integrative platform for advanced protein sequence and structure analysis. Nucleic Acids Res. pii: gkw348.
+
+    .. [#] Remmert M., Biegert A., Hauser A., Söding J. (2011). HHblits: Lightning-fast iterative
+       protein sequence searching by HMM-HMM alignment. Nat Methods. 9(2):173-5.
+
     Examples
     --------
     To generate a Multiple Sequence Alignment, use:
@@ -32,12 +38,6 @@ class HHfilterCommandLine(AbstractCommandline):
 
     You would typically run the command line with :func:`hhfilter_cline` or via
     the Python subprocess module.
-
-    .. [#]_ Alva V., Nam SZ., Söding J., Lupas AN. (2016). The MPI bioinformatics Toolkit as an
-       integrative platform for advanced protein sequence and structure analysis. Nucleic Acids Res. pii: gkw348.
-
-    .. [#]_ Remmert M., Biegert A., Hauser A., Söding J. (2011). HHblits: Lightning-fast iterative
-       protein sequence searching by HMM-HMM alignment. Nat Methods. 9(2):173-5.
 
     """
 
