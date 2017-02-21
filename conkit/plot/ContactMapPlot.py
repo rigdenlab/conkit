@@ -203,7 +203,7 @@ class ContactMapFigure(Figure):
                                                  marker='o', linestyle='', label='Structural')
             artists = [tp_artist, fp_artist, rf_artist]
         else:
-            nt_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.NEUTRAL,
+            nt_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.GENERAL,
                                                  marker='o', linestyle='', label='Contact')
             artists = [nt_artist]
         ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102),
@@ -222,5 +222,5 @@ class ContactMapFigure(Figure):
         return [
             ColorDefinitions.MATCH if contact.is_true_positive
             else ColorDefinitions.MISMATCH if contact.is_false_positive
-            else ColorDefinitions.NEUTRAL for contact in h
+            else ColorDefinitions.GENERAL for contact in h
         ]

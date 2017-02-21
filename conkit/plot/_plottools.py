@@ -15,7 +15,6 @@ class ColorDefinitions(object):
     # Contact map colors
     MATCH = '#0F0B2C'
     MISMATCH = '#DC4869'
-    NEUTRAL = '#32B57A'
     STRUCTURAL = '#D8D6D6'
 
     # Sequence coverage colors
