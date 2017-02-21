@@ -50,8 +50,6 @@ class _Gap(object):
 class ContactMap(Entity):
     """A contact map object representing a single prediction
 
-    Description
-    -----------
     The :obj:`ContactMap <conkit.core.ContactMap>` class represents a data structure to hold a single
     contact map prediction in one place. It contains functions to store,
     manipulate and organise :obj:`Contact <conkit.core.Contact>` instances.
