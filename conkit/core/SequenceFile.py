@@ -22,8 +22,6 @@ except ImportError:
 class SequenceFile(Entity):
     """A sequence file object representing a single sequence file
 
-    Description
-    -----------
     The :obj:`SequenceFile <conkit.core.SequenceFile>` class represents a data structure to hold
     :obj:`Sequence <conkit.core.Sequence>` instances in a single sequence file. It contains
     functions to store and analyze sequences.

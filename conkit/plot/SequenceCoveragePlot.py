@@ -12,13 +12,12 @@ import matplotlib.pyplot
 import numpy
 
 from conkit.plot._Figure import Figure
+from conkit.plot._plottools import ColorDefinitions
 
 
 class SequenceCoverageFigure(Figure):
     """A Figure object specifically for a Sequence coverage illustration.
 
-    Description
-    -----------
     This figure will illustrate the coverage of sequences at each position
     in the provided alignment. It counts the frequency of sequences at which
     a residue is present and plots it.
@@ -96,11 +95,11 @@ class SequenceCoverageFigure(Figure):
         fig, ax = matplotlib.pyplot.subplots()
 
         # Add lines as quality indicators
-        ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color='r', label='5 x Nresidues')
+        ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label='5 x Nresidues')
         if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
-            ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color='g', label='20 x Nresidues')
+            ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color=ColorDefinitions.L20CUTOFF, label='20 x Nresidues')
 
-        ax.plot(residues, aa_counts, color='#000000', marker='o', linestyle='-',
+        ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker='o', linestyle='-',
                 markersize=5, label='Amino acid count')
 
         # Prettify the plot

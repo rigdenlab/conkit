@@ -16,8 +16,6 @@ import os
 class JonesIO(_SequenceFileParser):
     """Parser class for Jones sequence files
 
-    Description
-    -----------
     This format is a "new" definition of sequence-only records.
 
     It assumes that there are no comments, headers or any other

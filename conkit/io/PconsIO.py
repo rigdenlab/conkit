@@ -33,8 +33,6 @@ RE_SPLIT = re.compile(r'\s+')
 class PconsParser(_ContactFileParser):
     """Class to parse a Pcons output
 
-    Description
-    -----------
     This module can be used to parse all versions of the
     Pcons programs, i.e. PconsC, PconsC2, and PconsC3.
 

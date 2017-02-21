@@ -13,8 +13,6 @@ import operator
 class Entity(object):
     """Base class for all entities used in this interface.
 
-    Description
-    -----------
     It handles the storage of data. It also provides a high-efficiency
     methods to allow fast lookup and iterations of each entity. It also
     provides a hierarchical structure to remember parent and child

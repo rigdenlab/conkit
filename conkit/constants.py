@@ -19,10 +19,3 @@ THREE_TO_ONE = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CME': 'C', 'CYS
                 'PRO': 'P', 'PYL': 'O', 'SER': 'S', 'SEC': 'U', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y', 'VAL': 'V', 
                 'ASX': 'B', 'GLX': 'Z', 'XAA': 'X', 'XLE': 'J'}
 
-# ================================================
-# Constants defining Contact().status color coding
-# ================================================
-TPCOLOR = '#2D9D00'     # color true positive
-FPCOLOR = '#AB0000'     # color false positive
-NTCOLOR = '#0482ff'     # color undefined
-RFCOLOR = '#B5B5B5'     # color structure

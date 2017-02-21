@@ -12,13 +12,12 @@ import matplotlib.pyplot
 import numpy
 
 from conkit.plot._Figure import Figure
+from conkit.plot._plottools import ColorDefinitions
 
 
 class PrecisionEvaluationFigure(Figure):
     """A Figure object specifically for a Precision evaluation.
 
-    Description
-    -----------
     This figure will illustrate the precision scores of a contact
     map at different precision scores. These can be determined at
     various start and end points with different stepwise increases
@@ -168,12 +167,12 @@ class PrecisionEvaluationFigure(Figure):
         fig, ax = matplotlib.pyplot.subplots()
 
         # Add indicator lines for clarity of data
-        ax.axhline(0.5, color='#008E00', linestyle='-',  label='50% Precision')
+        ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-',  label='50% Precision')
         if self.min_cutoff <= 1.0:
-            ax.axvline(1.0, color='#BDBDBD', linestyle='--', label='Factor L')
+            ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='--', label='Factor L')
 
         # Add data points itself
-        ax.plot(factors, precisions, color='#000000', marker='o', markersize=5, linestyle='-',
+        ax.plot(factors, precisions, color=ColorDefinitions.GENERAL, marker='o', markersize=5, linestyle='-',
                 label='Precision score')
 
         # Prettify the plot

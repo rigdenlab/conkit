@@ -12,8 +12,6 @@ from conkit.core.Entity import Entity
 class ContactFile(Entity):
     """A contact file object representing a single prediction file
 
-    Description
-    -----------
     The contact file class represents a data structure to hold all predictions
     with a single contact map file. It contains functions to store,
     manipulate and organise contact maps.

@@ -26,6 +26,13 @@ class CdhitCommandLine(AbstractCommandline):
     helps to significantly reduce the computational and manual efforts in
     many sequence analysis tasks and aids in understanding the data
     structure and correct the bias within a dataset.
+    
+    .. [#] Li W, Jaroszewski L, Godzik A(2001). Clustering of highly homologous sequences
+       to reduce thesize of large protein database. Bioinformatics 17, 282-283.
+
+    .. [#] Li W, Jaroszewski L, Godzik A (2002). Tolerating some redundancy significantly
+       speeds up clustering of large protein databases. Bioinformatics 18, 77-82.
+
 
     Examples
     --------
@@ -35,14 +42,6 @@ class CdhitCommandLine(AbstractCommandline):
 
     You would typically run the command line with :func:`cdhit_cline` or via
     the Python subprocess module.
-
-    Citations
-    ---------
-    .. [#] Li W, Jaroszewski L, Godzik A(2001). Clustering of highly homologous sequences
-       to reduce thesize of large protein database. Bioinformatics 17, 282-283.
-
-    .. [#] Li W, Jaroszewski L, Godzik A (2002). Tolerating some redundancy significantly
-       speeds up clustering of large protein databases. Bioinformatics 18, 77-82.
 
     """
 

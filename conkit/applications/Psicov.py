@@ -21,6 +21,10 @@ class PsicovCommandLine(AbstractCommandline):
     The PSICOV program is a Accurate Contact Prediction from large
     protein alignments.
 
+    .. [#] Jones, D.T., Buchan, D.W., Cozzetto, D. & Pontil, M. (2012). PSICOV:
+       Precise structural contact prediction using sparse inverse covariance
+       estimation on large multiple sequence alignments. Bioinformatics. 28, 184-190.
+
     Examples
     --------
     To predict a contact map using a Multiple Sequence Alignment in
@@ -33,10 +37,6 @@ class PsicovCommandLine(AbstractCommandline):
 
     You would typically run the command line with :func:`psicov_cline` or via
     the Python subprocess module.
-
-    .. [#] Jones, D.T., Buchan, D.W., Cozzetto, D. & Pontil, M. (2012). PSICOV:
-       Precise structural contact prediction using sparse inverse covariance
-       estimation on large multiple sequence alignments. Bioinformatics. 28, 184-190.
 
     """
 
