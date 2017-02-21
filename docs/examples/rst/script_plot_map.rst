@@ -25,7 +25,7 @@ You can also add a reference structure to determine which contacts are true and 
    $> conkit-plot cmap -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 
-The call above produces a contact map plot looking like this. The gray points are the reference contacts, green show true positive contacts in your prediction and red false positive ones.
+The call above produces a contact map plot looking like this. The gray points are the reference contacts, and matched and mismatched contacts are shown in color.
 
 .. image:: ../images/toxd_cmap_reference.png
    :alt: Toxd CMap Reference
@@ -39,7 +39,7 @@ You could also add a second contact prediction file to the call to compare two m
 
    $> conkit-plot cmap -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
-The call above produces a contact map plot looking like this. The gray points are the reference contacts, green show true positive contacts in your prediction and red false positive ones. The top triangle is the second contact map from file ``toxd/toxd.psicov`` whereas the bottom one is from ``toxd/toxd.mat``.
+The call above produces a contact map plot looking like this. The gray points are the reference contacts, and matched and mismatched contacts are shown in color. The top triangle is the second contact map from file ``toxd/toxd.psicov`` whereas the bottom one is from ``toxd/toxd.mat``.
 
 .. image:: ../images/toxd_cmap_advanced.png
    :alt: Toxd CMap Advanced
