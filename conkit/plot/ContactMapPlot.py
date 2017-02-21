@@ -12,15 +12,13 @@ __version__ = 0.1
 import matplotlib.pyplot
 import numpy
 
-from conkit import constants
 from conkit.plot._Figure import Figure
+from conkit.plot._plottools import ColorDefinitions
 
 
 class ContactMapFigure(Figure):
     """A Figure object specifically for a Contact Map
 
-    Description
-    -----------
     This figure will illustrate the contacts in a contact
     map. This plot is a very common representation of contacts.
     With this figure, you can illustrate either your contact 
@@ -138,7 +136,7 @@ class ContactMapFigure(Figure):
             else:
                 reference_data = numpy.asarray([(c.res1_seq, c.res2_seq)
                                                 for c in self._reference if c.is_true_positive])
-            reference_colors = [constants.RFCOLOR for _ in range(len(reference_data))]
+            reference_colors = [ColorDefinitions.STRUCTURAL for _ in range(len(reference_data))]
             ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
                        s=10, marker='o', edgecolor='none', linewidths=0.0)
             ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
@@ -197,15 +195,15 @@ class ContactMapFigure(Figure):
 
         # Create a custom legend
         if self._reference:
-            tp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.TPCOLOR,
+            tp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.MATCH,
                                                  marker='o', linestyle='', label='Match')
-            fp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.FPCOLOR,
+            fp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.MISMATCH,
                                                  marker='o', linestyle='', label='Mismatch')
-            rf_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.RFCOLOR,
+            rf_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.STRUCTURAL,
                                                  marker='o', linestyle='', label='Structural')
             artists = [tp_artist, fp_artist, rf_artist]
         else:
-            nt_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=constants.NTCOLOR,
+            nt_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.NEUTRAL,
                                                  marker='o', linestyle='', label='Contact')
             artists = [nt_artist]
         ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102),
@@ -222,8 +220,7 @@ class ContactMapFigure(Figure):
     def _determine_color(h):
         """Determine the color of the contacts in order"""
         return [
-            constants.TPCOLOR if contact.is_true_positive
-            else constants.FPCOLOR if contact.is_false_positive
-            else constants.NTCOLOR
-            for contact in h
+            ColorDefinitions.MATCH if contact.is_true_positive
+            else ColorDefinitions.MISMATCH if contact.is_false_positive
+            else ColorDefinitions.NEUTRAL for contact in h
         ]

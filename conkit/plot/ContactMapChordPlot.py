@@ -13,17 +13,27 @@ import matplotlib.pyplot
 import numpy
 
 from conkit.plot._Figure import Figure
-from conkit.plot._plottools import points_on_circle
+from conkit.plot._plottools import ColorDefinitions, points_on_circle
 
 
 class ContactMapChordFigure(Figure):
     """A Figure object specifically for a Contact Map chord diagram
 
-    Description
-    -----------
     This figure will illustrate the contacts linking the residues
     in the target sequence. This plot is a very common representation
     of contacts. With this figure, you can illustrate intra-molecular.
+
+    Color scheme: 
+    
+    ==========  ===========   ==========  ===========  ==========  ===========  ==========  ===========  ==========  ===========
+    Amino acid  Hex code      Amino acid  Hex code     Amino acid  Hex code     Amino acid  Hex code     Amino acid  Hex code
+    ==========  ===========   ==========  ===========  ==========  ===========  ==========  ===========  ==========  ===========
+    Ala         ``#882D17``   Arg         ``#B3446C``  Asn         ``#F99379``  Asp         ``#875692``  Cys         ``#F3C300`` 
+    Gln         ``#F6A600``   Glu         ``#F38400``  Gly         ``#BE0032``  His         ``#C2B280``  Ile         ``#848482``
+    Leu         ``#E68FAC``   Lys         ``#008856``  Met         ``#0067A5``  Phe         ``#A1CAF1``  Pro         ``#604E97``
+    Ser         ``#DCD300``   Thr         ``#8DB600``  Trp         ``#E25822``  Tyr         ``#2B3D26``  Val         ``#654522``
+    Unk         ``#000000``
+    ==========  ===========   ==========  ===========  ==========  ===========  ==========  ===========  ==========  ===========
 
     Attributes
     ----------
@@ -37,14 +47,6 @@ class ContactMapChordFigure(Figure):
     >>> conkit.plot.ContactMapChordFigure(cmap)
 
     """
-    AA_ENCODING = {
-        'A': '#882D17', 'C': '#F3C300', 'D': '#875692', 'E': '#F38400',
-        'F': '#A1CAF1', 'G': '#BE0032', 'H': '#C2B280', 'I': '#848482',
-        'K': '#008856', 'L': '#E68FAC', 'M': '#0067A5', 'N': '#F99379',
-        'P': '#604E97', 'Q': '#F6A600', 'R': '#B3446C', 'S': '#DCD300',
-        'T': '#8DB600', 'V': '#654522', 'W': '#E25822', 'Y': '#2B3D26',
-        'X': '#000000'
-    }
 
     def __init__(self, hierarchy, **kwargs):
         """A new contact map plot
@@ -120,11 +122,11 @@ class ContactMapChordFigure(Figure):
         residue_data = residue_data.reshape(self_data.T[0].shape[0] * 2, 2)
 
         #     - compute a default color list
-        color_codes = dict([(k, ContactMapChordFigure.AA_ENCODING['X']) for k in self_data_range])
+        color_codes = dict([(k, ColorDefinitions.AA_ENCODING['X']) for k in self_data_range])
 
         #     - fill default dict with data we have
         for k, v in numpy.vstack({tuple(row) for row in residue_data}):
-            color_codes[int(k)] = ContactMapChordFigure.AA_ENCODING[v]
+            color_codes[int(k)] = ColorDefinitions.AA_ENCODING[v]
 
         #     - create a color list
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
