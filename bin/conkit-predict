@@ -162,15 +162,16 @@ def main():
         ccmpred_cline()
 
     # Add sequence information to contact hierarchy
+    dtn = 5
     cmap = conkit.io.read(matrix_fname, 'ccmpred').top_map
     cmap.sequence = conkit.io.read(jon_fname, 'jones').top_sequence
-    cmap.remove_neighbors(min_distance=5, inplace=True)
+    cmap.remove_neighbors(min_distance=dtn, inplace=True)
     cmap.sort('raw_score', reverse=True, inplace=True)
     cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
     contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.pdf')
     conkit.plot.ContactMapFigure(cmap, file_name=contact_map_fname)
     logging.info('Plotted contact map: {0}'.format(contact_map_fname))
-    logging.info('|- Min sequence separation for contacting residues: {0}'.format(args.dtn))
+    logging.info('|- Min sequence separation for contacting residues: {0}'.format(dtn))
     logging.info('|- Contact list cutoff factor: {0} * L'.format(args.dfactor))
 
     # Use the ccmpred parser to write a contact file
