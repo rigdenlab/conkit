@@ -12,7 +12,8 @@ The call above uses the contact prediction file ``toxd.mat`` file, which is in `
 
 .. image:: ../images/toxd_chord_simple.png
    :alt: Toxd Chord Simple
-   :width: 500px
+   :scale: 30
+   :align: center
 
 Each residue in the Chord plot corresponds to an amino acid in your sequence. For a full list of the encoding used, check the :obj:`ContactMapChordFigure <conkit.plot.ContactMapChordPlot.ContactMapChordFigure>`.
 

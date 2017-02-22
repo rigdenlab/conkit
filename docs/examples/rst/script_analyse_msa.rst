@@ -31,3 +31,6 @@ The output tells you the file and format you have provided. It also prints which
 
 .. image:: ../images/toxd_scov_plot.png
    :alt: Toxd Sequence Coverage Plot
+   :scale: 30
+   :align: center
+

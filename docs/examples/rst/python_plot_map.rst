@@ -12,7 +12,8 @@ Contact Map Plotting
 
 .. image:: ../images/toxd_cmap_simple.png
    :alt: Toxd CMap Simple
-   :width: 500px
+   :scale: 30
+   :align: center
 
 --------------------------------------------------------------
 
@@ -26,4 +27,5 @@ Contact Map Plotting
 
 .. image:: ../images/toxd_cmap_reference.png
    :alt: Toxd CMap Reference
-   :width: 500px
+   :scale: 30
+   :align: center

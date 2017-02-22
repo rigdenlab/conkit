@@ -12,3 +12,6 @@ Sequence Coverage Plotting
 
 .. image:: ../images/toxd_peval_plot.png
    :alt: Toxd Precision Evaluation Plot
+   :scale: 30
+   :align: center
+

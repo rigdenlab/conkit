@@ -12,3 +12,5 @@ Three command line flags above are important to note. The ``-min`` flag is the m
 
 .. image:: ../images/toxd_peval_plot.png
    :alt: Toxd Precision Evaluation Plot
+   :scale: 30
+   :align: center
