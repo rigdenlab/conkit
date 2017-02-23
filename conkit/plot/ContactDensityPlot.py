@@ -125,11 +125,12 @@ class ContactDensityFigure(Figure):
         else:
             bandwidth = ContactDensityFigure.bowman_bandwidth(X)
 
-        fig, ax = matplotlib.pyplot.subplots()
-
         # Estimate the Kernel Density using original data and fit random sample
         kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(X)
         dens = numpy.exp(kde.score_samples(X_plot))
+        
+        # Plot the data
+        fig, ax = matplotlib.pyplot.subplots()
 
         ax.plot(X_plot[:, 0], dens, linestyle="solid",
                 color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")
@@ -159,16 +160,24 @@ class ContactDensityFigure(Figure):
     def bowman_bandwidth(X):
         """This is the optimal bandwidth if the point distribution is Gaussian.
 
-        It is a direct implementation taken from Bowman & Azzalini [#]_. To calculate
-        the bandwidth for the 1D data array ``X`` with ``n`` data points, the following
+        To calculate the bandwidth for the 1D data array ``X`` with ``n`` data points, the following
         equation is used:
-
+        
         .. math::
 
-           bandwidth=\sqrt{\frac{\sum{X}^2}{n}-(\frac{\sum{X}}{n})^2}*(\frac{3*n}{4})^\frac{-1}{5}
-
+           bandwidth=\\sqrt{\\frac{\\sum{X}^2}{n}-(\\frac{\\sum{X}}{n})^2}*(\\frac{3*n}{4})^\\frac{-1}{5}
+        
+        This equation is a direct implementation taken from Bowman & Azzalini [#]_.
+        
         .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
 
+        Parameters
+        ----------
+        X : list, tuple
+           A list of data points
+
+
         """
+        X = numpy.asarray(X)
         sigma = numpy.sqrt((X ** 2).sum() / X.shape[0] - (X.sum() / X.shape[0]) ** 2)
         return sigma * ((3. * X.shape[0] / 4.) ** (-1. / 5.))
