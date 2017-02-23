@@ -8,6 +8,9 @@
    * - - Contact Map Chord Diagram
      - `Script <examples/rst/script_plot_chord.html>`_
      - `Python <examples/rst/python_plot_chord.html>`_
+   * - - Contact Density Plot
+     -
+     -
    * - - Precision Evaluation
      - `Script <examples/rst/script_plot_peval.html>`_
      - `Python <examples/rst/python_plot_peval.html>`_
