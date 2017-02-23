@@ -137,14 +137,16 @@ class ContactDensityFigure(Figure):
         # Find all local minima
         local_minima_idx = scipy.signal.argrelmin(dens)[0]
         ax.scatter(X_plot[local_minima_idx], dens[local_minima_idx], marker="p",
-                   color=ColorDefinitions.MISMATCH)
+                   color=ColorDefinitions.MISMATCH, label="Local Minima")
 
         # Prettify the plot
         ax.set_xlim(X.min(), X.max())
+        ax.set_ylim(0., dens.max())
 
         ax.set_xlabel('Residue number')
         ax.set_ylabel('Kernel Density Estimate')
-        # ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.,
+                  scatterpoints=1)
 
         # Make axes length proportional and remove whitespace around the plot
         aspectratio = Figure._correct_aspect(ax, 0.3)
