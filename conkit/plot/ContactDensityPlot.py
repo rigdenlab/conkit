@@ -121,9 +121,9 @@ class ContactDensityFigure(Figure):
 
         # Obtain the bandwidth as defined by user method
         if self.bw_method == "bowman":
-            bandwidth = ContactDensityFigure._bowman_bandwidth(X)
+            bandwidth = ContactDensityFigure.bowman_bandwidth(X)
         else:
-            bandwidth = ContactDensityFigure._bowman_bandwidth(X)
+            bandwidth = ContactDensityFigure.bowman_bandwidth(X)
 
         fig, ax = matplotlib.pyplot.subplots()
 
@@ -156,7 +156,7 @@ class ContactDensityFigure(Figure):
         fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
 
     @staticmethod
-    def _bowman_bandwidth(X):
+    def bowman_bandwidth(X):
         """This is the optimal bandwidth if the point distribution is Gaussian.
 
         It is a direct implementation taken from Bowman & Azzalini [#]_. To calculate
