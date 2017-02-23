@@ -92,7 +92,8 @@ style with residues being connected by their contacts
     contact_map_chord_subparser.add_argument('-d', dest='dtn', default=5, type=int,
                                              help='Minimum sequence separation [default: 5]')
     contact_map_chord_subparser.add_argument('-f', dest='dfactor', default=1.0, type=float,
-                                             help='number of contacts to include relative to sequence length [default: 1.0]')
+                                             help='number of contacts to include relative to '
+                                                  'sequence length [default: 1.0]')
     contact_map_chord_subparser.add_argument('seqfile',
                                              help="Path to the sequence file")
     contact_map_chord_subparser.add_argument('seqformat',
@@ -102,6 +103,35 @@ style with residues being connected by their contacts
     contact_map_chord_subparser.add_argument('conformat',
                                              help="Format of the contact file")
     contact_map_chord_subparser.set_defaults(which='contact_map_chord')
+
+
+def add_contact_density_args(subparsers):
+    description = u"""
+This command will plot a contact density plot using the provided
+contacts. It will illustrate the density to help define domain
+boundaries better.
+"""
+    contact_density_subparser = subparsers.add_parser('cdens', help="Plot a contact density plot",
+                                                        description=description,
+                                                        formatter_class=argparse.RawDescriptionHelpFormatter)
+    _add_default_args(contact_density_subparser)
+    ## Help for below: 'The bandwidth estimation method [default: bowman]'
+    contact_density_subparser.add_argument('-b', dest='bw_method', default='bowman',
+                                           help=argparse.SUPPRESS)
+    contact_density_subparser.add_argument('-d', dest='dtn', default=5, type=int,
+                                           help='Minimum sequence separation [default: 5]')
+    contact_density_subparser.add_argument('-f', dest='dfactor', default=10.0, type=float,
+                                           help='number of contacts to include relative to '
+                                                'sequence length [default: 10.0]')
+    contact_density_subparser.add_argument('seqfile',
+                                           help="Path to the sequence file")
+    contact_density_subparser.add_argument('seqformat',
+                                           help="Format of the sequence file")
+    contact_density_subparser.add_argument('confile',
+                                           help="Path to the contact file")
+    contact_density_subparser.add_argument('conformat',
+                                           help="Format of the contact file")
+    contact_density_subparser.set_defaults(which='contact_density')
 
 
 def add_precision_evaluation_args(subparsers):
@@ -262,6 +292,23 @@ def main():
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
         plot = conkit.plot.ContactMapChordFigure(con_sliced, file_name=outfile, dpi=args.dpi)
+
+    elif args.which == 'contact_density':
+        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
+        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
+
+        seq = conkit.io.read(args.seqfile, args.seqformat)[0]
+        con = conkit.io.read(args.confile, args.conformat)[0]
+
+        con.sequence = seq
+        con.assign_sequence_register()
+        con.remove_neighbors(min_distance=args.dtn, inplace=True)
+        con.sort('raw_score', reverse=True, inplace=True)
+        ncontacts = int(seq.seq_len * args.dfactor)
+        con_sliced = con[:ncontacts]
+        outformat = 'png'
+        outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
+        plot = conkit.plot.ContactDensityFigure(con_sliced, bw_method=args.bw_method, file_name=outfile, dpi=args.dpi)
 
     elif args.which == 'precision_evaluation':
         if args.interchain:

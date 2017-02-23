@@ -39,7 +39,11 @@ setup(
         'bin/conkit-convert',
     ],
     platforms=['Linux', 'Mac OS-X', 'Unix', 'Windows'],
-    install_requires=['numpy >=1.8.2', 'scipy >=0.16.0', 'biopython >=1.64', 'matplotlib >=1.3.1'],
+    install_requires=[
+        'numpy >=1.8.2', 'scipy >=0.16.0', 
+        'biopython >=1.64', 'matplotlib >=1.3.1', 
+        'scikit-learn >=0.18'
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
