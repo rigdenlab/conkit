@@ -67,7 +67,9 @@ class ContactMapChordFigure(Figure):
         self._draw()
 
     def __repr__(self):
-        return "ContactMapChordFigure(file_name=\"{0}\")".format(self.file_name)
+        return "{0}(file_name=\"{1}\")".format(
+                self.__class__.__name__, self.file_name
+        )
 
     @property
     def hierarchy(self):

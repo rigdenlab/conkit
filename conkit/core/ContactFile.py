@@ -57,7 +57,9 @@ class ContactFile(Entity):
         super(ContactFile, self).__init__(id)
 
     def __repr__(self):
-        return "ContactFile(id=\"{0}\" nmaps={1})".format(self.id, len(self))
+        return "{0}(id=\"{1}\" nmaps={2})".format(
+                self.__class__.__name__, self.id, len(self)
+        )
 
     @property
     def author(self):

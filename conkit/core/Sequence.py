@@ -66,8 +66,9 @@ class Sequence(Entity):
             seq_string = self.seq[:5] + '...' + self.seq[-5:]
         else:
             seq_string = self.seq
-        return "Sequence(id=\"{0}\" seq=\"{1}\" seq_len={2})".format(
-            self.id, seq_string, len(self.seq))
+        return "{0}(id=\"{1}\" seq=\"{2}\" seq_len={3})".format(
+            self.__class__.__name__, self.id, seq_string, len(self.seq)
+        )
 
     @property
     def remark(self):

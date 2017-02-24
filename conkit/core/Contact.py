@@ -109,10 +109,10 @@ class Contact(Entity):
         super(Contact, self).__init__((res1_seq, res2_seq))
 
     def __repr__(self):
-        return "Contact(id=\"{0}\" res1=\"{1}\" res1_chain=\"{2}\" res1_seq={3} " \
-               "res2=\"{4}\" res2_chain=\"{5}\" res2_seq={6} raw_score={7})".format(
-            self.id, self.res1, self.res1_chain, self.res1_seq,
-            self.res2, self.res2_chain, self.res2_seq, self.raw_score
+        return "{0}(id=\"{1}\" res1=\"{2}\" res1_chain=\"{3}\" res1_seq={4} " \
+               "res2=\"{5}\" res2_chain=\"{6}\" res2_seq={7} raw_score={8})".format(
+            self.__class__.__name__, self.id, self.res1, self.res1_chain, 
+            self.res1_seq, self.res2, self.res2_chain, self.res2_seq, self.raw_score
         )
 
     @property

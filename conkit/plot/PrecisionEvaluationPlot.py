@@ -75,7 +75,9 @@ class PrecisionEvaluationFigure(Figure):
         self._draw()
 
     def __repr__(self):
-        return "PrecisionEvaluationFigure(file_name=\"{0}\")".format(self.file_name)
+        return "{0}(file_name=\"{1}\")".format(
+                self.__class__.__name__, self.file_name
+        )
 
     @property
     def cutoff_step(self):

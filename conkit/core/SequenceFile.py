@@ -72,7 +72,9 @@ class SequenceFile(Entity):
         super(SequenceFile, self).__init__(id)
 
     def __repr__(self):
-        return "SequenceFile(id=\"{0}\" nseqs={1})".format(self.id, self.nseqs)
+        return "{0}(id=\"{1}\" nseqs={2})".format(
+                self.__class__.__name__, self.id, self.nseqs
+        )
 
     @property
     def is_alignment(self):
