@@ -10,8 +10,21 @@ __version__ = 0.1
 
 import matplotlib.pyplot
 import numpy
-import scipy.signal
-import sklearn.neighbors
+import warnings
+
+try:
+    import scipy.signal
+    SCIPY = True
+except ImportError:
+    SCIPY = False
+
+try:
+    import sklearn.neighbors
+    SKLEARN = True
+except ImportError:
+    SKLEARN = False
+
+
 
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
@@ -113,7 +126,17 @@ class ContactDensityFigure(Figure):
         self._draw()
 
     def _draw(self):
-        """Draw the actual plot"""
+        """Draw the actual plot
+        
+        Raises
+        ------
+        RuntimeError
+           Cannot find SciKit package
+
+        """
+
+        if not SKLEARN:
+            raise RuntimeError('Cannot find SciKit package')
 
         # Compute the relevant data we need
         X = numpy.asarray([i for c in self._hierarchy for i in numpy.arange(c.res1_seq, c.res2_seq)])[:, numpy.newaxis]
@@ -136,9 +159,12 @@ class ContactDensityFigure(Figure):
                 color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")
 
         # Find all local minima
-        local_minima_idx = scipy.signal.argrelmin(dens)[0]
-        ax.scatter(X_plot[local_minima_idx], dens[local_minima_idx], marker="p",
-                   color=ColorDefinitions.MISMATCH, label="Local Minimum")
+        if SCIPY:
+            local_minima_idx = scipy.signal.argrelmin(dens)[0]
+            ax.scatter(X_plot[local_minima_idx], dens[local_minima_idx], marker="p",
+                       color=ColorDefinitions.MISMATCH, label="Local Minimum")
+        else:
+            warnings.warn("SciPy not installed - cannot determine local minima")
 
         # Prettify the plot
         ax.set_xlim(X.min(), X.max())
