@@ -29,8 +29,8 @@ The output tells you the file and format you have provided. It also prints which
 
 .. _Toxd Frequency Plot:
 
-.. image:: ../images/toxd_scov_plot.png
+.. figure:: ../images/toxd_scov_plot.png
    :alt: Toxd Sequence Coverage Plot
-   :scale: 30
    :align: center
+   :scale: 30
 

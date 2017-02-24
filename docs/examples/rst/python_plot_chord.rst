@@ -10,10 +10,10 @@ Contact Map Chord Diagram Plotting
    :language: python
    :linenos:
 
-.. image:: ../images/toxd_chord_simple.png
+.. figure:: ../images/toxd_chord_simple.png
    :alt: Toxd Chord Simple
-   :scale: 30
    :align: center
+   :scale: 30
 
 Each residue in the Chord plot corresponds to an amino acid in your sequence. For a full list of the encoding used, check the :obj:`ContactMapChordFigure <conkit.plot.ContactMapChordPlot.ContactMapChordFigure>`.
 

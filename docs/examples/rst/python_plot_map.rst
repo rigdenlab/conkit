@@ -10,10 +10,10 @@ Contact Map Plotting
    :language: python
    :linenos:
 
-.. image:: ../images/toxd_cmap_simple.png
+.. figure:: ../images/toxd_cmap_simple.png
    :alt: Toxd CMap Simple
-   :scale: 30
    :align: center
+   :scale: 30
 
 --------------------------------------------------------------
 
@@ -25,7 +25,7 @@ Contact Map Plotting
    :language: python
    :linenos:
 
-.. image:: ../images/toxd_cmap_reference.png
+.. figure:: ../images/toxd_cmap_reference.png
    :alt: Toxd CMap Reference
-   :scale: 30
    :align: center
+   :scale: 30

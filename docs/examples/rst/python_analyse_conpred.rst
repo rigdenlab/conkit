@@ -19,10 +19,10 @@ Similar to the example on plotting a contact map, this is something you will alm
 
 Let's assume we have created the following contact map plot
 
-.. image:: ../images/toxd_cmap_simple.png
+.. figure:: ../images/toxd_cmap_simple.png
    :alt: Toxd CMap Simple
-   :scale: 30
    :align: center
+   :scale: 30
 
 Looking at this contact map tells us that there is most likely a |beta|-strand between residues 13-23 and 33-34. The spread of the contacts also gives us an indication that we are dealing with a monomeric protein structure. However, our contact prediction contains a lot more information that is not visible from this plot.
 
@@ -97,10 +97,10 @@ To produce a precision evaluation plot with factors between 0.0 and 5.0 with a s
    >>> conkit.plot.PrecisionEvaluationFigure(conpred, min_cutoff=0.0, max_cutoff=5.0, cutoff_step=0.1)
 
 
-.. image:: ../images/toxd_peval_plot.png
+.. figure:: ../images/toxd_peval_plot.png
    :alt: Toxd Precision Evaluation Plot
-   :scale: 30
    :align: center
+   :scale: 30
 
 .. note::
 

@@ -10,8 +10,8 @@ Sequence Coverage Plotting
    :language: python
    :linenos:
 
-.. image:: ../images/toxd_peval_plot.png
+.. figure:: ../images/toxd_peval_plot.png
    :alt: Toxd Precision Evaluation Plot
-   :scale: 30
    :align: center
+   :scale: 30
 

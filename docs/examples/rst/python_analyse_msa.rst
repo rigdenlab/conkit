@@ -44,8 +44,8 @@ This tells you the first sequence in the alignment has 59 residues, i.e. the cha
 
 .. _Toxd Frequency Plot:
 
-.. image:: ../images/toxd_scov_plot.png
+.. figure:: ../images/toxd_scov_plot.png
    :alt: Toxd Sequence Coverage Plot
-   :scale: 30
    :align: center
+   :scale: 30
 

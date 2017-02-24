@@ -10,10 +10,10 @@ If you would like to plot a contact map in Chord diagram style using ConKit with
 
 The call above uses the contact prediction file ``toxd.mat`` file, which is in ``ccmpred`` format, and plots the following contact map stored in the file ``toxd/toxd.png``.
 
-.. image:: ../images/toxd_chord_simple.png
+.. figure:: ../images/toxd_chord_simple.png
    :alt: Toxd Chord Simple
-   :scale: 30
    :align: center
+   :scale: 30
 
 Each residue in the Chord plot corresponds to an amino acid in your sequence. For a full list of the encoding used, check the :obj:`ContactMapChordFigure <conkit.plot.ContactMapChordPlot.ContactMapChordFigure>`.
 
