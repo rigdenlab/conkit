@@ -138,7 +138,7 @@ class ContactDensityFigure(Figure):
         # Find all local minima
         local_minima_idx = scipy.signal.argrelmin(dens)[0]
         ax.scatter(X_plot[local_minima_idx], dens[local_minima_idx], marker="p",
-                   color=ColorDefinitions.MISMATCH, label="Local Minima")
+                   color=ColorDefinitions.MISMATCH, label="Local Minimum")
 
         # Prettify the plot
         ax.set_xlim(X.min(), X.max())
