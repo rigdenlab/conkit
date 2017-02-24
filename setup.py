@@ -1,10 +1,53 @@
 """Python Interface for Residue-Residue Contact Predictions"""
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from distutils.util import convert_path
 
+import os
+import sys
 
-def get_version():
+
+def dependencies():
+    with open('requirements.txt', 'r') as f_in:
+        return [l for l in f_in.read().rsplit(os.linesep) 
+                if l and not l.startswith("#")]
+
+
+def readme():
+    with open('README.rst', 'r') as f_in:
+        return f_in.read()
+
+
+def scripts():
+    python = sys.executable
+    extension = '.bat' if sys.platform.startswith('win') else ''
+    header = '' if sys.platform.startswith('win') else '#!/bin/bash'
+    bin_dir = 'bin'
+    command_dir = convert_path('conkit/command_line')
+    scripts = []
+    for file in os.listdir(command_dir):
+        if not file.startswith('_') and file.endswith('.py'):
+            # Make sure we have a workable name
+            f_name = os.path.basename(file).rsplit('.', 1)[0]
+            for c in ['.', '_']:
+                new_f_name = f_name.replace(c, '-')
+            # Worst check to see if it's ccp4-python
+            try:
+                import ample    # We know this is only distributed with ccp4-python
+                python = "ccp4-python"
+            except ImportError:
+                python = sys.executable
+            # Write the content of the script
+            script = os.path.join('bin', new_f_name + extension)
+            with open(script, "w") as f_out:
+                f_out.write(header + os.linesep)
+                f_out.write(python + " -m conkit.command_line." + f_name + " \"$@\"" + os.linesep)
+            os.chmod(script, 0o777)
+            scripts.append(script)
+    return scripts
+
+
+def version():
     # Credits to http://stackoverflow.com/a/24517154
     main_ns = {}
     ver_path = convert_path('conkit/_version.py')
@@ -13,49 +56,58 @@ def get_version():
     return main_ns['__version__']
 
 
-def readme():
-    with open('README.rst', 'r') as f_in:
-        return f_in.read()
+AUTHOR = "Felix Simkovic"
+AUTHOR_EMAIL = "felixsimkovic@me.com"
+DESCRIPTION = __doc__.replace("\n", "")
+DEPENDENCIES = dependencies()
+LICENSE = "BSD License"
+LONG_DESCRIPTION = readme()
+PACKAGE_DIR = "conkit"
+PACKAGE_NAME = "conkit"
+PLATFORMS = ['Linux', 'Mac OS-X', 'Unix', 'Windows']
+SCRIPTS = scripts()
+URL = "http://www.conkit.org/en/latest/"
+VERSION = version()
 
+PACKAGES = [
+    'conkit', 
+    'conkit/applications',
+    'conkit/command_line',
+    'conkit/core', 
+    'conkit/io',
+    'conkit/plot', 
+]
 
-# Obtain the current version of ConKit
-__version__ = get_version()
+CLASSIFIERS = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
 
 # Do the actual setup below
 setup(
-    name='conkit',
-    description=__doc__.replace("\n", ""),
-    long_description=readme(),
-    version=__version__,
-    author='Felix Simkovic',
-    author_email='felixsimkovic@me.com',
-    license='BSD License',
-    url='https://github.com/rigdenlab/conkit',
-    package_dir={'conkit': 'conkit'},
-    packages=find_packages(exclude="tests"),
-    scripts=[
-        'bin/conkit-plot', 'bin/conkit-msatool',
-        'bin/conkit-predict', 'bin/conkit-precision',
-        'bin/conkit-convert',
-    ],
-    platforms=['Linux', 'Mac OS-X', 'Unix', 'Windows'],
-    install_requires=[
-        'numpy >=1.8.2', 'scipy >=0.16.0', 
-        'biopython >=1.64', 'matplotlib >=1.3.1', 
-        'scikit-learn >=0.18'
-    ],
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Topic :: Scientific/Engineering :: Bio-Informatics",
-    ],
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    name=PACKAGE_NAME,
+    description=DESCRIPTION,
+    long_description=LONG_DESCRIPTION,
+    license=LICENSE,
+    version=VERSION,
+    url=URL,
+    packages=PACKAGES,
+    package_dir={PACKAGE_NAME: PACKAGE_DIR},
+    install_requires=DEPENDENCIES,
+    scripts=SCRIPTS,
+    platforms=PLATFORMS,
+    classifiers=CLASSIFIERS,
     test_suite='nose.collector',
     tests_require=['nose >=1.3.7'],
     include_package_data=True,

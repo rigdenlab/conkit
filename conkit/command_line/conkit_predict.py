@@ -59,7 +59,7 @@ def add_sequence_args(subparsers):
 
 
 def main():
-    parser = argparse.ArgumentParser(__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_alignment_args(subparsers)
