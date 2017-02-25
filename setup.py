@@ -6,17 +6,6 @@ from distutils.util import convert_path
 import os
 import sys
 
-# Are we on Windows
-WINDOWS = sys.platform.startswith('win')
-
-# Some checks to see if it's installed as part of CCP4, scripts are different
-try:
-    import ample    # We know this is only distributed with ccp4-python
-    import mrbump
-    CCP4_INSTALL = True
-except ImportError:
-    CCP4_INSTALL = False
-
 
 def dependencies():
     with open('requirements.txt', 'r') as f_in:
@@ -30,7 +19,7 @@ def readme():
 
 
 def scripts():
-    python = "ccp4-python" if CCP4_INSTALL else sys.executable
+    python = sys.executable
     extension = '.bat' if sys.platform.startswith('win') else ''
     header = '' if sys.platform.startswith('win') else '#!/bin/bash'
     bin_dir = 'bin'
@@ -46,8 +35,10 @@ def scripts():
             script = os.path.join('bin', new_f_name + extension)
             with open(script, "w") as f_out:
                 f_out.write(header + os.linesep)
-                if WINDOWS:
+                # BATCH file
+                if sys.platform.startswith('win'):
                     string = "@{0} -m conkit.command_line.{1} %*"
+                # BASH file
                 else:
                     string = "{0} -m conkit.command_line.{1} \"$@\""
                 f_out.write(string.format(python, f_name) + os.linesep)

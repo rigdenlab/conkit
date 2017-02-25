@@ -62,7 +62,7 @@ External software
 
 Required dependencies
 +++++++++++++++++++++
-Python 2.7, 3.4 or 3.5
+Python 2.7, 3.4, 3.5, or 3.6
   `Download Python <https://www.python.org/downloads/>`_
 NumPy 1.8.2 (or later)
   `Download NumPy <http://www.scipy.org/scipylib/download.html>`_
@@ -77,6 +77,8 @@ Optional dependencies
 +++++++++++++++++++++
 SciPy 0.16 (or later)
   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
+scikit-learn 0.18 (or later)
+  `Download scikit-learn <http://scikit-learn.org/stable/install.html>`_
 HHblits
    `Download HHblits <https://github.com/soedinglab/hh-suite>`_
 HHblits Database
