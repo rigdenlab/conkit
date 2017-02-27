@@ -163,6 +163,7 @@ def main():
 
     # Add sequence information to contact hierarchy
     dtn = 5
+    dfactor = 1.
     cmap = conkit.io.read(matrix_fname, 'ccmpred').top_map
     cmap.sequence = conkit.io.read(jon_fname, 'jones').top_sequence
     cmap.remove_neighbors(min_distance=dtn, inplace=True)
@@ -172,7 +173,7 @@ def main():
     conkit.plot.ContactMapFigure(cmap, file_name=contact_map_fname)
     logging.info('Plotted contact map: {0}'.format(contact_map_fname))
     logging.info('|- Min sequence separation for contacting residues: {0}'.format(dtn))
-    logging.info('|- Contact list cutoff factor: {0} * L'.format(args.dfactor))
+    logging.info('|- Contact list cutoff factor: {0} * L'.format(dfactor))
 
     # Use the ccmpred parser to write a contact file
     casprr_fname = os.path.join(args.wdir, args.prefix + '.rr')
