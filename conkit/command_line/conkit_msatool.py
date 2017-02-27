@@ -42,7 +42,7 @@ def main():
     logging.info('Number of Effective Sequences:             {0}'.format(meff))
     logging.info('Sequence Coverage Plot:                    {0}'.format(plot))
 
-    return 0
+    return
 
 
 if __name__ == "__main__":

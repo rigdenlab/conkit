@@ -37,7 +37,7 @@ def main():
     # Perform the conversion
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
 
-    return 0
+    return
 
 
 if __name__ == "__main__":

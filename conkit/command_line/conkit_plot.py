@@ -347,7 +347,7 @@ def main():
 
     logging.info('Final plot written in {0} format to: {1}'.format(plot.format.upper(), plot.file_name))
 
-    return 0
+    return
 
 
 if __name__ == "__main__":

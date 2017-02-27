@@ -58,7 +58,7 @@ def main():
     
     logging.info('Precision score: {0}'.format(precision))
 
-    return 0 
+    return 
 
 if __name__ == "__main__":
     sys.exit(main())
