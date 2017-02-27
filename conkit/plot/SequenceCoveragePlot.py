@@ -107,6 +107,8 @@ class SequenceCoverageFigure(Figure):
         # Prettify the plot
         ax.set_xlim(residues[0], residues[-1])
         xticks = ax.get_xticks().astype(numpy.int64) + residues[0]
+        # Remove any excess xticks
+        xticks = numpy.delete(xticks, [i for i, t in enumerate(xticks) if t > residues[-1]])
         ax.set_xticks(xticks)
         ax.set_xticklabels(xticks)
 
@@ -120,3 +122,4 @@ class SequenceCoverageFigure(Figure):
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
+
