@@ -58,14 +58,22 @@ def add_sequence_args(subparsers):
     from_sequence_subparser.set_defaults(which='sequence')
 
 
-def main():
+def main(argl=None):
+    """The main routine for conkit-predict functionality
+
+    Parameters
+    ----------
+    argl : list, tuple, optional
+       A list containing the command line flags
+
+    """
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_alignment_args(subparsers)
     add_sequence_args(subparsers)
     # Parse all arguments
-    args = parser.parse_args()
+    args = parser.parse_args(argl)
 
     logging.info('Prefix: {0}'.format(args.prefix))
     logging.info('Working dir: {0}'.format(args.wdir))
@@ -146,7 +154,7 @@ def main():
 
     # Kill switch to not run CCMpred DCA
     if args.which == 'sequence' and args.nodca:
-        return 0
+        return
 
     # Use the re-formatted alignment for contact prediction
     ccmpred = args.ccmpred
@@ -180,7 +188,7 @@ def main():
     conkit.io.convert(matrix_fname, 'ccmpred', casprr_fname, 'casprr')
     logging.info('Final prediction file: {0}'.format(casprr_fname))
 
-    return 0
+    return
 
 
 if __name__ == "__main__":
