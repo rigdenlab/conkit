@@ -1,19 +1,37 @@
 """Python Interface for Residue-Residue Contact Predictions"""
 
 from setuptools import setup
+from setuptools.command.install import install
 from distutils.util import convert_path
 
 import os
 import sys
 
-# Determine the Python executable
-if "--script-python-path" in sys.argv:
-    PYTHON_EXE = sys.argv[sys.argv.index("--script-python-path") + 1]
-    sys.argv.pop(sys.argv.index("--script-python-path") + 1)
-    sys.argv.remove("--script-python-path")
-else:
-    PYTHON_EXE = sys.executable
+# ==============================================================
+# Setup.py command extensions
+# ==============================================================
 
+# Credits to http://stackoverflow.com/a/33181352
+class InstallCommand(install):
+    user_options = install.user_options + [
+        ('script-python-path=', None, 'Path to Python interpreter to be included in the scripts')
+    ]
+
+    def initialize_options(self):
+        install.initialize_options(self)
+        self.script_python_path = None
+
+    def finalize_options(self):
+        install.finalize_options(self)
+
+    def run(self):
+        global script_python_path
+        script_python_path = self.script_python_path
+        install.run(self)
+
+# ==============================================================
+# Functions, functions, functions ...
+# ==============================================================
 
 def dependencies():
     with open('requirements.txt', 'r') as f_in:
@@ -62,7 +80,25 @@ def version():
         exec(f_in.read(), main_ns)
     return main_ns['__version__']
 
+# ==============================================================
+# Determine the Python executable
+# ==============================================================
+PYTHON_EXE = None
+for arg in sys.argv:
+    if arg[0:20] == "--script-python-path" and len(arg) == 20:
+        option, value = arg, sys.argv[sys.argv.index(arg) + 1]
+        PYTHON_EXE = value
+    elif arg[0:20] == "--script-python-path" and arg[20] == "=":
+        option, value = arg[:20], arg[21:]
+        PYTHON_EXE = value
 
+if not PYTHON_EXE:
+    PYTHON_EXE = sys.executable
+
+
+# ==============================================================
+# Define all the relevant options
+# ==============================================================
 AUTHOR = "Felix Simkovic"
 AUTHOR_EMAIL = "felixsimkovic@me.com"
 DESCRIPTION = __doc__.replace("\n", "")
@@ -101,6 +137,9 @@ CLASSIFIERS = [
 
 # Do the actual setup below
 setup(
+    cmdclass={
+        'install': InstallCommand,
+    },
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     name=PACKAGE_NAME,
