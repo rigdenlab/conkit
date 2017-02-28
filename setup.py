@@ -6,6 +6,14 @@ from distutils.util import convert_path
 import os
 import sys
 
+# Determine the Python executable
+if "--script-python-path" in sys.argv:
+    PYTHON_EXE = sys.argv[sys.argv.index("--script-python-path") + 1]
+    sys.argv.pop(sys.argv.index("--script-python-path") + 1)
+    sys.argv.remove("--script-python-path")
+else:
+    PYTHON_EXE = sys.executable
+
 
 def dependencies():
     with open('requirements.txt', 'r') as f_in:
@@ -19,7 +27,6 @@ def readme():
 
 
 def scripts():
-    python = sys.executable
     extension = '.bat' if sys.platform.startswith('win') else ''
     header = '' if sys.platform.startswith('win') else '#!/bin/bash'
     bin_dir = 'bin'
@@ -41,7 +48,7 @@ def scripts():
                 # BASH file
                 else:
                     string = "{0} -m conkit.command_line.{1} \"$@\""
-                f_out.write(string.format(python, f_name) + os.linesep)
+                f_out.write(string.format(PYTHON_EXE, f_name) + os.linesep)
             os.chmod(script, 0o777)
             scripts.append(script)
     return scripts
