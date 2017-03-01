@@ -17,5 +17,5 @@ ONE_TO_THREE = {'A': 'ALA', 'C': 'CYS', 'B': 'ASX', 'E': 'GLU', 'D': 'ASP', 'G':
 THREE_TO_ONE = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CME': 'C', 'CYS': 'C', 'GLN': 'Q', 'GLU': 'E', 
                 'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LEU': 'L', 'LYS': 'K', 'MET': 'M', 'MSE': 'M', 'PHE': 'F', 
                 'PRO': 'P', 'PYL': 'O', 'SER': 'S', 'SEC': 'U', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y', 'VAL': 'V', 
-                'ASX': 'B', 'GLX': 'Z', 'XAA': 'X', 'XLE': 'J'}
+                'ASX': 'B', 'GLX': 'Z', 'XAA': 'X', 'UNK': 'X', 'XLE': 'J'}
 
