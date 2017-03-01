@@ -459,6 +459,11 @@ class ContactMap(Entity):
         hierarchy_mod
             :obj:`ContactMap <conkit.core.ContactMap>` instance, regardless of inplace
 
+        Raises
+        ------
+        ValueError
+           Error creating reliable keymap matching the sequence in :obj:`ContactMap <conkit.core.ContactMap>`
+
         """
         contact_map1 = self._inplace(inplace)
         contact_map2 = other._inplace(inplace)
@@ -506,8 +511,13 @@ class ContactMap(Entity):
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
         # Some checks
-        assert len(contact_map1_keymap) == len(numpy.where(encoded_repr[0] != ord('-'))[0])
-        assert len(contact_map2_keymap) == len(numpy.where(encoded_repr[1] != ord('-'))[0])
+        msg = "Error creating reliable keymap matching the sequence in ContactMap: "
+        if len(contact_map1_keymap) != numpy.where(encoded_repr[0] != ord('-'))[0].shape[0]:
+            msg += contact_map1.id
+            raise ValueError(msg)
+        elif len(contact_map2_keymap) != numpy.where(encoded_repr[1] != ord('-'))[0].shape[0]:
+            msg += contact_map2.id
+            raise ValueError(msg)
 
         # Create a sequence matching keymap including deletions and insertions
         contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
