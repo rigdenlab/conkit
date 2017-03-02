@@ -1,8 +1,8 @@
 """Python Interface for Residue-Residue Contact Predictions"""
 
-from setuptools import setup
-from setuptools.command.install import install
+from distutils.command.build import build
 from distutils.util import convert_path
+from setuptools import setup
 
 import os
 import sys
@@ -12,22 +12,22 @@ import sys
 # ==============================================================
 
 # Credits to http://stackoverflow.com/a/33181352
-class InstallCommand(install):
-    user_options = install.user_options + [
+class BuildCommand(build):
+    user_options = build.user_options + [
         ('script-python-path=', None, 'Path to Python interpreter to be included in the scripts')
     ]
 
     def initialize_options(self):
-        install.initialize_options(self)
+        build.initialize_options(self)
         self.script_python_path = None
 
     def finalize_options(self):
-        install.finalize_options(self)
+        build.finalize_options(self)
 
     def run(self):
         global script_python_path
         script_python_path = self.script_python_path
-        install.run(self)
+        build.run(self)
 
 # ==============================================================
 # Functions, functions, functions ...
@@ -46,7 +46,7 @@ def readme():
 
 def scripts():
     extension = '.bat' if sys.platform.startswith('win') else ''
-    header = '' if sys.platform.startswith('win') else '#!/bin/bash'
+    header = '' if sys.platform.startswith('win') else '#!/bin/sh'
     bin_dir = 'bin'
     command_dir = convert_path('conkit/command_line')
     scripts = []
@@ -107,7 +107,7 @@ LICENSE = "BSD License"
 LONG_DESCRIPTION = readme()
 PACKAGE_DIR = "conkit"
 PACKAGE_NAME = "conkit"
-PLATFORMS = ['Linux', 'Mac OS-X', 'Unix', 'Windows']
+PLATFORMS = ['POSIX', 'Mac OS', 'Windows', 'Unix']
 SCRIPTS = scripts()
 URL = "http://www.conkit.org/en/latest/"
 VERSION = version()
@@ -138,7 +138,7 @@ CLASSIFIERS = [
 # Do the actual setup below
 setup(
     cmdclass={
-        'install': InstallCommand,
+        'build': BuildCommand,
     },
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
