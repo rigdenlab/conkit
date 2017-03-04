@@ -57,7 +57,7 @@ def scripts():
             for c in ['.', '_']:
                 new_f_name = f_name.replace(c, '-')
             # Write the content of the script
-            script = os.path.join('bin', new_f_name + extension)
+            script = os.path.join(bin_dir, new_f_name + extension)
             with open(script, "w") as f_out:
                 f_out.write(header + os.linesep)
                 # BATCH file
