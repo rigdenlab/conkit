@@ -33,4 +33,5 @@ conpred.sort('raw_score', reverse=True, inplace=True)
 conpred = conpred[:int(seq.seq_len * 10.)]
 
 # Then we can plot the density plot
-plot = conkit.plot.ContactDensityPlot(conpred)
+cdens_plot = "4p9g/4p9g_cdens.png"
+conkit.plot.ContactDensityFigure(conpred, file_name=cdens_plot)
