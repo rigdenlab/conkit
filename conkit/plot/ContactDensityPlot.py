@@ -46,8 +46,6 @@ class ContactDensityFigure(Figure):
     >>> conkit.plot.ContactDensityFigure(cmap)
 
     """
-    BW_METHODS = ['bowman']
-
     def __init__(self, hierarchy, bw_method='bowman', **kwargs):
         """A new contact density plot
 
@@ -82,17 +80,7 @@ class ContactDensityFigure(Figure):
 
     @bw_method.setter
     def bw_method(self, bw_method):
-        """Define the method to estimate the bandwidth
-
-        Raises
-        ------
-        ValueError
-           Method not yet defined
-
-        """
-        if bw_method not in ContactDensityFigure.BW_METHODS:
-            msg = "Bandwidth method not yet implemented: {0}".format(bw_method)
-            raise ValueError(msg)
+        """Define the method to estimate the bandwidth"""
         self._bw_method = bw_method
 
     @property
