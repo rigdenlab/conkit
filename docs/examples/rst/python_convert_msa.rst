@@ -17,12 +17,12 @@ In order to convert files in ConKit, we need to use the ConKit I/O framework.
 
 .. code-block:: python
 
-   >>> conkit.io.write('toxd/toxd.fasta', 'fasta', msa)
+   >>> conkit.io.write('toxd/toxd.aln', 'fasta', msa)
 
 **3. To convert file formats in single call, you can use the :func:`conkit.io.convert` function.**
 
 .. code-block:: python
 
-   >>> conkit.io.convert('toxd/toxd.a3m', 'a3m', 'toxd/toxd.fasta', 'fasta')
+   >>> conkit.io.convert('toxd/toxd.a3m', 'a3m', 'toxd/toxd.aln', 'fasta')
 
 You can convert these files to many different other formats, for a full list check out the :ref:`file_formats`.
