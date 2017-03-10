@@ -16,6 +16,12 @@ import collections
 import numpy
 import warnings
 
+try:
+    import sklearn.neighbors
+    SKLEARN = True
+except ImportError:
+    SKLEARN = False
+
 
 class _Residue(object):
     """A basic class representing a residue"""
@@ -374,6 +380,74 @@ class ContactMap(Entity):
         if union == 0:
             return 1.0
         return float(intersection) / union
+
+    def calculate_kernel_density(self, bw_method="bowman"):
+        """Calculate the contact density in the contact map using Gaussian kernels
+
+        Various algorithms can be used to estimate the bandwidth. To calculate the bandwidth for an 1D data array ``X`` with ``n`` data points and ``d`` dimensions, the following implementations can used:
+
+        1. Bowman & Azzalini [#]_ implementation
+
+        .. math::
+
+           bandwidth=\\sqrt{\\frac{\\sum{X}^2}{n}-(\\frac{\\sum{X}}{n})^2}*(\\frac{(d+2)*n}{4})^\\frac{-1}{d+4}
+
+        2. Scott's [#]_ implementation
+
+        .. math::
+
+           bandwidth=n^\\frac{-1}{d+4}
+
+        3. Silverman's [#]_ implementation
+
+        .. math::
+
+           bandwidth=(n*\\frac{d+2}{4})^\\frac{-1}{d+4}
+
+        .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
+        .. [#] Scott, D.W. (1992). Multivariate Density Estimation: Theory, Practice, and Visualization.
+        .. [#] Silverman, B.W. (1986). Density Estimation for Statistics and Data Analysis.
+
+        Parameters
+        ----------
+        bw_method : str, optional
+           The bandwidth estimator to use [default: bowman]
+
+        Returns
+        -------
+        list
+           The list of per-residue density estimates
+
+        Raises
+        ------
+        RuntimeError
+           Cannot find SciKit package
+        ValueError
+           Undefined bandwidth method
+
+        """
+        if not SKLEARN:
+            raise RuntimeError('Cannot find SciKit package')
+
+        # Compute the relevant data we need
+        x = numpy.asarray([i for c in self for i in numpy.arange(c.res1_seq, c.res2_seq)])[:, numpy.newaxis]
+        x_fit = numpy.linspace(x.min(), x.max() + 1, x.max() - x.min() + 1)[:, numpy.newaxis]
+
+        # Obtain the bandwidth as defined by user method
+        if bw_method == "bowman":
+            sigma = numpy.sqrt((x ** 2).sum() / x.shape[0] - (x.sum() / x.shape[0]) ** 2)
+            bandwidth = sigma * ((((x.shape[1] + 2) * x.shape[0]) / 4.) ** (-1. / (x.shape[1] + 4)))
+        elif bw_method == "scott":
+            bandwidth = x.shape[0] ** (-1. / (x.shape[1] + 4))
+        elif bw_method == "silverman":
+            bandwidth = (x.shape[0] * (x.shape[1] + 2) / 4.) ** (-1. / (x.shape[1] + 4))
+        else:
+            msg = "Undefined bandwidth method: {0}".format(bw_method)
+            raise ValueError(msg)
+
+        # Estimate the Kernel Density using original data and fit random sample
+        kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(x)
+        return numpy.exp(kde.score_samples(x_fit)).tolist()
 
     def calculate_scalar_score(self):
         """Calculate a scaled score for the :obj:`ContactMap <conkit.core.ContactMap>`

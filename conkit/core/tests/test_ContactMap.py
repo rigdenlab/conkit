@@ -218,6 +218,22 @@ class Test(unittest.TestCase):
         jindex = contact_map1.calculate_jaccard_index(contact_map2)
         self.assertEqual(1.0, jindex)
 
+    def test_calculate_kernel_density_1(self):
+        contact_map1 = ContactMap('foo')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map1.add(c)
+        density = contact_map1.calculate_kernel_density()
+        self.assertEqual(
+            [0.16667107733143438, 0.31043404719558043, 0.2164399375102372, 0.03819316377418961], density)
+
+    def test_calculate_kernel_density_2(self):
+        contact_map1 = ContactMap('foo')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
+            contact_map1.add(c)
+        density = contact_map1.calculate_kernel_density()
+        self.assertEqual(
+            [0.14368199694070077, 0.32329654171162514, 0.23892418165173065, 0.02903560560801715], density)
+
     def test_find_1(self):
         contact_map1 = ContactMap('1')
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
