@@ -115,9 +115,8 @@ boundaries better.
                                                         description=description,
                                                         formatter_class=argparse.RawDescriptionHelpFormatter)
     _add_default_args(contact_density_subparser)
-    ## Help for below: 'The bandwidth estimation method [default: bowman]'
     contact_density_subparser.add_argument('-b', dest='bw_method', default='bowman',
-                                           help=argparse.SUPPRESS)
+                                           help='The bandwidth estimation method [default: bowman]')
     contact_density_subparser.add_argument('-d', dest='dtn', default=5, type=int,
                                            help='Minimum sequence separation [default: 5]')
     contact_density_subparser.add_argument('-f', dest='dfactor', default=10.0, type=float,

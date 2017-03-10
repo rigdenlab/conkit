@@ -18,13 +18,6 @@ try:
 except ImportError:
     SCIPY = False
 
-try:
-    import sklearn.neighbors
-    SKLEARN = True
-except ImportError:
-    SKLEARN = False
-
-
 
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
@@ -126,48 +119,35 @@ class ContactDensityFigure(Figure):
         self._draw()
 
     def _draw(self):
-        """Draw the actual plot
-        
-        Raises
-        ------
-        RuntimeError
-           Cannot find SciKit package
+        """Draw the actual plot"""
 
-        """
-
-        if not SKLEARN:
-            raise RuntimeError('Cannot find SciKit package')
-
-        # Compute the relevant data we need
-        X = numpy.asarray([i for c in self._hierarchy for i in numpy.arange(c.res1_seq, c.res2_seq)])[:, numpy.newaxis]
-        X_plot = numpy.linspace(X.min(), X.max(), X.max() - X.min())[:, numpy.newaxis]
-
-        # Obtain the bandwidth as defined by user method
-        if self.bw_method == "bowman":
-            bandwidth = ContactDensityFigure.bowman_bandwidth(X)
-        else:
-            bandwidth = ContactDensityFigure.bowman_bandwidth(X)
-
-        # Estimate the Kernel Density using original data and fit random sample
-        kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(X)
-        dens = numpy.exp(kde.score_samples(X_plot))
+        # Estimate the Kernel Density using original data
+        dens = numpy.asarray(self.hierarchy.calculate_kernel_density(self.bw_method))
         
         # Plot the data
         fig, ax = matplotlib.pyplot.subplots()
 
-        ax.plot(X_plot[:, 0], dens, linestyle="solid",
+        # The residues for the x-axis
+        residues = numpy.asarray(
+            list(set(
+                sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy])
+            ))
+        )
+        x = numpy.arange(residues.min(), residues.max())
+
+        ax.plot(x, dens, linestyle="solid",
                 color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")
 
         # Find all local minima
         if SCIPY:
             local_minima_idx = scipy.signal.argrelmin(dens)[0]
-            ax.scatter(X_plot[local_minima_idx], dens[local_minima_idx], marker="p",
+            ax.scatter(x[local_minima_idx], dens[local_minima_idx], marker="p",
                        color=ColorDefinitions.MISMATCH, label="Local Minimum")
         else:
             warnings.warn("SciPy not installed - cannot determine local minima")
 
         # Prettify the plot
-        ax.set_xlim(X.min(), X.max())
+        ax.set_xlim(x.min(), x.max())
         ax.set_ylim(0., dens.max())
 
         ax.set_xlabel('Residue number')
@@ -181,29 +161,3 @@ class ContactDensityFigure(Figure):
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
-
-    @staticmethod
-    def bowman_bandwidth(X):
-        """This is the optimal bandwidth if the point distribution is Gaussian.
-
-        To calculate the bandwidth for the 1D data array ``X`` with ``n`` data points, the following
-        equation is used:
-        
-        .. math::
-
-           bandwidth=\\sqrt{\\frac{\\sum{X}^2}{n}-(\\frac{\\sum{X}}{n})^2}*(\\frac{3*n}{4})^\\frac{-1}{5}
-        
-        This equation is a direct implementation taken from Bowman & Azzalini [#]_.
-        
-        .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
-
-        Parameters
-        ----------
-        X : list, tuple
-           A list of data points
-
-
-        """
-        X = numpy.asarray(X)
-        sigma = numpy.sqrt((X ** 2).sum() / X.shape[0] - (X.sum() / X.shape[0]) ** 2)
-        return sigma * ((3. * X.shape[0] / 4.) ** (-1. / 5.))
