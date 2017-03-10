@@ -168,14 +168,20 @@ class PrecisionEvaluationFigure(Figure):
 
         fig, ax = matplotlib.pyplot.subplots()
 
-        # Add indicator lines for clarity of data
-        ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-',  label='50% Precision')
-        if self.min_cutoff <= 1.0:
-            ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='--', label='Factor L')
-
         # Add data points itself
         ax.plot(factors, precisions, color=ColorDefinitions.GENERAL, marker='o', markersize=5, linestyle='-',
-                label='Precision score')
+                label='Precision score', zorder=1)
+
+        # Add indicator lines for clarity of data
+        ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-',  label='50% Precision', zorder=0)
+        if self.min_cutoff <= 1.0:
+            ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='-', label='Factor L', zorder=0)
+        if self.min_cutoff <= 0.5:
+            ax.axvline(0.5, color=ColorDefinitions.FACTOR1, linestyle='--', label='Factor L/2', zorder=0)
+        if self.min_cutoff <= 0.2:
+            ax.axvline(0.2, color=ColorDefinitions.FACTOR1, linestyle='-.', label='Factor L/5', zorder=0)
+        if self.min_cutoff <= 0.1:
+            ax.axvline(0.1, color=ColorDefinitions.FACTOR1, linestyle=':', label='Factor L/10', zorder=0)
 
         # Prettify the plot
         ax.set_xlim(self.min_cutoff, self.max_cutoff)
