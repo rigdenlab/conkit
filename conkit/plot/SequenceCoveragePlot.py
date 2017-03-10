@@ -96,13 +96,16 @@ class SequenceCoverageFigure(Figure):
 
         fig, ax = matplotlib.pyplot.subplots()
 
-        # Add lines as quality indicators
-        ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label='5 x Nresidues')
-        if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
-            ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color=ColorDefinitions.L20CUTOFF, label='20 x Nresidues')
+        ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker='o', markersize=5, linestyle='-',
+                label='Amino acid count', zorder=1)
 
-        ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker='o', linestyle='-',
-                markersize=5, label='Amino acid count')
+        # Add lines as quality indicators
+        ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF,
+                   label='5 x Nresidues', zorder=0)
+        if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
+            ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color=ColorDefinitions.L20CUTOFF,
+                       label='20 x Nresidues', zorder=0)
+
 
         # Prettify the plot
         ax.set_xlim(residues[0], residues[-1])
@@ -122,4 +125,3 @@ class SequenceCoverageFigure(Figure):
         fig.tight_layout()
 
         fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
-
