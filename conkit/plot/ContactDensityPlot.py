@@ -37,7 +37,7 @@ class ContactDensityFigure(Figure):
     hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
        The default contact map hierarchy
     bw_method : str
-       The method to estimate the bandwidth [default: bowman]
+       The method to estimate the bandwidth
 
     Examples
     --------
@@ -55,6 +55,7 @@ class ContactDensityFigure(Figure):
            The default contact map hierarchy
         bw_method : str, optional
            The method to estimate the bandwidth [default: bowman]
+
         **kwargs
            General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
 
@@ -75,7 +76,11 @@ class ContactDensityFigure(Figure):
 
     @property
     def bw_method(self):
-        """The method to estimate the bandwidth"""
+        """The method to estimate the bandwidth
+        
+        For a full list of options, please refer to 
+        :func:`calculate_kernel_density() <conkit.core.ContactMap.calculate_kernel_density>`
+        """
         return self._bw_method
 
     @bw_method.setter

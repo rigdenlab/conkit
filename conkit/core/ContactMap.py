@@ -384,27 +384,26 @@ class ContactMap(Entity):
     def calculate_kernel_density(self, bw_method="bowman"):
         """Calculate the contact density in the contact map using Gaussian kernels
 
-        Various algorithms can be used to estimate the bandwidth. To calculate the bandwidth for an 1D data array ``X`` with ``n`` data points and ``d`` dimensions, the following implementations can used:
+        Various algorithms can be used to estimate the bandwidth. To calculate the bandwidth for an 1D data array ``X`` with ``n`` data points and ``d`` dimensions, the listed algorithms have been implemented. Please note, in rules 2 and 3, the value of :math:`\\sigma` is the smaller of the standard deviation of ``X`` or the normalized interquartile range.
 
         1. Bowman & Azzalini [#]_ implementation
 
         .. math::
 
-           bandwidth=\\sqrt{\\frac{\\sum{X}^2}{n}-(\\frac{\\sum{X}}{n})^2}*(\\frac{(d+2)*n}{4})^\\frac{-1}{d+4}
+           \\sqrt{\\frac{\\sum{X}^2}{n}-(\\frac{\\sum{X}}{n})^2}*(\\frac{(d+2)*n}{4})^\\frac{-1}{d+4}
 
         2. Scott's [#]_ implementation
 
         .. math::
 
-           bandwidth=1.059*\\sigma*n^\\frac{-1}{d+4}
+           1.059*\\sigma*n^\\frac{-1}{d+4}
 
         3. Silverman's [#]_ implementation
 
         .. math::
 
-           bandwidth=0.9*\\sigma*(n*\\frac{d+2}{4})^\\frac{-1}{d+4}
+           0.9*\\sigma*(n*\\frac{d+2}{4})^\\frac{-1}{d+4}
 
-        In rules 2 and 3, the value of :math:`sigma` is the smaller of the standard deviation of ``X`` or the normalized interquartile range.
 
         .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
         .. [#] Scott, D.W. (1992). Multivariate Density Estimation: Theory, Practice, and Visualization.
