@@ -396,13 +396,15 @@ class ContactMap(Entity):
 
         .. math::
 
-           bandwidth=n^\\frac{-1}{d+4}
+           bandwidth=1.059*\\sigma*n^\\frac{-1}{d+4}
 
         3. Silverman's [#]_ implementation
 
         .. math::
 
-           bandwidth=(n*\\frac{d+2}{4})^\\frac{-1}{d+4}
+           bandwidth=0.9*\\sigma*(n*\\frac{d+2}{4})^\\frac{-1}{d+4}
+
+        In rules 2 and 3, the value of :math:`sigma` is the smaller of the standard deviation of ``X`` or the normalized interquartile range.
 
         .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
         .. [#] Scott, D.W. (1992). Multivariate Density Estimation: Theory, Practice, and Visualization.
@@ -438,9 +440,17 @@ class ContactMap(Entity):
             sigma = numpy.sqrt((x ** 2).sum() / x.shape[0] - (x.sum() / x.shape[0]) ** 2)
             bandwidth = sigma * ((((x.shape[1] + 2) * x.shape[0]) / 4.) ** (-1. / (x.shape[1] + 4)))
         elif bw_method == "scott":
-            bandwidth = x.shape[0] ** (-1. / (x.shape[1] + 4))
+            sigma = numpy.minimum(
+                numpy.std(x, axis=0, ddof=1),
+                (numpy.percentile(x, 75) - numpy.percentile(x, 25)) / 1.349
+            ).astype(numpy.float64)
+            bandwidth = 1.059 * sigma * x.shape[0] ** (-1. / (x.shape[1] + 4))
         elif bw_method == "silverman":
-            bandwidth = (x.shape[0] * (x.shape[1] + 2) / 4.) ** (-1. / (x.shape[1] + 4))
+            sigma = numpy.minimum(
+                numpy.std(x, axis=0, ddof=1),
+                (numpy.percentile(x, 75) - numpy.percentile(x, 25)) / 1.349
+            ).astype(numpy.float64)
+            bandwidth = 0.9 * sigma * (x.shape[0] * (x.shape[1] + 2) / 4.) ** (-1. / (x.shape[1] + 4))
         else:
             msg = "Undefined bandwidth method: {0}".format(bw_method)
             raise ValueError(msg)
