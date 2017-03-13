@@ -752,8 +752,8 @@ class ContactMap(Entity):
     def _create_keymap(contact_map, altloc=False):
         """Create a simple keymap
 
-        Paramters
-        ---------
+        Parameters
+        ----------
         altloc : bool
            Use the res_altloc positions [default: False]
 
