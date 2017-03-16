@@ -12,6 +12,7 @@ import collections
 import itertools
 import warnings
 
+from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 
 from conkit import constants
@@ -22,13 +23,13 @@ from conkit.core import Sequence
 from conkit.io._ParserIO import _ContactFileParser
 
 
-class PdbParser(_ContactFileParser):
+class _GenericStructureParser(_ContactFileParser):
     """
-    Class to parse a PDB file and extract distance restraints
+    Parent class to parse a PDB file and extract distance restraints
     as residue-residue contacts
     """
     def __init__(self):
-        super(PdbParser, self).__init__()
+        super(_GenericStructureParser, self).__init__()
 
     def _build_sequence(self, chain):
         """Build a peptide using Biopython to extract the sequence"""
@@ -105,27 +106,25 @@ class PdbParser(_ContactFileParser):
             if residue.id[0].strip() and residue.resname not in constants.THREE_TO_ONE:
                 chain.detach_child(residue.id)
 
-    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type='CB'):
+    def _read(self, structure, f_id, distance_cutoff, atom_type):
         """Read a contact file
 
         Parameters
         ----------
-        f_handle
-           Open file handle [read permissions]
-        f_id : str, optional
+        structure
+           A :obj:`Structure <Bio.PDB.Structure.Structure>` instance
+        f_id : str
            Unique contact file identifier
-        distance_cutoff : int, optional
-           Distance cutoff for which to determine contacts [default: 8]
-        atom_type : str, optional
-           Atom type between which distances are calculated [default: CB]
+        distance_cutoff : int
+           Distance cutoff for which to determine contacts
+        atom_type : str
+           Atom type between which distances are calculated
 
         Returns
         -------
         :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
-        structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
-
         hierarchies = []
         for model in structure:
 
@@ -190,6 +189,49 @@ class PdbParser(_ContactFileParser):
             warnings.warn(msg, FutureWarning)
         return hierarchies[0]
 
+    def _write(self):
+        """Write a contact file instance to to file
+
+        Raises
+        ------
+        RuntimeError
+           Not available
+
+        """
+        raise RuntimeError("Not available")
+
+
+class MmCifParser(_GenericStructureParser):
+    """
+    Class to parse a mmCIF file and extract distance restraints
+    as residue-residue contacts
+    """
+
+    def __init__(self):
+        super(MmCifParser, self).__init__()
+
+    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type='CB'):
+        """Read a contact file
+
+        Parameters
+        ----------
+        f_handle
+           Open file handle [read permissions]
+        f_id : str, optional
+           Unique contact file identifier
+        distance_cutoff : int, optional
+           Distance cutoff for which to determine contacts [default: 8]
+        atom_type : str, optional
+           Atom type between which distances are calculated [default: CB]
+
+        Returns
+        -------
+        :obj:`ContactFile <conkit.core.ContactFile>`
+
+        """
+        structure = MMCIFParser(QUIET=True).get_structure("mmcif", f_handle)
+        return self._read(structure, f_id, distance_cutoff, atom_type)
+
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to to file
 
@@ -206,4 +248,54 @@ class PdbParser(_ContactFileParser):
            Not available
 
         """
-        raise RuntimeError("Not available")
+        self._write()
+
+
+class PdbParser(_GenericStructureParser):
+    """
+    Class to parse a PDB file and extract distance restraints
+    as residue-residue contacts
+    """
+    def __init__(self):
+        super(PdbParser, self).__init__()
+
+    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type='CB'):
+        """Read a contact file
+
+        Parameters
+        ----------
+        f_handle
+           Open file handle [read permissions]
+        f_id : str, optional
+           Unique contact file identifier
+        distance_cutoff : int, optional
+           Distance cutoff for which to determine contacts [default: 8]
+        atom_type : str, optional
+           Atom type between which distances are calculated [default: CB]
+
+        Returns
+        -------
+        :obj:`ContactFile <conkit.core.ContactFile>`
+
+        """
+        structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
+        return self._read(structure, f_id, distance_cutoff, atom_type)
+
+    def write(self, f_handle, hierarchy):
+        """Write a contact file instance to to file
+
+        Parameters
+        ----------
+        f_handle
+           Open file handle [write permissions]
+        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
+                    or :obj:`ContactMap <conkit.core.Contact>`
+
+        Raises
+        ------
+        RuntimeError
+           Not available
+
+        """
+        self._write()
+

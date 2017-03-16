@@ -16,6 +16,7 @@ from conkit.io.GremlinIO import GremlinParser
 from conkit.io.MemBrainIO import MemBrainParser
 from conkit.io.PconsIO import PconsParser
 from conkit.io.PdbIO import PdbParser
+from conkit.io.PdbIO import MmCifParser
 from conkit.io.PlmDCAIO import PlmDCAParser
 from conkit.io.PsicovIO import PsicovParser
 
@@ -38,6 +39,7 @@ CONTACT_FILE_PARSERS = {
     'gremlin': GremlinParser,
     'membrain': MemBrainParser,
     'metapsicov': PsicovParser,
+    'mmcif': MmCifParser,
     'pconsc': PconsParser,
     'pconsc2': PconsParser,
     'pconsc3': PconsParser,
