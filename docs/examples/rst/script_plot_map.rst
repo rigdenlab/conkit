@@ -23,7 +23,7 @@ You can also add a reference structure to determine which contacts are true and 
 
 .. code-block:: bash
 
-   $> conkit-plot cmap -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap -p toxd/toxd.pdb -pf pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 
 The call above produces a contact map plot looking like this. The gray points are the reference contacts, and matched and mismatched contacts are shown in color.
@@ -39,7 +39,7 @@ You could also add a second contact prediction file to the call to compare two m
 
 .. code-block:: bash
 
-   $> conkit-plot cmap -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb -pf pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 The call above produces a contact map plot looking like this. The gray points are the reference contacts, and matched and mismatched contacts are shown in color. The top triangle is the second contact map from file ``toxd/toxd.psicov`` whereas the bottom one is from ``toxd/toxd.mat``.
 
@@ -54,7 +54,7 @@ Finally, you could also illustrate the confidence with which each contact was pr
 
 .. code-block:: bash
 
-   $> conkit-plot cmap --confidence -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
+   $> conkit-plot cmap --confidence -e toxd/toxd.psicov -ef psicov -p toxd/toxd.pdb -pf pdb toxd/toxd.fasta fasta toxd/toxd.mat ccmpred
 
 The call above produces a contact map plot looking like this. All parameters and settings are identical to the previous map except the ``--confidence`` flag, which will show more confidently predicted contacts as larger markers.
 

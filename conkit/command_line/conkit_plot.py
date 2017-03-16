@@ -37,6 +37,9 @@ def add_contact_map_args(subparsers):
 This command will plot a contact map using the provided contacts
 alongside any additional information.
 
+If you provide a reference contact map, it is assumed that the sequence
+is identical for both contact predictions.
+
 If you provide a reference structure, the true positive contacts
 are identified by a distance of <8\u212B between C\u03B2-C\u03B2 atoms.
 
@@ -49,9 +52,10 @@ reference structure, they will not be plotted.
     contact_map_subparser = subparsers.add_parser('cmap', help="Plot a contact map", description=description,
                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     _add_default_args(contact_map_subparser)
-    contact_map_subparser.add_argument('-c', dest='pdbchain', default=None,
-                                       help='PDB chain to use [default: first in file]. Inter-molecular predictions '
-                                            'use two letter convention, i.e AD for contacts between A and D.')
+    contact_map_subparser.add_argument('-c', dest='refid', default=None,
+                                       help='Reference identifier to use [default: first in file]. '
+                                            'Inter-molecular predictions use two letter convention, '
+                                            'i.e AD for contacts between A and D.')
     contact_map_subparser.add_argument('-d', dest='dtn', default=5, type=int,
                                        help='Minimum sequence separation [default: 5]')
     contact_map_subparser.add_argument('-e', dest='otherfile', default=None,
@@ -60,10 +64,10 @@ reference structure, they will not be plotted.
                                        help='the format of the second contact map')
     contact_map_subparser.add_argument('-f', dest='dfactor', default=1.0, type=float,
                                        help='number of contacts to include relative to sequence length [default: 1.0]')
-    contact_map_subparser.add_argument('-p', dest='pdbfile', default=None, type=str,
-                                       help="A reference PDB file")
-    contact_map_subparser.add_argument('-pf', dest='pdbformat', default='pdb', type=str,
-                                       help="A reference PDB file")
+    contact_map_subparser.add_argument('-p', dest='reffile', default=None, type=str,
+                                       help="A reference file")
+    contact_map_subparser.add_argument('-pf', dest='refformat', default=None, type=str,
+                                       help="A reference file")
     contact_map_subparser.add_argument('--confidence', action="store_true", default=False,
                                        help='Plot the confidence scores')
     contact_map_subparser.add_argument('--interchain', action="store_true", default=False,
@@ -236,15 +240,19 @@ def main():
         else:
             other_sliced = None
 
-        if args.pdbfile:
-            if args.pdbchain:
-                pdb = conkit.io.read(args.pdbfile, 'pdb')[args.pdbchain]
-            elif args.pdbfile:
-                pdb = conkit.io.read(args.pdbfile, 'pdb')[0]
-            reference = pdb
-            con_matched = con_sliced.match(pdb, renumber=True, remove_unmatched=True)
+        if args.reffile:
+            if args.refid:
+                reference = conkit.io.read(args.reffile, args.refformat)[args.refid]
+            else:
+                reference = conkit.io.read(args.reffile, args.refformat)[0]
+
+            if args.refformat not in ['pdb', 'mmcif']:
+                msg = "The provided format {0} is not yet implemented for the reference flag".format(args.refformat)
+                raise RuntimeError(msg)
+
+            con_matched = con_sliced.match(reference, renumber=True, remove_unmatched=True)
             if other_sliced:
-                other_matched = other_sliced.match(pdb, renumber=True, remove_unmatched=True)
+                other_matched = other_sliced.match(reference, renumber=True, remove_unmatched=True)
             else:
                 other_matched = other_sliced
         else:
