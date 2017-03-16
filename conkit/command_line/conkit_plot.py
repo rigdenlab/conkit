@@ -256,7 +256,9 @@ def main():
             """Remove alternative locations"""
             altloc = False
             for contact in map.copy():
-                if contact.res1_chain != contact.res2_chain:
+                # For now we need this args.interchain check to account for gapped residues
+                # where res chain was not assigned
+                if contact.res1_chain != contact.res2_chain and args.interchain:
                     altloc = True
                     break
                 if contact.res1_chain == contact.res2_chain and args.interchain:

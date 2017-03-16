@@ -45,9 +45,11 @@ class _Gap(object):
     """A basic class representing a gap residue"""
     __slots__ = ('res_seq', 'res_altseq', 'res_name', 'res_chain')
 
+    _IDENTIFIER = -999999
+
     def __init__(self):
-        self.res_seq = 9999
-        self.res_altseq = 9999
+        self.res_seq = _Gap._IDENTIFIER
+        self.res_altseq = _Gap._IDENTIFIER
         self.res_name = 'X'
         self.res_chain = ''
 
@@ -384,7 +386,11 @@ class ContactMap(Entity):
     def calculate_kernel_density(self, bw_method="bowman"):
         """Calculate the contact density in the contact map using Gaussian kernels
 
-        Various algorithms can be used to estimate the bandwidth. To calculate the bandwidth for an 1D data array ``X`` with ``n`` data points and ``d`` dimensions, the listed algorithms have been implemented. Please note, in rules 2 and 3, the value of :math:`\\sigma` is the smaller of the standard deviation of ``X`` or the normalized interquartile range.
+        Various algorithms can be used to estimate the bandwidth. To calculate the
+        bandwidth for an 1D data array ``X`` with ``n`` data points and ``d`` dimensions,
+        the listed algorithms have been implemented. Please note, in rules 2 and 3, the
+        value of :math:`\\sigma` is the smaller of the standard deviation of ``X`` or
+        the normalized interquartile range.
 
         1. Bowman & Azzalini [#]_ implementation
 
@@ -613,20 +619,32 @@ class ContactMap(Entity):
         # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
+        # Get the residue list for matching UNKNOWNs
+        residues_map2 = tuple(i+1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
+
         # Adjust true and false positive statuses
-        for other_contact in contact_map2:
-            id = (other_contact.res1_altseq, other_contact.res2_altseq)
-            if id in contact_map1:
-                contact_map1[id].status = other_contact.status
+        for contact in contact_map1:
+            id = (contact.res1_seq, contact.res2_seq)
+            id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in id if i == r.res_altseq)
+
+            if any(i == _Gap._IDENTIFIER for i in id_alt) and any(j not in residues_map2 for j in id):
+                contact_map1[id].define_unknown()
+            elif all(i in residues_map2 for i in id):
+                if id_alt in contact_map2:
+                    contact_map1[id].define_match()
+                else:
+                    contact_map1[id].define_mismatch()
+            else:
+                msg = "Error matching two contact maps - this should never happen"
+                raise RuntimeError(msg)
 
         # ================================================================
         # 3. Remove unmatched contacts
         # ================================================================
         if remove_unmatched:
-            indexes = [residue1.res_seq for residue1, residue2 in zip(contact_map1_keymap, contact_map2_keymap)
-                       if not isinstance(residue1, _Gap) and isinstance(residue2, _Gap)]
-            for contact in contact_map1.find(indexes):
-                contact_map1.remove(contact.id)
+            for contact in contact_map1.copy():
+                if contact.is_unknown:
+                    contact_map1.remove(contact.id)
 
         # ================================================================
         # 4. Renumber the contact map 1 based on contact map 2
@@ -799,8 +817,7 @@ class ContactMap(Entity):
     def _reindex(keymap):
         """Reindex a key map"""
         for i, residue in enumerate(keymap):
-            if isinstance(residue, _Residue):
-                residue.res_altseq = i + 1
+            residue.res_altseq = i + 1
         return keymap
 
     @staticmethod

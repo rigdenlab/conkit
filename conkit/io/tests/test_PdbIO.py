@@ -36,10 +36,10 @@ END
             contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CB')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
-        self.assertEqual(6, len(contact_map1))
-        self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.is_true_positive])
-        self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.is_true_positive])
-        self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.is_true_positive])
+        self.assertEqual(2, len(contact_map1))
+        self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.is_match])
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -66,10 +66,10 @@ END
             contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CA')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
-        self.assertEqual(6, len(contact_map1))
-        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_true_positive])
-        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_true_positive])
-        self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.is_true_positive])
+        self.assertEqual(1, len(contact_map1))
+        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.is_match])
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -96,10 +96,10 @@ END
             contact_file = PdbParser().read(f_in, distance_cutoff=7, atom_type='CB')
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
-        self.assertEqual(6, len(contact_map1))
-        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_true_positive])
-        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_true_positive])
-        self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.is_true_positive])
+        self.assertEqual(1, len(contact_map1))
+        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.is_match])
         os.unlink(f_name)
 
     def test_read_4(self):
@@ -128,17 +128,13 @@ END
         # Two maps because no contacts in B
         contact_map1 = contact_file['A']     # chain A
         contact_map2 = contact_file['AB']    # chain AB
-        contact_map3 = contact_file['B']     # chain B
-        self.assertEqual(3, len(contact_file))
+        self.assertEqual(2, len(contact_file))
         self.assertEqual(1, len(contact_map1))
         self.assertEqual(['A', 'A'], [contact_map1.top_contact.res1_chain, contact_map1.top_contact.res2_chain])
         self.assertEqual([36, 86], [contact_map1.top_contact.res1_seq, contact_map1.top_contact.res2_seq])
-        self.assertEqual(4, len(contact_map2))
+        self.assertEqual(1, len(contact_map2))
         self.assertEqual(['A', 'B'], [contact_map2.top_contact.res1_chain, contact_map2.top_contact.res2_chain])
-        self.assertEqual([36, 171], [contact_map2.top_contact.res1_seq, contact_map2.top_contact.res2_seq])
-        self.assertEqual(1, len(contact_map3))
-        self.assertEqual(['B', 'B'], [contact_map3.top_contact.res1_chain, contact_map3.top_contact.res2_chain])
-        self.assertEqual([171, 208], [contact_map3.top_contact.res1_seq, contact_map3.top_contact.res2_seq])
+        self.assertEqual([86, 208], [contact_map2.top_contact.res1_seq, contact_map2.top_contact.res2_seq])
         os.unlink(f_name)
 
 

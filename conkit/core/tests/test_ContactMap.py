@@ -57,9 +57,9 @@ class Test(unittest.TestCase):
         contact_map.sequence = Sequence('TEST', 'AAAAA')
         for i, contact in enumerate(contact_map):
             if i % 2 == 0:
-                contact.define_true_positive()
+                contact.define_match()
             else:
-                contact.define_false_positive()
+                contact.define_mismatch()
         self.assertEqual(0.5, contact_map.precision)
 
     def test_repr_sequence_1(self):
@@ -316,22 +316,18 @@ class Test(unittest.TestCase):
         contact_map1.assign_sequence_register()
 
         contact_map2 = ContactMap('bar')
-        for i, params in enumerate([(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0)]):
+        for i, params in enumerate([(1, 5, 1.0), (1, 7, 1.0), (2, 7, 1.0), (3, 4, 1.0)]):
             contact = Contact(*params)
             contact.res1_altseq = params[0]
             contact.res2_altseq = params[1]
-            if i % 2 == 0:
-                contact.define_true_positive()
-            else:
-                contact.define_false_positive()
+            contact.define_match()
             contact_map2.add(contact)
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE,
-             Contact._UNKNOWN],
+            [Contact._MATCH, Contact._MISMATCH, Contact._MATCH, Contact._MISMATCH, Contact._UNKNOWN],
             [c.status for c in contact_map1]
         )
 
@@ -348,17 +344,14 @@ class Test(unittest.TestCase):
             contact = Contact(*params)
             contact.res1_altseq = params[0]
             contact.res2_altseq = params[1]
-            if i % 2 == 0:
-                contact.define_true_positive()
-            else:
-                contact.define_false_positive()
+            contact.define_match()
             contact_map2.add(contact)
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
+            [Contact._MATCH, Contact._MATCH, Contact._MISMATCH, Contact._MATCH],
             [c.status for c in contact_map1]
         )
 
@@ -376,17 +369,17 @@ class Test(unittest.TestCase):
             contact.res1_altseq = params[0]
             contact.res2_altseq = params[1]
             if i % 2 == 0:
-                contact.define_true_positive()
+                contact.define_match()
             else:
-                contact.define_false_positive()
+                contact.define_mismatch()
             contact_map2.add(contact)
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
-        self.assertEqual([(2, 7), (3, 5)], [c.id for c in contact_map1])
+        self.assertEqual([(1, 5), (1, 6), (2, 7), (3, 5)], [c.id for c in contact_map1])
         self.assertEqual(
-            [Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
+            [Contact._MISMATCH, Contact._MISMATCH, Contact._MATCH, Contact._MATCH],
             [c.status for c in contact_map1]
         )
 
@@ -403,17 +396,14 @@ class Test(unittest.TestCase):
             contact = Contact(*params)
             contact.res1_altseq = params[0]
             contact.res2_altseq = params[1]
-            if i % 2 == 0:
-                contact.define_true_positive()
-            else:
-                contact.define_false_positive()
+            contact.define_match()
             contact_map2.add(contact)
         contact_map2.sequence = Sequence('bar', 'BCDEFG')
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
         self.assertEqual(
-            [Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
+            [Contact._MATCH, Contact._MATCH],
             [c.status for c in contact_map1]
         )
         self.assertEqual([2, 2, 3], [c.res1_altseq for c in contact_map2])
@@ -434,7 +424,7 @@ class Test(unittest.TestCase):
         contact1.res2_chain = 'B'
         contact1.res1_altseq = 1
         contact1.res2_altseq = 5
-        contact1.define_true_positive()
+        contact1.define_match()
         contact_map2.add(contact1)
 
         contact2 = Contact(95, 31, 1.0)
@@ -442,7 +432,7 @@ class Test(unittest.TestCase):
         contact2.res2_chain = 'B'
         contact2.res1_altseq = 1
         contact2.res2_altseq = 6
-        contact2.define_false_positive()
+        contact2.define_match()
         contact_map2.add(contact2)
 
         contact3 = Contact(97, 30, 1.0)
@@ -450,7 +440,7 @@ class Test(unittest.TestCase):
         contact3.res2_chain = 'B'
         contact3.res1_altseq = 3
         contact3.res2_altseq = 5
-        contact3.define_true_positive()
+        contact3.define_match()
         contact_map2.add(contact3)
 
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
@@ -458,8 +448,7 @@ class Test(unittest.TestCase):
 
         contact_map1.match(contact_map2, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._UNKNOWN, Contact._TRUE_POSITIVE,
-             Contact._UNKNOWN],
+            [Contact._MATCH, Contact._MATCH, Contact._MISMATCH, Contact._MATCH, Contact._UNKNOWN],
             [c.status for c in contact_map1]
         )
 
@@ -478,7 +467,7 @@ class Test(unittest.TestCase):
         contact1.res2_chain = 'B'
         contact1.res1_altseq = 1
         contact1.res2_altseq = 5
-        contact1.define_true_positive()
+        contact1.define_match()
         contact_map2.add(contact1)
 
         contact2 = Contact(95, 31, 1.0)
@@ -486,7 +475,7 @@ class Test(unittest.TestCase):
         contact2.res2_chain = 'B'
         contact2.res1_altseq = 1
         contact2.res2_altseq = 6
-        contact2.define_false_positive()
+        contact2.define_match()
         contact_map2.add(contact2)
 
         contact3 = Contact(97, 30, 1.0)
@@ -494,7 +483,7 @@ class Test(unittest.TestCase):
         contact3.res2_chain = 'B'
         contact3.res1_altseq = 3
         contact3.res2_altseq = 5
-        contact3.define_true_positive()
+        contact3.define_match()
         contact_map2.add(contact3)
 
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
@@ -502,7 +491,7 @@ class Test(unittest.TestCase):
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
+            [Contact._MATCH, Contact._MATCH, Contact._MISMATCH, Contact._MATCH],
             [c.status for c in contact_map1]
         )
 
@@ -521,7 +510,7 @@ class Test(unittest.TestCase):
         contact1.res2_chain = 'B'
         contact1.res1_altseq = 1
         contact1.res2_altseq = 5
-        contact1.define_true_positive()
+        contact1.define_match()
         contact_map2.add(contact1)
 
         contact2 = Contact(95, 31, 1.0)
@@ -529,7 +518,7 @@ class Test(unittest.TestCase):
         contact2.res2_chain = 'B'
         contact2.res1_altseq = 1
         contact2.res2_altseq = 6
-        contact2.define_false_positive()
+        contact2.define_match()
         contact_map2.add(contact2)
 
         contact3 = Contact(97, 30, 1.0)
@@ -537,7 +526,7 @@ class Test(unittest.TestCase):
         contact3.res2_chain = 'B'
         contact3.res1_altseq = 3
         contact3.res2_altseq = 5
-        contact3.define_true_positive()
+        contact3.define_match()
         contact_map2.add(contact3)
 
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
@@ -545,13 +534,18 @@ class Test(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._UNKNOWN, Contact._TRUE_POSITIVE,
-             Contact._UNKNOWN],
+            [Contact._MATCH, Contact._MATCH, Contact._MISMATCH, Contact._MATCH, Contact._UNKNOWN],
             [c.status for c in contact_map1]
         )
-        self.assertEqual([95, 95, 9999, 97, 9999], [c.res1_seq for c in contact_map1])
+        self.assertEqual(
+            [95, 95, _Gap._IDENTIFIER, 97, _Gap._IDENTIFIER],
+            [c.res1_seq for c in contact_map1]
+        )
         self.assertEqual(['A', 'A', '', 'A', ''], [c.res1_chain for c in contact_map1])
-        self.assertEqual([30, 31, 9999, 30, 9999], [c.res2_seq for c in contact_map1])
+        self.assertEqual(
+            [30, 31, _Gap._IDENTIFIER, 30, _Gap._IDENTIFIER],
+            [c.res2_seq for c in contact_map1]
+        )
         self.assertEqual(['B', 'B', '', 'B', ''], [c.res2_chain for c in contact_map1])
 
     def test_match_8(self):
@@ -569,7 +563,6 @@ class Test(unittest.TestCase):
         contact1.res2_chain = 'B'
         contact1.res1_altseq = 1
         contact1.res2_altseq = 5
-        contact1.define_true_positive()
         contact_map2.add(contact1)
 
         contact2 = Contact(95, 31, 1.0)
@@ -577,7 +570,6 @@ class Test(unittest.TestCase):
         contact2.res2_chain = 'B'
         contact2.res1_altseq = 1
         contact2.res2_altseq = 6
-        contact2.define_false_positive()
         contact_map2.add(contact2)
 
         contact3 = Contact(97, 30, 1.0)
@@ -585,7 +577,6 @@ class Test(unittest.TestCase):
         contact3.res2_chain = 'B'
         contact3.res1_altseq = 3
         contact3.res2_altseq = 5
-        contact3.define_true_positive()
         contact_map2.add(contact3)
 
         contact_map2.sequence = Sequence('bar', 'ABCDEFG')
@@ -593,13 +584,13 @@ class Test(unittest.TestCase):
 
         contact_map1.match(contact_map2, remove_unmatched=True, renumber=True, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE],
+            [Contact._MATCH, Contact._MATCH, Contact._MISMATCH, Contact._MATCH],
             [c.status for c in contact_map1]
         )
-        self.assertEqual([95, 95, 97], [c.res1_seq for c in contact_map1])
-        self.assertEqual(['A', 'A', 'A'], [c.res1_chain for c in contact_map1])
-        self.assertEqual([30, 31, 30], [c.res2_seq for c in contact_map1])
-        self.assertEqual(['B', 'B', 'B'], [c.res2_chain for c in contact_map1])
+        self.assertEqual([95, 95, _Gap._IDENTIFIER, 97], [c.res1_seq for c in contact_map1])
+        self.assertEqual(['A', 'A', '', 'A'], [c.res1_chain for c in contact_map1])
+        self.assertEqual([30, 31, _Gap._IDENTIFIER, 30], [c.res2_seq for c in contact_map1])
+        self.assertEqual(['B', 'B', '', 'B'], [c.res2_chain for c in contact_map1])
 
     def test_match_9(self):
         contact_map1 = ContactMap('foo')
@@ -616,7 +607,6 @@ class Test(unittest.TestCase):
         contact1.res2_chain = 'B'
         contact1.res1_altseq = 1
         contact1.res2_altseq = 5
-        contact1.define_true_positive()
         contact_map2.add(contact1)
 
         contact2 = Contact(95, 31, 1.0)
@@ -624,7 +614,6 @@ class Test(unittest.TestCase):
         contact2.res2_chain = 'B'
         contact2.res1_altseq = 1
         contact2.res2_altseq = 6
-        contact2.define_false_positive()
         contact_map2.add(contact2)
 
         contact3 = Contact(96, 32, 1.0)
@@ -632,7 +621,6 @@ class Test(unittest.TestCase):
         contact3.res2_chain = 'B'
         contact3.res1_altseq = 2
         contact3.res2_altseq = 7
-        contact3.define_true_positive()
         contact_map2.add(contact3)
 
         contact4 = Contact(97, 30, 1.0)
@@ -640,7 +628,6 @@ class Test(unittest.TestCase):
         contact4.res2_chain = 'B'
         contact4.res1_altseq = 3
         contact4.res2_altseq = 5
-        contact4.define_true_positive()
         contact_map2.add(contact4)
 
         contact5 = Contact(96, 33, 1.0)
@@ -648,7 +635,6 @@ class Test(unittest.TestCase):
         contact5.res2_chain = 'B'
         contact5.res1_altseq = 2
         contact5.res2_altseq = 8
-        contact5.define_false_positive()
         contact_map2.add(contact5)
 
         contact_map2.sequence = Sequence('bar', 'ABCDEFGF')
@@ -656,8 +642,7 @@ class Test(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE, Contact._TRUE_POSITIVE,
-             Contact._FALSE_POSITIVE],
+            [Contact._MATCH, Contact._MATCH, Contact._MATCH, Contact._MATCH, Contact._MATCH],
             [c.status for c in contact_map1]
         )
         self.assertEqual([95, 95, 96, 97, 96], [c.res1_seq for c in contact_map1])
@@ -685,56 +670,38 @@ class Test(unittest.TestCase):
         contact1.res2_chain = 'B'
         contact1.res1_altseq = 1
         contact1.res2_altseq = 5
-        contact1.define_true_positive()
         contact_map2.add(contact1)
 
-        contact2 = Contact(6, 3, 1.0)
+        contact2 = Contact(7, 4, 1.0)
         contact2.res1_chain = 'A'
         contact2.res2_chain = 'B'
-        contact2.res1_altseq = 1
-        contact2.res2_altseq = 6
-        contact2.define_false_positive()
+        contact2.res1_altseq = 2
+        contact2.res2_altseq = 7
+        contact2.define_match()
         contact_map2.add(contact2)
 
-        contact3 = Contact(7, 4, 1.0)
+        contact3 = Contact(8, 2, 1.0)
         contact3.res1_chain = 'A'
         contact3.res2_chain = 'B'
-        contact3.res1_altseq = 2
-        contact3.res2_altseq = 7
-        contact3.define_true_positive()
+        contact3.res1_altseq = 3
+        contact3.res2_altseq = 5
+        contact3.define_match()
         contact_map2.add(contact3)
-
-        contact4 = Contact(8, 2, 1.0)
-        contact4.res1_chain = 'A'
-        contact4.res2_chain = 'B'
-        contact4.res1_altseq = 3
-        contact4.res2_altseq = 5
-        contact4.define_true_positive()
-        contact_map2.add(contact4)
-
-        contact5 = Contact(7, 5, 1.0)
-        contact5.res1_chain = 'A'
-        contact5.res2_chain = 'B'
-        contact5.res1_altseq = 2
-        contact5.res2_altseq = 8
-        contact5.define_false_positive()
-        contact_map2.add(contact5)
 
         contact_map2.sequence = Sequence('bar', 'ABCDEFGH')
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual(
-            [Contact._TRUE_POSITIVE, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE, Contact._TRUE_POSITIVE,
-             Contact._FALSE_POSITIVE],
+            [Contact._MATCH, Contact._MISMATCH, Contact._MATCH, Contact._MATCH, Contact._MISMATCH],
             [c.status for c in contact_map1]
         )
         self.assertEqual(
-                [(6, 2), (6, 3), (7, 4), (8, 2), (7, 5)], 
+                [(6, 2), (6, _Gap._IDENTIFIER), (7, 4), (8, 2), (7, _Gap._IDENTIFIER)],
                 [(c.res1_seq, c.res2_seq) for c in contact_map1]
         )
         self.assertEqual(
-                [('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B')], 
+                [('A', 'B'), ('A', ''), ('A', 'B'), ('A', 'B'), ('A', '')],
                 [(c.res1_chain, c.res2_chain) for c in contact_map1]
         )
 
@@ -947,20 +914,26 @@ class Test(unittest.TestCase):
     def test__reindex_3(self):
         keymap = [_Gap(), _Residue(2, 1, 'X', ''), _Residue(3, 2, 'X', '')]
         reindex = ContactMap._reindex(keymap)
-        self.assertEqual([9999, 2, 3], [c.res_seq for c in reindex])
-        self.assertEqual([9999, 2, 3], [c.res_altseq for c in reindex])
+        self.assertEqual([_Gap._IDENTIFIER, 2, 3], [c.res_seq for c in reindex])
+        self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
     def test__reindex_4(self):
         keymap = [_Gap(), _Residue(200000, 10000, 'X', ''), _Gap(), _Gap()]
         reindex = ContactMap._reindex(keymap)
-        self.assertEqual([9999, 200000, 9999, 9999], [c.res_seq for c in reindex])
-        self.assertEqual([9999, 2, 9999, 9999], [c.res_altseq for c in reindex])
+        self.assertEqual(
+            [_Gap._IDENTIFIER, 200000, _Gap._IDENTIFIER, _Gap._IDENTIFIER],
+            [c.res_seq for c in reindex]
+        )
+        self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
     def test__reindex_5(self):
         keymap = [_Gap(), _Gap(), _Gap(), _Gap()]
         reindex = ContactMap._reindex(keymap)
-        self.assertEqual([9999, 9999, 9999, 9999], [c.res_seq for c in reindex])
-        self.assertEqual([9999, 9999, 9999, 9999], [c.res_altseq for c in reindex])
+        self.assertEqual(
+            [_Gap._IDENTIFIER, _Gap._IDENTIFIER, _Gap._IDENTIFIER, _Gap._IDENTIFIER],
+            [c.res_seq for c in reindex]
+        )
+        self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
     @unittest.skip("Test case missing")
     def test__renumber(self):

@@ -163,11 +163,8 @@ class PdbParser(_ContactFileParser):
                     contact.res2_chain = atom2.reschain
 
                     if distance < distance_cutoff:
-                        contact.define_true_positive()
-                    else:
-                        contact.define_false_positive()
-
-                    contact_map.add(contact)
+                        contact.define_match()
+                        contact_map.add(contact)
 
                 # Tidy up empty maps
                 if len(contact_map) > 0:

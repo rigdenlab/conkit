@@ -32,17 +32,26 @@ class Test(unittest.TestCase):
         with self.assertRaises(TypeError):
             contact.distance_bound = 'test'
 
-    def test_is_false_positive_1(self):
+    def test_is_match_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.define_false_positive()
-        self.assertTrue(contact.is_false_positive)
-        self.assertFalse(contact.is_true_positive)
+        contact.define_match()
+        self.assertTrue(contact.is_match)
+        self.assertFalse(contact.is_mismatch)
+        self.assertFalse(contact.is_unknown)
 
-    def test_is_true_positive_1(self):
+    def test_is_mismatch_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.define_true_positive()
-        self.assertTrue(contact.is_true_positive)
-        self.assertFalse(contact.is_false_positive)
+        contact.define_mismatch()
+        self.assertFalse(contact.is_match)
+        self.assertTrue(contact.is_mismatch)
+        self.assertFalse(contact.is_unknown)
+
+    def test_is_unknown_1(self):
+        contact = Contact(1, 2, 1.0)
+        contact.define_unknown()
+        self.assertFalse(contact.is_match)
+        self.assertFalse(contact.is_mismatch)
+        self.assertTrue(contact.is_unknown)
 
     def test_lower_bound_1(self):
         contact = Contact(1, 2, 1.0)
@@ -206,11 +215,21 @@ class Test(unittest.TestCase):
 
     def test_status_1(self):
         contact = Contact(1, 2000000, 1.0)
-        self.assertEqual(0, contact.status)
-        contact.define_false_positive()
-        self.assertEqual(-1, contact.status)
-        contact.define_true_positive()
-        self.assertEqual(1, contact.status)
+        self.assertEqual(Contact._UNKNOWN, contact.status)
+        contact.define_match()
+        self.assertEqual(Contact._MATCH, contact.status)
+
+    def test_status_2(self):
+        contact = Contact(1, 2000000, 1.0)
+        self.assertEqual(Contact._UNKNOWN, contact.status)
+        contact.define_mismatch()
+        self.assertEqual(Contact._MISMATCH, contact.status)
+
+    def test_status_3(self):
+        contact = Contact(1, 2000000, 1.0)
+        self.assertEqual(Contact._UNKNOWN, contact.status)
+        contact.define_unknown()
+        self.assertEqual(Contact._UNKNOWN, contact.status)
 
     def test_weight_1(self):
         contact = Contact(1, 2000000, 1.0)
@@ -218,22 +237,31 @@ class Test(unittest.TestCase):
         contact.weight = 2.5
         self.assertEqual(2.5, contact.weight)
 
-    def test_define_false_positive_1(self):
+    def test_define_match_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.define_false_positive()
-        self.assertTrue(contact.is_false_positive)
-        self.assertFalse(contact.is_true_positive)
+        contact.define_match()
+        self.assertTrue(contact.is_match)
+        self.assertFalse(contact.is_mismatch)
+        self.assertFalse(contact.is_unknown)
 
-    def test_define_true_positive_1(self):
+    def test_define_mismatch_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.define_true_positive()
-        self.assertTrue(contact.is_true_positive)
-        self.assertFalse(contact.is_false_positive)
+        contact.define_mismatch()
+        self.assertFalse(contact.is_match)
+        self.assertTrue(contact.is_mismatch)
+        self.assertFalse(contact.is_unknown)
+
+    def test_define_unknown_1(self):
+        contact = Contact(1, 2, 1.0)
+        contact.define_unknown()
+        self.assertFalse(contact.is_match)
+        self.assertFalse(contact.is_mismatch)
+        self.assertTrue(contact.is_unknown)
 
     def test__to_dict_1(self):
         contact = Contact(1, 2, 1.0)
         dict = {
-            'id': (1, 2), 'is_false_positive': False, 'is_true_positive': False, 'distance_bound': (0, 8),
+            'id': (1, 2), 'is_match': False, 'is_mismatch': False, 'is_unknown': True, 'distance_bound': (0, 8),
             'lower_bound': 0, 'upper_bound': 8, 'raw_score': 1.0, 'res1': 'X', 'res2': 'X', 'res1_chain': '',
             'res2_chain': '', 'res1_seq': 1, 'res2_seq': 2, 'res1_altseq': 0, 'res2_altseq': 0, 'scalar_score': 0.0,
             'status': 0, 'weight': 1.0,
@@ -242,10 +270,10 @@ class Test(unittest.TestCase):
 
     def test__to_dict_2(self):
         contact = Contact(1, 2, 1.0)
-        contact.define_true_positive()
+        contact.define_match()
         contact.lower_bound = 4
         dict = {
-            'id': (1, 2), 'is_false_positive': False, 'is_true_positive': True, 'distance_bound': (4, 8),
+            'id': (1, 2), 'is_match': True, 'is_mismatch': False, 'is_unknown': False, 'distance_bound': (4, 8),
             'lower_bound': 4, 'upper_bound': 8, 'raw_score': 1.0, 'res1': 'X', 'res2': 'X', 'res1_chain': '',
             'res2_chain': '', 'res1_seq': 1, 'res2_seq': 2, 'res1_altseq': 0, 'res2_altseq': 0, 'scalar_score': 0.0,
             'status': 1, 'weight': 1.0,

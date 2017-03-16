@@ -20,9 +20,11 @@ class Contact(Entity):
        The lower and upper distance boundary values of a contact pair in Ångstrom [Default: 0-8Å].
     id : str
        A unique identifier
-    is_false_positive : bool
+    is_match : bool
        A boolean status for the contact
-    is_true_positive : bool
+    is_mismatch : bool
+       A boolean status for the contact
+    is_unknown : bool
        A boolean status for the contact
     lower_bound : int
        The lower distance boundary value
@@ -66,8 +68,8 @@ class Contact(Entity):
                  '_status', '_weight']
 
     _UNKNOWN = 0
-    _FALSE_POSITIVE = -1
-    _TRUE_POSITIVE = 1
+    _MISMATCH = -1
+    _MATCH = 1
 
     def __init__(self, res1_seq, res2_seq, raw_score, distance_bound=(0, 8)):
         """Initialize a generic contact pair
@@ -138,36 +140,19 @@ class Contact(Entity):
             raise TypeError("Data of type list or tuple required")
 
     @property
-    def is_false_positive(self):
-        """A boolean status for the contact
-
-        Parameters
-        ----------
-        is_false_positive : bool
-           True / False
-
-        See Also
-        --------
-        define_false_positive, define_true_positive, is_true_positive
-
-        """
-        return True if self.status == Contact._FALSE_POSITIVE else False
+    def is_match(self):
+        """A boolean status for the contact"""
+        return True if self.status == Contact._MATCH else False
 
     @property
-    def is_true_positive(self):
-        """A boolean status for the contact
+    def is_mismatch(self):
+        """A boolean status for the contact"""
+        return True if self.status == Contact._MISMATCH else False
 
-        Parameters
-        ----------
-        is_true_positive : bool
-           True / False
-
-        See Also
-        --------
-        define_true_positive, define_false_positive, is_false_positive
-
-        """
-        return True if self.status == Contact._TRUE_POSITIVE else False
+    @property
+    def is_unknown(self):
+        """A boolean status for the contact"""
+        return True if self.status == Contact._UNKNOWN else False
 
     @property
     def lower_bound(self):
@@ -417,7 +402,7 @@ class Contact(Entity):
            Unknown status
 
         """
-        if any(i == status for i in [Contact._UNKNOWN, Contact._FALSE_POSITIVE, Contact._TRUE_POSITIVE]):
+        if any(i == status for i in [Contact._UNKNOWN, Contact._MISMATCH, Contact._MATCH]):
             self._status = status
         else:
             raise ValueError("Unknown status")
@@ -438,32 +423,25 @@ class Contact(Entity):
         """
         self._weight = float(weight)
 
-    def define_false_positive(self):
-        """Define a contact as false positive
+    def define_match(self):
+        """Define a contact as matching contact"""
+        self._status = Contact._MATCH
 
-        See Also
-        --------
-        define_true_positive, is_true_positive, is_false_positive
+    def define_mismatch(self):
+        """Define a contact as mismatching contact"""
+        self._status = Contact._MISMATCH
 
-        """
-        self._status = Contact._FALSE_POSITIVE
-
-    def define_true_positive(self):
-        """Define a contact as true positive
-
-        See Also
-        --------
-        define_false_positive, is_false_positive, is_true_positive
-
-        """
-        self._status = Contact._TRUE_POSITIVE
+    def define_unknown(self):
+        """Define a contact with unknown status"""
+        self._status = Contact._UNKNOWN
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
         return {
             'id': self.id,
-            'is_false_positive': self.is_false_positive,
-            'is_true_positive': self.is_true_positive,
+            'is_match': self.is_match,
+            'is_mismatch': self.is_mismatch,
+            'is_unknown': self.is_unknown,
             'distance_bound': self.distance_bound,
             'lower_bound': self.lower_bound,
             'upper_bound': self.upper_bound,

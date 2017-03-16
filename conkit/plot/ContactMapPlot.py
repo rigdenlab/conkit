@@ -12,6 +12,7 @@ __version__ = 0.1
 import matplotlib.pyplot
 import numpy
 
+from conkit.core.ContactMap import _Gap
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
 
@@ -133,55 +134,57 @@ class ContactMapFigure(Figure):
         # Plot the other_ref contacts
         if self._reference:
             if self.altloc:
-                reference_data = numpy.asarray([(c.res1_altseq, c.res2_altseq)
-                                                for c in self._reference if c.is_true_positive])
+                reference_data = numpy.asarray([(c.res1_altseq, c.res2_altseq) for c in self._reference])
             else:
-                reference_data = numpy.asarray([(c.res1_seq, c.res2_seq)
-                                                for c in self._reference if c.is_true_positive])
+                reference_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in self._reference])
             reference_colors = [ColorDefinitions.STRUCTURAL for _ in range(len(reference_data))]
-            ax.scatter(reference_data.T[0], reference_data.T[1], color=reference_colors,
+            ax.scatter(reference_data[:, 0], reference_data[:, 1], color=reference_colors,
                        s=10, marker='o', edgecolor='none', linewidths=0.0)
-            ax.scatter(reference_data.T[1], reference_data.T[0], color=reference_colors,
+            ax.scatter(reference_data[:, 1], reference_data[:, 0], color=reference_colors,
                        s=10, marker='o', edgecolor='none', linewidths=0.0)
 
         # Plot the self contacts
-        self_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy])
+        self_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy
+                                   if not (c.res1_seq == _Gap._IDENTIFIER or c.res2_seq == _Gap._IDENTIFIER)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
         if self.use_conf:
-            self_sizes = (self_data.T[2] - self_data.T[2].min()) / (self_data.T[2].max() - self_data.T[2].min())
+            # ptp is (max - min)
+            self_sizes = (self_data[:, 2] - self_data[:, 2].min()) / self_data[:, 2].ptp()
             self_sizes = self_sizes * 20 + 10
         else:
-            self_sizes = [10] * len(self_data.T[2])
+            self_sizes = [10] * len(self_data[:, 2])
 
         # This is the bottom triangle
-        ax.scatter(self_data.T[1], self_data.T[0], color=self_colors, marker='o',
+        ax.scatter(self_data[:, 1], self_data[:, 0], color=self_colors, marker='o',
                    s=self_sizes, edgecolor='none', linewidths=0.0)
 
         # Plot the other contacts
         if self._other:
-            other_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other])
+            other_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other
+                                        if not (c.res1_seq == _Gap._IDENTIFIER or c.res2_seq == _Gap._IDENTIFIER)])
             other_colors = ContactMapFigure._determine_color(self._other)
             if self.use_conf:
-                other_sizes = (other_data.T[2] - other_data.T[2].min()) / (other_data.T[2].max() - other_data.T[2].min())
+                # ptp is (max - min)
+                other_sizes = (other_data[:, 2] - other_data[:, 2].min()) / other_data[:, 2].ptp()
                 other_sizes = other_sizes * 20 + 10
             else:
-                other_sizes = [10] * len(other_data.T[2])
+                other_sizes = [10] * len(other_data[:, 2])
             # This is the upper triangle
-            ax.scatter(other_data.T[0], other_data.T[1], color=other_colors, marker='o',
+            ax.scatter(other_data[:, 0], other_data[:, 1], color=other_colors, marker='o',
                        s=other_sizes, edgecolor='none', linewidths=0.0)
         else:
             # This is the upper triangle
-            ax.scatter(self_data.T[0], self_data.T[1], color=self_colors, marker='o',
+            ax.scatter(self_data[:, 0], self_data[:, 1], color=self_colors, marker='o',
                        s=self_sizes, edgecolor='none', linewidths=0.0)
 
         # Allow dynamic x and y limits
-        min_max_data = numpy.append(self_data.T[0], self_data.T[1])
+        min_max_data = numpy.append(self_data[:, 0], self_data[:, 1])
         if self._reference:
-            min_max_data = numpy.append(min_max_data, reference_data.T[0])
-            min_max_data = numpy.append(min_max_data, reference_data.T[1])
+            min_max_data = numpy.append(min_max_data, reference_data[:, 0])
+            min_max_data = numpy.append(min_max_data, reference_data[:, 1])
         if self._other:
-            min_max_data = numpy.append(min_max_data, other_data.T[0])
-            min_max_data = numpy.append(min_max_data, other_data.T[1])
+            min_max_data = numpy.append(min_max_data, other_data[:, 0])
+            min_max_data = numpy.append(min_max_data, other_data[:, 1])
         ax.set_xlim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
         ax.set_ylim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
 
@@ -222,7 +225,7 @@ class ContactMapFigure(Figure):
     def _determine_color(h):
         """Determine the color of the contacts in order"""
         return [
-            ColorDefinitions.MATCH if contact.is_true_positive
-            else ColorDefinitions.MISMATCH if contact.is_false_positive
+            ColorDefinitions.MATCH if contact.is_match
+            else ColorDefinitions.MISMATCH if contact.is_mismatch
             else ColorDefinitions.GENERAL for contact in h
         ]
