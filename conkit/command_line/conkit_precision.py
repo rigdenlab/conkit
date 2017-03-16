@@ -27,6 +27,7 @@ def main():
     parser.add_argument('-f', dest='dfactor', default=1.0, type=float,
                         help='number of contacts to include relative to sequence length [default: 1.0]')
     parser.add_argument('pdbfile')
+    parser.add_argument('pdbformat')
     parser.add_argument('seqfile')
     parser.add_argument('seqformat')
     parser.add_argument('confile')
@@ -35,9 +36,9 @@ def main():
     
     # Compute all the data
     if args.pdbchain:
-        pdb = conkit.io.read(args.pdbfile, 'pdb')[args.pdbchain]
+        pdb = conkit.io.read(args.pdbfile, args.pdbformat)[args.pdbchain]
     else:
-        pdb = conkit.io.read(args.pdbfile, 'pdb')[0]
+        pdb = conkit.io.read(args.pdbfile, args.pdbformat)[0]
     seq = conkit.io.read(args.seqfile, args.seqformat)[0]
     con = conkit.io.read(args.confile, args.conformat)[0]
     
