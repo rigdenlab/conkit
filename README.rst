@@ -65,8 +65,6 @@ Contributors
 
 - Felix Simkovic
 - Jens Thomas
-- Ronan Keegan
-- Adam Simpkin
 - Daniel Rigden
 
 
