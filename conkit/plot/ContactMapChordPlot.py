@@ -98,7 +98,7 @@ class ContactMapChordFigure(Figure):
         # Obtain the data from the hierarchy
         self_data = numpy.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score)
                                    for c in hierarchy])
-        _drange = numpy.append(self_data.T[1], self_data.T[3]).astype(numpy.int64)
+        _drange = numpy.append(self_data[:, 1], self_data[:, 3]).astype(numpy.int64)
         self_data_range = numpy.arange(_drange.min(), _drange.max() + 1)
 
         # The number of points on the outer circle and their coordinates
@@ -121,7 +121,7 @@ class ContactMapChordFigure(Figure):
         # Get the amino acids if available
         #     - get the residue data from the original data array
         residue_data = numpy.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
-        residue_data = residue_data.reshape(self_data.T[0].shape[0] * 2, 2)
+        residue_data = residue_data.reshape(self_data[:, 0].shape[0] * 2, 2)
 
         #     - compute a default color list
         color_codes = dict([(k, ColorDefinitions.AA_ENCODING['X']) for k in self_data_range])
@@ -134,7 +134,7 @@ class ContactMapChordFigure(Figure):
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
         # Plot the residue points
-        ax.scatter(coords.T[0], coords.T[1], marker='o', color=colors, edgecolors="none", zorder=1)
+        ax.scatter(coords[:, 0], coords[:, 1], marker='o', color=colors, edgecolors="none", zorder=1)
 
         # Annotate some residue
         # TODO: Use _plottools module to process this

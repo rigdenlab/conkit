@@ -267,7 +267,7 @@ class SequenceFile(Entity):
         # sum all values per row
         aa_counts = numpy.sum(aa_frequencies, axis=0)
         # divide all by sequence length
-        return (aa_counts / len(msa_mat.T[0])).tolist()
+        return (aa_counts / len(msa_mat[:, 0])).tolist()
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`SequenceFile <conkit.core.SequenceFile>`
