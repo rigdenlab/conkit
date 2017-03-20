@@ -1,4 +1,4 @@
-.. _examples_main2:
+.. _examples_main:
 
 ConKit Usage Examples
 =====================
