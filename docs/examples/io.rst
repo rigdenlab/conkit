@@ -1,10 +1,14 @@
 
+.. role:: raw-html(raw)
+   :format: html
+
 .. list-table:: File Conversions
-   :widths: 28, 10, 10
+   :class: table-hover
+   :widths: 1000, 10, 10
 
    * - - (Multiple) Sequence File
-     - `Script <examples/rst/script_convert_msa.html>`_
-     - `Python <examples/rst/python_convert_msa.html>`_
+     - :raw-html:`<a href="examples/rst/script_convert_msa.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_convert_msa.html" class="btn btn-default btn-sm">Python</a>`
    * - - Contact prediction
-     - `Script <examples/rst/script_convert_conpred.html>`_
-     - `Python <examples/rst/python_convert_conpred.html>`_
+     - :raw-html:`<a href="examples/rst/script_convert_conpred.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_convert_conpred.html" class="btn btn-default btn-sm">Python</a>`

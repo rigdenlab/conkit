@@ -18,6 +18,8 @@ The following table contains the various different file formats currently implem
     The keyword to be used in ConKit
 
 
+.. rst-class:: table-hover
+
 +--------------------+------------------------+-----------------------------------------------------------+
 | Type               | Format                 | Keyword                                                   |
 +====================+========================+===========================================================+

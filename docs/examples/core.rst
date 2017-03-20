@@ -1,10 +1,14 @@
 
+.. role:: raw-html(raw)
+   :format: html
+
 .. list-table:: ConKit Data Model
-   :widths: 28, 10, 10
+   :class: table-hover
+   :widths: 1000, 10, 10
 
    * - - (Multiple) Sequence File
      -
-     - `Python <examples/rst/python_create_sequencefile.html>`_
+     - :raw-html:`<a href="examples/rst/python_create_sequencefile.html" class="btn btn-default btn-sm">Python</a>`
    * - - Contact prediction
      -
-     - `Python <examples/rst/python_create_contactfile.html>`_
+     - :raw-html:`<a href="examples/rst/python_create_contactfile.html" class="btn btn-default btn-sm">Python</a>`

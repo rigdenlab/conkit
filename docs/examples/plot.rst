@@ -1,19 +1,27 @@
 
+.. role:: raw-html(raw)
+   :format: html
+
 .. list-table:: Data Visualisation
-   :widths: 28, 10, 10
+   :class: table-hover
+   :widths: 1000, 10, 10
 
    * - - Contact Map
-     - `Script <examples/rst/script_plot_map.html>`_
-     - `Python <examples/rst/python_plot_map.html>`_
+     - :raw-html:`<a href="examples/rst/script_plot_map.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_plot_map.html" class="btn btn-default btn-sm">Python</a>`
+
    * - - Contact Map Chord Diagram
-     - `Script <examples/rst/script_plot_chord.html>`_
-     - `Python <examples/rst/python_plot_chord.html>`_
+     - :raw-html:`<a href="examples/rst/script_plot_chord.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_plot_chord.html" class="btn btn-default btn-sm">Python</a>`
+
    * - - Contact Density Plot
-     - `Script <examples/rst/script_plot_cdens.html>`_
-     - `Python <examples/rst/python_plot_cdens.html>`_
+     - :raw-html:`<a href="examples/rst/script_plot_cdens.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_plot_cdens.html" class="btn btn-default btn-sm">Python</a>`
+
    * - - Precision Evaluation
-     - `Script <examples/rst/script_plot_peval.html>`_
-     - `Python <examples/rst/python_plot_peval.html>`_
+     - :raw-html:`<a href="examples/rst/script_plot_peval.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_plot_peval.html" class="btn btn-default btn-sm">Python</a>`
+
    * - - Sequence Coverage
-     - `Script <examples/rst/script_plot_scov.html>`_
-     - `Python <examples/rst/python_plot_scov.html>`_
+     - :raw-html:`<a href="examples/rst/script_plot_scov.html" class="btn btn-primary btn-sm">Script</a>`
+     - :raw-html:`<a href="examples/rst/python_plot_scov.html" class="btn btn-default btn-sm">Python</a>`
