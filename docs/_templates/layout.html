@@ -22,15 +22,15 @@
 
 {%- block footer %}
 <footer class="footer">
-  <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
-      {% if theme_source_link_position == "footer" %}
-        <br/>
-        {% include "sourcelink.html" %}
-      {% endif %}
-    </p>
-
+    <br/>
+    <div class="container">
+      <p class="pull-right">
+          <a href="#">Back to top</a>
+          {% if theme_source_link_position == "footer" %}
+          <br/>
+          {% include "sourcelink.html" %}
+          {% endif %}
+      </p>
       <div style="padding: 10px 0px">
           <div style="width:50%; float:left">
             {%- if show_copyright %}
@@ -47,5 +47,8 @@
             {%- endif %}
           </div>
       </div>
+    </div>
+    <br/>
+    <br/>
 </footer>
 {%- endblock %}

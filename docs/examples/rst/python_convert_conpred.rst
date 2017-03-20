@@ -5,7 +5,7 @@ File Format Conversion
 In order to convert files in ConKit, we need to use the ConKit I/O framework.
 
 .. note::
-   ConKit I/O framework consists of three main functions that handle the relevant parsers: :func:`read() <conkit.io.read>`, :func:`write() <conkit.io.write>` and :func:`convert() <conkit.io.convert>. The latter effectively uses the former two but handles everything in one step.
+   ConKit I/O framework consists of three main functions that handle the relevant parsers: :func:`read() <conkit.io.read>`, :func:`write() <conkit.io.write>` and :func:`convert() <conkit.io.convert>`. The latter effectively uses the former two but handles everything in one step.
 
 **1. Files can be read in ConKit's internal hierarchies using simple Python code.**
 
