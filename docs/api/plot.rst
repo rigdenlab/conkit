@@ -1,4 +1,4 @@
-Core package
+Plot package
 ============
 
 .. automodule:: conkit.plot
