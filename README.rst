@@ -32,6 +32,10 @@ This project is a result of the continuous struggle using residue-residue contac
    :target: https://landscape.io/github/rigdenlab/conkit/master
    :alt: Code Health
 
+.. image:: https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtx148-blue.svg
+   :target: https://doi.org/10.1093/bioinformatics/btx148
+   :alt: DOI Status
+
 
 Key Features
 ++++++++++++
