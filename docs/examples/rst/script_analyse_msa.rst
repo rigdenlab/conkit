@@ -1,3 +1,4 @@
+.. _script_analyse_msa:
 
 Multiple Sequence Alignment Analysis
 ------------------------------------

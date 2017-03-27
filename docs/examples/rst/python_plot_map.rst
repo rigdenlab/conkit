@@ -1,3 +1,4 @@
+.. _python_plot_map:
 
 Contact Map Plotting
 --------------------

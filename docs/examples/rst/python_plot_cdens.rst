@@ -1,3 +1,4 @@
+.. _python_plot_cdens:
 
 Contact Density Plotting
 ------------------------

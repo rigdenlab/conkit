@@ -1,3 +1,4 @@
+.. _python_convert_msa:
 
 File Format Conversion
 ----------------------

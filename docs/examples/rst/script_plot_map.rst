@@ -1,5 +1,4 @@
-.. _example_plotting_a_map:
-
+.. _script_plot_map:
 
 Contact Map Plotting
 --------------------

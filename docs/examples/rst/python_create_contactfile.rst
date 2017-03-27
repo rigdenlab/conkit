@@ -1,3 +1,4 @@
+.. _python_create_contactfile:
 
 ConKit ContactFile Hierarchy Construction
 -----------------------------------------

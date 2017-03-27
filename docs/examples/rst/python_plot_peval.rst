@@ -1,3 +1,4 @@
+.. _python_plot_peval:
 
 Sequence Coverage Plotting
 --------------------------

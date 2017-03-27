@@ -1,3 +1,4 @@
+.. _script_plot_peval:
 
 Precision Evaluation Plotting
 -----------------------------

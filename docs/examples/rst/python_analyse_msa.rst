@@ -1,3 +1,4 @@
+.. _python_analyse_msa:
 
 Multiple Sequence Alignment Analysis
 ------------------------------------

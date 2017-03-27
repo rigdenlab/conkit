@@ -1,3 +1,4 @@
+.. _python_plot_chord:
 
 Contact Map Chord Diagram Plotting
 ----------------------------------

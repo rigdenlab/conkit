@@ -72,6 +72,22 @@ visibility: hidden;
 .tyr {color: #2B3D26;}
 .unk {color: #000000;}
 
+.btn-example a:link {
+   color: #ffffff;
+
+}
+.btn-example a:visited {
+   color: #ffffff;
+}
+.btn-example a:hover {
+   color: #ffffff;
+   text-decoration: none;
+}
+.btn-example a:active {
+   color: #ffffff;
+   text-decoration: none;
+}
+
 
 .btn-default {
 background-image: -webkit-linear-gradient(#6d7070, #3a3c3d 50%, #3a3c3d);
