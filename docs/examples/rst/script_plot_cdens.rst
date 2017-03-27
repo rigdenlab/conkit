@@ -1,3 +1,4 @@
+.. _script_plot_cdens:
 
 Contact Density Plotting
 ------------------------

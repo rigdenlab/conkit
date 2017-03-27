@@ -1,3 +1,4 @@
+.. _python_analyse_conpred:
 
 Contact Prediction Analysis
 ---------------------------
@@ -15,7 +16,7 @@ Note, we've chosen the top contact map immediately because this file only contai
 
 2. **Plotting a contact map**
 
-Similar to the example on plotting a contact map, this is something you will almost certainly do every single time you obtain a contact prediction. Head over to the :ref:`example_plotting_a_map` in case you haven't looked at it.
+Similar to the example on plotting a contact map, this is something you will almost certainly do every single time you obtain a contact prediction. Head over to the :ref:`contact map plotting example <python_plot_map>` in case you haven't looked at it.
 
 Let's assume we have created the following contact map plot
 

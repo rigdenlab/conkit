@@ -1,3 +1,4 @@
+.. _script_convert_msa:
 
 File Format Conversion
 ----------------------

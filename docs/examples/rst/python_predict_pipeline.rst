@@ -1,3 +1,4 @@
+.. _python_predict_pipeline:
 
 Contact Prediction
 ------------------

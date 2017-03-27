@@ -1,3 +1,4 @@
+.. _script_convert_conpred:
 
 File Format Conversion
 ----------------------

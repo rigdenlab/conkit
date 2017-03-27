@@ -1,3 +1,4 @@
+.. _script_predict_pipeline:
 
 Contact Prediction
 ------------------
