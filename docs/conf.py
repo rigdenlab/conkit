@@ -133,9 +133,6 @@ todo_include_todos = True
 # If true, create autosummary automatically
 autosummary_generate = True
 autodoc_docstring_signature = True
-autodoc_mock_imports = [
-    'Bio', 'matplotlib', 'numpy', 'scipy', 'scikit-learn',
-]
 
 # -- Options for HTML output ----------------------------------------------
 
