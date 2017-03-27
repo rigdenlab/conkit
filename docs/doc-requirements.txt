@@ -1,5 +1,4 @@
 # Required for documentation
 sphinx>=1.5.1
-ipython
 numpydoc
 sphinx_bootstrap_theme
