@@ -432,6 +432,12 @@ class ContactMap(Entity):
         ValueError
            Undefined bandwidth method
 
+        Notes
+        -----
+        This implementation is a direct translation of the Perl code published by [#]_.
+
+        .. [#] Sadowski, M.I. (2013). Prediction of protein domain boundaries from inverse covariances.
+
         """
         if not SKLEARN:
             raise RuntimeError('Cannot find SciKit package')
@@ -671,24 +677,10 @@ class ContactMap(Entity):
 
         """
         contact_map = self._inplace(inplace)
-
-        for contact in reversed(contact_map):
+        for contact in contact_map.copy():
             if abs(contact.res1_seq - contact.res2_seq) < min_distance:
                 contact_map.remove(contact.id)
-
         return contact_map
-
-    def plot_map(self, *args, **kwargs):
-        """Produce a 2D contact map plot
-
-        Warnings
-        --------
-        This function has been deprecated. Please use :obj:`conkit.plot.ContactMapFigure` instead.
-
-        """
-        warnings.warn('This function has been deprecated. Please use conkit.plot.ContactMapFigure() instead.')
-        from conkit.plot import ContactMapFigure
-        ContactMapFigure(self, *args, **kwargs)
 
     def rescale(self, inplace=False):
         """Rescale the raw scores in :obj:`ContactMap <conkit.core.ContactMap>`
