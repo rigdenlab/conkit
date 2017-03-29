@@ -6,7 +6,7 @@
 - Environment (if applicable): <ADD HERE>
 <!-- Such as CCP4, Anaconda, CCP-EM, etc. -->
 
-### Example
+## Example
 
 A minimal example to reproduce the error:
 ```
