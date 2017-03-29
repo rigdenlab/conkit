@@ -119,11 +119,11 @@ boundaries better.
                                                         description=description,
                                                         formatter_class=argparse.RawDescriptionHelpFormatter)
     _add_default_args(contact_density_subparser)
-    contact_density_subparser.add_argument('-b', dest='bw_method', default='bowman',
-                                           help='The bandwidth estimation method [default: bowman]')
+    contact_density_subparser.add_argument('-b', dest='bw_method', default='amise',
+                                           help='The bandwidth estimation method [default: amise]')
     contact_density_subparser.add_argument('-d', dest='dtn', default=5, type=int,
                                            help='Minimum sequence separation [default: 5]')
-    contact_density_subparser.add_argument('-f', dest='dfactor', default=10.0, type=float,
+    contact_density_subparser.add_argument('-f', dest='dfactor', default=5.0, type=float,
                                            help='number of contacts to include relative to '
                                                 'sequence length [default: 10.0]')
     contact_density_subparser.add_argument('seqfile',
@@ -305,6 +305,7 @@ def main():
     elif args.which == 'contact_density':
         logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
         logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
+        logging.info('Bandwidth estimator: {0}'.format(args.bw_method))
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]

@@ -23,6 +23,90 @@ except ImportError:
     SKLEARN = False
 
 
+class _BandwidthEstimators(object):
+    """A collection of bandwidth estimators for Kernel Density Estimation"""
+    @staticmethod
+    def _curvature(p, x, w):
+        z = (x - p) / w
+        y = (1 * (z ** 2 - 1.0) * numpy.exp(-0.5 * z * z) / (w * numpy.sqrt(2. * numpy.pi)) / w ** 2).sum()
+        return y / p.shape[0]
+
+    @staticmethod
+    def _optimal_bandwidth_equation(p, default_bw):
+        alpha = 1. / (2. * numpy.sqrt(numpy.pi))
+        sigma = 1.0
+        n = p.shape[0]
+        q = _BandwidthEstimators._stiffness_integral(p, default_bw)
+        return default_bw - ((n * q * sigma ** 4) / alpha) ** (-1.0 / (p.shape[1] + 4))
+
+    @staticmethod
+    def _stiffness_integral(p, default_bw, eps=1e-4):
+
+        def extended_range(mn, mx, bw, ext=3):
+            return mn - ext * bw, mx + ext * bw
+
+        mn, mx = extended_range(p.min(), p.max(), default_bw, ext=3)
+
+        n = 1
+        dx = (mx - mn) / n
+
+        yy = 0.5 * dx * (_BandwidthEstimators._curvature(p, mn, default_bw) ** 2 +
+                         _BandwidthEstimators._curvature(p, mx, default_bw) ** 2)
+
+        # The trapezoidal rule guarantees a relative error of better than eps
+        # for some number of steps less than maxn.
+        maxn = (mx - mn) / numpy.sqrt(eps)
+        # Cap the total computation spent
+        maxn = 2048 if maxn > 2048 else maxn
+        n = 2
+        while n <= maxn:
+            dx /= 2.
+            y = 0
+            for i in numpy.arange(1, n, 2):
+                y += _BandwidthEstimators._curvature(p, mn + i * dx, default_bw) ** 2
+            yy = 0.5 * yy + y * dx
+            if n > 8 and abs(y * dx - 0.5 * yy) < eps * yy:
+                break
+            n *= 2
+        return yy
+
+    @staticmethod
+    def amise(p, niterations=25, eps=1e-3):
+        x0 = _BandwidthEstimators.bowman(p)
+        y0 = _BandwidthEstimators._optimal_bandwidth_equation(p, x0)
+
+        x = 0.8 * x0
+        y = _BandwidthEstimators._optimal_bandwidth_equation(p, x)
+
+        for _ in numpy.arange(niterations):
+            x -= y * (x0 - x) / (y0 - y)
+            y = _BandwidthEstimators._optimal_bandwidth_equation(p, x)
+            if abs(y) < (eps * y0):
+                break
+        return x
+
+    @staticmethod
+    def bowman(p):
+        sigma = numpy.sqrt((p ** 2).sum() / p.shape[0] - (p.sum() / p.shape[0]) ** 2)
+        return sigma * ((((p.shape[1] + 2) * p.shape[0]) / 4.) ** (-1. / (p.shape[1] + 4)))
+
+    @staticmethod
+    def scott(p):
+        sigma = numpy.minimum(
+            numpy.std(p, axis=0, ddof=1),
+            (numpy.percentile(p, 75) - numpy.percentile(p, 25)) / 1.349
+        ).astype(numpy.float64)
+        return 1.059 * sigma * p.shape[0] ** (-1. / (p.shape[1] + 4))
+
+    @staticmethod
+    def silverman(p):
+        sigma = numpy.minimum(
+            numpy.std(p, axis=0, ddof=1),
+            (numpy.percentile(p, 75) - numpy.percentile(p, 25)) / 1.349
+        ).astype(numpy.float64)
+        return 0.9 * sigma * (p.shape[0] * (p.shape[1] + 2) / 4.) ** (-1. / (p.shape[1] + 4))
+
+
 class _Residue(object):
     """A basic class representing a residue"""
     __slots__ = ('res_seq', 'res_altseq', 'res_name', 'res_chain')
@@ -383,7 +467,7 @@ class ContactMap(Entity):
             return 1.0
         return float(intersection) / union
 
-    def calculate_kernel_density(self, bw_method="bowman"):
+    def calculate_kernel_density(self, bw_method="amise"):
         """Calculate the contact density in the contact map using Gaussian kernels
 
         Various algorithms can be used to estimate the bandwidth. To calculate the
@@ -392,25 +476,29 @@ class ContactMap(Entity):
         value of :math:`\\sigma` is the smaller of the standard deviation of ``X`` or
         the normalized interquartile range.
 
-        1. Bowman & Azzalini [#]_ implementation
+        1. Asymptotic Mean Integrated Squared Error (AMISE)
+
+           This particular choice of bandwidth recovers all the important features whilst maintaining smoothness.
+
+
+        2. Bowman & Azzalini [#]_ implementation
 
         .. math::
 
            \\sqrt{\\frac{\\sum{X}^2}{n}-(\\frac{\\sum{X}}{n})^2}*(\\frac{(d+2)*n}{4})^\\frac{-1}{d+4}
 
-        2. Scott's [#]_ implementation
+        3. Scott's [#]_ implementation
 
         .. math::
 
            1.059*\\sigma*n^\\frac{-1}{d+4}
-
-        3. Silverman's [#]_ implementation
+        4. Silverman's [#]_ implementation
 
         .. math::
 
            0.9*\\sigma*(n*\\frac{d+2}{4})^\\frac{-1}{d+4}
 
-
+        .. [#] Sadowski, M.I. (2013). Prediction of protein domain boundaries from inverse covariances.
         .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
         .. [#] Scott, D.W. (1992). Multivariate Density Estimation: Theory, Practice, and Visualization.
         .. [#] Silverman, B.W. (1986). Density Estimation for Statistics and Data Analysis.
@@ -418,7 +506,7 @@ class ContactMap(Entity):
         Parameters
         ----------
         bw_method : str, optional
-           The bandwidth estimator to use [default: bowman]
+           The bandwidth estimator to use [default: amise_sekant]
 
         Returns
         -------
@@ -432,12 +520,6 @@ class ContactMap(Entity):
         ValueError
            Undefined bandwidth method
 
-        Notes
-        -----
-        This implementation is a direct translation of the Perl code published by [#]_.
-
-        .. [#] Sadowski, M.I. (2013). Prediction of protein domain boundaries from inverse covariances.
-
         """
         if not SKLEARN:
             raise RuntimeError('Cannot find SciKit package')
@@ -447,25 +529,18 @@ class ContactMap(Entity):
         x_fit = numpy.linspace(x.min(), x.max() + 1, x.max() - x.min() + 1)[:, numpy.newaxis]
 
         # Obtain the bandwidth as defined by user method
-        if bw_method == "bowman":
-            sigma = numpy.sqrt((x ** 2).sum() / x.shape[0] - (x.sum() / x.shape[0]) ** 2)
-            bandwidth = sigma * ((((x.shape[1] + 2) * x.shape[0]) / 4.) ** (-1. / (x.shape[1] + 4)))
+        if bw_method == "amise":
+            bandwidth = _BandwidthEstimators.amise(x)
+        elif bw_method == "bowman":
+            bandwidth = _BandwidthEstimators.bowman(x)
         elif bw_method == "scott":
-            sigma = numpy.minimum(
-                numpy.std(x, axis=0, ddof=1),
-                (numpy.percentile(x, 75) - numpy.percentile(x, 25)) / 1.349
-            ).astype(numpy.float64)
-            bandwidth = 1.059 * sigma * x.shape[0] ** (-1. / (x.shape[1] + 4))
+            bandwidth = _BandwidthEstimators.scott(x)
         elif bw_method == "silverman":
-            sigma = numpy.minimum(
-                numpy.std(x, axis=0, ddof=1),
-                (numpy.percentile(x, 75) - numpy.percentile(x, 25)) / 1.349
-            ).astype(numpy.float64)
-            bandwidth = 0.9 * sigma * (x.shape[0] * (x.shape[1] + 2) / 4.) ** (-1. / (x.shape[1] + 4))
+            bandwidth = _BandwidthEstimators.silverman(x)
         else:
             msg = "Undefined bandwidth method: {0}".format(bw_method)
             raise ValueError(msg)
-
+        print(bandwidth)
         # Estimate the Kernel Density using original data and fit random sample
         kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(x)
         return numpy.exp(kde.score_samples(x_fit)).tolist()
