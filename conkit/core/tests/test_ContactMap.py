@@ -224,7 +224,7 @@ class Test(unittest.TestCase):
             contact_map1.add(c)
         density = contact_map1.calculate_kernel_density()
         self.assertEqual(
-            [0.16667107733143438, 0.31043404719558043, 0.2164399375102372, 0.03819316377418961], density)
+            [0.16474084813765252, 0.261112863222513, 0.19866887264998387, 0.06773394884313075], density)
 
     def test_calculate_kernel_density_2(self):
         contact_map1 = ContactMap('foo')
@@ -232,7 +232,7 @@ class Test(unittest.TestCase):
             contact_map1.add(c)
         density = contact_map1.calculate_kernel_density()
         self.assertEqual(
-            [0.14368199694070077, 0.32329654171162514, 0.23892418165173065, 0.02903560560801715], density)
+            [0.14936186609839505, 0.2861706643122889, 0.22273876277011645, 0.05660346699219792], density)
 
     def test_find_1(self):
         contact_map1 = ContactMap('1')
