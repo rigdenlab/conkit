@@ -20,10 +20,11 @@ from conkit.io.PdbIO import MmCifParser
 from conkit.io.PlmDCAIO import PlmDCAParser
 from conkit.io.PsicovIO import PsicovParser
 
-from conkit.io.A3mIO import A3mIO
-from conkit.io.FastaIO import FastaIO
-from conkit.io.JonesIO import JonesIO
-from conkit.io.StockholmIO import StockholmIO
+from conkit.io.A3mIO import A3mParser
+from conkit.io.FastaIO import FastaParser
+from conkit.io.JonesIO import JonesParser
+from conkit.io.StockholmIO import StockholmParser
+
 from conkit.io._iotools import open_f_handle
 
 
@@ -49,11 +50,11 @@ CONTACT_FILE_PARSERS = {
 }
 
 SEQUENCE_FILE_PARSERS = {
-    'a3m': A3mIO,
-    'a3m-inserts': A3mIO,
-    'fasta': FastaIO,
-    'jones': JonesIO,
-    'stockholm': StockholmIO,
+    'a3m': A3mParser,
+    'a3m-inserts': A3mParser,
+    'fasta': FastaParser,
+    'jones': JonesParser,
+    'stockholm': StockholmParser,
 }
 
 

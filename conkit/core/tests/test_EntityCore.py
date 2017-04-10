@@ -3,7 +3,7 @@
 __author__ = "Felix Simkovic"
 __date__ = "12 Aug 2016"
 
-from conkit.core.Entity import Entity
+from conkit.core.EntityCore import Entity
 
 import unittest
 

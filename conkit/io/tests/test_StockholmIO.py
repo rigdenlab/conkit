@@ -3,7 +3,7 @@
 __author__ = "Felix Simkovic"
 __date__ = "12 Sep 2016"
 
-from conkit.io.StockholmIO import StockholmIO
+from conkit.io.StockholmIO import StockholmParser
 from conkit.io._iotools import create_tmp_f
 
 import os
@@ -52,7 +52,7 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
 //
 """
         f_name = create_tmp_f(content=msa)
-        parser = StockholmIO()
+        parser = StockholmParser()
         with open(f_name, 'r') as f_in:
             hierarchy = parser.read(f_in)
         for i, sequence_entry in enumerate(hierarchy):
@@ -170,7 +170,7 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
             "",
         ]
         msa = os.linesep.join(msa)
-        parser = StockholmIO()
+        parser = StockholmParser()
         f_name_in = create_tmp_f(content=msa)
         f_name_out = create_tmp_f()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:

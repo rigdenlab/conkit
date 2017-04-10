@@ -1,7 +1,7 @@
-conkit.core.ContactFile module
+conkit.core.ContactCore module
 ==============================
 
-.. automodule:: conkit.core.ContactFile
+.. automodule:: conkit.core.ContactCore
     :members:
     :undoc-members:
     :show-inheritance:

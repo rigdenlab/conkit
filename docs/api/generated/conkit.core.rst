@@ -11,10 +11,10 @@ Submodules
 
 .. toctree::
 
-   conkit.core.Contact
-   conkit.core.ContactFile
-   conkit.core.ContactMap
-   conkit.core.Entity
-   conkit.core.Sequence
-   conkit.core.SequenceFile
+   conkit.core.ContactCore
+   conkit.core.ContactFileCore
+   conkit.core.ContactMapCore
+   conkit.core.EntityCore
+   conkit.core.SequenceCore
+   conkit.core.SequenceFileCore
 

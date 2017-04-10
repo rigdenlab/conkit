@@ -6,7 +6,7 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "27 Sep 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
 import collections
 import itertools
@@ -16,10 +16,10 @@ from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 
 from conkit import constants
-from conkit.core import Contact
-from conkit.core import ContactFile
-from conkit.core import ContactMap
-from conkit.core import Sequence
+from conkit.core.ContactCore import Contact
+from conkit.core.ContactFileCore import ContactFile
+from conkit.core.ContactMapCore import ContactMap
+from conkit.core.SequenceCore import Sequence
 from conkit.io._ParserIO import _ContactFileParser
 
 

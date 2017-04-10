@@ -4,10 +4,10 @@ Parser module specific to Stockholm sequence files
 
 __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
-from conkit.core import Sequence
-from conkit.core import SequenceFile
+from conkit.core.SequenceCore import Sequence
+from conkit.core.SequenceFileCore import SequenceFile
 from conkit.io._ParserIO import _SequenceFileParser
 
 import os
@@ -21,11 +21,11 @@ SEQ_RECORD = re.compile(r'^(\S+)\s+([A-Z0-9~-]+)$')
 END_RECORD = re.compile(r'^//$')
 
 
-class StockholmIO(_SequenceFileParser):
+class StockholmParser(_SequenceFileParser):
     """Parser class for Stockholm sequence files
     """
     def __init__(self):
-        super(StockholmIO, self).__init__()
+        super(StockholmParser, self).__init__()
 
     def read(self, f_handle, f_id='stockholm'):
         """Read a sequence file

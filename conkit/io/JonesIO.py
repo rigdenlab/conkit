@@ -4,16 +4,16 @@ Parser module specific to the "Jones" sequence file format
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Sep 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
-from conkit.core import Sequence
-from conkit.core import SequenceFile
+from conkit.core.SequenceCore import Sequence
+from conkit.core.SequenceFileCore import SequenceFile
 from conkit.io._ParserIO import _SequenceFileParser
 
 import os
 
 
-class JonesIO(_SequenceFileParser):
+class JonesParser(_SequenceFileParser):
     """Parser class for Jones sequence files
 
     This format is a "new" definition of sequence-only records.
@@ -26,7 +26,7 @@ class JonesIO(_SequenceFileParser):
 
     """
     def __init__(self):
-        super(JonesIO, self).__init__()
+        super(JonesParser, self).__init__()
 
     def read(self, f_handle, f_id='jones'):
         """Read a sequence file

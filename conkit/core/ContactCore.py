@@ -8,7 +8,7 @@ __date__ = "03 Aug 2016"
 __version__ = 0.1
 
 from conkit import constants
-from conkit.core.Entity import Entity
+from conkit.core.EntityCore import Entity
 
 
 class Contact(Entity):

@@ -3,7 +3,7 @@
 __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
 
-from conkit.io.FastaIO import FastaIO
+from conkit.io.FastaIO import FastaParser
 from conkit.io._iotools import create_tmp_f
 
 import os
@@ -19,7 +19,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
 SSEHP
 """
         f_name = create_tmp_f(content=seq)
-        parser = FastaIO()
+        parser = FastaParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in)
         sequence_entry = sequence_file.top_sequence
@@ -35,7 +35,7 @@ SSEHP
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 """
         f_name = create_tmp_f(content=seq)
-        parser = FastaIO()
+        parser = FastaParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in)
         sequence_entry = sequence_file.top_sequence
@@ -58,7 +58,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
-        parser = FastaIO()
+        parser = FastaParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in)
         self.assertEqual(['foo', 'bar'], sequence_file.remark)
@@ -85,7 +85,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         seq = os.linesep.join(seq)
         f_name_in = create_tmp_f(content=seq)
         f_name_out = create_tmp_f()
-        parser = FastaIO()
+        parser = FastaParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
@@ -105,7 +105,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         seq = os.linesep.join(seq)
         f_name_in = create_tmp_f(content=seq)
         f_name_out = create_tmp_f()
-        parser = FastaIO()
+        parser = FastaParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
@@ -130,7 +130,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         msa = os.linesep.join(msa)
         f_name_in = create_tmp_f(content=msa)
         f_name_out = create_tmp_f()
-        parser = FastaIO()
+        parser = FastaParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)

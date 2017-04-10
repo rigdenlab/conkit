@@ -3,9 +3,9 @@
 __author__ = "Felix Simkovic"
 __date__ = "07 Sep 2016"
 
-from conkit.core.Sequence import Sequence
-from conkit.core.SequenceFile import SCIPY
-from conkit.core.SequenceFile import SequenceFile
+from conkit.core.SequenceCore import Sequence
+from conkit.core.SequenceFileCore import SCIPY
+from conkit.core.SequenceFileCore import SequenceFile
 
 import unittest
 

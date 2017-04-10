@@ -9,8 +9,8 @@ __credits__ = "Jens Thomas"
 __date__ = "03 Aug 2016"
 __version__ = 0.1
 
-from conkit.core.Entity import Entity
-from conkit.core.Sequence import Sequence
+from conkit.core.EntityCore import Entity
+from conkit.core.SequenceCore import Sequence
 
 import collections
 import numpy
@@ -25,6 +25,60 @@ except ImportError:
 
 class _BandwidthEstimators(object):
     """A collection of bandwidth estimators for Kernel Density Estimation"""
+    @staticmethod
+    def amise(p, niterations=25, eps=1e-3):
+
+        def curvature(p, x, w):
+            z = (x - p) / w
+            y = (1 * (z ** 2 - 1.0) * numpy.exp(-0.5 * z * z) / (w * numpy.sqrt(2. * numpy.pi)) / w ** 2).sum()
+            return y / p.shape[0]
+
+        def extended_range(mn, mx, bw, ext=3):
+            return mn - ext * bw, mx + ext * bw
+
+        def optimal_bandwidth_equation(p, default_bw):
+            alpha = 1. / (2. * numpy.sqrt(numpy.pi))
+            sigma = 1.0
+            n = p.shape[0]
+            q = stiffness_integral(p, default_bw)
+            return default_bw - ((n * q * sigma ** 4) / alpha) ** (-1.0 / (p.shape[1] + 4))
+
+        def stiffness_integral(p, default_bw, eps=1e-4):
+            mn, mx = extended_range(p.min(), p.max(), default_bw, ext=3)
+            n = 1
+            dx = (mx - mn) / n
+            yy = 0.5 * dx * (curvature(p, mn, default_bw) ** 2 +
+                             curvature(p, mx, default_bw) ** 2)
+            # The trapezoidal rule guarantees a relative error of better than eps
+            # for some number of steps less than maxn.
+            maxn = (mx - mn) / numpy.sqrt(eps)
+            # Cap the total computation spent
+            maxn = 2048 if maxn > 2048 else maxn
+            n = 2
+            while n <= maxn:
+                dx /= 2.
+                y = 0
+                for i in numpy.arange(1, n, 2):
+                    y += curvature(p, mn + i * dx, default_bw) ** 2
+                yy = 0.5 * yy + y * dx
+                if n > 8 and abs(y * dx - 0.5 * yy) < eps * yy:
+                    break
+                n *= 2
+            return yy
+
+        x0 = _BandwidthEstimators.bowman(p)
+        y0 = optimal_bandwidth_equation(p, x0)
+
+        x = 0.8 * x0
+        y = optimal_bandwidth_equation(p, x)
+
+        for _ in numpy.arange(niterations):
+            x -= y * (x0 - x) / (y0 - y)
+            y = optimal_bandwidth_equation(p, x)
+            if abs(y) < (eps * y0):
+                break
+        return x
+
     @staticmethod
     def _curvature(p, x, w):
         z = (x - p) / w

@@ -1,7 +1,7 @@
-conkit.core.SequenceFile module
+conkit.core.SequenceCore module
 ===============================
 
-.. automodule:: conkit.core.SequenceFile
+.. automodule:: conkit.core.SequenceCore
     :members:
     :undoc-members:
     :show-inheritance:

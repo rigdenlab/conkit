@@ -1,7 +1,7 @@
-conkit.core.ContactMap module
+conkit.core.EntityCore module
 =============================
 
-.. automodule:: conkit.core.ContactMap
+.. automodule:: conkit.core.EntityCore
     :members:
     :undoc-members:
     :show-inheritance:

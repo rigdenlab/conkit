@@ -3,7 +3,7 @@
 __author__ = "Felix Simkovic"
 __date__ = "11 Sep 2016"
 
-from conkit.io.A3mIO import A3mIO
+from conkit.io.A3mIO import A3mParser
 from conkit.io._iotools import create_tmp_f
 
 import os
@@ -35,7 +35,7 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 ---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL
 """
         f_name = create_tmp_f(content=msa)
-        parser = A3mIO()
+        parser = A3mParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in, remove_insert=True)     # <------------
         for i, sequence_entry in enumerate(sequence_file):
@@ -114,7 +114,7 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 ---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL
 """
         f_name = create_tmp_f(content=msa)
-        parser = A3mIO()
+        parser = A3mParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in, remove_insert=False)     # <------------
         for i, sequence_entry in enumerate(sequence_file):
@@ -183,7 +183,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 """
         f_name = create_tmp_f(content=msa)
-        parser = A3mIO()
+        parser = A3mParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in, remove_insert=False)  # <------------
         for i, sequence_entry in enumerate(sequence_file):
@@ -238,7 +238,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 
         f_name_in = create_tmp_f(content=os.linesep.join(msa))
         f_name_out = create_tmp_f()
-        parser = A3mIO()
+        parser = A3mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in, remove_insert=True)
             parser.write(f_out, sequence_file)
@@ -298,7 +298,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 
         f_name_in = create_tmp_f(content=os.linesep.join(msa))
         f_name_out = create_tmp_f()
-        parser = A3mIO()
+        parser = A3mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in, remove_insert=False)
             parser.write(f_out, sequence_file)

@@ -9,10 +9,10 @@ Stefan Seemayer and his A3MIO project [https://github.com/sseemayer/BioPython-A3
 __author__ = "Felix Simkovic"
 __credits__ = "Stefan Seemayer"
 __date__ = "11 Sep 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
-from conkit.core import Sequence
-from conkit.core import SequenceFile
+from conkit.core.SequenceCore import Sequence
+from conkit.core.SequenceFileCore import SequenceFile
 from conkit.io._ParserIO import _SequenceFileParser
 
 import numpy
@@ -20,12 +20,12 @@ import os
 import re
 
 
-class A3mIO(_SequenceFileParser):
+class A3mParser(_SequenceFileParser):
     """Parser class for A3M sequence files
 
     """
     def __init__(self):
-        super(A3mIO, self).__init__()
+        super(A3mParser, self).__init__()
 
     def read(self, f_handle, f_id='a3m', remove_insert=True):
         """Read a sequence file

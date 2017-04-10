@@ -4,20 +4,20 @@ Parser module specific to FASTA sequence files
 
 __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
-from conkit.core import Sequence
-from conkit.core import SequenceFile
+from conkit.core.SequenceCore import Sequence
+from conkit.core.SequenceFileCore import SequenceFile
 from conkit.io._ParserIO import _SequenceFileParser
 
 import os
 
 
-class FastaIO(_SequenceFileParser):
+class FastaParser(_SequenceFileParser):
     """Parser class for FASTA sequence files
     """
     def __init__(self):
-        super(FastaIO, self).__init__()
+        super(FastaParser, self).__init__()
 
     def read(self, f_handle, f_id='fasta'):
         """Read a sequence file

@@ -8,7 +8,7 @@ __version__ = 0.1
 
 from Bio import pairwise2
 from conkit.constants import ONE_TO_THREE
-from conkit.core.Entity import Entity
+from conkit.core.EntityCore import Entity
 
 
 class Sequence(Entity):

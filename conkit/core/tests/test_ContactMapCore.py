@@ -3,11 +3,11 @@
 __author__ = "Felix Simkovic"
 __date__ = "12 Aug 2016"
 
-from conkit.core.Contact import Contact
-from conkit.core.ContactMap import ContactMap
-from conkit.core.ContactMap import _Gap
-from conkit.core.ContactMap import _Residue
-from conkit.core.Sequence import Sequence
+from conkit.core.ContactCore import Contact
+from conkit.core.ContactMapCore import ContactMap
+from conkit.core.ContactMapCore import _Gap
+from conkit.core.ContactMapCore import _Residue
+from conkit.core.SequenceCore import Sequence
 
 import unittest
 

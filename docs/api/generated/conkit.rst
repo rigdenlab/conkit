@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
 
     conkit.applications
+    conkit.command_line
     conkit.core
     conkit.io
     conkit.plot

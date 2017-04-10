@@ -3,7 +3,7 @@
 __author__ = "Felix Simkovic"
 __date__ = "13 Sep 2016"
 
-from conkit.io.JonesIO import JonesIO
+from conkit.io.JonesIO import JonesParser
 from conkit.io._iotools import create_tmp_f
 
 import os
@@ -19,7 +19,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
-        parser = JonesIO()
+        parser = JonesParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
@@ -48,7 +48,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
-        parser = JonesIO()
+        parser = JonesParser()
         with open(f_name, 'r') as f_in:
             with self.assertRaises(ValueError):
                 parser.read(f_in)
@@ -65,7 +65,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
         msa = os.linesep.join(msa)
         f_name_in = create_tmp_f(content=msa)
         f_name_out = create_tmp_f()
-        parser = JonesIO()
+        parser = JonesParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)

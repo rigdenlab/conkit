@@ -3,8 +3,8 @@
 __author__ = "Felix Simkovic"
 __date__ = "12 Aug 2016"
 
-from conkit.core.ContactFile import ContactFile
-from conkit.core.ContactMap import ContactMap
+from conkit.core.ContactFileCore import ContactFile
+from conkit.core.ContactMapCore import ContactMap
 
 import unittest
         

@@ -12,7 +12,7 @@ __version__ = 0.1
 import matplotlib.pyplot
 import numpy
 
-from conkit.core.ContactMap import _Gap
+from conkit.core.ContactMapCore import _Gap
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
 

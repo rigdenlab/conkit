@@ -9,7 +9,7 @@ __author__ = "Felix Simkovic"
 __date__ = "07 Sep 2016"
 __version__ = 0.1
 
-from conkit.core.Entity import Entity
+from conkit.core.EntityCore import Entity
 
 import numpy
 try:
