@@ -1,7 +1,7 @@
 Command line package
 ====================
 
-.. automodule:: conkit.core
+.. automodule:: conkit.command_line
    :members:
    :undoc-members:
    :show-inheritance:
