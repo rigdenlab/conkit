@@ -478,7 +478,8 @@ class ContactMap(Entity):
 
         1. Asymptotic Mean Integrated Squared Error (AMISE)
 
-           This particular choice of bandwidth recovers all the important features whilst maintaining smoothness.
+           This particular choice of bandwidth recovers all the important features whilst maintaining smoothness. 
+           It is a direct implementation of the method used by [#]_.
 
 
         2. Bowman & Azzalini [#]_ implementation
