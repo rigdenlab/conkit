@@ -6,10 +6,10 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
-import matplotlib.pyplot
-import numpy
+import matplotlib.pyplot as plt
+import numpy as np
 
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
@@ -91,10 +91,10 @@ class SequenceCoverageFigure(Figure):
     def _draw(self):
         """Draw the actual plot"""
 
-        residues = numpy.arange(1, self._hierarchy.top_sequence.seq_len + 1)
-        aa_counts = numpy.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseqs
+        residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
+        aa_counts = np.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseqs
 
-        fig, ax = matplotlib.pyplot.subplots()
+        fig, ax = plt.subplots()
 
         ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker='o', markersize=5, linestyle='-',
                 label='Amino acid count', zorder=1)
@@ -109,9 +109,9 @@ class SequenceCoverageFigure(Figure):
 
         # Prettify the plot
         ax.set_xlim(residues[0], residues[-1])
-        xticks = ax.get_xticks().astype(numpy.int64) + residues[0]
+        xticks = ax.get_xticks().astype(np.int64) + residues[0]
         # Remove any excess xticks
-        xticks = numpy.delete(xticks, [i for i, t in enumerate(xticks) if t > residues[-1]])
+        xticks = np.delete(xticks, [i for i, t in enumerate(xticks) if t > residues[-1]])
         ax.set_xticks(xticks)
         ax.set_xticklabels(xticks)
 

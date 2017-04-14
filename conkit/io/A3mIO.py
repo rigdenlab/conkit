@@ -11,11 +11,11 @@ __credits__ = "Stefan Seemayer"
 __date__ = "11 Sep 2016"
 __version__ = "0.1"
 
-from conkit.core.SequenceCore import Sequence
-from conkit.core.SequenceFileCore import SequenceFile
+from conkit.core import Sequence
+from conkit.core import SequenceFile
 from conkit.io._ParserIO import _SequenceFileParser
 
-import numpy
+import numpy as np
 import os
 import re
 
@@ -89,7 +89,7 @@ class A3mParser(_SequenceFileParser):
                 sequence_file.add(sequence_entry)
             except ValueError:
                 while True:
-                    new_id = sequence_entry.id + "_{0}".format(numpy.random.randint(0, 100000))
+                    new_id = sequence_entry.id + "_{0}".format(np.random.randint(0, 100000))
                     if new_id in sequence_file:
                         continue
                     else:

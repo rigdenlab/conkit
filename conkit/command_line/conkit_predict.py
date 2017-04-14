@@ -18,11 +18,14 @@ __date__ = "01 June 2016"
 __version__ = 0.1
 
 import argparse
-import conkit
 import logging
 import os
 import sys
 import time
+
+import conkit.applications
+import conkit.io
+import conkit.plot
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 

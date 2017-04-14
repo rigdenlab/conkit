@@ -2,17 +2,16 @@
 A module to produce a contact map plot
 """
 
-
 from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
-import matplotlib.pyplot
-import numpy
+import matplotlib.pyplot as plt
+import numpy as np
 
-from conkit.core.ContactMapCore import _Gap
+from conkit.core import _Gap
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
 
@@ -129,14 +128,14 @@ class ContactMapFigure(Figure):
     def _draw(self):
         """Draw the actual plot"""
 
-        fig, ax = matplotlib.pyplot.subplots()
+        fig, ax = plt.subplots()
 
         # Plot the other_ref contacts
         if self._reference:
             if self.altloc:
-                reference_data = numpy.asarray([(c.res1_altseq, c.res2_altseq) for c in self._reference])
+                reference_data = np.asarray([(c.res1_altseq, c.res2_altseq) for c in self._reference])
             else:
-                reference_data = numpy.asarray([(c.res1_seq, c.res2_seq) for c in self._reference])
+                reference_data = np.asarray([(c.res1_seq, c.res2_seq) for c in self._reference])
             reference_colors = [ColorDefinitions.STRUCTURAL for _ in range(len(reference_data))]
             ax.scatter(reference_data[:, 0], reference_data[:, 1], color=reference_colors,
                        s=10, marker='o', edgecolor='none', linewidths=0.0)
@@ -144,7 +143,7 @@ class ContactMapFigure(Figure):
                        s=10, marker='o', edgecolor='none', linewidths=0.0)
 
         # Plot the self contacts
-        self_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy
+        self_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy
                                    if not (c.res1_seq == _Gap._IDENTIFIER or c.res2_seq == _Gap._IDENTIFIER)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
         if self.use_conf:
@@ -160,7 +159,7 @@ class ContactMapFigure(Figure):
 
         # Plot the other contacts
         if self._other:
-            other_data = numpy.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other
+            other_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other
                                         if not (c.res1_seq == _Gap._IDENTIFIER or c.res2_seq == _Gap._IDENTIFIER)])
             other_colors = ContactMapFigure._determine_color(self._other)
             if self.use_conf:
@@ -178,19 +177,19 @@ class ContactMapFigure(Figure):
                        s=self_sizes, edgecolor='none', linewidths=0.0)
 
         # Allow dynamic x and y limits
-        min_max_data = numpy.append(self_data[:, 0], self_data[:, 1])
+        min_max_data = np.append(self_data[:, 0], self_data[:, 1])
         if self._reference:
-            min_max_data = numpy.append(min_max_data, reference_data[:, 0])
-            min_max_data = numpy.append(min_max_data, reference_data[:, 1])
+            min_max_data = np.append(min_max_data, reference_data[:, 0])
+            min_max_data = np.append(min_max_data, reference_data[:, 1])
         if self._other:
-            min_max_data = numpy.append(min_max_data, other_data[:, 0])
-            min_max_data = numpy.append(min_max_data, other_data[:, 1])
+            min_max_data = np.append(min_max_data, other_data[:, 0])
+            min_max_data = np.append(min_max_data, other_data[:, 1])
         ax.set_xlim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
         ax.set_ylim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
 
         # Set the xticks and yticks dynamically
         gap = int(10 * (min_max_data.max() - min_max_data.min()) / 100)
-        tick_range = numpy.arange(min_max_data.min(), min_max_data.max(), gap, dtype=numpy.int64)
+        tick_range = np.arange(min_max_data.min(), min_max_data.max(), gap, dtype=np.int64)
         ax.set_xticks(tick_range)
         ax.set_yticks(tick_range)
 
@@ -200,16 +199,16 @@ class ContactMapFigure(Figure):
 
         # Create a custom legend
         if self._reference:
-            tp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.MATCH,
-                                                 marker='o', linestyle='', label='Match')
-            fp_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.MISMATCH,
-                                                 marker='o', linestyle='', label='Mismatch')
-            rf_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.STRUCTURAL,
-                                                 marker='o', linestyle='', label='Structural')
+            tp_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.MATCH,
+                                   marker='o', linestyle='', label='Match')
+            fp_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.MISMATCH,
+                                   marker='o', linestyle='', label='Mismatch')
+            rf_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.STRUCTURAL,
+                                   marker='o', linestyle='', label='Structural')
             artists = [tp_artist, fp_artist, rf_artist]
         else:
-            nt_artist = matplotlib.pyplot.Line2D((0, 1), (0, 0), color=ColorDefinitions.GENERAL,
-                                                 marker='o', linestyle='', label='Contact')
+            nt_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.GENERAL,
+                                   marker='o', linestyle='', label='Contact')
             artists = [nt_artist]
         ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102),
                   loc=3, ncol=3, mode="expand", borderaxespad=0.)

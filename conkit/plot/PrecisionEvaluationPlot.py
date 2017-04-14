@@ -6,10 +6,10 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
-import matplotlib.pyplot
-import numpy
+import matplotlib.pyplot as plt
+import numpy as np
 
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
@@ -159,14 +159,14 @@ class PrecisionEvaluationFigure(Figure):
     def _draw(self):
         """Draw the actual plot"""
 
-        factors = numpy.arange(self.min_cutoff, self.max_cutoff + 0.1, self.cutoff_step)
-        precisions = numpy.zeros(factors.shape[0])
+        factors = np.arange(self.min_cutoff, self.max_cutoff + 0.1, self.cutoff_step)
+        precisions = np.zeros(factors.shape[0])
         for i, factor in enumerate(factors):
             ncontacts = int(self._hierarchy.sequence.seq_len * factor)
             m = self._hierarchy[:ncontacts]
             precisions[i] = m.precision
 
-        fig, ax = matplotlib.pyplot.subplots()
+        fig, ax = plt.subplots()
 
         # Add data points itself
         ax.plot(factors, precisions, color=ColorDefinitions.GENERAL, marker='o', markersize=5, linestyle='-',
@@ -185,7 +185,7 @@ class PrecisionEvaluationFigure(Figure):
 
         # Prettify the plot
         ax.set_xlim(self.min_cutoff, self.max_cutoff)
-        xticks = (ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(numpy.int64)
+        xticks = (ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(np.int64)
         ax.set_xticklabels(xticks)
         ax.set_ylim(0.0, 1.0)
 

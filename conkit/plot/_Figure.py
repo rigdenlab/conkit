@@ -4,7 +4,7 @@ A module containing generic Figure related objects
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
 from conkit.core import Contact
 from conkit.core import ContactMap

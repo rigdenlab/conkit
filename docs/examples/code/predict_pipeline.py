@@ -10,7 +10,9 @@ using ConKit.
 
 """
 
-import conkit
+import conkit.applications
+import conkit.io
+import conkit.plot
 
 # Define the input variables
 sequence_file = "toxd/toxd.fasta"

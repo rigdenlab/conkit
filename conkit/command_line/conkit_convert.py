@@ -17,8 +17,9 @@ __date__ = "01 Oct 2016"
 __version__ = 0.1
 
 import argparse
-import conkit
 import sys
+
+import conkit.io
 
 _OPTIONS = sorted(
     conkit.io.CONTACT_FILE_PARSERS.keys() 

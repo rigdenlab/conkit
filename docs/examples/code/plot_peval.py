@@ -7,7 +7,8 @@ the precision scores of your contact map using ConKit
 
 """
 
-import conkit
+import conkit.io
+import conkit.plot
 
 # Define the input variables
 sequence_file = "toxd/toxd.fasta"

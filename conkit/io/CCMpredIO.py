@@ -8,12 +8,12 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "0.1"
 
-from conkit.core.ContactCore import Contact
-from conkit.core.ContactFileCore import ContactFile
-from conkit.core.ContactMapCore import ContactMap
+from conkit.core import Contact
+from conkit.core import ContactFile
+from conkit.core import ContactMap
 from conkit.io._ParserIO import _ContactFileParser
 
-import numpy
+import numpy as np
 import sys
 
 
@@ -45,7 +45,7 @@ class CCMpredParser(_ContactFileParser):
         contact_file.add(contact_map)
 
         # Bits ripped from Stefan Seemayer's script shipped with CCMpred
-        mat = numpy.loadtxt(f_handle)
+        mat = np.loadtxt(f_handle)
         raw_contacts = self._get_contact_pairs(mat)
 
         for res1_seq, res2_seq, raw_score in zip(raw_contacts[0], raw_contacts[1], mat[raw_contacts]):
@@ -67,8 +67,8 @@ class CCMpredParser(_ContactFileParser):
 
         Parameters
         ----------
-        mat : numpy.ndarray
-           A numpy arranged matrix
+        mat : np.ndarray
+           A np arranged matrix
 
         Returns
         -------
@@ -77,8 +77,8 @@ class CCMpredParser(_ContactFileParser):
 
         """
         contacts = mat.argsort(axis=None)[::-1]
-        contacts = (contacts % mat.shape[0]).astype(numpy.uint16), \
-                    numpy.floor(contacts / mat.shape[0]).astype(numpy.uint16)
+        contacts = (contacts % mat.shape[0]).astype(np.uint16), \
+                    np.floor(contacts / mat.shape[0]).astype(np.uint16)
         return contacts
 
     def write(self, f_handle, hierarchy):
@@ -111,12 +111,12 @@ class CCMpredParser(_ContactFileParser):
 
         for contact_map in contact_file:
             len_mat = max([c.res1_seq for c in contact_map] + [c.res2_seq for c in contact_map])
-            mat = numpy.zeros((len_mat, len_mat), numpy.float64)
+            mat = np.zeros((len_mat, len_mat), np.float64)
 
             for contact in contact_map:
                 mat[contact.res1_seq - 1][contact.res2_seq - 1] = contact.raw_score
                 mat[contact.res2_seq - 1][contact.res1_seq - 1] = contact.raw_score
             
-            numpy.savetxt(f_handle, mat)
+            np.savetxt(f_handle, mat)
 
         return

@@ -15,11 +15,11 @@ import warnings
 from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 
-from conkit import constants
-from conkit.core.ContactCore import Contact
-from conkit.core.ContactFileCore import ContactFile
-from conkit.core.ContactMapCore import ContactMap
-from conkit.core.SequenceCore import Sequence
+from conkit.core import Contact
+from conkit.core import ContactFile
+from conkit.core import ContactMap
+from conkit.core import Sequence
+from conkit.core import THREE_TO_ONE
 from conkit.io._ParserIO import _ContactFileParser
 
 
@@ -33,7 +33,7 @@ class _GenericStructureParser(_ContactFileParser):
 
     def _build_sequence(self, chain):
         """Build a peptide using Biopython to extract the sequence"""
-        return Sequence(chain.id + '_seq', ''.join(constants.THREE_TO_ONE[residue.resname] for residue in chain))
+        return Sequence(chain.id + '_seq', ''.join(THREE_TO_ONE[residue.resname] for residue in chain))
 
     def _chain_contacts(self, chain1, chain2):
         """Determine the contact pairs intra- or inter-molecular
@@ -103,7 +103,7 @@ class _GenericStructureParser(_ContactFileParser):
     def _remove_hetatm(self, chain):
         """Tidy up a chain removing all HETATM entries"""
         for residue in chain.copy():
-            if residue.id[0].strip() and residue.resname not in constants.THREE_TO_ONE:
+            if residue.id[0].strip() and residue.resname not in THREE_TO_ONE:
                 chain.detach_child(residue.id)
 
     def _read(self, structure, f_id, distance_cutoff, atom_type):

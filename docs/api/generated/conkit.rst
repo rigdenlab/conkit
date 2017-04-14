@@ -17,10 +17,3 @@ Subpackages
     conkit.io
     conkit.plot
 
-Submodules
-----------
-
-.. toctree::
-
-   conkit.constants
-

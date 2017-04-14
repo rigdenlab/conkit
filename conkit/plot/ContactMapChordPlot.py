@@ -6,11 +6,10 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
-import matplotlib.patches
-import matplotlib.pyplot
-import numpy
+import matplotlib.pyplot as plt
+import numpy as np
 
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions, points_on_circle
@@ -96,20 +95,20 @@ class ContactMapChordFigure(Figure):
         hierarchy = self.hierarchy.rescale()
 
         # Obtain the data from the hierarchy
-        self_data = numpy.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score)
+        self_data = np.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score)
                                    for c in hierarchy])
-        _drange = numpy.append(self_data[:, 1], self_data[:, 3]).astype(numpy.int64)
-        self_data_range = numpy.arange(_drange.min(), _drange.max() + 1)
+        _drange = np.append(self_data[:, 1], self_data[:, 3]).astype(np.int64)
+        self_data_range = np.arange(_drange.min(), _drange.max() + 1)
 
         # The number of points on the outer circle and their coordinates
         npoints = self_data_range.shape[0]
-        coords = numpy.asarray(points_on_circle(npoints))
+        coords = np.asarray(points_on_circle(npoints))
 
         # Instantiate the figure
-        fig, ax = matplotlib.pyplot.subplots()
+        fig, ax = plt.subplots()
 
         # Calculate and plot the Bezier curves
-        bezier_path = numpy.arange(0, 1.01, 0.01)
+        bezier_path = np.arange(0, 1.01, 0.01)
         for c in self_data:
             x1, y1 = coords[int(c[1]) - self_data_range.min()]
             x2, y2 = coords[int(c[3]) - self_data_range.min()]
@@ -120,14 +119,14 @@ class ContactMapChordFigure(Figure):
 
         # Get the amino acids if available
         #     - get the residue data from the original data array
-        residue_data = numpy.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
+        residue_data = np.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
         residue_data = residue_data.reshape(self_data[:, 0].shape[0] * 2, 2)
 
         #     - compute a default color list
         color_codes = dict([(k, ColorDefinitions.AA_ENCODING['X']) for k in self_data_range])
 
         #     - fill default dict with data we have
-        for k, v in numpy.vstack({tuple(row) for row in residue_data}):
+        for k, v in np.vstack({tuple(row) for row in residue_data}):
             color_codes[int(k)] = ColorDefinitions.AA_ENCODING[v]
 
         #     - create a color list
@@ -139,12 +138,12 @@ class ContactMapChordFigure(Figure):
         # Annotate some residue
         # TODO: Use _plottools module to process this
         label_data = set([int(x) for x in zip(*residue_data)[0]])
-        label_coords = numpy.zeros((npoints, 2))
-        space = 2 * numpy.pi / npoints
-        for i in numpy.arange(npoints):
+        label_coords = np.zeros((npoints, 2))
+        space = 2 * np.pi / npoints
+        for i in np.arange(npoints):
             label_coords[i] = [
-                (npoints + npoints / 10) * numpy.cos(space * i) - npoints / 20,
-                (npoints + npoints / 10) * numpy.sin(space * i) - npoints / 40
+                (npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
+                (npoints + npoints / 10) * np.sin(space * i) - npoints / 40
             ]
         for r in sorted(label_data)[::int(npoints / (npoints / 10))]:
             i = r - self_data_range.min()

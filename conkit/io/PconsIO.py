@@ -10,10 +10,10 @@ __author__ = "Felix Simkovic"
 __date__ = "26 Oct 2016"
 __version__ = "0.1"
 
-from conkit.core.ContactCore import Contact
-from conkit.core.ContactFileCore import ContactFile
-from conkit.core.ContactMapCore import ContactMap
-from conkit.core.SequenceCore import Sequence
+from conkit.core import Contact
+from conkit.core import ContactFile
+from conkit.core import ContactMap
+from conkit.core import Sequence
 from conkit.io._ParserIO import _ContactFileParser
 
 import os

@@ -9,9 +9,10 @@ __date__ = "21 Nov 2016"
 __version__ = "0.1"
 
 import argparse
-import conkit
 import logging
 import sys
+
+import conkit.io
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 

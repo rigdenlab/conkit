@@ -6,10 +6,10 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "23 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
-import matplotlib.pyplot
-import numpy
+import matplotlib.pyplot as plt
+import numpy as np
 import warnings
 
 try:
@@ -17,7 +17,6 @@ try:
     SCIPY = True
 except ImportError:
     SCIPY = False
-
 
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions
@@ -115,18 +114,18 @@ class ContactDensityFigure(Figure):
         """Draw the actual plot"""
 
         # Estimate the Kernel Density using original data
-        dens = numpy.asarray(self.hierarchy.calculate_kernel_density(self.bw_method))
+        dens = np.asarray(self.hierarchy.calculate_kernel_density(self.bw_method))
         
         # Plot the data
-        fig, ax = matplotlib.pyplot.subplots()
+        fig, ax = plt.subplots()
 
         # The residues for the x-axis
-        residues = numpy.asarray(
+        residues = np.asarray(
             list(set(
                 sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy])
             ))
         )
-        x = numpy.arange(residues.min(), residues.max())
+        x = np.arange(residues.min(), residues.max())
 
         ax.plot(x, dens, linestyle="solid",
                 color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")

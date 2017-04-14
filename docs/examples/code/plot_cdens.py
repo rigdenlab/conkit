@@ -7,7 +7,8 @@ the contact density of your contact map using ConKit
 
 """
 
-import conkit
+import conkit.io
+import conkit.plot
 
 # Define the input variables
 sequence_file = "4p9g/4p9g.fasta"
