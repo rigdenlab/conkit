@@ -2,7 +2,7 @@
 
 __author__ = 'Felix Simkovic'
 __date__ = '13 Sep 2016'
-__version__ = 0.1
+__version__ = "0.1"
 
 from conkit.io.CaspIO import CaspParser
 from conkit.io.CCMpredIO import CCMpredParser

@@ -9,17 +9,17 @@ For more specific descriptions, call each subcommand's help menu directly.
 
 __author__ = "Felix Simkovic"
 __date__ = "08 Feb 2017"
-__version__ = 0.1
+__version__ = "0.1"
 
 import argparse
 import inspect
-import logging
 import sys
 
+import conkit.command_line
 import conkit.io
 import conkit.plot
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+logger = conkit.command_line.get_logger('plotter', level='info')
 
 # Note:
 #     New subparsers can be added automatically as long as the convention is followed.
@@ -217,10 +217,10 @@ def main():
 
     if args.which == 'contact_map':
         if args.interchain:
-            logging.info('This script is experimental for inter-chain contact plotting')
+            logger.info('This script is experimental for inter-chain contact plotting')
 
-        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
+        logger.info('Min sequence separation for contacting residues: %d', args.dtn)
+        logger.info('Contact list cutoff factor: %f * L', args.dfactor)
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
@@ -262,19 +262,19 @@ def main():
             con_matched = con_sliced
             other_matched = other_sliced
 
-        def altloc_remove(map):
+        def altloc_remove(cmap):
             """Remove alternative locations"""
             altloc = False
-            for contact in map.copy():
+            for contact in cmap.copy():
                 # For now we need this args.interchain check to account for gapped residues
                 # where res chain was not assigned
                 if contact.res1_chain != contact.res2_chain and args.interchain:
                     altloc = True
                     break
                 if contact.res1_chain == contact.res2_chain and args.interchain:
-                    map.remove(contact.id)
+                    cmap.remove(contact.id)
                 elif contact.res1_chain != contact.res2_chain and not args.interchain:
-                    map.remove(contact.id)
+                    cmap.remove(contact.id)
             return altloc
 
         altloc = altloc_remove(con_matched)
@@ -288,8 +288,8 @@ def main():
                                             dpi=args.dpi)
 
     elif args.which == 'contact_map_chord':
-        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
+        logger.info('Min sequence separation for contacting residues: %d', args.dtn)
+        logger.info('Contact list cutoff factor: %f * L', args.dfactor)
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
@@ -305,9 +305,9 @@ def main():
         plot = conkit.plot.ContactMapChordFigure(con_sliced, file_name=outfile, dpi=args.dpi)
 
     elif args.which == 'contact_density':
-        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
-        logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
-        logging.info('Bandwidth estimator: {0}'.format(args.bw_method))
+        logger.info('Min sequence separation for contacting residues: %d', args.dtn)
+        logger.info('Contact list cutoff factor: %f * L', args.dfactor)
+        logger.info('Bandwidth estimator: %s', args.bw_method)
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
@@ -324,12 +324,12 @@ def main():
 
     elif args.which == 'precision_evaluation':
         if args.interchain:
-            logging.info('This script is experimental for inter-chain contact plotting')
+            logger.info('This script is experimental for inter-chain contact plotting')
 
-        logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
-        logging.info('Min contact list cutoff factor: {0} * L'.format(args.min_cutoff))
-        logging.info('Max contact list cutoff factor: {0} * L'.format(args.max_cutoff))
-        logging.info('Contact list cutoff factor step: {0}'.format(args.cutoff_step))
+        logger.info('Min sequence separation for contacting residues: %d', args.dtn)
+        logger.info('Min contact list cutoff factor: %f * L', args.min_cutoff)
+        logger.info('Max contact list cutoff factor: %f * L', args.max_cutoff)
+        logger.info('Contact list cutoff factor step: %f', args.cutoff_step)
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
@@ -357,7 +357,7 @@ def main():
         outfile = args.output if args.output else args.msafile.rsplit('.', 1)[0] + '.' + outformat
         plot = conkit.plot.SequenceCoverageFigure(hierarchy, file_name=outfile, dpi=args.dpi)
 
-    logging.info('Final plot written in {0} format to: {1}'.format(plot.format.upper(), plot.file_name))
+    logger.info('Final plot written in %s format to %s', plot.format.upper(), plot.file_name)
 
     return
 

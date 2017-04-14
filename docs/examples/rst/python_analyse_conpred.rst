@@ -7,7 +7,7 @@ Contact Prediction Analysis
 
 .. code-block:: python
 
-   >>> import conkit
+   >>> import conkit.io
    >>> conpred = conkit.io.read("toxd/toxd.mat", "ccmpred").top_map
    >>> conpred.sequence = conkit.io.read("toxd/toxd.fasta", "fasta").top_sequence
    >>> conpred.assign_sequence_register()

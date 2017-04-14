@@ -9,12 +9,12 @@ __date__ = "21 Nov 2016"
 __version__ = "0.1"
 
 import argparse
-import logging
 import sys
 
+import conkit.command_line
 import conkit.io
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+logger = conkit.command_line.get_logger('precision', level='info')
 
 
 def main():
@@ -46,8 +46,8 @@ def main():
     con.sequence = seq
     con.assign_sequence_register()
 
-    logging.info('Min sequence separation for contacting residues: {0}'.format(args.dtn))
-    logging.info('Contact list cutoff factor: {0} * L'.format(args.dfactor))
+    logger.info('Min sequence separation for contacting residues: %d', args.dtn)
+    logger.info('Contact list cutoff factor: %f * L', args.dfactor)
 
     con.remove_neighbors(min_distance=args.dtn, inplace=True)
     ncontacts = int(seq.seq_len * args.dfactor)
@@ -58,7 +58,7 @@ def main():
     con_matched = con_sliced.match(pdb)
     precision = con_matched.precision
     
-    logging.info('Precision score: {0}'.format(precision))
+    logger.info('Precision score: %f', precision)
 
     return 
 

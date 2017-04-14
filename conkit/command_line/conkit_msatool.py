@@ -9,16 +9,16 @@ prediction.
 
 __author__ = "Felix Simkovic"
 __date__ = "21 Nov 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
 import argparse
-import logging
 import sys
 
+import conkit.command_line
 import conkit.io
 import conkit.plot
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+logger = conkit.command_line.get_logger('msatool', level='info')
 
 
 def main():
@@ -36,13 +36,13 @@ def main():
     plot = args.msafile.rsplit('.', 1)[0] + '.png'
     conkit.plot.SequenceCoverageFigure(hierarchy, file_name=plot)
 
-    logging.info('Input MSA File:                            {0}'.format(args.msafile))
-    logging.info('Input MSA Format:                          {0}'.format(args.msaformat))
-    logging.info('Pairwise Sequence Identity Threshold:      {0}'.format(args.id))
-    logging.info('Length of the Target Sequence:             {0}'.format(seq_len))
-    logging.info('Total Number of Sequences:                 {0}'.format(nseqs))
-    logging.info('Number of Effective Sequences:             {0}'.format(meff))
-    logging.info('Sequence Coverage Plot:                    {0}'.format(plot))
+    logger.info('Input MSA File:                            %s', args.msafile)
+    logger.info('Input MSA Format:                          %s', args.msaformat)
+    logger.info('Pairwise Sequence Identity Threshold:      %f', args.id)
+    logger.info('Length of the Target Sequence:             %d', seq_len)
+    logger.info('Total Number of Sequences:                 %d', nseqs)
+    logger.info('Number of Effective Sequences:             %d', meff)
+    logger.info('Sequence Coverage Plot:                    %s', plot)
 
     return
 

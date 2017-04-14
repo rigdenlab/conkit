@@ -4,7 +4,7 @@ contact predictions obtained from a variety of different
 sources.
 """
 
-from conkit._version import __version__
+import conkit._version
 
 __author__ = "Felix Simkovic"
-__version__ = _version.__version__
+__version__ = conkit._version.__version__

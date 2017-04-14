@@ -12,8 +12,8 @@ Entities
 
 .. code-block:: python
 
-   >>> import conkit
-   >>> contact = conkit.core.Contact(1, 10, 1.0)
+   >>> from conkit.core import Contact
+   >>> contact = Contact(1, 10, 1.0)
 
 The example above creates a contact between residues ``1`` and ``10`` and assigns a ``raw_score`` of ``1.0`` to it. By default, this contact has many more default attributes assigned, such as the distance value often seen in columns 3 and 4 in the Casp RR format.
 
@@ -21,8 +21,8 @@ The example above creates a contact between residues ``1`` and ``10`` and assign
 
 .. code-block:: python
 
-   >>> import conkit
-   >>> cmap = conkit.core.ContactMap('example')
+   >>> from conkit.core import ContactMap
+   >>> cmap = ContactMap('example')
 
 This example shows you how to create a :obj:`ContactMap <conkit.core.ContactMap>` which can store a :obj:`Contact <conkit.core.Contact>`.
 
@@ -30,8 +30,8 @@ This example shows you how to create a :obj:`ContactMap <conkit.core.ContactMap>
 
 .. code-block:: python
 
-   >>> import conkit
-   >>> cmap = conkit.core.ContactFile('example')
+   >>> from conkit.core import ContactFile
+   >>> cmap = ContactFile('example')
 
 This example shows you how to create a :obj:`ContactFile <conkit.core.ContactFile>` which can store a :obj:`ContactMap <conkit.core.ContactMap>`.
 
@@ -44,10 +44,10 @@ To illustrate how you can combine the entities, look at the following:
 
 .. code-block:: python
 
-   >>> import conkit
-   >>> cfile = conkit.core.ContactFile('example_file')
-   >>> cmap = conkit.core.ContactMap('example_map')
-   >>> contact = conkit.core.Contact(1, 10, 1.0)
+   >>> from conkit.core import Contact, ContactMap, ContactFile
+   >>> cfile = ContactFile('example_file')
+   >>> cmap = ContactMap('example_map')
+   >>> contact = Contact(1, 10, 1.0)
    >>> # Add the contact to the contact map
    >>> cmap.add(contact)
    >>> # Add the contact map to the contact file

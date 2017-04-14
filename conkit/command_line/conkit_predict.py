@@ -12,22 +12,21 @@ It uses two external programs to perform this task.
 
 """
 
-
 __author__ = "Felix Simkovic"
 __date__ = "01 June 2016"
-__version__ = 0.1
+__version__ = "0.1"
 
 import argparse
-import logging
 import os
 import sys
 import time
 
 import conkit.applications
+import conkit.command_line
 import conkit.io
 import conkit.plot
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+logger = conkit.command_line.get_logger('predictor', level='info')
 
 
 def add_default_args(parser):
@@ -78,20 +77,20 @@ def main(argl=None):
     # Parse all arguments
     args = parser.parse_args(argl)
 
-    logging.info('Prefix: {0}'.format(args.prefix))
-    logging.info('Working dir: {0}'.format(args.wdir))
+    logger.info('Prefix: %s', args.prefix)
+    logger.info('Working dir: %s', args.wdir)
 
     if args.which == 'alignment':
         aln_fname = os.path.abspath(args.alignment_file)
         aln_format = args.alignment_format.lower()
 
-        logging.info('Input alignment file: {0}'.format(aln_fname))
-        logging.info('Input alignment format: {0}'.format(aln_format))
+        logger.info('Input alignment file: %s', aln_fname)
+        logger.info('Input alignment format: %s', aln_format)
 
         # Check that we can handle the alignment file
         if aln_format not in conkit.io.SEQUENCE_FILE_PARSERS:
-            msg = 'Sequence format not yet implemented: {0}'.format(aln_fname)
-            logging.critical(msg)
+            msg = 'Sequence format not yet implemented: %s' % aln_fname
+            logger.critical(msg)
             raise ValueError(msg)
 
         # Convert our alignment file to JONES format
@@ -109,14 +108,14 @@ def main(argl=None):
         a3m_fname = os.path.join(args.wdir, args.prefix + '.a3m')
         hhr_fname = os.path.join(args.wdir, args.prefix + '.hhr')
 
-        logging.info('HHblits DB: {0}'.format(hhblitsdb))
-        logging.info('Input sequence file: {0}'.format(seq_fname))
-        logging.info('Input sequence format: {0}'.format(seq_format))
+        logger.info('HHblits DB: %s', hhblitsdb)
+        logger.info('Input sequence file: %s', seq_fname)
+        logger.info('Input sequence format: %s', seq_format)
 
         # Check that we can handle the sequence file
         if seq_format not in conkit.io.SEQUENCE_FILE_PARSERS:
-            msg = 'Sequence format not yet implemented: {0}'.format(seq_format)
-            logging.critical(msg)
+            msg = 'Sequence format not yet implemented: %s' % seq_format
+            logger.critical(msg)
             raise ValueError(msg)
 
         # Convert our sequence file to FASTA format
@@ -131,7 +130,7 @@ def main(argl=None):
                                                                database=hhblitsdb, oa3m=a3m_fname,
                                                                niterations=3, id=99, show_all=True,
                                                                cov=60, diff='inf', maxfilt=500000)
-        logging.info('Executing: {0}'.format(hhblits_cline))
+        logger.info('Executing: %s', hhblits_cline)
         if args.demo:
             assert os.path.isfile(a3m_fname)
             time.sleep(5)
@@ -146,14 +145,14 @@ def main(argl=None):
 
     # CCMpred requires alignments to be in the *jones* format - i.e. the format created
     # and used by David Jones in PSICOV
-    logging.info('Final alignment file: {0}'.format(jon_fname))
+    logger.info('Final alignment file: %s', jon_fname)
     msa_h = conkit.io.read(jon_fname, 'jones')
-    logging.info('|- Total Number of sequences: {0}'.format(msa_h.nseqs))
-    logging.info('|- Pairwise Sequence Identity Threshold: {0}'.format(0.7))
-    logging.info('|- Number of effective sequences: {0}'.format(msa_h.calculate_meff(identity=0.7)))
+    logger.info('|- Total Number of sequences: %d', msa_h.nseqs)
+    logger.info('|- Pairwise Sequence Identity Threshold: %f', 0.7)
+    logger.info('|- Number of effective sequences: %d', msa_h.calculate_meff(identity=0.7))
     freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.pdf')
     conkit.plot.SequenceCoverageFigure(msa_h, file_name=freq_plot_fname)
-    logging.info('|- Plotted sequence coverage: {0}'.format(freq_plot_fname))
+    logger.info('|- Plotted sequence coverage: %s', freq_plot_fname)
 
     # Kill switch to not run CCMpred DCA
     if args.which == 'sequence' and args.nodca:
@@ -165,7 +164,7 @@ def main(argl=None):
     ccmpred_cline = conkit.applications.CCMpredCommandLine(cmd=ccmpred,
                                                            alnfile=jon_fname, matfile=matrix_fname,
                                                            threads=2, renormalize=True)
-    logging.info('Executing: {0}'.format(ccmpred_cline))
+    logger.info('Executing: %s', ccmpred_cline)
     if args.demo:
         assert os.path.isfile(matrix_fname)
         time.sleep(5)
@@ -182,14 +181,14 @@ def main(argl=None):
     cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
     contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.pdf')
     conkit.plot.ContactMapFigure(cmap, file_name=contact_map_fname)
-    logging.info('Plotted contact map: {0}'.format(contact_map_fname))
-    logging.info('|- Min sequence separation for contacting residues: {0}'.format(dtn))
-    logging.info('|- Contact list cutoff factor: {0} * L'.format(dfactor))
+    logger.info('Plotted contact map: %s', contact_map_fname)
+    logger.info('|- Min sequence separation for contacting residues: %d', dtn)
+    logger.info('|- Contact list cutoff factor: %f * L', dfactor)
 
     # Use the ccmpred parser to write a contact file
     casprr_fname = os.path.join(args.wdir, args.prefix + '.rr')
     conkit.io.convert(matrix_fname, 'ccmpred', casprr_fname, 'casprr')
-    logging.info('Final prediction file: {0}'.format(casprr_fname))
+    logger.info('Final prediction file: %s', casprr_fname)
 
     return
 

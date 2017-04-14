@@ -127,11 +127,11 @@ class Figure(object):
            Type is unknown
 
         """
-        dict = {'Contact': Contact, 'ContactMap': ContactMap, 'ContactFile': ContactFile,
-                'Sequence': Sequence, 'SequenceFile': SequenceFile}
-        if t not in dict.keys():
+        hdict = {'Contact': Contact, 'ContactMap': ContactMap, 'ContactFile': ContactFile,
+                 'Sequence': Sequence, 'SequenceFile': SequenceFile}
+        if t not in hdict.keys():
             raise ValueError("Type {0} is unknown".format(t))
-        elif not isinstance(h, dict[t]):
+        elif not isinstance(h, hdict[t]):
             raise TypeError("Provided hierarchy is not a {0}".format(t))
 
     @staticmethod
