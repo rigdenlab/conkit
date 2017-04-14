@@ -17,7 +17,7 @@ This project is a result of the continuous struggle using residue-residue contac
    :alt: Python Versions
 
 .. image:: https://readthedocs.org/projects/conkit/badge/?version=latest
-   :target: http://conkit.readthedocs.io/en/latest/?badge=latest
+   :target: http://www.conkit.org/en/latest/?badge=latest
    :alt: Documentation Status
 
 .. image:: https://travis-ci.org/rigdenlab/conkit.svg?branch=master
