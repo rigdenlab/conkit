@@ -15,7 +15,6 @@ import collections
 import copy
 import numpy as np
 import operator
-import warnings
 
 try:
     import scipy.spatial
@@ -1004,21 +1003,23 @@ class ContactMap(_Entity):
         coverage
 
         """
-        status_array = np.asarray([c.status for c in self])
-
-        fp_count = np.sum(np.where(status_array == -1, 1, 0))
-        uk_count = np.sum(np.where(status_array == 0, 1, 0))
-        tp_count = np.sum(np.where(status_array == 1, 1, 0))
-
         # ContactMap is empty
         if len(self) == 0:
+            print('ContactMap is empty')
             return 0.0
-        elif fp_count == 0.0 and tp_count == 0.0:
-            warnings.warn("No matches or mismatches found in your contact map. Match two ContactMaps first.")
+        
+        unique, counts = np.unique(np.asarray([c.status for c in self]), return_counts=True)
+        cdict = dict(zip(unique, counts))
+        fp_count = cdict[Contact._MISMATCH] if Contact._MISMATCH in cdict else 0.0
+        uk_count = cdict[Contact._UNKNOWN] if Contact._UNKNOWN in cdict else 0.0
+        tp_count = cdict[Contact._MATCH] if Contact._MATCH in cdict else 0.0
+        
+        if fp_count == 0.0 and tp_count == 0.0:
+            print("No matches or mismatches found in your contact map. Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
-            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical "
-                          "sequences. The precision value might be inaccurate.")
+            print("Some contacts between the ContactMaps are unmatched due to non-identical "
+                  "sequences. The precision value might be inaccurate.")
 
         return tp_count / (tp_count + fp_count)
 
