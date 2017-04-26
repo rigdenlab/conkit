@@ -841,27 +841,9 @@ class Contact(_Entity):
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
-        return {
-            'id': self.id,
-            'is_match': self.is_match,
-            'is_mismatch': self.is_mismatch,
-            'is_unknown': self.is_unknown,
-            'distance_bound': self.distance_bound,
-            'lower_bound': self.lower_bound,
-            'upper_bound': self.upper_bound,
-            'raw_score': self.raw_score,
-            'res1': self.res1,
-            'res2': self.res2,
-            'res1_chain': self.res1_chain,
-            'res2_chain': self.res2_chain,
-            'res1_seq': self.res1_seq,
-            'res2_seq': self.res2_seq,
-            'res1_altseq': self.res1_altseq,
-            'res2_altseq': self.res2_altseq,
-            'scalar_score': self.scalar_score,
-            'status': self.status,
-            'weight': self.weight,
-        }
+        keys =  ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
+                + [k[1:] for k in self.__slots__]
+        return {k: getattr(self, k) for k in keys}
 
     @staticmethod
     def _set_residue(amino_acid):
