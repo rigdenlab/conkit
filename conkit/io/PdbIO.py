@@ -67,9 +67,7 @@ class _GenericStructureParser(_ContactFileParser):
             for atom1, atom2 in itertools.product(residue1, residue2):
 
                 # Ignore duplicates
-                if int(residue1.id[1]) > int(residue2.id[1]):
-                    continue
-                elif int(residue1.id[1]) == int(residue2.id[1]):
+                if chain1 == chain2 and int(residue1.id[1]) >= int(residue2.id[1]):
                     continue
 
                 # Biopython implementation to calculate distance between atoms

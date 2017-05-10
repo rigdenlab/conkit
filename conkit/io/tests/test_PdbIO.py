@@ -128,13 +128,17 @@ END
         # Two maps because no contacts in B
         contact_map1 = contact_file['A']     # chain A
         contact_map2 = contact_file['AB']    # chain AB
-        self.assertEqual(2, len(contact_file))
+        contact_map3 = contact_file['BA']    # chain BA
+        self.assertEqual(3, len(contact_file))
         self.assertEqual(1, len(contact_map1))
         self.assertEqual(['A', 'A'], [contact_map1.top_contact.res1_chain, contact_map1.top_contact.res2_chain])
         self.assertEqual([36, 86], [contact_map1.top_contact.res1_seq, contact_map1.top_contact.res2_seq])
         self.assertEqual(1, len(contact_map2))
         self.assertEqual(['A', 'B'], [contact_map2.top_contact.res1_chain, contact_map2.top_contact.res2_chain])
         self.assertEqual([86, 208], [contact_map2.top_contact.res1_seq, contact_map2.top_contact.res2_seq])
+        self.assertEqual(1, len(contact_map3))
+        self.assertEqual(['B', 'A'], [contact_map3.top_contact.res1_chain, contact_map3.top_contact.res2_chain])
+        self.assertEqual([208, 86], [contact_map3.top_contact.res1_seq, contact_map3.top_contact.res2_seq])
         os.unlink(f_name)
 
 
