@@ -54,6 +54,8 @@ class BbcontactsParser(_ContactFileParser):
             else:
                 # bbcontacts reverse residue numbering so swap
                 _, _, _, raw_score, _, _, res2_seq, res1_seq = line.split()
+                if any(value == "NA" for value in [raw_score, res2_seq, res1_seq]):
+                    continue
                 contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact_map.add(contact)
 
