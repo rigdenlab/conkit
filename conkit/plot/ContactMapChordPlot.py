@@ -11,6 +11,7 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
+from conkit.core import Contact
 from conkit.plot._Figure import Figure
 from conkit.plot._plottools import ColorDefinitions, points_on_circle
 
@@ -47,13 +48,15 @@ class ContactMapChordFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, **kwargs):
+    def __init__(self, hierarchy, use_conf=False, **kwargs):
         """A new contact map plot
 
         Parameters
         ----------
         hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
            The default contact map hierarchy
+        use_conf : bool, optional
+           The marker size will correspond to the raw score [default: False]
         **kwargs
            General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
 
@@ -62,6 +65,7 @@ class ContactMapChordFigure(Figure):
 
         self._hierarchy = None
         self.hierarchy = hierarchy
+        self.use_conf = use_conf
 
         self._draw()
 
@@ -95,8 +99,7 @@ class ContactMapChordFigure(Figure):
         hierarchy = self.hierarchy.rescale()
 
         # Obtain the data from the hierarchy
-        self_data = np.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score)
-                                   for c in hierarchy])
+        self_data = np.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score, c.status) for c in hierarchy])
         _drange = np.append(self_data[:, 1], self_data[:, 3]).astype(np.int64)
         self_data_range = np.arange(_drange.min(), _drange.max() + 1)
 
@@ -106,7 +109,7 @@ class ContactMapChordFigure(Figure):
 
         # Instantiate the figure
         fig, ax = plt.subplots()
-
+        
         # Calculate and plot the Bezier curves
         bezier_path = np.arange(0, 1.01, 0.01)
         for c in self_data:
@@ -115,7 +118,13 @@ class ContactMapChordFigure(Figure):
             xb, yb = [0, 0]                  # Midpoint the curve is supposed to approach
             x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path ** 2 * x2
             y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path ** 2 * y2
-            ax.plot(x, y, color="#000000", alpha=float(c[4]), linestyle="-", zorder=0)
+            # 0.0 transparent through 1.0 opaque
+            alpha = float(c[4]) if self.use_conf else 1.0
+            color = {
+                str(Contact._MISMATCH): ColorDefinitions.MISMATCH,
+                str(Contact._MATCH): ColorDefinitions.MATCH,
+            }.get(str(c[5]), ColorDefinitions.MATCH)
+            ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
 
         # Get the amino acids if available
         #     - get the residue data from the original data array
