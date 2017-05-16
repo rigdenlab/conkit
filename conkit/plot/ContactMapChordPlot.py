@@ -121,10 +121,13 @@ class ContactMapChordFigure(Figure):
             # 0.0 transparent through 1.0 opaque
             alpha = float(c[4]) if self.use_conf else 1.0
             color = {
-                str(Contact._MISMATCH): ColorDefinitions.MISMATCH,
-                str(Contact._MATCH): ColorDefinitions.MATCH,
-            }.get(str(c[5]), ColorDefinitions.MATCH)
-            ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
+                Contact._MISMATCH: ColorDefinitions.STRUCTURAL,
+                Contact._MATCH: ColorDefinitions.MATCH,
+            }.get(int(c[5]), ColorDefinitions.MATCH)
+            if int(c[5]) == Contact._MATCH:
+                ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=1, linewidth=1)
+            else:
+                ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
 
         # Get the amino acids if available
         #     - get the residue data from the original data array
@@ -142,7 +145,7 @@ class ContactMapChordFigure(Figure):
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
         # Plot the residue points
-        ax.scatter(coords[:, 0], coords[:, 1], marker='o', color=colors, edgecolors="none", zorder=1)
+        ax.scatter(coords[:, 0], coords[:, 1], marker='o', color=colors, edgecolors="none", zorder=2, s=15)
 
         # Annotate some residue
         # TODO: Use _plottools module to process this
@@ -151,15 +154,15 @@ class ContactMapChordFigure(Figure):
         space = 2 * np.pi / npoints
         for i in np.arange(npoints):
             label_coords[i] = [
-                (npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
-                (npoints + npoints / 10) * np.sin(space * i) - npoints / 40
+                (npoints + npoints / 10) * np.cos(space * i) - npoints / 20 - 5,
+                (npoints + npoints / 10) * np.sin(space * i) - npoints / 40 
             ]
         for r in sorted(label_data)[::int(npoints / (npoints / 10))]:
             i = r - self_data_range.min()
             xy = x, y = coords[i]
             xytext = label_coords[i]
             ax.annotate(r, xy=xy, xytext=xytext)
-            ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=2)
+            ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=3, s=15)
 
         # Arrow for the start
         arrow_x, arrow_y = (npoints + npoints / 5, 0)
