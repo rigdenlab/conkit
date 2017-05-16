@@ -965,7 +965,7 @@ class ContactMap(_Entity):
     def short_range_contacts(self):
         """The short range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
         
-        Short range contacts are defined as 6 <= x < 12 residues apart
+        Short range contacts are defined as 6 <= x <= 11 residues apart
 
         Returns
         -------
@@ -977,13 +977,13 @@ class ContactMap(_Entity):
         medium_range_contacts, long_range_contacts
 
         """
-        return self.remove_neighbors(min_distance=6, max_distance=12)
+        return self.remove_neighbors(min_distance=6, max_distance=11)
 
     @property
     def medium_range_contacts(self):
         """The medium range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
         
-        Medium range contacts are defined as 12 <= x < 24 residues apart
+        Medium range contacts are defined as 12 <= x <= 23 residues apart
 
         Returns
         -------
@@ -995,7 +995,7 @@ class ContactMap(_Entity):
         short_range_contacts, long_range_contacts
 
         """
-        return self.remove_neighbors(min_distance=12, max_distance=24)
+        return self.remove_neighbors(min_distance=12, max_distance=23)
 
     @property
     def long_range_contacts(self):
@@ -1529,7 +1529,7 @@ class ContactMap(_Entity):
 
         The algorithm works by keeping contact pairs that satisfy
     
-            ``min_distance`` <= ``x`` < ``max_distance``
+            ``min_distance`` <= ``x`` <= ``max_distance``
 
         Parameters
         ----------
@@ -1548,7 +1548,7 @@ class ContactMap(_Entity):
         """
         contact_map = self._inplace(inplace)
         for contact in contact_map.copy():
-            if min_distance <= abs(contact.res1_seq - contact.res2_seq) < max_distance:
+            if min_distance <= abs(contact.res1_seq - contact.res2_seq) <= max_distance:
                 continue
             else:
                 contact_map.remove(contact.id)
