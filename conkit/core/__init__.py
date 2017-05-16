@@ -1045,8 +1045,10 @@ class ContactMap(_Entity):
             print('ContactMap is empty')
             return 0.0
         
-        unique, counts = np.unique(np.asarray([c.status for c in self]), return_counts=True)
-        cdict = dict(zip(unique, counts))
+        # np.unique(..., return_counts=True) added in numpy > 1.9, backward compatibility
+        # requires we do it the old way :-/
+        s = np.asarray([c.status for c in self])
+        cdict = dict(zip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
         fp_count = cdict[Contact._MISMATCH] if Contact._MISMATCH in cdict else 0.0
         uk_count = cdict[Contact._UNKNOWN] if Contact._UNKNOWN in cdict else 0.0
         tp_count = cdict[Contact._MATCH] if Contact._MATCH in cdict else 0.0
