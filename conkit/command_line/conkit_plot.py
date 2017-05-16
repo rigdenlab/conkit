@@ -100,6 +100,8 @@ style with residues being connected by their contacts
     contact_map_chord_subparser.add_argument('-f', dest='dfactor', default=1.0, type=float,
                                              help='number of contacts to include relative to '
                                                   'sequence length [default: 1.0]')
+    contact_map_chord_subparser.add_argument('--confidence', action="store_true", default=False,
+                                             help='Plot the confidence scores')
     contact_map_chord_subparser.add_argument('seqfile',
                                              help="Path to the sequence file")
     contact_map_chord_subparser.add_argument('seqformat',
@@ -302,7 +304,8 @@ def main():
         con_sliced = con[:ncontacts]
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
-        plot = conkit.plot.ContactMapChordFigure(con_sliced, file_name=outfile, dpi=args.dpi)
+        plot = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence, file_name=outfile, 
+                                                 dpi=args.dpi)
 
     elif args.which == 'contact_density':
         logger.info('Min sequence separation for contacting residues: %d', args.dtn)

@@ -1225,7 +1225,7 @@ class ContactMap(_Entity):
         Returns
         -------
         float
-           The Jaccard distance
+           The Jaccard index 
 
         See Also
         --------

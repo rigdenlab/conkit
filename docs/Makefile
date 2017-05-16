@@ -159,7 +159,7 @@ pseudoxml:
 figures:
 	if [ -d _tmp ]; then rm -rf _tmp; else mkdir _tmp; fi
 	git clone https://github.com/rigdenlab/conkit-examples.git _tmp/conkit-examples 
-	conkit-plot chord -o examples/images/toxd_chord_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
+	conkit-plot chord --confidence -o examples/images/toxd_chord_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
 	conkit-plot cmap -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
 	conkit-plot cmap -o examples/images/toxd_cmap_reference.png -p _tmp/conkit-examples/toxd/toxd.pdb -pf pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
 	conkit-plot cmap -o examples/images/toxd_cmap_advanced.png -e _tmp/conkit-examples/toxd/toxd.psicov -ef psicov -p _tmp/conkit-examples/toxd/toxd.pdb -pf pdb _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
