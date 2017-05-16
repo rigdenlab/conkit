@@ -15,6 +15,7 @@ import collections
 import copy
 import numpy as np
 import operator
+import sys
 
 try:
     import scipy.spatial
@@ -935,7 +936,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        cov : float
+        float
            The calculated coverage score
 
         See Also
@@ -954,11 +955,65 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        ncontacts : int
-           The number of sequences in the :obj:`ContactMap <conkit.core.ContactMap>`
+        int
+           The number of contacts in the :obj:`ContactMap <conkit.core.ContactMap>`
 
         """
         return len(self)
+
+    @property
+    def short_range_contacts(self):
+        """The short range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
+        
+        Short range contacts are defined as 6 <= x < 12 residues apart
+
+        Returns
+        -------
+        obj
+           A copy of the :obj:`ContactMap <conkit.core.ContactMap>` with short-range contacts only
+
+        See Also
+        --------
+        medium_range_contacts, long_range_contacts
+
+        """
+        return self.remove_neighbors(min_distance=6, max_distance=12)
+
+    @property
+    def medium_range_contacts(self):
+        """The medium range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
+        
+        Medium range contacts are defined as 12 <= x < 24 residues apart
+
+        Returns
+        -------
+        obj
+           A copy of the :obj:`ContactMap <conkit.core.ContactMap>` with medium-range contacts only
+
+        See Also
+        --------
+        short_range_contacts, long_range_contacts
+
+        """
+        return self.remove_neighbors(min_distance=12, max_distance=24)
+
+    @property
+    def long_range_contacts(self):
+        """The long range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
+        
+        long range contacts are defined as 24 <= x residues apart
+
+        Returns
+        -------
+        obj
+           A copy of the :obj:`ContactMap <conkit.core.ContactMap>` with long-range contacts only
+
+        See Also
+        --------
+        short_range_contacts, medium_range_contacts
+
+        """
+        return self.remove_neighbors(min_distance=24)
 
     @property
     def precision(self):
@@ -977,7 +1032,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        ppv : float
+        float
            The calculated precision score
 
         See Also
@@ -1014,7 +1069,8 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        sequence : :obj:`conkit.coreSequence`
+        obj
+           A :obj:`conkit.coreSequence` object
 
         Raises
         ------
@@ -1044,7 +1100,8 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        sequence : :obj:`Sequence <conkit.core.Sequence>`
+        obj
+           A :obj:`Sequence <conkit.core.Sequence>` object
 
         Raises
         ------
@@ -1071,7 +1128,8 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        :obj:`Sequence <conkit.core.Sequence>`
+        obj
+           A :obj:`Sequence <conkit.core.Sequence>` object
 
         See Also
         --------
@@ -1104,7 +1162,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        top_contact : :obj:`Contact <conkit.core.Contact>`, None
+        obj, None
            The first :obj:`Contact <conkit.core.Contact>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
@@ -1316,8 +1374,8 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        :obj:`ContactMap <conkit.core.ContactMap>`
-           A modified version of the contact map containing
+        obj
+           A modified version of the :obj:`ContactMap <conkit.core.ContactMap>` containing
            the found contacts
 
         """
@@ -1355,7 +1413,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        hierarchy_mod
+        obj 
             :obj:`ContactMap <conkit.core.ContactMap>` instance, regardless of inplace
 
         Raises
@@ -1464,25 +1522,33 @@ class ContactMap(_Entity):
 
         return contact_map1
 
-    def remove_neighbors(self, min_distance=5, inplace=False):
+    def remove_neighbors(self, min_distance=5, max_distance=sys.maxint, inplace=False):
         """Remove contacts between neighboring residues
+
+        The algorithm works by keeping contact pairs that satisfy
+    
+            ``min_distance`` <= ``x`` < ``max_distance``
 
         Parameters
         ----------
         min_distance : int, optional
-           The minimum number of residues between contacts  [default: 5]
+           The minimum number of residues between contacts [default: 5]
+        max_distance : int, optional
+           The maximum number of residues between contacts [defailt: maximum nr permitted by OS]
         inplace : bool, optional
            Replace the saved order of contacts [default: False]
 
         Returns
         -------
-        contact_map : :obj:`ContactMap <conkit.core.ContactMap>`
+        obj
            The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
 
         """
         contact_map = self._inplace(inplace)
         for contact in contact_map.copy():
-            if abs(contact.res1_seq - contact.res2_seq) < min_distance:
+            if min_distance <= abs(contact.res1_seq - contact.res2_seq) < max_distance:
+                continue
+            else:
                 contact_map.remove(contact.id)
         return contact_map
 
@@ -1506,7 +1572,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        contact_map : :obj:`ContactMap <conkit.core.ContactMap>`
+        obj
            The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
 
         """
@@ -1538,7 +1604,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        contact_map : :obj:`ContactMap <conkit.core.ContactMap>`
+        obj
            The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
 
         Raises
@@ -1770,7 +1836,7 @@ class ContactFile(_Entity):
 
         Returns
         -------
-        top_map : :obj:`ContactMap <conkit.core.ContactMap>`, None
+        obj, None
            The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
@@ -1793,7 +1859,7 @@ class ContactFile(_Entity):
 
         Returns
         -------
-        contact_map : :obj:`ContactMap <conkit.core.ContactMap>`
+        obj
            The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
 
         Raises
@@ -1931,9 +1997,9 @@ class Sequence(_Entity):
 
         Returns
         -------
-        :obj:`Sequence <conkit.core.Sequence>`
+        obj
            The reference to the :obj:`Sequence`, regardless of inplace
-        :obj:`Sequence <conkit.core.Sequence>`
+        obj
            The reference to the :obj:`Sequence`, regardless of inplace
 
         """
@@ -1964,9 +2030,9 @@ class Sequence(_Entity):
 
         Returns
         -------
-        :obj:`Sequence <conkit.core.Sequence>`
+        obj
            The reference to the :obj:`Sequence <conkit.core.Sequence>`, regardless of inplace
-        :obj:`Sequence <conkit.core.Sequence>`
+        obj
            The reference to the :obj:`Sequence <conkit.core.Sequence>`, regardless of inplace
 
         """
@@ -2124,7 +2190,7 @@ class SequenceFile(_Entity):
 
         Returns
         -------
-        :obj:`Sequence <conkit.core.Sequence>`, None
+        obj
            The first :obj:`Sequence <conkit.core.Sequence>` entry in :obj:`SequenceFile <conkit.core.SequenceFile>`
 
         """
@@ -2247,7 +2313,7 @@ class SequenceFile(_Entity):
 
         Returns
         -------
-        :obj:`SequenceFile <conkit.core.SequenceFile>`
+        obj
            The reference to the :obj:`SequenceFile <conkit.core.SequenceFile>`, regardless of inplace
 
         Raises
@@ -2274,7 +2340,7 @@ class SequenceFile(_Entity):
 
         Returns
         -------
-        :obj:`SequenceFile <conkit.core.SequenceFile>`
+        obj
            The reference to the :obj:`SequenceFile <conkit.core.SequenceFile>`, regardless of inplace
 
         """

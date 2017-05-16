@@ -1318,6 +1318,38 @@ class TestContactMap(unittest.TestCase):
         self.assertDictEqual({}, contact_map_mod.child_dict)
         self.assertEqual(contact_map, contact_map_mod)
 
+    def test_remove_neighbors_3(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.remove_neighbors(min_distance=6, max_distance=12, inplace=True)
+        self.assertEqual([(2, 10)], [c.id for c in contact_map_mod])
+        self.assertEqual([(2, 10)], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_remove_neighbors_4(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.remove_neighbors(min_distance=12, max_distance=24, inplace=True)
+        self.assertEqual([(3, 20)], [c.id for c in contact_map_mod])
+        self.assertEqual([(3, 20)], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_remove_neighbors_5(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.remove_neighbors(min_distance=24, inplace=True)
+        self.assertEqual([(1, 30)], [c.id for c in contact_map_mod])
+        self.assertEqual([(1, 30)], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_remove_neighbors_6(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.remove_neighbors(min_distance=6, max_distance=24, inplace=True)
+        self.assertEqual([(2, 10), (3, 20)], [c.id for c in contact_map_mod])
+        self.assertEqual([(2, 10), (3, 20)], sorted(contact_map_mod.child_dict.keys()))
+
     def test_rescale_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
