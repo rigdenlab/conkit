@@ -1524,7 +1524,7 @@ class ContactMap(_Entity):
 
         return contact_map1
 
-    def remove_neighbors(self, min_distance=5, max_distance=sys.maxint, inplace=False):
+    def remove_neighbors(self, min_distance=5, max_distance=sys.maxsize, inplace=False):
         """Remove contacts between neighboring residues
 
         The algorithm works by keeping contact pairs that satisfy
