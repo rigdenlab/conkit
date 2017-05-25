@@ -14,7 +14,7 @@ from Bio.Application import AbstractCommandline
 import warnings
 
 
-class HHblitsCommandLine(AbstractCommandline):
+class HHblitsCommandline(AbstractCommandline):
     """
     Command line object for HHblits [#]_ [#]_ alignment generation
 
@@ -32,8 +32,8 @@ class HHblitsCommandLine(AbstractCommandline):
     --------
     To generate a Multiple Sequence Alignment, use:
 
-    >>> from conkit.applications import HHblitsCommandLine
-    >>> hhblits_cline = HHblitsCommandLine(
+    >>> from conkit.applications import HHblitsCommandline
+    >>> hhblits_cline = HHblitsCommandline(
     ...     input="test.fasta", database="uniprot20_29Feb2012"
     ... )
     >>> print(hhblits_cline)

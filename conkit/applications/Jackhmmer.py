@@ -12,7 +12,7 @@ from Bio.Application import _Switch
 from Bio.Application import AbstractCommandline
 
 
-class JackhmmerCommandLine(AbstractCommandline):
+class JackhmmerCommandline(AbstractCommandline):
     """
     Command line object for Jackhmmer [#]_ alignment generation
 
@@ -28,8 +28,8 @@ class JackhmmerCommandLine(AbstractCommandline):
     --------
     To generate a Multiple Sequence Alignment, use:
 
-    >>> from conkit.applications import JackhmmerCommandLine
-    >>> jackhmmer_cline = JackhmmerCommandLine(
+    >>> from conkit.applications import JackhmmerCommandline
+    >>> jackhmmer_cline = JackhmmerCommandline(
     ...     input="test.fasta", database="uniref100.fasta"
     ... )
     >>> print(jackhmmer_cline)

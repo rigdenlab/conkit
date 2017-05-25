@@ -11,7 +11,7 @@ from Bio.Application import _Option
 from Bio.Application import AbstractCommandline
 
 
-class HHfilterCommandLine(AbstractCommandline):
+class HHfilterCommandline(AbstractCommandline):
     """
     Command line object for HHfilter [#]_ [#]_ alignment filter application
 
@@ -29,8 +29,8 @@ class HHfilterCommandLine(AbstractCommandline):
     --------
     To generate a Multiple Sequence Alignment, use:
 
-    >>> from conkit.applications import HHfilterCommandLine
-    >>> hhfilter_cline = HHfilterCommandLine(
+    >>> from conkit.applications import HHfilterCommandline
+    >>> hhfilter_cline = HHfilterCommandline(
     ...     input='test.a3m', output='test.filtered.a3m'
     ... )
     >>> print(hhfilter_cline)

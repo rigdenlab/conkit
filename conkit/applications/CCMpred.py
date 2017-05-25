@@ -13,7 +13,7 @@ from Bio.Application import _Switch
 from Bio.Application import AbstractCommandline
 
 
-class CCMpredCommandLine(AbstractCommandline):
+class CCMpredCommandline(AbstractCommandline):
     """
     Command line object for CCMpred [#]_ contact prediction application
 
@@ -32,8 +32,8 @@ class CCMpredCommandLine(AbstractCommandline):
     To predict a contact map using a Multiple Sequence Alignment in
     JONES format, use:
 
-    >>> from conkit.applications import CCMpredCommandLine
-    >>> ccmpred_cline = CCMpredCommandLine(
+    >>> from conkit.applications import CCMpredCommandline
+    >>> ccmpred_cline = CCMpredCommandline(
     ...    alnfile="test.aln", matfile="output.mat"
     ... )
     >>> print(ccmpred_cline)

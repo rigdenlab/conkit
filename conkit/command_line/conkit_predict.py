@@ -125,7 +125,7 @@ def main(argl=None):
             seq_fname = seq_fname_tmp
 
         # Generate a multiple sequence alignment
-        hhblits_cline = conkit.applications.HHblitsCommandLine(cmd=hhblits,
+        hhblits_cline = conkit.applications.HHblitsCommandline(cmd=hhblits,
                                                                input=seq_fname, output=hhr_fname,
                                                                database=hhblitsdb, oa3m=a3m_fname,
                                                                niterations=3, id=99, show_all=True,
@@ -161,7 +161,7 @@ def main(argl=None):
     # Use the re-formatted alignment for contact prediction
     ccmpred = args.ccmpred
     matrix_fname = os.path.join(args.wdir, args.prefix + '.mat')
-    ccmpred_cline = conkit.applications.CCMpredCommandLine(cmd=ccmpred,
+    ccmpred_cline = conkit.applications.CCMpredCommandline(cmd=ccmpred,
                                                            alnfile=jon_fname, matfile=matrix_fname,
                                                            threads=2, renormalize=True)
     logger.info('Executing: %s', ccmpred_cline)

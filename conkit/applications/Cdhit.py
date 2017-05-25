@@ -11,7 +11,7 @@ from Bio.Application import _Option
 from Bio.Application import AbstractCommandline
 
 
-class CdhitCommandLine(AbstractCommandline):
+class CdhitCommandline(AbstractCommandline):
     """
     Command line object for Cd-hit [#]_ [#]_
 
@@ -36,8 +36,8 @@ class CdhitCommandLine(AbstractCommandline):
 
     Examples
     --------
-    >>> from conkit.applications import CdhitCommandLine
-    >>> cdhit_cline = CdhitCommandLine()
+    >>> from conkit.applications import CdhitCommandline
+    >>> cdhit_cline = CdhitCommandline()
     >>> print(cdhit_cline)
 
     You would typically run the command line with :func:`cdhit_cline` or via

@@ -13,7 +13,7 @@ from Bio.Application import _Switch
 from Bio.Application import AbstractCommandline
 
 
-class BbcontactsCommandLine(AbstractCommandline):
+class BbcontactsCommandline(AbstractCommandline):
     """
     Command line object for bbcontacts [#]_ contact filtering application
 
@@ -33,8 +33,8 @@ class BbcontactsCommandLine(AbstractCommandline):
     To filter a contact map using a Multiple Sequence Alignment in
     CCMpred format, use:
 
-    >>> from conkit.applications import BbcontactsCommandLine
-    >>> bbcontacts_cline = BbcontactsCommandLine(
+    >>> from conkit.applications import BbcontactsCommandline
+    >>> bbcontacts_cline = BbcontactsCommandline(
     ...     matfile='test.mat', diversity_score=0.482, prefix='test'
     ... )
     >>> print(bbcontacts_cline)

@@ -12,7 +12,7 @@ from Bio.Application import _Switch
 from Bio.Application import AbstractCommandline
 
 
-class PsicovCommandLine(AbstractCommandline):
+class PsicovCommandline(AbstractCommandline):
     """
     Command line object for PSICOV [#]_ contact prediction application
 
@@ -30,8 +30,8 @@ class PsicovCommandLine(AbstractCommandline):
     To predict a contact map using a Multiple Sequence Alignment in
     JONES format, use:
 
-    >>> from conkit.applications import PsicovCommandLine
-    >>> psicov_cline = PsicovCommandLine(alnfile="test.aln")
+    >>> from conkit.applications import PsicovCommandline
+    >>> psicov_cline = PsicovCommandline(alnfile="test.aln")
     >>> print(ccmpred_cline)
     psicov test.aln
 
