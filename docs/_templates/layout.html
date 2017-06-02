@@ -1,8 +1,5 @@
 {% extends "!layout.html" %}
 
-{# Custom CSS overrides #}
-{% set bootswatch_css_custom = ['_static/custom.css'] %}
-
 {% block header %}
 <div id="header" class="{{ theme_header_class }} header-default {% if theme_header_fixed_top|tobool -%} header-fixed-top{%- endif -%}">
   <div class="container">
