@@ -1198,6 +1198,7 @@ class ContactMap(_Entity):
                 res1_index, res2_index = c.res1_altseq, c.res2_altseq
             else:
                 res1_index, res2_index = c.res1_seq, c.res2_seq
+            print(c)
             c.res1 = self.sequence.seq[res1_index - 1]
             c.res2 = self.sequence.seq[res2_index - 1]
 
@@ -1308,8 +1309,6 @@ class ContactMap(_Entity):
            Cannot find SciKit package
         ValueError
            Undefined bandwidth method
-        ValueError
-           The ContactMap is empty!
 
         """
         if not SKLEARN:
@@ -1318,8 +1317,8 @@ class ContactMap(_Entity):
         # Compute the relevant data we need
         x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
         if x.size == 0:
-            msg = "The ContactMap is empty!"
-            raise ValueError(msg)
+            print("The ContactMap is empty!")
+            return []
         x_fit = np.linspace(x.min(), x.max() + 1, x.max() - x.min() + 1)[:, np.newaxis]
 
         # Obtain the bandwidth as defined by user method
