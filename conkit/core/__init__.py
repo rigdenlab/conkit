@@ -1198,7 +1198,6 @@ class ContactMap(_Entity):
                 res1_index, res2_index = c.res1_altseq, c.res2_altseq
             else:
                 res1_index, res2_index = c.res1_seq, c.res2_seq
-            print(c)
             c.res1 = self.sequence.seq[res1_index - 1]
             c.res2 = self.sequence.seq[res2_index - 1]
 
@@ -1314,12 +1313,14 @@ class ContactMap(_Entity):
         if not SKLEARN:
             raise RuntimeError('Cannot find SciKit package')
 
-        # Compute the relevant data we need
-        x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
-        if x.size == 0:
+        if len(self) == 0:
             print("The ContactMap is empty!")
             return []
-        x_fit = np.linspace(x.min(), x.max() + 1, x.max() - x.min() + 1)[:, np.newaxis]
+
+        # Compute the ranges between each contact pair and store it
+        x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+        # Compute per-residue points for density extraction
+        x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
 
         # Obtain the bandwidth as defined by user method
         if bw_method == "amise":

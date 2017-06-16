@@ -506,9 +506,7 @@ class TestContact(unittest.TestCase):
         contact.res2_seq = 5
         self.assertEqual(5, contact.res2_seq)
 
-    def test_res1_altseq(self):
-        # ======================================================
-        # Test Case 1
+    def test_res1_altseq_1(self):
         contact = Contact(1, 2000000, 1.0)
         contact.res1_altseq = 1000
         self.assertEqual(1000, contact.res1_altseq)
@@ -816,19 +814,24 @@ class TestContactMap(unittest.TestCase):
 
     def test_calculate_kernel_density_1(self):
         contact_map1 = ContactMap('foo')
-        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1)]:
             contact_map1.add(c)
         density = contact_map1.calculate_kernel_density()
-        self.assertEqual(
-            [0.16474084813765252, 0.261112863222513, 0.19866887264998387, 0.06773394884313075], density)
+        self.assertEqual([0.11944664492151888, 0.20124328187327287, 0.23868489948868032, 0.20124328187327284, 0.11944664492151894], density)
 
     def test_calculate_kernel_density_2(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
         density = contact_map1.calculate_kernel_density()
-        self.assertEqual(
-            [0.14936186609839505, 0.2861706643122889, 0.22273876277011645, 0.05660346699219792], density)
+        self.assertEqual([0.10012592274179978, 0.19837169506444377, 0.26841488628499205, 0.23132109484153407, 0.1217899243718511], density)
+
+    def test_calculate_kernel_density_3(self):
+        contact_map1 = ContactMap('foo')
+        for c in [Contact(3, 5, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
+            contact_map1.add(c)
+        density = contact_map1.calculate_kernel_density()
+        self.assertEqual([0.14422964774244934, 0.4134215939843202, 0.41342159398432, 0.14422964774244929], density)
 
     def test_find_1(self):
         contact_map1 = ContactMap('1')
