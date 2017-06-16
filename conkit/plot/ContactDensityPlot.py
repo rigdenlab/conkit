@@ -125,7 +125,7 @@ class ContactDensityFigure(Figure):
                 sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy])
             ))
         )
-        x = np.arange(residues.min(), residues.max())
+        x = np.arange(residues.min(), residues.max() + 1)
 
         ax.plot(x, dens, linestyle="solid",
                 color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")
