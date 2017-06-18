@@ -547,17 +547,17 @@ class Contact(_Entity):
     @property
     def is_match(self):
         """A boolean status for the contact"""
-        return True if self.status == Contact._MATCH else False
+        return self.status == Contact._MATCH
 
     @property
     def is_mismatch(self):
         """A boolean status for the contact"""
-        return True if self.status == Contact._MISMATCH else False
+        return self.status == Contact._MISMATCH
 
     @property
     def is_unknown(self):
         """A boolean status for the contact"""
-        return True if self.status == Contact._UNKNOWN else False
+        return self.status == Contact._UNKNOWN
 
     @property
     def lower_bound(self):
@@ -678,9 +678,10 @@ class Contact(_Entity):
 
         """
         # Keep this statement in case we get a float
-        if not isinstance(index, int):
+        if isinstance(index, int):
+            self._res1_altseq = index
+        else:
             raise TypeError('Data type int required for res_seq')
-        self._res1_altseq = index
 
     @property
     def res2_altseq(self):
@@ -697,9 +698,10 @@ class Contact(_Entity):
 
         """
         # Keep this statement in case we get a float
-        if not isinstance(index, int):
+        if isinstance(index, int):
+            self._res2_altseq = index
+        else:
             raise TypeError('Data type int required for res_seq')
-        self._res2_altseq = index
 
     @property
     def res1_chain(self):
@@ -748,9 +750,10 @@ class Contact(_Entity):
 
         """
         # Keep this statement in case we get a float
-        if not isinstance(index, int):
+        if isinstance(index, int):
+            self._res1_seq = index
+        else:
             raise TypeError('Data type int required for res_seq')
-        self._res1_seq = index
 
     @property
     def res2_seq(self):
@@ -767,9 +770,10 @@ class Contact(_Entity):
 
         """
         # Keep this statement in case we get a float
-        if not isinstance(index, int):
+        if isinstance(index, int):
+            self._res2_seq = index
+        else:
             raise TypeError('Data type int required for res_seq')
-        self._res2_seq = index
 
     @property
     def scalar_score(self):
@@ -1084,14 +1088,12 @@ class ContactMap(_Entity):
         repr_sequence_altloc, sequence
 
         """
-        if not isinstance(self.sequence, Sequence):
+        if isinstance(self.sequence, Sequence):
+            res1_seqs, res2_seqs = list(zip(*[contact.id for contact in self]))
+            res_seqs = set(sorted(res1_seqs + res2_seqs))
+            return self._construct_repr_sequence(list(res_seqs))
+        else:
             raise TypeError('Define the sequence as Sequence() instance')
-        # Get all resseqs that are the contact map
-        res1_seqs, res2_seqs = list(zip(*[contact.id for contact in self]))
-        res_seqs = set(
-            sorted(res1_seqs + res2_seqs)
-        )
-        return self._construct_repr_sequence(list(res_seqs))
 
     @property
     def repr_sequence_altloc(self):
@@ -1115,14 +1117,12 @@ class ContactMap(_Entity):
         repr_sequence, sequence
 
         """
-        if not isinstance(self.sequence, Sequence):
+        if isinstance(self.sequence, Sequence):
+            res1_seqs, res2_seqs = list(zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
+            res_seqs = set(sorted(res1_seqs + res2_seqs))
+            return self._construct_repr_sequence(list(res_seqs))
+        else:
             raise TypeError('Define the sequence as Sequence() instance')
-        # Get all resseqs that are the contact map
-        res1_seqs, res2_seqs = list(zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
-        res_seqs = set(
-            sorted(res1_seqs + res2_seqs)
-        )
-        return self._construct_repr_sequence(list(res_seqs))
 
     @property
     def sequence(self):
@@ -1154,9 +1154,10 @@ class ContactMap(_Entity):
            Incorrect hierarchy instance provided
 
         """
-        if not isinstance(sequence, Sequence):
+        if isinstance(sequence, Sequence):
+            self._sequence = sequence
+        else:
             raise TypeError('Instance of Sequence() required: {0}'.format(sequence))
-        self._sequence = sequence
 
     @property
     def top_contact(self):
@@ -1177,7 +1178,7 @@ class ContactMap(_Entity):
         """Construct the representative sequence"""
         # Determine which are present and which are not
         representative_sequence = ''
-        for i in range(1, self.sequence.seq_len + 1):
+        for i in np.arange(1, self.sequence.seq_len + 1):
             if i in res_seqs:
                 representative_sequence += self.sequence.seq[i - 1]
             else:
@@ -1367,7 +1368,6 @@ class ContactMap(_Entity):
         sca_scores = raw_scores / np.mean(raw_scores)
         for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
-        return
 
     def find(self, indexes, altloc=False):
         """Find all contacts associated with ``index``
@@ -2353,12 +2353,11 @@ class SequenceFile(_Entity):
         """
         sequence_file = self._inplace(inplace)
 
-        if not self.is_alignment:
-            raise ValueError('This is not an alignment')
-
-        i, j = start-1, end
-        for sequence in sequence_file:
-            sequence.seq = sequence.seq[i:j]
-
-        return sequence_file
+        if self.is_alignment:
+            i, j = start-1, end
+            for sequence in sequence_file:
+                sequence.seq = sequence.seq[i:j]
+            return sequence_file
+        else:
+            raise ValueError("This is not an alignment")
 
