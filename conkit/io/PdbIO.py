@@ -62,8 +62,8 @@ class _GenericStructureParser(_ContactFileParser):
         assert len(range1) == len(chain1)
         assert len(range2) == len(chain2)
 
-        for (resseq1_alt, residue1), (resseq2_alt, residue2) in itertools.product(list(zip(range1, chain1)),
-                                                                                  list(zip(range2, chain2))):
+        for (resseq1_alt, residue1), (resseq2_alt, residue2) in itertools.product(list(itertools.izip(range1, chain1)),
+                                                                                  list(itertools.izip(range2, chain2))):
             for atom1, atom2 in itertools.product(residue1, residue2):
 
                 # Ignore duplicates
