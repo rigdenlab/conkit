@@ -12,10 +12,12 @@ from Bio import pairwise2
 
 import collections
 import copy
-import itertools
 import numpy as np
 import operator
 import sys
+
+if sys.version_info.major < 3:
+    from itertools import izip as zip
 
 try:
     import scipy.spatial
@@ -1052,7 +1054,7 @@ class ContactMap(_Entity):
         # np.unique(..., return_counts=True) added in numpy > 1.9, backward compatibility
         # requires we do it the old way :-/
         s = np.asarray([c.status for c in self])
-        cdict = dict(itertools.izip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
+        cdict = dict(zip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
         fp_count = cdict[Contact._MISMATCH] if Contact._MISMATCH in cdict else 0.0
         uk_count = cdict[Contact._UNKNOWN] if Contact._UNKNOWN in cdict else 0.0
         tp_count = cdict[Contact._MATCH] if Contact._MATCH in cdict else 0.0
@@ -1089,7 +1091,7 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res1_seqs, res2_seqs = list(itertools.izip(*[contact.id for contact in self]))
+            res1_seqs, res2_seqs = list(zip(*[contact.id for contact in self]))
             res_seqs = set(sorted(res1_seqs + res2_seqs))
             return self._construct_repr_sequence(list(res_seqs))
         else:
@@ -1118,7 +1120,7 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res1_seqs, res2_seqs = list(itertools.izip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
+            res1_seqs, res2_seqs = list(zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
             res_seqs = set(sorted(res1_seqs + res2_seqs))
             return self._construct_repr_sequence(list(res_seqs))
         else:
@@ -1366,7 +1368,7 @@ class ContactMap(_Entity):
         """
         raw_scores = np.asarray([c.raw_score for c in self])
         sca_scores = raw_scores / np.mean(raw_scores)
-        for contact, sca_score in itertools.izip(self, sca_scores):
+        for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
 
     def find(self, indexes, altloc=False):
@@ -1592,7 +1594,7 @@ class ContactMap(_Entity):
         if np.isnan(norm_raw_scores).all():
             norm_raw_scores = np.where(norm_raw_scores == np.isnan, 0, 1)
 
-        for contact, norm_raw_score in itertools.izip(contact_map, norm_raw_scores):
+        for contact, norm_raw_score in zip(contact_map, norm_raw_scores):
             contact.raw_score = norm_raw_score
 
         return contact_map
@@ -1661,7 +1663,7 @@ class ContactMap(_Entity):
             contact_map_keymap[res1_index] = pos1
             contact_map_keymap[res2_index] = pos2
         contact_map_keymap_sorted = sorted(list(contact_map_keymap.items()), key=lambda x: int(x[0]))
-        return list(itertools.izip(*contact_map_keymap_sorted))[1]
+        return list(zip(*contact_map_keymap_sorted))[1]
 
     @staticmethod
     def _find_single(contact_map, index):
@@ -1692,7 +1694,7 @@ class ContactMap(_Entity):
     @staticmethod
     def _renumber(contact_map, self_keymap, other_keymap):
         """Renumber the contact map based on the mapping of self and other keymaps"""
-        for self_residue, other_residue in itertools.izip(self_keymap, other_keymap):
+        for self_residue, other_residue in zip(self_keymap, other_keymap):
             if isinstance(self_residue, _Gap):
                 continue
             for contact in ContactMap._find_single(contact_map, self_residue.res_seq):
