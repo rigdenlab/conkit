@@ -6,7 +6,7 @@ __date__ = "13 Sep 2016"
 import os
 import unittest
 
-from conkit.io.JonesIO import JonesParser
+from conkit.io.jones import JonesParser
 from conkit.io._iotools import create_tmp_f
 
 

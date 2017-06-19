@@ -11,9 +11,9 @@ Submodules
 
 .. toctree::
 
-   conkit.plot.ContactDensityPlot
-   conkit.plot.ContactMapChordPlot
-   conkit.plot.ContactMapPlot
-   conkit.plot.PrecisionEvaluationPlot
-   conkit.plot.SequenceCoveragePlot
+   conkit.plot.contactdensity
+   conkit.plot.contactmap
+   conkit.plot.contactmapchord
+   conkit.plot.precisionevaluation
+   conkit.plot.sequencecoverage
 

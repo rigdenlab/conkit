@@ -3,7 +3,7 @@
 __author__ = "Felix Simkovic"
 __date__ = "08 Feb 2017"
 
-from conkit.plot._Figure import Figure
+from conkit.plot._figure import Figure
 
 import unittest
 

@@ -3,13 +3,13 @@
 __author__ = "Felix Simkovic"
 __date__ = "18 Oct 2016"
 
-from conkit.core.ContactCore import Contact
-from conkit.core.ContactFileCore import ContactFile
-from conkit.core.ContactMapCore import ContactMap
-from conkit.core.SequenceCore import Sequence
-from conkit.core.SequenceFileCore import SequenceFile
-from conkit.io._ParserIO import _ContactFileParser
-from conkit.io._ParserIO import _SequenceFileParser
+from conkit.core.contact import Contact
+from conkit.core.contactfile import ContactFile
+from conkit.core.contactmap import ContactMap
+from conkit.core.sequence import Sequence
+from conkit.core.sequencefile import SequenceFile
+from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import _SequenceFileParser
 
 import unittest
 

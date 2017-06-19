@@ -11,22 +11,22 @@ Submodules
 
 .. toctree::
 
-   conkit.io.A3mIO
-   conkit.io.BCLContactIO
-   conkit.io.BbcontactsIO
-   conkit.io.CCMpredIO
-   conkit.io.CaspIO
-   conkit.io.ComsatIO
-   conkit.io.EPCMapIO
-   conkit.io.EVfoldIO
-   conkit.io.FastaIO
-   conkit.io.FreeContactIO
-   conkit.io.GremlinIO
-   conkit.io.JonesIO
-   conkit.io.MemBrainIO
-   conkit.io.PconsIO
-   conkit.io.PdbIO
-   conkit.io.PlmDCAIO
-   conkit.io.PsicovIO
-   conkit.io.StockholmIO
+   conkit.io.a3m
+   conkit.io.bbcontacts
+   conkit.io.bclcontact
+   conkit.io.casp
+   conkit.io.ccmpred
+   conkit.io.comsat
+   conkit.io.epcmap
+   conkit.io.evfold
+   conkit.io.fasta
+   conkit.io.freecontact
+   conkit.io.gremlin
+   conkit.io.jones
+   conkit.io.membrain
+   conkit.io.pcons
+   conkit.io.pdb
+   conkit.io.plmdca
+   conkit.io.psicov
+   conkit.io.stockholm
 

@@ -6,11 +6,11 @@ __date__ = "17 Aug 2016"
 import os
 import unittest
 
-from conkit.core.ContactCore import Contact
-from conkit.core.ContactFileCore import ContactFile
-from conkit.core.ContactMapCore import ContactMap
-from conkit.core.SequenceCore import Sequence
-from conkit.io.CaspIO import CaspParser
+from conkit.core.contact import Contact
+from conkit.core.contactfile import ContactFile
+from conkit.core.contactmap import ContactMap
+from conkit.core.sequence import Sequence
+from conkit.io.casp import CaspParser
 from conkit.io._iotools import create_tmp_f
 
 

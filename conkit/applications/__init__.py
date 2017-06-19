@@ -37,35 +37,35 @@ __version__ = "0.1"
 
 
 def BbcontactsCommandline(*args, **kwargs):
-    from conkit.applications.Bbcontacts import BbcontactsCommandline
+    from conkit.applications.bbcontacts import BbcontactsCommandline
     return BbcontactsCommandline(*args, **kwargs)
 
 
 def CCMpredCommandline(*args, **kwargs):
-    from conkit.applications.CCMpred import CCMpredCommandline
+    from conkit.applications.ccmpred import CCMpredCommandline
     return CCMpredCommandline(*args, **kwargs)
 
 
 def CdhitCommandline(*args, **kwargs):
-    from conkit.applications.Cdhit import CdhitCommandline
+    from conkit.applications.cdhit import CdhitCommandline
     return CdhitCommandline(*args, **kwargs)
 
 
 def HHblitsCommandline(*args, **kwargs):
-    from conkit.applications.HHblits import HHblitsCommandline
+    from conkit.applications.hhblits import HHblitsCommandline
     return HHblitsCommandline(*args, **kwargs)
 
 
 def HHfilterCommandline(*args, **kwargs):
-    from conkit.applications.HHfilter import HHfilterCommandline
+    from conkit.applications.hhfilter import HHfilterCommandline
     return HHfilterCommandline(*args, **kwargs)
 
 
 def JackhmmerCommandline(*args, **kwargs):
-    from conkit.applications.Jackhmmer import JackhmmerCommandline
+    from conkit.applications.jackhmmer import JackhmmerCommandline
     return JackhmmerCommandline(*args, **kwargs)
 
 
 def PsicovCommandline(*args, **kwargs):
-    from conkit.applications.Psicov import PsicovCommandline
+    from conkit.applications.psicov import PsicovCommandline
     return PsicovCommandline(*args, **kwargs)

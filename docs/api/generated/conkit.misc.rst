@@ -11,5 +11,5 @@ Submodules
 
 .. toctree::
 
-   conkit.misc.Bandwidth
+   conkit.misc.bandwidth
 

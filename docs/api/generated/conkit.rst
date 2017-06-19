@@ -18,3 +18,10 @@ Subpackages
     conkit.misc
     conkit.plot
 
+Submodules
+----------
+
+.. toctree::
+
+   conkit.version
+

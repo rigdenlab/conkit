@@ -6,7 +6,7 @@ __date__ = "12 Dec 2016"
 import os
 import unittest
 
-from conkit.io.BCLContactIO import BCLContactParser
+from conkit.io.bclcontact import BCLContactParser
 from conkit.io._iotools import create_tmp_f
 
 

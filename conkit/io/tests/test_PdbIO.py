@@ -6,7 +6,7 @@ __date__ = "26 Oct 2016"
 import os
 import unittest
 
-from conkit.io.PdbIO import PdbParser
+from conkit.io.pdb import PdbParser
 from conkit.io._iotools import create_tmp_f
 
 

@@ -6,7 +6,7 @@ __date__ = "12 Sep 2016"
 import os
 import unittest
 
-from conkit.io.StockholmIO import StockholmParser
+from conkit.io.stockholm import StockholmParser
 from conkit.io._iotools import create_tmp_f
 
 

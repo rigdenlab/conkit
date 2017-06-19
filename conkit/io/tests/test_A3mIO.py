@@ -6,7 +6,7 @@ __date__ = "11 Sep 2016"
 import os
 import unittest
 
-from conkit.io.A3mIO import A3mParser
+from conkit.io.a3m import A3mParser
 from conkit.io._iotools import create_tmp_f
 
 

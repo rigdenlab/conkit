@@ -6,7 +6,7 @@ __date__ = "09 Sep 2016"
 import os
 import unittest
 
-from conkit.io.FastaIO import FastaParser
+from conkit.io.fasta import FastaParser
 from conkit.io._iotools import create_tmp_f
 
 

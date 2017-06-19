@@ -11,9 +11,9 @@ Submodules
 
 .. toctree::
 
-   conkit.core.ContactCore
-   conkit.core.ContactFileCore
-   conkit.core.ContactMapCore
-   conkit.core.SequenceCore
-   conkit.core.SequenceFileCore
+   conkit.core.contact
+   conkit.core.contactfile
+   conkit.core.contactmap
+   conkit.core.sequence
+   conkit.core.sequencefile
 
