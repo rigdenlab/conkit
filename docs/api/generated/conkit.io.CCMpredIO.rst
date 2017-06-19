@@ -1,5 +1,5 @@
-conkit.io.CCMpredIO module
-==========================
+conkit\.io\.CCMpredIO module
+============================
 
 .. automodule:: conkit.io.CCMpredIO
     :members:

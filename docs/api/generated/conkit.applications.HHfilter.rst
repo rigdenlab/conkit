@@ -1,5 +1,5 @@
-conkit.applications.HHfilter module
-===================================
+conkit\.applications\.HHfilter module
+=====================================
 
 .. automodule:: conkit.applications.HHfilter
     :members:

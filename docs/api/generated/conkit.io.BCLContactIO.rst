@@ -1,5 +1,5 @@
-conkit.io.BCLContactIO module
-=============================
+conkit\.io\.BCLContactIO module
+===============================
 
 .. automodule:: conkit.io.BCLContactIO
     :members:

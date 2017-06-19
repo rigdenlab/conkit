@@ -1,5 +1,5 @@
-conkit.io.JonesIO module
-========================
+conkit\.io\.JonesIO module
+==========================
 
 .. automodule:: conkit.io.JonesIO
     :members:

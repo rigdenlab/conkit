@@ -1,5 +1,5 @@
-conkit.io.GremlinIO module
-==========================
+conkit\.io\.GremlinIO module
+============================
 
 .. automodule:: conkit.io.GremlinIO
     :members:

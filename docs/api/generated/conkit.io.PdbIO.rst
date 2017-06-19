@@ -1,5 +1,5 @@
-conkit.io.PdbIO module
-======================
+conkit\.io\.PdbIO module
+========================
 
 .. automodule:: conkit.io.PdbIO
     :members:

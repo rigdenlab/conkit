@@ -15,5 +15,6 @@ Subpackages
     conkit.command_line
     conkit.core
     conkit.io
+    conkit.misc
     conkit.plot
 

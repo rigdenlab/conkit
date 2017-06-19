@@ -1,5 +1,5 @@
-conkit.io package
-=================
+conkit\.io package
+==================
 
 .. automodule:: conkit.io
     :members:

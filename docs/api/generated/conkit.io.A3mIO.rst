@@ -1,5 +1,5 @@
-conkit.io.A3mIO module
-======================
+conkit\.io\.A3mIO module
+========================
 
 .. automodule:: conkit.io.A3mIO
     :members:

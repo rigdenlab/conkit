@@ -1,5 +1,5 @@
-conkit.applications.HHblits module
-==================================
+conkit\.applications\.HHblits module
+====================================
 
 .. automodule:: conkit.applications.HHblits
     :members:

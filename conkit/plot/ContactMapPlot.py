@@ -1,8 +1,38 @@
+# BSD 3-Clause License
+#
+# Copyright (c) 2016-17, University of Liverpool
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 A module to produce a contact map plot
 """
 
 from __future__ import division
+from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
@@ -11,8 +41,8 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.core import _Gap
 from conkit.plot._Figure import Figure
+from conkit.core._Struct import _Gap
 from conkit.plot._plottools import ColorDefinitions
 
 
@@ -144,7 +174,7 @@ class ContactMapFigure(Figure):
 
         # Plot the self contacts
         self_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy
-                                   if not (c.res1_seq == _Gap._IDENTIFIER or c.res2_seq == _Gap._IDENTIFIER)])
+                                   if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
         if self.use_conf:
             # ptp is (max - min)
@@ -160,7 +190,7 @@ class ContactMapFigure(Figure):
         # Plot the other contacts
         if self._other:
             other_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other
-                                        if not (c.res1_seq == _Gap._IDENTIFIER or c.res2_seq == _Gap._IDENTIFIER)])
+                                        if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
             other_colors = ContactMapFigure._determine_color(self._other)
             if self.use_conf:
                 # ptp is (max - min)

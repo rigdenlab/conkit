@@ -1,5 +1,5 @@
-conkit.applications.Psicov module
-=================================
+conkit\.applications\.Psicov module
+===================================
 
 .. automodule:: conkit.applications.Psicov
     :members:

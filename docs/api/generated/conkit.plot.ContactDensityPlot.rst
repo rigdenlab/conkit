@@ -1,5 +1,5 @@
-conkit.plot.ContactDensityPlot module
-=====================================
+conkit\.plot\.ContactDensityPlot module
+=======================================
 
 .. automodule:: conkit.plot.ContactDensityPlot
     :members:

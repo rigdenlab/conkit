@@ -3,14 +3,14 @@
 __author__ = "Felix Simkovic"
 __date__ = "26 Oct 2016"
 
-from conkit.io.PdbIO import PdbParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.io.PdbIO import PdbParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestPdbIO(unittest.TestCase):
 
     def test_read_1(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N

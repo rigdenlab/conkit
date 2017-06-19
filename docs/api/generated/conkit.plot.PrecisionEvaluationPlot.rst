@@ -1,5 +1,5 @@
-conkit.plot.PrecisionEvaluationPlot module
-==========================================
+conkit\.plot\.PrecisionEvaluationPlot module
+============================================
 
 .. automodule:: conkit.plot.PrecisionEvaluationPlot
     :members:

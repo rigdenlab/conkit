@@ -1,5 +1,5 @@
-conkit.applications.Jackhmmer module
-====================================
+conkit\.applications\.Jackhmmer module
+======================================
 
 .. automodule:: conkit.applications.Jackhmmer
     :members:

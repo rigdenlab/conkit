@@ -1,5 +1,5 @@
-conkit.io.FastaIO module
-========================
+conkit\.io\.FastaIO module
+==========================
 
 .. automodule:: conkit.io.FastaIO
     :members:

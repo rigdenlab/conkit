@@ -3,14 +3,14 @@
 __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
 
-from conkit.io.FastaIO import FastaParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.io.FastaIO import FastaParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestFastaParser(unittest.TestCase):
 
     def test_read_1(self):
         seq = """>00FAF_A <unknown description>

@@ -1,5 +1,5 @@
-conkit.io.BbcontactsIO module
-=============================
+conkit\.io\.BbcontactsIO module
+===============================
 
 .. automodule:: conkit.io.BbcontactsIO
     :members:

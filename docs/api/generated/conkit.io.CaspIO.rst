@@ -1,5 +1,5 @@
-conkit.io.CaspIO module
-=======================
+conkit\.io\.CaspIO module
+=========================
 
 .. automodule:: conkit.io.CaspIO
     :members:

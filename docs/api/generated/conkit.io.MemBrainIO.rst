@@ -1,5 +1,5 @@
-conkit.io.MemBrainIO module
-===========================
+conkit\.io\.MemBrainIO module
+=============================
 
 .. automodule:: conkit.io.MemBrainIO
     :members:

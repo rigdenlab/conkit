@@ -1,5 +1,5 @@
-conkit.plot.ContactMapPlot module
-=================================
+conkit\.plot\.ContactMapPlot module
+===================================
 
 .. automodule:: conkit.plot.ContactMapPlot
     :members:

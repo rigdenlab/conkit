@@ -1,5 +1,5 @@
-conkit.plot.SequenceCoveragePlot module
-=======================================
+conkit\.plot\.SequenceCoveragePlot module
+=========================================
 
 .. automodule:: conkit.plot.SequenceCoveragePlot
     :members:

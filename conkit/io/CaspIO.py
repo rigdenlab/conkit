@@ -1,3 +1,32 @@
+# BSD 3-Clause License
+#
+# Copyright (c) 2016-17, University of Liverpool
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 Parser module specific to CASP-RR predictions
 """
@@ -6,16 +35,15 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
-from conkit.core import Contact
-from conkit.core import ContactFile
-from conkit.core import ContactMap
-from conkit.core import Sequence
-from conkit.io._ParserIO import _ContactFileParser
-
 import collections
 import os
 import re
 
+from conkit.io._ParserIO import _ContactFileParser
+from conkit.core.ContactCore import Contact
+from conkit.core.ContactMapCore import ContactMap
+from conkit.core.ContactFileCore import ContactFile
+from conkit.core.SequenceCore import Sequence
 
 # Credits to Stefan Seemayer - bits taken from PyMOL-RR
 RE_PRFMAT = re.compile(r'PFRMAT\s+(RR)\s*$')
@@ -34,6 +62,7 @@ RE_END = re.compile(r'^END\s*$')
 ModelTemplate = collections.namedtuple('Model', ['id', 'contacts', 'sequence'])
 ContactTemplate = collections.namedtuple('Contact', ['res1_seq', 'res2_seq', 'lb', 'ub', 'raw_score',
                                                      'res1_chain', 'res2_chain', 'res1_altseq', 'res2_altseq'])
+
 
 class CaspParser(_ContactFileParser):
     """Parser class for CASP RR contact prediction file

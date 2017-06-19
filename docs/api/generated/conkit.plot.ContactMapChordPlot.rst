@@ -1,5 +1,5 @@
-conkit.plot.ContactMapChordPlot module
-======================================
+conkit\.plot\.ContactMapChordPlot module
+========================================
 
 .. automodule:: conkit.plot.ContactMapChordPlot
     :members:

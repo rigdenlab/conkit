@@ -3,14 +3,14 @@
 __author__ = "Felix Simkovic"
 __date__ = "11 Sep 2016"
 
-from conkit.io.A3mIO import A3mParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.io.A3mIO import A3mParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestA3mParser(unittest.TestCase):
 
     def test_read_1(self):
         msa = """>d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}

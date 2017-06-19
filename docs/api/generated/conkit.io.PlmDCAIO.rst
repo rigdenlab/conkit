@@ -1,5 +1,5 @@
-conkit.io.PlmDCAIO module
-=========================
+conkit\.io\.PlmDCAIO module
+===========================
 
 .. automodule:: conkit.io.PlmDCAIO
     :members:

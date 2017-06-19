@@ -3,14 +3,14 @@
 __author__ = "Felix Simkovic"
 __date__ = "12 Dec 2016"
 
-from conkit.io.BCLContactIO import BCLContactParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.io.BCLContactIO import BCLContactParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestBCLContactParser(unittest.TestCase):
 
     def test_read_1(self):
         content = """5 I    9 Q 0.000 0.286 0.185 0.836 0.875 0.749

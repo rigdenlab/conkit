@@ -1,5 +1,5 @@
-conkit.io.EVfoldIO module
-=========================
+conkit\.io\.EVfoldIO module
+===========================
 
 .. automodule:: conkit.io.EVfoldIO
     :members:

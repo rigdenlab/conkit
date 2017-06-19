@@ -3,19 +3,19 @@
 __author__ = "Felix Simkovic"
 __date__ = "14 Sep 2016"
 
-from conkit.core import Contact
-from conkit.core import ContactFile
-from conkit.core import ContactMap
-from conkit.core import Sequence
-from conkit.io.CCMpredIO import CCMpredParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import sys
 import unittest
 
+from conkit.core.ContactCore import Contact
+from conkit.core.ContactFileCore import ContactFile
+from conkit.core.ContactMapCore import ContactMap
+from conkit.core.SequenceCore import Sequence
+from conkit.io.CCMpredIO import CCMpredParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestCCMpredParser(unittest.TestCase):
 
     def test_read_1(self):
         content = """0.00000000000000000000e+00      9.05865192413330078125e-01      4.48399752378463745117e-01      3.83993983268737792969e-02      7.80840754508972167969e-01      5.15280842781066894531e-01      2.66545146703720092773e-01      4.99921828508377075195e-01      4.54095661640167236328e-01      7.60651350021362304688e-01

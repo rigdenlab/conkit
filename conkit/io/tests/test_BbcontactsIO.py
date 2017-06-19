@@ -3,14 +3,14 @@
 __author__ = "Felix Simkovic"
 __date__ = "26 Oct 2016"
 
-from conkit.io.BbcontactsIO import BbcontactsParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.io.BbcontactsIO import BbcontactsParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestBbcontactsParser(unittest.TestCase):
 
     def test_read_1(self):
         content = """#identifier diversity     direction viterbiscore indexpred        state  res1  res2

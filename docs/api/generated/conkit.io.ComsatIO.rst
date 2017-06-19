@@ -1,5 +1,5 @@
-conkit.io.ComsatIO module
-=========================
+conkit\.io\.ComsatIO module
+===========================
 
 .. automodule:: conkit.io.ComsatIO
     :members:
