@@ -16,7 +16,7 @@ class Test_ParserCache(unittest.TestCase):
 
     def test_2(self):
         c = _ParserCache()
-        self.assertFalse("casp" in c)
+        self.assertFalse("foo" in c)
 
     def test_3(self):
         c = _ParserCache()
@@ -24,7 +24,7 @@ class Test_ParserCache(unittest.TestCase):
 
     def test_4(self):
         c = _ParserCache()
-        self.assertFalse("casp" in c.contact_file_parsers)
+        self.assertFalse("bar" in c.contact_file_parsers)
 
     def test_5(self):
         c = _ParserCache()
@@ -32,7 +32,7 @@ class Test_ParserCache(unittest.TestCase):
 
     def test_6(self):
         c = _ParserCache()
-        self.assertFalse("fas" in c.sequence_file_parsers)
+        self.assertFalse("baz" in c.sequence_file_parsers)
 
     def test_7(self):
         c = _ParserCache()

@@ -43,6 +43,14 @@ __author__ = 'Felix Simkovic'
 __date__ = '19 Jun 2017'
 __version__ = "1.0"
 
+import copy
+import glob
+import importlib
+import os
+import re
+
+RE_CLASS_DECLARATION = re.compile("^class\s+([A-Za-z0-9]+)\s*(.*):$")
+
 
 class _CacheObj(object):
     """Container for individual module"""
@@ -55,13 +63,25 @@ class _CacheObj(object):
         self.object = object
         self.group = group
 
+    def __repr__(self):
+        return "{name}(id={id} module={module} object={object} group={group}".format(
+            name=self.__class__.__name__, **{k: getattr(self, k) for k in self.__class__.__slots__}
+        )
+
 
 class _ParserCache(object):
     """Cache to hold handlers to each file parser"""
+    
+    # This mask is for backward-compatibility and extensions to avoid re-writing the same algorithms
+    MASKS = {
+        "a3m": ["a3m", "a3m-inserts"], 
+        "casp": ["casp", "casprr"],
+        "pcons": ["pconsc", "pconsc2", "pconsc3"], 
+        "psicov": ["psicov", "metapsicov"]
+    }
 
     def __init__(self):
-        self._cfile_parsers = []    # Contact file parsers
-        self._sfile_parsers = []    # Sequence file parsers
+        self._parsers = []
 
         self.__construct()
 
@@ -80,48 +100,44 @@ class _ParserCache(object):
     def contact_file_parsers(self):
         """A dict of contact file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._cfile_parsers}
+        return {c.id: c for c in self._parsers if c.group == "_ContactFileParser" or c.group == "_GenericStructureParser"}
 
     @property
     def sequence_file_parsers(self):
         """A dict of sequence file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._sfile_parsers}
+        return {c.id: c for c in self._parsers if c.group == "_SequenceFileParser"}
 
     @property
     def file_parsers(self):
         """A dict of all file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._sfile_parsers + self._cfile_parsers}
+        return {c.id: c for c in self._parsers}
 
     def __construct(self):
         """Create the handles"""
-        base = "conkit.io."
-
-        self._cfile_parsers += [_CacheObj("bclcontact", base + "bclcontact", "BCLContactParser", "contact")]
-        self._cfile_parsers += [_CacheObj("bbcontacts", base + "bbcontacts", "BbcontactsParser", "contact")]
-        self._cfile_parsers += [_CacheObj("ccmpred", base + "ccmpred", "CCMpredParser", "contact")]
-        self._cfile_parsers += [_CacheObj("casprr", base + "casp", "CaspParser", "contact")]
-        self._cfile_parsers += [_CacheObj("comsat", base + "comsat", "ComsatParser", "contact")]
-        self._cfile_parsers += [_CacheObj("epcmap", base + "epcmap", "EPCMapParser", "contact")]
-        self._cfile_parsers += [_CacheObj("evfold", base + "evfold", "EVfoldParser", "contact")]
-        self._cfile_parsers += [_CacheObj("freecontact", base + "freecontact", "FreeContactParser", "contact")]
-        self._cfile_parsers += [_CacheObj("gremlin", base + "gremlin", "GremlinParser", "contact")]
-        self._cfile_parsers += [_CacheObj("membrain", base + "membrain", "MemBrainParser", "contact")]
-        self._cfile_parsers += [_CacheObj("pconsc", base + "pcons", "PconsParser", "contact")]
-        self._cfile_parsers += [_CacheObj("pconsc2", base + "pcons", "PconsParser", "contact")]
-        self._cfile_parsers += [_CacheObj("pconsc3", base + "pcons", "PconsParser", "contact")]
-        self._cfile_parsers += [_CacheObj("pdb", base + "pdb", "PdbParser", "contact")]
-        self._cfile_parsers += [_CacheObj("mmcif", base + "pdb", "MmCifParser", "contact")]
-        self._cfile_parsers += [_CacheObj("plmdca", base + "plmdca", "PlmDCAParser", "contact")]
-        self._cfile_parsers += [_CacheObj("psicov", base + "psicov", "PsicovParser", "contact")]
-        self._cfile_parsers += [_CacheObj("metapsicov", base + "psicov", "PsicovParser", "contact")]
-
-        self._sfile_parsers += [_CacheObj("a3m", base + "a3m", "A3mParser", "sequence")]
-        self._sfile_parsers += [_CacheObj("a3m-inserts", base + "a3m", "A3mParser", "sequence")]
-        self._sfile_parsers += [_CacheObj("fasta", base + "fasta", "FastaParser", "sequence")]
-        self._sfile_parsers += [_CacheObj("jones", base + "jones", "JonesParser", "sequence")]
-        self._sfile_parsers += [_CacheObj("stockholm", base + "stockholm", "StockholmParser", "sequence")]
+        path = os.path.abspath(os.path.dirname(__file__))
+        for m in glob.glob(os.path.join(path, "[!_]*.py")):
+            with open(m, "r") as f_in:
+                lines = [RE_CLASS_DECLARATION.match(l.strip()) for l in f_in if RE_CLASS_DECLARATION.match(l.strip())]
+            for match in lines:
+                decl = _CacheObj(None, None, match.group(1), None)
+                ggroup = match.group(2)
+                if ggroup and ggroup.startswith("(") and ggroup.endswith(")"):
+                    decl.group = ggroup.replace("(", "").replace(")", "")
+                else:
+                    decl.group = "Ungrouped"
+                name = os.path.basename(m).replace(".py", "")
+                decl.module = "conkit.io." + name
+                objname = decl.object.lower().replace("parser", "")
+                if objname in _ParserCache.MASKS:
+                    for extra in _ParserCache.MASKS[objname]:
+                        decl_ = copy.copy(decl)
+                        decl_.id = extra
+                        self._parsers += [decl_]
+                else:
+                    decl.id = objname
+                    self._parsers += [decl]
 
     def import_module(self, format):
         """Import a module defined in the cache"""
