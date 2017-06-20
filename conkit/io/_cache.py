@@ -27,7 +27,17 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""Module containing code for caching all parsers"""
+"""Module containing code for caching all parsers
+
+Description
+-----------
+This module is an import caching facility used for the I/O package in ConKit.
+
+To allow fast access to individual modules required for read(), write() and convert()
+functions, we don't want to import everything every time. Thus, we only cache the 
+results to ultimately import the bits we really require.
+
+"""
 
 __author__ = 'Felix Simkovic'
 __date__ = '19 Jun 2017'
@@ -113,7 +123,15 @@ class _ParserCache(object):
         self._sfile_parsers += [_CacheObj("jones", base + "jones", "JonesParser", "sequence")]
         self._sfile_parsers += [_CacheObj("stockholm", base + "stockholm", "StockholmParser", "sequence")]
 
+    def import_module(self, format):
+        """Import a module defined in the cache"""
+        return importlib.import_module(self[format].module)
+    
+    def import_class(self, format):
+        """Import a class defined the cache"""
+        return getattr(self.import_module(format), PARSER_CACHE[format].object)
 
+
+# Only allow this to be seen from outside
 PARSER_CACHE = _ParserCache()
-CONTACT_FILE_PARSERS = PARSER_CACHE.contact_file_parsers
-SEQUENCE_FILE_PARSERS = PARSER_CACHE.sequence_file_parsers
+

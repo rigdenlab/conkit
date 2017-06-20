@@ -36,8 +36,12 @@ __version__ = "0.1"
 import importlib
 import os
 
-from conkit.io._cache import CONTACT_FILE_PARSERS, SEQUENCE_FILE_PARSERS, PARSER_CACHE
+from conkit.io._cache import PARSER_CACHE 
 from conkit.io._iotools import open_f_handle
+
+# Accessed by some modules - might be deprecated in the future
+CONTACT_FILE_PARSERS = PARSER_CACHE.contact_file_parsers
+SEQUENCE_FILE_PARSERS = PARSER_CACHE.sequence_file_parsers
 
 
 def convert(fname_in, format_in, fname_out, format_out):
@@ -81,10 +85,8 @@ def convert(fname_in, format_in, fname_out, format_out):
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
     else:
-        module_in = importlib.import_module(PARSER_CACHE[format_in].module)
-        parser_in = getattr(module_in, PARSER_CACHE[format_in].object)()
-        module_out = importlib.import_module(PARSER_CACHE[format_out].module)
-        parser_out = getattr(module_out, PARSER_CACHE[format_out].object)()
+        parser_in = PARSER_CACHE.import_class(format_in)()
+        parser_out = PARSER_CACHE.import_class(format_out)()
 
     kwargs = {}
     if format_in == 'a3m-inserts':
@@ -127,8 +129,7 @@ def read(fname, format, f_id='conkit'):
 
     """
     if format in PARSER_CACHE:
-        module_in = importlib.import_module(PARSER_CACHE[format].module)
-        parser_in = getattr(module_in, PARSER_CACHE[format].object)()
+        parser_in = PARSER_CACHE.import_class(format)()
     else:
         raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
 
@@ -171,10 +172,10 @@ def write(fname, format, hierarchy):
 
     """
     if format in PARSER_CACHE:
-        module_out = importlib.import_module(PARSER_CACHE[format].module)
-        parser_out = getattr(module_out, PARSER_CACHE[format].object)()
+        parser_out = PARSER_CACHE.import_class(format)()
     else:
         raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
 
     with open_f_handle(fname, 'write') as f_out:
         parser_out.write(f_out, hierarchy)
+
