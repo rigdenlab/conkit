@@ -1,5 +1,5 @@
-conkit.applications package
-===========================
+conkit\.applications package
+============================
 
 .. automodule:: conkit.applications
     :members:
@@ -11,11 +11,11 @@ Submodules
 
 .. toctree::
 
-   conkit.applications.Bbcontacts
-   conkit.applications.CCMpred
-   conkit.applications.Cdhit
-   conkit.applications.HHblits
-   conkit.applications.HHfilter
-   conkit.applications.Jackhmmer
-   conkit.applications.Psicov
+   conkit.applications.bbcontacts
+   conkit.applications.ccmpred
+   conkit.applications.cdhit
+   conkit.applications.hhblits
+   conkit.applications.hhfilter
+   conkit.applications.jackhmmer
+   conkit.applications.psicov
 

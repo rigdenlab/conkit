@@ -31,6 +31,11 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
+   api/misc
+
+.. toctree::
+   :maxdepth: 2
+
    api/applications
 
 .. only:: html

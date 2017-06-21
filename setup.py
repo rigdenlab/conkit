@@ -75,7 +75,7 @@ def scripts():
 def version():
     # Credits to http://stackoverflow.com/a/24517154
     main_ns = {}
-    ver_path = convert_path('conkit/_version.py')
+    ver_path = convert_path('conkit/version.py')
     with open(ver_path) as f_in:
         exec(f_in.read(), main_ns)
     return main_ns['__version__']

@@ -3,18 +3,18 @@
 __author__ = "Felix Simkovic"
 __date__ = "26 Oct 2016"
 
-from conkit.core import Contact
-from conkit.core import ContactFile
-from conkit.core import ContactMap
-from conkit.core import Sequence
-from conkit.io.MemBrainIO import MemBrainParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.core.contact import Contact
+from conkit.core.contactfile import ContactFile
+from conkit.core.contactmap import ContactMap
+from conkit.core.sequence import Sequence
+from conkit.io.membrain import MemBrainParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestMemBrainParser(unittest.TestCase):
 
     def test_read_1(self):
         content = """Helix   Position        Residue Helix   Position        Residue Probability

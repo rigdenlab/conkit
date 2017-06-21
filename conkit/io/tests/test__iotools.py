@@ -3,11 +3,10 @@
 __author__ = "Felix Simkovic"
 __date__ = "21 Nov 2016"
 
-from conkit.io import _iotools
-
 import os
-import sys
 import unittest
+
+from conkit.io import _iotools
 
 
 class Test(unittest.TestCase):

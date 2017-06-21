@@ -3,14 +3,14 @@
 __author__ = "Felix Simkovic"
 __date__ = "12 Sep 2016"
 
-from conkit.io.StockholmIO import StockholmParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.io.stockholm import StockholmParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestStockholmParser(unittest.TestCase):
 
     def test_read_1(self):
         msa = """# STOCKHOLM 1.0

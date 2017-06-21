@@ -3,18 +3,18 @@
 __author__ = "Felix Simkovic"
 __date__ = "14 Sep 2016"
 
-from conkit.core import Contact
-from conkit.core import ContactFile
-from conkit.core import ContactMap
-from conkit.core import Sequence
-from conkit.io.ComsatIO import ComsatParser
-from conkit.io._iotools import create_tmp_f
-
 import os
 import unittest
 
+from conkit.core.contact import Contact
+from conkit.core.contactfile import ContactFile
+from conkit.core.contactmap import ContactMap
+from conkit.core.sequence import Sequence
+from conkit.io.comsat import ComsatParser
+from conkit.io._iotools import create_tmp_f
 
-class Test(unittest.TestCase):
+
+class TestComsatParser(unittest.TestCase):
 
     def test_read_1(self):
         content = """19   A   41   A   H1-H2

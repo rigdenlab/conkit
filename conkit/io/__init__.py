@@ -1,61 +1,47 @@
+# BSD 3-Clause License
+#
+# Copyright (c) 2016-17, University of Liverpool
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """I/O interface for file reading, writing and conversions"""
 
 __author__ = 'Felix Simkovic'
 __date__ = '13 Sep 2016'
 __version__ = "0.1"
 
-from conkit.io.CaspIO import CaspParser
-from conkit.io.CCMpredIO import CCMpredParser
-from conkit.io.ComsatIO import ComsatParser
-from conkit.io.BbcontactsIO import BbcontactsParser
-from conkit.io.BCLContactIO import BCLContactParser
-from conkit.io.EPCMapIO import EPCMapParser
-from conkit.io.EVfoldIO import EVfoldParser
-from conkit.io.FreeContactIO import FreeContactParser
-from conkit.io.GremlinIO import GremlinParser
-from conkit.io.MemBrainIO import MemBrainParser
-from conkit.io.PconsIO import PconsParser
-from conkit.io.PdbIO import PdbParser
-from conkit.io.PdbIO import MmCifParser
-from conkit.io.PlmDCAIO import PlmDCAParser
-from conkit.io.PsicovIO import PsicovParser
+import importlib
+import os
 
-from conkit.io.A3mIO import A3mParser
-from conkit.io.FastaIO import FastaParser
-from conkit.io.JonesIO import JonesParser
-from conkit.io.StockholmIO import StockholmParser
-
+from conkit.io._cache import PARSER_CACHE 
 from conkit.io._iotools import open_f_handle
 
-
-CONTACT_FILE_PARSERS = {
-    'casprr': CaspParser,
-    'ccmpred': CCMpredParser,
-    'comsat': ComsatParser,
-    'bbcontacts': BbcontactsParser,
-    'bclcontact': BCLContactParser,
-    'epcmap': EPCMapParser,
-    'evfold': EVfoldParser,
-    'freecontact': FreeContactParser,
-    'gremlin': GremlinParser,
-    'membrain': MemBrainParser,
-    'metapsicov': PsicovParser,
-    'mmcif': MmCifParser,
-    'pconsc': PconsParser,
-    'pconsc2': PconsParser,
-    'pconsc3': PconsParser,
-    'pdb': PdbParser,
-    'plmdca': PlmDCAParser,
-    'psicov': PsicovParser,
-}
-
-SEQUENCE_FILE_PARSERS = {
-    'a3m': A3mParser,
-    'a3m-inserts': A3mParser,
-    'fasta': FastaParser,
-    'jones': JonesParser,
-    'stockholm': StockholmParser,
-}
+# Accessed by some modules - might be deprecated in the future
+CONTACT_FILE_PARSERS = PARSER_CACHE.contact_file_parsers
+SEQUENCE_FILE_PARSERS = PARSER_CACHE.sequence_file_parsers
 
 
 def convert(fname_in, format_in, fname_out, format_out):
@@ -90,41 +76,33 @@ def convert(fname_in, format_in, fname_out, format_out):
     ...     io.convert(f_in, 'pconsc3', f_out, 'casprr'))
 
     """
-    # Check for the correct format and values provided
-    kwargs = {}
-    if not (format_in in CONTACT_FILE_PARSERS or format_in in SEQUENCE_FILE_PARSERS):
+    if format_in not in PARSER_CACHE:
         raise ValueError("Unrecognised input file format: '{selected}'".format(selected=format_in))
-    elif not (format_out in CONTACT_FILE_PARSERS or format_out in SEQUENCE_FILE_PARSERS):
+    elif format_out not in PARSER_CACHE:
         raise ValueError("Unrecognised output file format: '{selected}'".format(selected=format_out))
     elif format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
-    elif format_in in CONTACT_FILE_PARSERS:
-        parser_in = CONTACT_FILE_PARSERS[format_in]()
-        parser_out = CONTACT_FILE_PARSERS[format_out]()
-    elif format_in in SEQUENCE_FILE_PARSERS:
-        parser_in = SEQUENCE_FILE_PARSERS[format_in]()
-        parser_out = SEQUENCE_FILE_PARSERS[format_out]()
-        if format_in == 'a3m-inserts':
-            kwargs['remove_inserts'] = False
     else:
-        raise Exception("Should never be here")
+        parser_in = PARSER_CACHE.import_class(format_in)()
+        parser_out = PARSER_CACHE.import_class(format_out)()
+
+    kwargs = {}
+    if format_in == 'a3m-inserts':
+        kwargs['remove_inserts'] = False
 
     with open_f_handle(fname_in, 'read') as f_in, open_f_handle(fname_out, 'write') as f_out: 
         hierarchy = parser_in.read(f_in, **kwargs)
         parser_out.write(f_out, hierarchy)
 
-    return
 
-
-def read(f_in, format, f_id='conkit'):
+def read(fname, format, f_id='conkit'):
     """Parse a file handle to read into structure
 
     Parameters
     ----------
-    f_in
-       Open file handle for input file [read-permissions]
+    fname : filehandle, filename
     format : str
        File format of handle
     f_id : str
@@ -150,18 +128,17 @@ def read(f_in, format, f_id='conkit'):
     ...     hierarchy = io.read(f_in, 'ccmpred')
 
     """
-    # Check for the correct format and values provided
-    if not (format in CONTACT_FILE_PARSERS or format in SEQUENCE_FILE_PARSERS):
-        raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
-    elif format in CONTACT_FILE_PARSERS:
-        parser = CONTACT_FILE_PARSERS[format]()
-    elif format in SEQUENCE_FILE_PARSERS:
-        parser = SEQUENCE_FILE_PARSERS[format]()
+    if format in PARSER_CACHE:
+        parser_in = PARSER_CACHE.import_class(format)()
     else:
-        raise Exception("Should never be here")
-    
-    with open_f_handle(f_in, 'read') as f_in:
-        hierarchy = parser.read(f_in, f_id=f_id)
+        raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
+
+    kwargs = {}
+    if format == 'a3m-inserts':
+        kwargs['remove_inserts'] = False
+
+    with open_f_handle(fname, 'read') as f_in:
+        hierarchy = parser_in.read(f_in, f_id=f_id)
 
     return hierarchy
 
@@ -194,17 +171,11 @@ def write(fname, format, hierarchy):
     ...     io.write(f_out, 'casprr', hierarchy)
 
     """
-    # Check for the correct format and values provided
-    if not (format in CONTACT_FILE_PARSERS or format in SEQUENCE_FILE_PARSERS):
-        raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
-    elif format in CONTACT_FILE_PARSERS:
-        parser = CONTACT_FILE_PARSERS[format]()
-    elif format in SEQUENCE_FILE_PARSERS:
-        parser = SEQUENCE_FILE_PARSERS[format]()
+    if format in PARSER_CACHE:
+        parser_out = PARSER_CACHE.import_class(format)()
     else:
-        raise Exception("Should never be here")
-    
-    with open_f_handle(fname, 'write') as f_out:
-        parser.write(f_out, hierarchy)
+        raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
 
-    return
+    with open_f_handle(fname, 'write') as f_out:
+        parser_out.write(f_out, hierarchy)
+

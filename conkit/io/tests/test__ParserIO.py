@@ -3,19 +3,18 @@
 __author__ = "Felix Simkovic"
 __date__ = "18 Oct 2016"
 
-from conkit.core import Contact
-from conkit.core import ContactFile
-from conkit.core import ContactMap
-from conkit.core import Sequence
-from conkit.core import SequenceFile
-from conkit.io._ParserIO import _ContactFileParser
-from conkit.io._ParserIO import _SequenceFileParser
+from conkit.core.contact import Contact
+from conkit.core.contactfile import ContactFile
+from conkit.core.contactmap import ContactMap
+from conkit.core.sequence import Sequence
+from conkit.core.sequencefile import SequenceFile
+from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import _SequenceFileParser
 
 import unittest
 
 
-class Test1(unittest.TestCase):
-    """Test for _ContactFileParser"""
+class Test_ContactFileParser(unittest.TestCase):
     def test__reconstruct_1(self):
         hierarchy = _ContactFileParser()._reconstruct(Contact(1, 3, 1.0))
         self.assertTrue(isinstance(hierarchy, ContactFile))
@@ -35,8 +34,7 @@ class Test1(unittest.TestCase):
         self.assertEqual('test', hierarchy.id)
 
 
-class Test2(unittest.TestCase):
-    """Test for _SequenceFileParser"""
+class Test_SequenceFileParser(unittest.TestCase):
     def test__reconstruct_1(self):
         hierarchy = _SequenceFileParser()._reconstruct(SequenceFile('test'))
         self.assertTrue(isinstance(hierarchy, SequenceFile))
