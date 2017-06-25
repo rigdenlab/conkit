@@ -51,7 +51,6 @@ import conkit.plot
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-id', default=0.7, type=float, help='sequence identity [default: 0.7]')
     parser.add_argument('msafile', help='Multiple Sequence Alignment file')
     parser.add_argument('msaformat', help='Multiple Sequence Alignment format')
     args = parser.parse_args()
@@ -60,19 +59,15 @@ def main():
     logger = conkit.command_line.setup_logging(level='info')
 
     # Compute all the data
-    hierarchy = conkit.io.read(args.msafile, args.msaformat)
-    seq_len = hierarchy.top_sequence.seq_len
-    nseqs = hierarchy.nseqs
-    meff = hierarchy.calculate_meff(identity=args.id)
+    msa = conkit.io.read(args.msafile, args.msaformat)
     plot = args.msafile.rsplit('.', 1)[0] + '.png'
-    conkit.plot.SequenceCoverageFigure(hierarchy, file_name=plot)
+    conkit.plot.SequenceCoverageFigure(msa, file_name=plot)
 
     logger.info('Input MSA File:                            %s', args.msafile)
     logger.info('Input MSA Format:                          %s', args.msaformat)
-    logger.info('Pairwise Sequence Identity Threshold:      %f', args.id)
-    logger.info('Length of the Target Sequence:             %d', seq_len)
-    logger.info('Total Number of Sequences:                 %d', nseqs)
-    logger.info('Number of Effective Sequences:             %d', meff)
+    logger.info('Length of the Target Sequence:             %d', msa.top_sequence.seq_len)
+    logger.info('Total Number of Sequences:                 %d', msa.nseqs)
+    logger.info('Number of Effective Sequences:             %d', msa.neff)
     logger.info('Sequence Coverage Plot:                    %s', plot)
 
 
