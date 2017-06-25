@@ -102,67 +102,59 @@ class TestSequenceFile(unittest.TestCase):
         self.assertEqual(sequence1, sequence_file.top_sequence)
 
     @skipUnless(SCIPY)
-    def test_calculate_meff_1(self):
+    def test_calculate_weights_1(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'),
                   Sequence('cho', 'AAAAAAA'), Sequence('baz', 'AAAAAAA')]:
             sequence_file.add(s)
-        m_eff = sequence_file.calculate_meff(identity=0.7)
-        self.assertTrue(isinstance(m_eff, int))
-        self.assertEqual(1, m_eff)
+        weights = sequence_file.calculate_weights(identity=0.7)
+        self.assertEqual(weights, [0.25, 0.25, 0.25, 0.25])
 
     @skipUnless(SCIPY)
-    def test_calculate_meff_2(self):
+    def test_calculate_weights_2(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'),
                   Sequence('cho', 'AAAAAAA'), Sequence('baz', 'BBBBBBB')]:
             sequence_file.add(s)
-        m_eff = sequence_file.calculate_meff(identity=0.7)
-        self.assertTrue(isinstance(m_eff, int))
-        self.assertEqual(2, m_eff)
+        weights = sequence_file.calculate_weights(identity=0.7)
+        self.assertEqual(weights, [0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0])
 
     @skipUnless(SCIPY)
-    def test_calculate_meff_3(self):
+    def test_calculate_weights_3(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AABA-'),
                   Sequence('cho', 'B-BAA--'), Sequence('baz', 'BBBBBBB')]:
             sequence_file.add(s)
-        m_eff = sequence_file.calculate_meff(identity=0.7)
-        self.assertTrue(isinstance(m_eff, int))
-        self.assertEqual(4, m_eff)
+        weights = sequence_file.calculate_weights(identity=0.7)
+        self.assertEqual(weights, [1.0, 1.0, 1.0, 1.0])
 
     @skipUnless(SCIPY)
-    def test_calculate_meff_4(self):
+    def test_calculate_weights_4(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAABA-'),
                   Sequence('cho', 'B-BAA--'), Sequence('baz', 'BBBBBBB')]:
             sequence_file.add(s)
-        m_eff = sequence_file.calculate_meff(identity=0.7)
-        self.assertTrue(isinstance(m_eff, int))
-        self.assertEqual(3, m_eff)
+        weights = sequence_file.calculate_weights(identity=0.7)
+        self.assertEqual(weights, [0.5, 0.5, 1.0, 1.0])
 
     @skipUnless(SCIPY)
-    def test_calculate_meff_5(self):
+    def test_calculate_weights_5(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AA-ABA-'),
                   Sequence('cho', 'B-BAA--'), Sequence('baz', 'BBBBBBB')]:
             sequence_file.add(s)
-        m_eff = sequence_file.calculate_meff(identity=0.6)
-        self.assertTrue(isinstance(m_eff, int))
-        self.assertEqual(4, m_eff)
-        self.assertNotEqual(3, m_eff)
-        self.assertNotEqual(3, m_eff)
+        weights = sequence_file.calculate_weights(identity=0.6)
+        self.assertEqual(weights, [1.0, 1.0, 1.0, 1.0])
 
     @skipUnless(SCIPY)
-    def test_calculate_meff_6(self):
+    def test_calculate_weights_6(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AA-ABA-'),
                   Sequence('cho', 'AAACBAA'), Sequence('doo', 'B-BAA--'),
                   Sequence('miu', 'BBBBBBB'), Sequence('nop', 'AAAAAAB')]:
             sequence_file.add(s)
-        m_eff = sequence_file.calculate_meff(identity=0.6)
-        self.assertTrue(isinstance(m_eff, int))
-        self.assertEqual(4, m_eff)
+        weights = sequence_file.calculate_weights(identity=0.6)
+        self.assertEqual(weights, [0.3333333333333333, 1.0, 0.5, 1.0, 1.0, 0.5])
 
     def test_calculate_freq_1(self):
         sequence_file = SequenceFile('test')

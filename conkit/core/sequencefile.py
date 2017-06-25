@@ -119,6 +119,11 @@ class SequenceFile(_Entity):
         return True if self.status == SequenceFile._YES_ALIGNMENT else False
 
     @property
+    def neff(self):
+        """The number of effective sequences"""
+        return sum(self.calculate_weights())
+
+    @property
     def nseqs(self):
         """The number of :obj:`Sequence <conkit.core.Sequence>` instances
         in the :obj:`SequenceFile <conkit.core.SequenceFile>`
@@ -226,6 +231,48 @@ class SequenceFile(_Entity):
         ValueError
            Sequence Identity needs to be between 0 and 1
 
+        See Also
+        --------
+        neff
+
+        """
+        import warnings
+        warnings.warn("This function will be deprecated in a future release!")
+        return self.neff
+
+    def calculate_weights(self, identity=0.7):
+        """Calculate the sequence weights
+
+        This function calculates the sequence weights in the
+        the Multiple Sequence Alignment.
+
+        The mathematical function used to calculate `Meff` is
+
+        .. math::
+
+           M_{eff}=\\sum_{i}\\frac{1}{\\sum_{j}S_{i,j}}
+
+        Parameters
+        ----------
+        identity : float, optional
+           The sequence identity to use for similarity decision [default: 0.7]
+
+        Returns
+        -------
+        list
+           A list of the sequence weights in the alignment 
+
+        Raises
+        ------
+        MemoryError
+           Too many sequences in the alignment for Hamming distance calculation
+        RuntimeError
+           SciPy package not installed
+        ValueError
+           :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
+        ValueError
+           Sequence Identity needs to be between 0 and 1
+
         """
         try:
             import scipy.spatial
@@ -259,8 +306,7 @@ class SequenceFile(_Entity):
             i = batch_size * k
             dists = scipy.spatial.distance.cdist(msa_mat[i:i+batch], msa_mat, metric='hamming')
             hamming[i:i+batch] = (dists < (1 - identity)).sum(axis=1)
-
-        return (1. / hamming).sum().astype(int).item()
+        return (1. / hamming).tolist()
 
     def calculate_freq(self):
         """Calculate the gap frequency in each alignment column
