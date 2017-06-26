@@ -10,7 +10,7 @@ This project is a result of the continuous struggle using residue-residue contac
 
 .. image:: https://img.shields.io/pypi/v/conkit.svg
    :target: https://pypi.python.org/pypi/conkit
-   :alt: PyPy Package
+   :alt: PyPi Package
 
 .. image:: https://img.shields.io/pypi/pyversions/conkit.svg
    :target: https://pypi.python.org/pypi/conkit
