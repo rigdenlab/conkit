@@ -398,7 +398,7 @@ class SequenceFile(_Entity):
         throw = set()
         for i in np.arange(len(self)):
             ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i+1:], metric='hamming')[0]
-            throw.update(1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten())
+            throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
         # Throw the previously selected sequences
         sequence_file = self._inplace(inplace)
         for i in reversed(list(throw)):
