@@ -39,6 +39,10 @@ __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 import numpy as np
+import sys 
+
+if sys.version_info.major < 3:
+    from itertools import izip as zip 
 
 from conkit.core._entity import _Entity
 
@@ -340,6 +344,67 @@ class SequenceFile(_Entity):
         aa_counts = np.sum(aa_frequencies, axis=0)
         # divide all by sequence length
         return (aa_counts / len(msa_mat[:, 0])).tolist()
+
+    def filter(self, min_id=0.3, max_id=0.9, inplace=False):
+        """Filter an alignment
+
+        Parameters
+        ----------
+        min_id : float, optional
+
+        max_id : float, optional
+
+        inplace : bool, optional
+           Replace the saved order of sequences [default: False]
+
+
+        Returns
+        -------
+        obj
+           The reference to the :obj:`SequenceFile <conkit.core.SequenceFile>`, regardless of inplace
+
+        Raises
+        ------
+        MemoryError
+           Too many sequences in the alignment for Hamming distance calculation
+        RuntimeError
+           SciPy package not installed
+        ValueError
+           :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
+        ValueError
+           Minimum sequence Identity needs to be between 0 and 1
+        ValueError
+           Maximum sequence Identity needs to be between 0 and 1
+
+        """
+        try:
+            import scipy.spatial
+        except ImportError:
+            raise RuntimeError('Cannot find SciPy package')
+
+        if not self.is_alignment:
+            raise ValueError('This is not an alignment')
+
+        if 0 > min_id > 1:
+            raise ValueError("Minimum sequence Identity needs to be between 0 and 1")
+        elif 0 > max_id > 1:
+            raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
+
+        # Alignment to unsigned integer matrix
+        msa_mat = np.asarray(
+            [np.fromstring(sequence_entry.seq, dtype='uint8') for sequence_entry in self], dtype='uint8'
+        )
+        # Find all throwable sequences
+        throw = set()
+        for i in np.arange(len(self)):
+            ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i+1:], metric='hamming')[0]
+            throw.update(1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten())
+        # Throw the previously selected sequences
+        sequence_file = self._inplace(inplace)
+        for i in reversed(list(throw)):
+            sequence_file.remove(self[i].id)
+
+        return sequence_file
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`SequenceFile <conkit.core.SequenceFile>`
