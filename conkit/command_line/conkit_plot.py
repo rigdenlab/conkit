@@ -43,11 +43,12 @@ __version__ = "0.1"
 
 import argparse
 import inspect
-import sys
 
 import conkit.command_line
 import conkit.io
 import conkit.plot
+ 
+logger = None
 
 # Note:
 #     New subparsers can be added automatically as long as the convention is followed.
@@ -246,6 +247,7 @@ def main():
     args = parser.parse_args()
 
     # Setup the logger
+    global logger
     logger = conkit.command_line.setup_logging(level='info')
 
     if args.which == 'contact_map':
@@ -397,4 +399,13 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import sys 
+    import traceback
+    try:
+        main()
+        sys.exit(0)
+    except:
+        msg = "".join(traceback.format_exception(*sys.exc_info()))
+        logger.critical(msg)
+        sys.exit(1)
+

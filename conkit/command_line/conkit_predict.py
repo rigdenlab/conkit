@@ -48,13 +48,14 @@ __version__ = "0.1"
 
 import argparse
 import os
-import sys
 import time
 
 import conkit.applications
 import conkit.command_line
 import conkit.io
 import conkit.plot
+
+logger = None
 
 
 def add_default_args(parser):
@@ -106,6 +107,7 @@ def main(argl=None):
     args = parser.parse_args(argl)
 
     # Setup the logger
+    global logger
     logger = conkit.command_line.setup_logging(level='info')
 
     logger.info('Prefix: %s', args.prefix)
@@ -224,4 +226,13 @@ def main(argl=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import sys 
+    import traceback
+    try:
+        main()
+        sys.exit(0)
+    except:
+        msg = "".join(traceback.format_exception(*sys.exc_info()))
+        logger.critical(msg)
+        sys.exit(1)
+

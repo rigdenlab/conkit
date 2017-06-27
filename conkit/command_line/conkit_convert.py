@@ -47,10 +47,11 @@ __date__ = "01 Oct 2016"
 __version__ = "0.1"
 
 import argparse
-import sys
 
 import conkit.command_line
 import conkit.io
+
+logger = None
 
 
 def main():
@@ -62,6 +63,7 @@ def main():
     args = parser.parse_args()
 
     # Setup the logger
+    global logger
     logger = conkit.command_line.setup_logging(level='info')
 
     # Perform the conversion
@@ -73,4 +75,13 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import sys 
+    import traceback
+    try:
+        main()
+        sys.exit(0)
+    except:
+        msg = "".join(traceback.format_exception(*sys.exc_info()))
+        logger.critical(msg)
+        sys.exit(1)
+

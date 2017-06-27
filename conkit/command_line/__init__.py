@@ -34,6 +34,7 @@ __date__ = "14 Apr 2017"
 __version__ = "0.1"
 
 import logging
+import os
 
 
 def setup_logging(level='info', logfile=None):
@@ -54,6 +55,28 @@ def setup_logging(level='info', logfile=None):
        Instance of a :obj:`logger <logging.Logger>`
 
     """
+    
+    class ColorFormatter(logging.Formatter):
+        """Formatter to color console logging output"""
+    
+        # ANSI foreground color codes
+        colors = { 
+            logging.DEBUG: 34,           # blue
+            logging.INFO: 0   ,          # reset to default
+            logging.WARNING: 33,         # yellow
+            logging.ERROR: 31,           # red
+            logging.CRITICAL: 31,        # red
+        }
+
+        def format(self, record):
+            if record.exc_info is None:
+                # REM: get the ANSI FG color code
+                color = ColorFormatter.colors[record.levelno]
+                prefix = '\033[{}m'.format(color)
+                record.msg = os.linesep.join([prefix + l for l in str(record.msg).splitlines()])
+
+            return logging.Formatter.format(self, record)
+
     # Reset any Handlers or Filters already in the logger to start from scratch
     # https://stackoverflow.com/a/16966965
     map(logging.getLogger().removeHandler, logging.getLogger().handlers[:])
@@ -70,7 +93,7 @@ def setup_logging(level='info', logfile=None):
     # create console handler with a higher log level
     ch = logging.StreamHandler()
     ch.setLevel(logging_levels.get(level, logging.INFO))
-    ch.setFormatter(logging.Formatter('%(message)s'))
+    ch.setFormatter(ColorFormatter('%(message)s'))
     logging.getLogger().addHandler(ch)
 
     # create file handler which logs even debug messages
@@ -86,3 +109,4 @@ def setup_logging(level='info', logfile=None):
     logging.getLogger().debug('File logger level: %s', logging.NOTSET)
 
     return logging.getLogger()
+
