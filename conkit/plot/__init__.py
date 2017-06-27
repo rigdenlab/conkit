@@ -39,30 +39,30 @@ matplotlib.use('Agg')
 
 
 def ContactMapFigure(*args, **kwargs):
-    """:obj:`Contact <conkit.plot.ContactMapPlot.ContactMapFigure>` instance"""
+    """:obj:`ContactMapFigure <conkit.plot.contactmap.ContactMapFigure>` instance"""
     from conkit.plot.contactmap import ContactMapFigure
     return ContactMapFigure(*args, **kwargs)
 
 
 def ContactMapChordFigure(*args, **kwargs):
-    """:obj:`Contact <conkit.plot.ContactMapChordPlot.ContactMapChordFigure>` instance"""
+    """:obj:`ContactMapChordFigure <conkit.plot.contactmapchord.ContactMapChordFigure>` instance"""
     from conkit.plot.contactmapchord import ContactMapChordFigure
     return ContactMapChordFigure(*args, **kwargs)
 
 
 def ContactDensityFigure(*args, **kwargs):
-    """:obj:`Contact <conkit.plot.ContactDensityPlot.ContactDensityFigure>` instance"""
+    """:obj:`ContactDensityFigure <conkit.plot.contactdensity.ContactDensityFigure>` instance"""
     from conkit.plot.contactdensity import ContactDensityFigure
     return ContactDensityFigure(*args, **kwargs)
 
 
 def PrecisionEvaluationFigure(*args, **kwargs):
-    """:obj:`Contact <conkit.plot.PrecisionEvaluationPlot.PrecisionEvaluationFigure>` instance"""
+    """:obj:`PrecisionEvaluationFigure <conkit.plot.precisionevaluation.PrecisionEvaluationFigure>` instance"""
     from conkit.plot.precisionevaluation import PrecisionEvaluationFigure
     return PrecisionEvaluationFigure(*args, **kwargs)
 
 
 def SequenceCoverageFigure(*args, **kwargs):
-    """:obj:`Contact <conkit.plot.SequenceCoveragePlot.SequenceCoverageFigure>` instance"""
+    """:obj:`SequenceCoverageFigure <conkit.plot.sequencecoverage.SequenceCoverageFigure>` instance"""
     from conkit.plot.sequencecoverage import SequenceCoverageFigure
     return SequenceCoverageFigure(*args, **kwargs)
