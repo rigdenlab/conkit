@@ -45,7 +45,7 @@ If this has completed successfully, you are good to go and you can now install C
 
 .. code-block:: bash
 
-   $> sudo python setup.py build install
+   $> python setup.py build install
 
 ConKit is now successfully installed in your system's default Python.
 

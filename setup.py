@@ -34,9 +34,13 @@ class BuildCommand(build):
 # ==============================================================
 
 def dependencies():
-    with open('requirements.txt', 'r') as f_in:
-        return [l for l in f_in.read().rsplit(os.linesep) 
-                if l and not l.startswith("#")]
+    return [
+        "numpy >=1.8.2",
+        "biopython >=1.64",
+        "matplotlib >=1.3.1",
+        "scipy >=0.16.0",
+        "scikit-learn >=0.17",
+    ]
 
 
 def readme():
