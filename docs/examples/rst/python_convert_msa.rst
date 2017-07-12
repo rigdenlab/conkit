@@ -12,18 +12,21 @@ In order to convert files in ConKit, we need to use the ConKit I/O framework.
 
 .. code-block:: python
   
+   >>> import conkit.io
    >>> msa = conkit.io.read('toxd/toxd.a3m', 'a3m')
 
 **2. Sequence hierarchies can also be written in a similarly easy format. Using the ``msa`` hierarchy we have created above:**
 
 .. code-block:: python
 
+   >>> import conkit.io
    >>> conkit.io.write('toxd/toxd.mfa', 'fasta', msa)
 
 **3. To convert file formats in single call, you can use the :func:`conkit.io.convert` function.**
 
 .. code-block:: python
 
+   >>> import conkit.io
    >>> conkit.io.convert('toxd/toxd.a3m', 'a3m', 'toxd/toxd.mfa', 'fasta')
 
 You can convert these files to many different other formats, for a full list check out the :ref:`file_formats`.

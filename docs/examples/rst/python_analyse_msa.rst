@@ -10,6 +10,7 @@ Multiple Sequence Alignment Analysis
 
 .. code-block:: python
 
+   >>> import conkit.io
    >>> msa = conkit.io.read('toxd/toxd.a3m', 'a3m')
 
 **2. To obtain the length of the target sequence, you can simply ask the ``msa`` hierarchy for it.**
@@ -41,6 +42,7 @@ This tells you the first sequence in the alignment has 59 residues, i.e. the cha
 .. code-block:: python
 
    >>> file_name = 'toxd/toxd.png'
+   >>> import conkit.plot
    >>> conkit.plot.SequenceCoverageFigure(msa, file_name=file_name)
 
 .. _Toxd Frequency Plot:

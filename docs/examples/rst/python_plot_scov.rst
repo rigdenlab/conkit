@@ -5,6 +5,8 @@ Sequence Coverage Plotting
 
 .. code-block:: python
 
+   >>> import conkit.io
+   >>> import conkit.plot
    >>> msa = conkit.io.read('toxd/toxd.a3m', 'a3m')
    >>> conkit.plot.SequenceCoverageFigure(msa)
 

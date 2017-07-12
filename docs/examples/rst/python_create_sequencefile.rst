@@ -12,7 +12,7 @@ Entities
 
 .. code-block:: python
 
-   >>> import conkit
+   >>> import conkit.core
    >>> seq = conkit.core.Sequence("example", "ABCDEF")
 
 The example above creates a :obj:`Sequence <conkit.core.Sequence>` object with id "example" and sequence "ABCDEF". This sequence contains numerous functions, such as :func:`align_global() <conkit.core.Sequence.align_global>` for a global pairwise alignment with a second sequence
@@ -21,7 +21,7 @@ The example above creates a :obj:`Sequence <conkit.core.Sequence>` object with i
 
 .. code-block:: python
 
-   >>> import conkit
+   >>> import conkit.core
    >>> sfile = conkit.core.SequenceFile("example)
 
 This example shows you how to create a :obj:`SequenceFile <conkit.core.SequenceFile>` which can store one or more :obj:`Sequence <conkit.core.Sequence>` objects.
@@ -35,7 +35,7 @@ To illustrate how you can combine the entities, look at the following:
 
 .. code-block:: python
 
-   >>> import conkit
+   >>> import conkit.core
    >>> sfile = conkit.core.SequenceFile("example)
    >>> seq1 = conkit.core.Sequence("example", "ABCDEF")
    >>> seq2 = conkit.core.Sequence("elpmaxe", "FEDCBA")
