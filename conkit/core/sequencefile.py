@@ -202,7 +202,7 @@ class SequenceFile(_Entity):
         else:
             return None
 
-    def calculate_meff(self, identity=0.7):
+    def calculate_meff(self, identity=0.8):
         """Calculate the number of effective sequences
 
         This function calculates the number of effective
@@ -217,7 +217,7 @@ class SequenceFile(_Entity):
         Parameters
         ----------
         identity : float, optional
-           The sequence identity to use for similarity decision [default: 0.7]
+           The sequence identity to use for similarity decision [default: 0.8]
 
         Returns
         -------
