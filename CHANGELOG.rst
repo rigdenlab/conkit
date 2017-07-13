@@ -2,6 +2,12 @@
 Changelog
 =========
 
+v0.8.1
+------
+
+- Revoked catching of ``SystemExit(0)`` exception in scripts when invoked with ``--help`` flag 
+
+
 v0.8
 ----
 

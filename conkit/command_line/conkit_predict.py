@@ -231,8 +231,9 @@ if __name__ == "__main__":
     try:
         main()
         sys.exit(0)
-    except:
-        msg = "".join(traceback.format_exception(*sys.exc_info()))
-        logger.critical(msg)
+    except Exception as e:
+        if not isinstance(e, SystemExit):
+            msg = "".join(traceback.format_exception(*sys.exc_info()))
+            logger.critical(msg)
         sys.exit(1)
 
