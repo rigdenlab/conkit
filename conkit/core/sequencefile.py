@@ -244,7 +244,7 @@ class SequenceFile(_Entity):
         warnings.warn("This function will be deprecated in a future release!")
         return self.neff
 
-    def calculate_weights(self, identity=0.7):
+    def calculate_weights(self, identity=0.8):
         """Calculate the sequence weights
 
         This function calculates the sequence weights in the
@@ -259,7 +259,7 @@ class SequenceFile(_Entity):
         Parameters
         ----------
         identity : float, optional
-           The sequence identity to use for similarity decision [default: 0.7]
+           The sequence identity to use for similarity decision [default: 0.8]
 
         Returns
         -------
