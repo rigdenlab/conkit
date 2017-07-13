@@ -33,10 +33,9 @@ __author__ = "Felix Simkovic"
 __date__ = "20 Nov 2016"
 __version__ = "0.1"
 
+import io
 import sys
 import tempfile
-
-MODE_APPENDIX = 'b' if sys.version_info.major == 3 else ''
 
 
 def create_tmp_f(content=None, mode='w'):
@@ -115,21 +114,14 @@ def open_f_handle(f_handle, mode):
     # Check the mode of opening the file
     if mode not in ['append', 'read', 'write']:
         raise ValueError('Mode needs to be one of: append, read, write')
-    mode = mode[0]
     
     try:
         if is_str_like(f_handle):
-            # Deal with some Python2/3 compatibility issues
-            if sys.version_info.major >= 3:
-                f_handle = open(f_handle, mode + 'b')
-            else:
-                f_handle = open(f_handle, mode)
-        elif f_handle.mode == mode + MODE_APPENDIX:
-            f_handle = f_handle
+            return io.open(f_handle, mode[0], encoding='utf-8')
+        elif f_handle.mode == mode[0]:
+            return f_handle
         else:
             raise TypeError("f_handle must be str of filehandle")
     except AttributeError:
         raise TypeError("f_handle must be str of filehandle")
-
-    return f_handle
 

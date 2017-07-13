@@ -48,28 +48,31 @@ class Test(unittest.TestCase):
     def test_open_f_handle_1(self):
         fname = _iotools.create_tmp_f()
         with _iotools.open_f_handle(fname, 'append') as fhandle:
-            self.assertEqual('a' + _iotools.MODE_APPENDIX, fhandle.mode)
+            self.assertEqual('a', fhandle.mode)
         f_in_handle =  _iotools.open_f_handle(fname, 'append')
         with _iotools.open_f_handle(f_in_handle, 'append') as fhandle:
-            self.assertEqual('a' + _iotools.MODE_APPENDIX, fhandle.mode)
+            self.assertEqual('a', fhandle.mode)
+        f_in_handle.close()
         os.unlink(fname)
 
     def test_open_f_handle_2(self):
         fname = _iotools.create_tmp_f()
         with _iotools.open_f_handle(fname, 'read') as fhandle:
-            self.assertEqual('r' + _iotools.MODE_APPENDIX, fhandle.mode)
+            self.assertEqual('r', fhandle.mode)
         f_in_handle =  _iotools.open_f_handle(fname, 'read')
         with _iotools.open_f_handle(f_in_handle, 'read') as fhandle:
-            self.assertEqual('r' + _iotools.MODE_APPENDIX, fhandle.mode)
+            self.assertEqual('r', fhandle.mode)
+        f_in_handle.close()
         os.unlink(fname)
 
     def test_open_f_handle_3(self):
         fname = _iotools.create_tmp_f()
         with _iotools.open_f_handle(fname, 'write') as fhandle:
-            self.assertEqual('w' + _iotools.MODE_APPENDIX, fhandle.mode)
+            self.assertEqual('w', fhandle.mode)
         f_in_handle =  _iotools.open_f_handle(fname, 'write')
         with _iotools.open_f_handle(f_in_handle, 'write') as fhandle:
-            self.assertEqual('w' + _iotools.MODE_APPENDIX, fhandle.mode)
+            self.assertEqual('w', fhandle.mode)
+        f_in_handle.close()
         os.unlink(fname)
 
     def test_open_f_handle_4(self):
