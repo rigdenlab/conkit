@@ -6,6 +6,7 @@ v0.8.1
 ------
 
 - Revoked catching of ``SystemExit(0)`` exception in scripts when invoked with ``--help`` flag 
+- Bug fix relating to Python3 automatic opening of file handles - Thanks to Miguel Correa for reporting this bug
 
 
 v0.8
