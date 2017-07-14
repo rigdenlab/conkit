@@ -249,6 +249,7 @@ class TestSequenceFile(unittest.TestCase):
         self.assertEqual(['BC', 'CD', 'DE'], [s.seq for s in sequence_file_trimmed])
         self.assertNotEqual(sequence_file, sequence_file_trimmed)
 
+    @skipUnless(SCIPY)
     def test_filter_1(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AAAAAA'), Sequence('doe', 'AAAAAA')]:
@@ -256,6 +257,7 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=1.0)
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in filtered])
         
+    @skipUnless(SCIPY)
     def test_filter_2(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AAAABB'), Sequence('doe', 'AAAAAA')]:
@@ -263,6 +265,7 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=0.9)
         self.assertEqual(['foo', 'bar'], [s.id for s in filtered])
         
+    @skipUnless(SCIPY)
     def test_filter_3(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AAAAAA'), Sequence('doe', 'BBBBBB')]:
@@ -270,6 +273,7 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=0.9)
         self.assertEqual(['foo', 'doe'], [s.id for s in filtered])
 
+    @skipUnless(SCIPY)
     def test_filter_4(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'CCCCCC'), Sequence('doe', 'BBBBBB')]:
@@ -277,6 +281,7 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=0.9)
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in filtered])
 
+    @skipUnless(SCIPY)
     def test_filter_5(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'CCCCCC'), Sequence('doe', 'BBBBBB')]:
