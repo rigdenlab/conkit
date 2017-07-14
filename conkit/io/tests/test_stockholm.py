@@ -204,8 +204,14 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
             "",
         ]
         ref = os.linesep.join(ref)
+        print("====")
+        print(ref)
+        print("====")
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
+            output = f_in.read()
+        print("====")
+        print(output)
+        print("====")
         self.assertEqual(ref, output)
         os.unlink(f_name_in)
         os.unlink(f_name_out)
