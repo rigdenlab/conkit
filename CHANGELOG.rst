@@ -2,12 +2,19 @@
 Changelog
 =========
 
+v0.8.2
+------
+
+- Critical bug fix for automated opening of filehandle in Python2.7 
+- Test function skipping added for ``SequenceFile().filter()`` when SciPy not installed
+- Renamed conkit/io/tests files for filenames to agree with modules in conkit/io
+- Performance of ``write()`` in parsers improved by construction of string and single call to ``write()`` of filehandle
+
 v0.8.1
 ------
 
 - Revoked catching of ``SystemExit(0)`` exception in scripts when invoked with ``--help`` flag 
 - Bug fix relating to Python3 automatic opening of file handles - Thanks to Miguel Correa for reporting this bug
-
 
 v0.8
 ----
@@ -19,6 +26,3 @@ v0.8
 - ``io`` sub-package caches modules and imports upon request
 - ``core`` classes extracted to individual module files
 - License text added to each module
-
-
-----
