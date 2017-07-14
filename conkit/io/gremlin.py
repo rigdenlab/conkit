@@ -154,16 +154,18 @@ class GremlinParser(_ContactFileParser):
         # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
 
+        content = ""
+
         if contact_file.top_map.top_contact.res1_chain and contact_file.top_map.top_contact.res2_chain:
             header_args = ['i', 'j', 'gene', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob', 'I_prob']
-            f_handle.write('\t'.join(header_args) + os.linesep)
+            content += '\t'.join(header_args) + os.linesep
 
             out_kwargs = ['{res1_seq}', '{res2_seq}', '{chains}', '{res1_code}', '{res2_code}',
                           '{raw_score}', '{scalar_score}', '1.0', 'N/A']
 
         else:
             header_args = ['i', 'j', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob']
-            f_handle.write('\t'.join(header_args) + os.linesep)
+            content += '\t'.join(header_args) + os.linesep
 
             out_kwargs = ['{res1_seq}', '{res2_seq}', '{res1_code}', '{res2_code}',
                           '{raw_score}', '{scalar_score}', '1.0']
@@ -184,6 +186,6 @@ class GremlinParser(_ContactFileParser):
                                            res2_code=res2_code, chains=chains,
                                            raw_score=c.raw_score, scalar_score=round(c.scalar_score, 1))
 
-                f_handle.write(out_line + os.linesep)
+                content += out_line + os.linesep
 
-        return
+        f_handle.write(content)

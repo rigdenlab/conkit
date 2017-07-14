@@ -120,19 +120,21 @@ class FastaParser(_SequenceFileParser):
         # Double check the type of hierarchy and reconstruct if necessary
         hierarchy = self._reconstruct(hierarchy)
 
+        content = ""
+
         # Write remarks
         for remark in hierarchy.remark:
-            f_handle.write('#{remark}'.format(remark=remark) + os.linesep)
+            content += '#{remark}'.format(remark=remark) + os.linesep
 
         for sequence_entry in hierarchy:
             header = '>{id}'.format(id=sequence_entry.id)
             if len(sequence_entry.remark) > 0:
                 header = '|'.join([header] + sequence_entry.remark)
-            f_handle.write(header + os.linesep)
+            content += header + os.linesep
 
             # Cut the sequence into chunks [FASTA <= 60 chars per line]
             sequence_string = sequence_entry.seq.upper()       # UPPER CASE !!!
             for i in range(0, sequence_entry.seq_len, 60):
-                f_handle.write(sequence_string[i:i+60] + os.linesep)
+                content += sequence_string[i:i+60] + os.linesep
 
-        return
+        f_handle.write(content)

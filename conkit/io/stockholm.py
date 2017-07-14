@@ -130,20 +130,14 @@ class StockholmParser(_SequenceFileParser):
         # Double check the type of sequence_file and reconstruct if necessary
         sequence_file = self._reconstruct(hierarchy)
 
-        f_handle.write("# STOCKHOLM 1.0" + os.linesep)
-        f_handle.write("#=GF ID {ident}{ls}{ls}".format(ident=sequence_file.top_sequence.id,
-                                                        ls=os.linesep))
+        content = "# STOCKHOLM 1.0" + os.linesep
+        content += "#=GF ID {}".format(sequence_file.top_sequence.id) + os.linesep * 2
+
         chunks = []
         for i, sequence_entry in enumerate(sequence_file):
 
             if i != 0:
-                f_handle.write(
-                    '#=GS {ident:33} DE {remark}{ls}'.format(
-                        ident=sequence_entry.id,
-                        remark=" ".join(sequence_entry.remark),
-                        ls=os.linesep,
-                    )
-                )
+                content += '#=GS {:33} DE {}'.format(sequence_entry.id, " ".join(sequence_entry.remark)) + os.linesep
 
             # Cut the sequence into chunks [ <= 200 seq chars per line]
             chunk = []
@@ -155,16 +149,10 @@ class StockholmParser(_SequenceFileParser):
 
         # Write the sequence out in chunks
         for j in range(len(chunks[0][1])):
-            f_handle.write(os.linesep)
+            content += os.linesep
             for i in range(len(chunks)):
-                f_handle.write(
-                    "{ident:41} {seq_chunk}{ls}".format(
-                        ident=chunks[i][0],
-                        seq_chunk=chunks[i][1][j],
-                        ls=os.linesep,
-                    )
-                )
+                content += "{:41} {}".format(chunks[i][0], chunks[i][1][j]) + os.linesep
 
-        f_handle.write("//" + os.linesep)
+        content += "//" + os.linesep
 
-        return
+        f_handle.write(content)

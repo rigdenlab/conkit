@@ -116,11 +116,13 @@ class ComsatParser(_ContactFileParser):
         if len(contact_file) > 1:
             raise RuntimeError('More than one contact map provided')
 
+        content = ""
+
         for contact_map in contact_file:
             for contact in contact_map:
                 line = "{res1_seq}{sep}{res1}{sep}{res2_seq}{sep}{res2}{sep}Hx-Hx"
                 line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq,
                                    res1=contact.res1, res2=contact.res2, sep="\t")
-                f_handle.write(line + os.linesep)
+                content += line + os.linesep
 
-        return
+        f_handle.write(content)

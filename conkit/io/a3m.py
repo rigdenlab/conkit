@@ -191,15 +191,18 @@ class A3mParser(_SequenceFileParser):
         # Double check the type of hierarchy and reconstruct if necessary
         sequence_file = self._reconstruct(hierarchy)
 
+        content = ""
+
         # Write remarks
         for remark in sequence_file.remark:
-            f_handle.write('#{remark}'.format(remark=remark) + os.linesep)
+            content += '#{remark}'.format(remark=remark) + os.linesep
 
         for sequence_entry in sequence_file:
             header = '>{id}'.format(id=sequence_entry.id)
             if len(sequence_entry.remark) > 0:
                 header = '|'.join([header] + sequence_entry.remark)
-            f_handle.write(header + os.linesep)
-            f_handle.write(sequence_entry.seq + os.linesep)
+            content += header + os.linesep
+            content += sequence_entry.seq + os.linesep
 
-        return
+        f_handle.write(content)
+

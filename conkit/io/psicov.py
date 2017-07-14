@@ -104,11 +104,13 @@ class PsicovParser(_ContactFileParser):
         if len(contact_file) > 1:
             raise RuntimeError('More than one contact map provided')
 
+        content = ""
+
         for contact_map in contact_file:
             for contact in contact_map:
                 line = "{res1_seq} {res2_seq} {lb} {ub} {raw_score:.6f}"
                 line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score,
                                    lb=contact.distance_bound[0], ub=contact.distance_bound[1])
-                f_handle.write(line + os.linesep)
+                content += line + os.linesep
 
-        return
+        f_handle.write(content)

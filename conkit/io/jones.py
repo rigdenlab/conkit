@@ -111,7 +111,9 @@ class JonesParser(_SequenceFileParser):
         # Double check the type of hierarchy and reconstruct if necessary
         sequence_file = self._reconstruct(hierarchy)
 
-        for sequence_entry in sequence_file:
-            f_handle.write(sequence_entry.seq + os.linesep)
+        content = ""
 
-        return
+        for sequence_entry in sequence_file:
+            content += sequence_entry.seq + os.linesep
+
+        f_handle.write(content)

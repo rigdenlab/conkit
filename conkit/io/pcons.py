@@ -163,21 +163,23 @@ class PconsParser(_ContactFileParser):
 
         comment_line = "##############################################################################"
 
+        content = ""
+
         for contact_map in contact_file:
-            f_handle.write(comment_line + os.linesep)
-            f_handle.write("PconsC3 result file" + os.linesep)
-            f_handle.write("Generated from ConKit" + os.linesep)
-            f_handle.write(comment_line + os.linesep)
+            content += comment_line + os.linesep
+            content += "PconsC3 result file" + os.linesep
+            content += "Generated from ConKit" + os.linesep
+            content += comment_line + os.linesep
 
             if contact_map.sequence is not None:
-                f_handle.write("Sequence number: 1" + os.linesep)
-                f_handle.write("Sequence name: {0}".format(contact_map.sequence.id) + os.linesep)
-                f_handle.write("Sequence length: {0} aa.".format(contact_map.sequence.seq_len) + os.linesep)
-                f_handle.write("Sequence:" + os.linesep)
-                f_handle.write(contact_map.sequence.seq + os.linesep * 3)
+                content += "Sequence number: 1" + os.linesep
+                content += "Sequence name: {0}".format(contact_map.sequence.id) + os.linesep
+                content += "Sequence length: {0} aa.".format(contact_map.sequence.seq_len) + os.linesep
+                content += "Sequence:" + os.linesep
+                content += contact_map.sequence.seq + os.linesep * 3
 
-            f_handle.write("Predicted contacts:" + os.linesep)
-            f_handle.write("Res1 Res2 Score" + os.linesep)
+            content += "Predicted contacts:" + os.linesep
+            content += "Res1 Res2 Score" + os.linesep
 
             for contact in contact_map:
                 res1_seq = contact.res1_seq
@@ -185,8 +187,8 @@ class PconsParser(_ContactFileParser):
                 raw_score = contact.raw_score
                 l = "{res1_seq:>4} {res2_seq:>4} {raw_score:>.6f}".format(res1_seq=res1_seq, res2_seq=res2_seq,
                                                                           raw_score=raw_score)
-                f_handle.write(l + os.linesep)
+                content += l + os.linesep
 
-            f_handle.write(os.linesep + comment_line + os.linesep)
+            content += os.linesep + comment_line + os.linesep
 
-        return
+        f_handle.write(content)

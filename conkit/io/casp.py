@@ -192,25 +192,25 @@ class CaspParser(_ContactFileParser):
         # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
 
-        f_handle.write("PFRMAT RR" + os.linesep)
+        content = "PFRMAT RR" + os.linesep
         if contact_file.target:
-            f_handle.write("TARGET {0}".format(contact_file.target) + os.linesep)
+            content += "TARGET {0}".format(contact_file.target) + os.linesep
         if contact_file.author:
-            f_handle.write("AUTHOR {0}".format(contact_file.author) + os.linesep)
+            content += "AUTHOR {0}".format(contact_file.author) + os.linesep
         if contact_file.remark:
             for remark in contact_file.remark:
-                f_handle.write("REMARK {0}".format(remark) + os.linesep)
+                content += "REMARK {0}".format(remark) + os.linesep
         if contact_file.method:
             for method in contact_file.method:
-                f_handle.write("METHOD {0}".format(method) + os.linesep)
+                content += "METHOD {0}".format(method) + os.linesep
 
         for contact_map in contact_file:
 
-            f_handle.write("MODEL  {0}".format(contact_map.id) + os.linesep)
+            content += "MODEL  {0}".format(contact_map.id) + os.linesep
             if isinstance(contact_map.sequence, Sequence):
                 sequence = contact_map.sequence
                 for i in range(0, sequence.seq_len, 50):
-                    f_handle.write(sequence.seq[i:i+50] + os.linesep)
+                    content += sequence.seq[i:i+50] + os.linesep
             # Casp Roll format specifies raw scores to be in [0, 1]
             if any(c.raw_score > 1.0 or c.raw_score < 0.0 for c in contact_map):
                 contact_map.rescale(inplace=True)
@@ -224,9 +224,9 @@ class CaspParser(_ContactFileParser):
                 s = s.format(res1_chain=res1_chain, res1_seq=contact.res1_seq, res2_chain=res2_chain,
                              res2_seq=contact.res2_seq, lb=contact.distance_bound[0], ub=contact.distance_bound[1],
                              raw_score=contact.raw_score)
-                f_handle.write(s + os.linesep)
-            f_handle.write("ENDMDL" + os.linesep)
+                content += s + os.linesep
+            content += "ENDMDL" + os.linesep
 
-        f_handle.write("END" + os.linesep)
+        content += "END" + os.linesep
 
-        return
+        f_handle.write(content)
