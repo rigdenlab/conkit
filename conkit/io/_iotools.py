@@ -116,12 +116,14 @@ def open_f_handle(f_handle, mode):
         raise ValueError('Mode needs to be one of: append, read, write')
     
     try:
-        if is_str_like(f_handle):
-            return io.open(f_handle, mode[0], encoding='utf-8')
+        if is_str_like(f_handle) and sys.version_info.major >= 3:
+            return io.open(f_handle, mode[0], encoding="utf-8")
+        elif is_str_like(f_handle):
+            return open(f_handle, mode[0])
         elif f_handle.mode == mode[0]:
             return f_handle
         else:
-            raise TypeError("f_handle must be str of filehandle")
+            raise TypeError("f_handle must be str or filehandle")
     except AttributeError:
-        raise TypeError("f_handle must be str of filehandle")
+        raise TypeError("f_handle must be str or filehandle")
 

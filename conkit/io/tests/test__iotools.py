@@ -76,12 +76,22 @@ class Test(unittest.TestCase):
         os.unlink(fname)
 
     def test_open_f_handle_4(self):
+        fname = _iotools.create_tmp_f()
+        with _iotools.open_f_handle(fname, 'write') as fhandle:
+            self.assertEqual('w', fhandle.mode)
+            fhandle.write("hello world!")
+        with _iotools.open_f_handle(fname, 'read') as fhandle:
+            self.assertEqual('r', fhandle.mode)
+            self.assertEqual("hello world!", fhandle.read().strip())
+        os.unlink(fname)
+
+    def test_open_f_handle_5(self):
         with self.assertRaises(TypeError):
             _iotools.open_f_handle(1, 'read')
         with self.assertRaises(TypeError):
             _iotools.open_f_handle(1.0, 'write')
 
-    def test_open_f_handle_5(self):
+    def test_open_f_handle_6(self):
         fname = _iotools.create_tmp_f()
         with self.assertRaises(ValueError):
             _iotools.open_f_handle(fname, 'foo')
