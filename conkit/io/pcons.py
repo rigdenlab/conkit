@@ -56,7 +56,7 @@ RE_SEQUENCE_NAME = re.compile(r"^Sequence name:\s+(.*)\s*$")
 RE_SEQUENCE = re.compile(r"^Sequence:\s*$")
 RE_PRED_CONTACTS = re.compile(r"^Predicted\s+contacts:\s*$")
 RE_CONTACT_HEADER = re.compile(r"^Res1\s+Res2\s+Score\s*$")
-RE_CONTACT = re.compile(r"^\s*(\d+)\s+(\d+)\s+(\d*\.\d+|\d+)\s*$")
+RE_CONTACT = re.compile(r"^\s*(\d+)\s+(\d+)\s+(-?\d*\.\d+|\d+)\s*$")
 RE_SPLIT = re.compile(r'\s+')
 
 
