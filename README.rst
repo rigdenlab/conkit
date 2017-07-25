@@ -65,8 +65,8 @@ Please use the `GitHub Issue Tracker`_.
 Contributors
 ++++++++++++
 
-- Felix Simkovic
-- Jens Thomas
+- `Felix Simkovic <https://github.com/fsimkovic>`_
+- `Jens Thomas <https://github.com/linucks>`_
 - Daniel Rigden
 
 
