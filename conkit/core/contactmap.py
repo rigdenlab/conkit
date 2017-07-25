@@ -467,9 +467,11 @@ class ContactMap(_Entity):
             print("The ContactMap is empty!")
             return []
 
-        # Compute the ranges between each contact pair and store it
-	# REM: Bug in Sadowski's algorithm, fix in commented line below but untested/not optimized
+	# REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
+        # REM: Remember to change test cases when corrected implementation benchmarked
         #x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+         
+        # Compute the ranges between each contact pair and store it
         x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
         # Compute per-residue points for density extraction
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
