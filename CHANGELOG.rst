@@ -4,7 +4,9 @@ Changelog
 
 v0.8.3dev1
 ----------
+
 - Bug fix in ``PconsParser`` class to accept negative ``raw_score`` values
+- ``requirements.txt`` file re-added for easier dependency installation
 
 v0.8.2
 ------
