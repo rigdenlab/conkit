@@ -45,9 +45,7 @@ Key Features
 - Visualisation of Multiple Sequence Alignment and contact prediction data
 - Easy-to-use Python wrappers for the contact prediction related software
 
-.. note::
-
-   ConKit was presented at the CCP4 Study Weekend 2017. A recording of the presentation is available on `YouTube <https://youtu.be/YhHkfa7ggAE>`_.
+For a quick overview of ConKit, watch `this video <https://youtu.be/YhHkfa7ggAE>`_.
 
 Installation & Usage
 ++++++++++++++++++++
