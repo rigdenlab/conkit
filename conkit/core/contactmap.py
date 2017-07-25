@@ -468,7 +468,9 @@ class ContactMap(_Entity):
             return []
 
         # Compute the ranges between each contact pair and store it
-        x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+	# REM: Bug in Sadowski's algorithm, fix in commented line below but untested/not optimized
+        #x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+        x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
         # Compute per-residue points for density extraction
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
         # Calculate the bandwidth
