@@ -6,13 +6,14 @@ v0.8.3dev1
 ----------
 
 - Bug fix in ``PconsParser`` class to accept negative ``raw_score`` values
+- Bug fix in ``SequenceFile.neff`` which returned ``float`` instead of ``int``
 - ``requirements.txt`` file re-added for easier dependency installation
 
 v0.8.2
 ------
 
 - Critical bug fix for automated opening of filehandle in Python2.7 
-- Test function skipping added for ``SequenceFile().filter()`` when SciPy not installed
+- Test function skipping added for ``SequenceFile.filter()`` when SciPy not installed
 - Renamed conkit/io/tests files for filenames to agree with modules in conkit/io
 - Performance of ``write()`` in parsers improved by construction of string and single call to ``write()`` of filehandle
 

@@ -156,6 +156,15 @@ class TestSequenceFile(unittest.TestCase):
         weights = sequence_file.calculate_weights(identity=0.6)
         self.assertEqual(weights, [0.3333333333333333, 1.0, 0.5, 1.0, 1.0, 0.5])
 
+    @skipUnless(SCIPY)
+    def test_calculate_weights_6(self):
+        sequence_file = SequenceFile('test')
+        for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AA-ABA-'),
+                  Sequence('cho', 'AAACBAA'), Sequence('doo', 'B-BAA--'),
+                  Sequence('miu', 'BBBBBBB'), Sequence('nop', 'AAAAAAB')]:
+            sequence_file.add(s)
+        self.assertEqual(5, sequence_file.neff)
+
     def test_calculate_freq_1(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AAAA-'), Sequence('cho', '--AAA--')]:

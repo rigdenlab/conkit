@@ -125,7 +125,7 @@ class SequenceFile(_Entity):
     @property
     def neff(self):
         """The number of effective sequences"""
-        return sum(self.calculate_weights())
+        return int(sum(self.calculate_weights()))
 
     @property
     def nseqs(self):
