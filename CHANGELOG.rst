@@ -5,6 +5,7 @@ Changelog
 v0.8.3dev1
 ----------
 
+- Distance definitions accept floating point values
 - Bug fix in ``PconsParser`` class to accept negative ``raw_score`` values
 - Bug fix in ``SequenceFile.neff`` which returned ``float`` instead of ``int``
 - ``requirements.txt`` file re-added for easier dependency installation

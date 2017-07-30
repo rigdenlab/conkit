@@ -118,7 +118,7 @@ class Contact(_Entity):
            The residue sequence number of residue 2
 
         """
-        self._distance_bound = [0, 8]
+        self._distance_bound = [0., 8.]
         self._raw_score = 1.0
         self._res1 = 'X'
         self._res2 = 'X'
@@ -195,7 +195,7 @@ class Contact(_Entity):
 
         Parameters
         ----------
-        value : int
+        value : int, float 
 
         Raises
         ------
@@ -209,7 +209,7 @@ class Contact(_Entity):
             raise ValueError('Lower bound must be positive')
         elif value >= self.upper_bound:
             raise ValueError('Lower bound must be smaller than upper bound')
-        self._distance_bound[0] = value
+        self._distance_bound[0] = float(value)
 
     @property
     def upper_bound(self):
@@ -222,7 +222,7 @@ class Contact(_Entity):
 
         Parameters
         ----------
-        value : int
+        value : int, float
 
         Raises
         ------
@@ -236,7 +236,7 @@ class Contact(_Entity):
             raise ValueError('Upper bound must be positive')
         elif value <= self.lower_bound:
             raise ValueError('Upper bound must be larger than lower bound')
-        self._distance_bound[1] = value
+        self._distance_bound[1] = float(value)
 
     @property
     def raw_score(self):
@@ -249,7 +249,7 @@ class Contact(_Entity):
 
         Parameters
         ----------
-        score : float
+        score : int, float
 
         """
         self._raw_score = float(score)

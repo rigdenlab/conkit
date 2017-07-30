@@ -182,7 +182,7 @@ class _GenericStructureParser(_ContactFileParser):
                         atom1.resseq,
                         atom2.resseq,
                         round(1.0-(distance/100), 6),
-                        distance_bound=(0, distance_cutoff)
+                        distance_bound=(0., float(distance_cutoff))
                     )
 
                     contact.res1_altseq = atom1.resseq_alt

@@ -75,7 +75,7 @@ class PsicovParser(_ContactFileParser):
 
             elif line[0].isdigit():
                 _contact = Contact(int(line[0]), int(line[1]), float(line[4]),
-                                   distance_bound=(int(line[2]), int(line[3])))
+                                   distance_bound=(float(line[2]), float(line[3])))
                 _map.add(_contact)
 
         hierarchy.method = 'Contact map predicted using PSICOV'
@@ -109,8 +109,10 @@ class PsicovParser(_ContactFileParser):
         for contact_map in contact_file:
             for contact in contact_map:
                 line = "{res1_seq} {res2_seq} {lb} {ub} {raw_score:.6f}"
+                lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
+                ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
                 line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score,
-                                   lb=contact.distance_bound[0], ub=contact.distance_bound[1])
+                                   lb=lb, ub=ub)
                 content += line + os.linesep
 
         f_handle.write(content)

@@ -155,7 +155,7 @@ class CaspParser(_ContactFileParser):
                             res2_chain, res2_seq = res2_split[1], res2_split[2]
 
                         contact = Contact(int(res1_seq), int(res2_seq), float(raw_score),
-                                          distance_bound=(int(lb), int(ub)))
+                                          distance_bound=(float(lb), float(ub)))
                         contact.res1_chain = res1_chain
                         contact.res2_chain = res2_chain
                         contact.res1_altseq = int(res1_seq)
@@ -221,9 +221,10 @@ class CaspParser(_ContactFileParser):
                 else:
                     res1_chain = contact.res1_chain
                     res2_chain = contact.res2_chain
+                lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
+                ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
                 s = s.format(res1_chain=res1_chain, res1_seq=contact.res1_seq, res2_chain=res2_chain,
-                             res2_seq=contact.res2_seq, lb=contact.distance_bound[0], ub=contact.distance_bound[1],
-                             raw_score=contact.raw_score)
+                             res2_seq=contact.res2_seq, lb=lb, ub=ub, raw_score=contact.raw_score)
                 content += s + os.linesep
             content += "ENDMDL" + os.linesep
 
