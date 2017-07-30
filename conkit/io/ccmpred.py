@@ -70,24 +70,20 @@ class CCMpredParser(_ContactFileParser):
 
         """
         contact_file = ContactFile(f_id)
+        contact_file.method = 'Contact map predicted using CCMpred'
         contact_map = ContactMap("map_1")
         contact_file.add(contact_map)
 
         # Bits ripped from Stefan Seemayer's script shipped with CCMpred
         mat = np.loadtxt(f_handle)
-        raw_contacts = self._get_contact_pairs(mat)
-
-        for res1_seq, res2_seq, raw_score in zip(raw_contacts[0], raw_contacts[1], mat[raw_contacts]):
-            if res1_seq > res2_seq:
-                continue
-            # Matrix starts count at 0 so increment numbers by one straight away
-            contact = Contact(
-                int(res1_seq+1),
-                int(res2_seq+1),
-                float(raw_score)
-            )
-            contact_map.add(contact)
-        contact_file.method = 'Contact map predicted using CCMpred'
+        if mat.size > 0:
+            raw_contacts = self._get_contact_pairs(mat)
+            for res1_seq, res2_seq, raw_score in zip(raw_contacts[0], raw_contacts[1], mat[raw_contacts]):
+                if res1_seq > res2_seq:
+                    continue
+                # Matrix starts count at 0 so increment numbers by one straight away
+                contact = Contact(int(res1_seq+1), int(res2_seq+1), float(raw_score))
+                contact_map.add(contact)
 
         return contact_file
         
