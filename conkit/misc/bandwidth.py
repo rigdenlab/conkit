@@ -159,6 +159,27 @@ class BowmanBW(_BandwidthCalc):
         return sigma * ((((data.shape[1] + 2) * data.shape[0]) / 4.) ** (-1. / (data.shape[1] + 4)))
 
 
+class LinearBW(_BandwidthCalc):
+    """Linear [#]_ implementation
+
+    .. math::
+
+       \\frac{N_{max}}{t}
+
+    .. [#] Sadowski, M.I. (2013). Prediction of protein domain boundaries from inverse covariances.
+
+    """
+    def __init__(self, data, threshold=15):
+        super(LinearBW, self).__init__()
+        self._data = np.asarray(data)
+        self._threshold = threshold
+
+    @property
+    def bandwidth(self):
+        """The bandwidth"""
+        return float(self._data.max() / self._threshold)
+
+
 class ScottBW(_BandwidthCalc):
     """Scott's [#]_ implementation
 
@@ -211,6 +232,8 @@ def bandwidth_factory(method):
         return AmiseBW
     elif method == "bowman":
         return BowmanBW
+    elif method == "linear":
+        return LinearBW
     elif method == "scott":
         return ScottBW
     elif method == "silverman":

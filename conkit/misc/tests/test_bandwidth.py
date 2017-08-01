@@ -45,6 +45,25 @@ class TestBowmanBW(unittest.TestCase):
         self.assertEqual(round(bandwidth.BowmanBW(x).bw, 7), 0.6052020)
 
 
+class TestLinearBW(unittest.TestCase):
+
+    def test_1(self):
+        xy = np.array([(1, 5), (3, 3), (2, 4)])
+        x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
+        self.assertEqual(bandwidth.LinearBW(x, threshold=8).bw, 0.625)
+
+    def test_2(self):
+        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)])
+        x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
+        self.assertEqual(bandwidth.LinearBW(x, threshold=10).bw, 1.0)
+
+    def test_3(self):
+        xy = np.array([(3, 5), (2, 4), (3, 4)])
+        x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
+        self.assertEqual(round(bandwidth.LinearBW(x, threshold=15).bw, 7), 0.3333333)
+
+
+
 class TestScottBW(unittest.TestCase):
 
     def test_1(self):

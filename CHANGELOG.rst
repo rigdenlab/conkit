@@ -5,6 +5,7 @@ Changelog
 v0.8.3dev1
 ----------
 
+- ``LinearBW`` calculator added for linear bandwidth calculation in analysis
 - Distance definitions accept floating point values
 - ``requirements.txt`` file re-added for easier dependency installation
 - Bug fix
