@@ -34,35 +34,29 @@ from __future__ import division
 from __future__ import print_function
 
 __author__ = "Felix Simkovic"
-__date__ = "03 Aug 2016"
+__date__ = "02 Aug 2017"
 __version__ = "1.0"
 
+import abc
 import numpy as np
 
+ABC = abc.ABCMeta('ABC', (object,), {})
 
-class _BandwidthCalc(object):
-    """Container class for bandwidth calculations"""
 
-    def __init__(self):
-        self._data = None
+class BandwidthBase(ABC):
+    """Abstract class for bandwidth calculations"""
 
-    @property
-    def data(self):
-        """The input data"""
-        return self._data
-
-    @property
+    @abc.abstractproperty
     def bandwidth(self):
-        """The bandwith"""
         return 0.0
 
+    # REM: abstractproperty requires us to re-declare it in every child class
     @property
     def bw(self):
-        """The bandwith"""
         return self.bandwidth
 
 
-class AmiseBW(_BandwidthCalc):
+class AmiseBW(BandwidthBase):
     """Asymptotic Mean Integrated Squared Error (AMISE)
 
     This particular choice of bandwidth recovers all the important features whilst maintaining smoothness.
@@ -73,14 +67,12 @@ class AmiseBW(_BandwidthCalc):
     """
     def __init__(self, data, niterations=25, eps=1e-3):
         """Instantiate a new bandwith calculator"""
-        super(AmiseBW, self).__init__()
         self._data = np.asarray(data)
         self._niterations = niterations
         self._eps = eps
 
     @property
     def bandwidth(self):
-        """The bandwidth"""
         data = self._data
         x0 = BowmanBW(data).bandwidth
         y0 = AmiseBW.optimal_bandwidth_equation(data, x0)
@@ -136,7 +128,7 @@ class AmiseBW(_BandwidthCalc):
         return yy
 
 
-class BowmanBW(_BandwidthCalc):
+class BowmanBW(BandwidthBase):
     """Bowman & Azzalini [#]_ bandwidth calculation
 
     .. math::
@@ -148,18 +140,16 @@ class BowmanBW(_BandwidthCalc):
     """
     def __init__(self, data):
         """Instantiate a new bandwith calculator"""
-        super(BowmanBW, self).__init__()
         self._data = np.asarray(data)
 
     @property
     def bandwidth(self):
-        """The bandwidth"""
         data = self._data
         sigma = np.sqrt((data ** 2).sum() / data.shape[0] - (data.sum() / data.shape[0]) ** 2)
         return sigma * ((((data.shape[1] + 2) * data.shape[0]) / 4.) ** (-1. / (data.shape[1] + 4)))
 
 
-class LinearBW(_BandwidthCalc):
+class LinearBW(BandwidthBase):
     """Linear [#]_ implementation
 
     .. math::
@@ -170,17 +160,15 @@ class LinearBW(_BandwidthCalc):
 
     """
     def __init__(self, data, threshold=15):
-        super(LinearBW, self).__init__()
         self._data = np.asarray(data)
         self._threshold = threshold
 
     @property
     def bandwidth(self):
-        """The bandwidth"""
         return float(self._data.max() / self._threshold)
 
 
-class ScottBW(_BandwidthCalc):
+class ScottBW(BandwidthBase):
     """Scott's [#]_ implementation
 
     .. math::
@@ -192,18 +180,16 @@ class ScottBW(_BandwidthCalc):
     """
     def __init__(self, data):
         """Instantiate a new bandwith calculator"""
-        super(ScottBW, self).__init__()
         self._data = np.asarray(data)
 
     @property
     def bandwidth(self):
-        """The bandwidth"""
         data = self._data
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
         return 1.059 * sigma * data.shape[0] ** (-1. / (data.shape[1] + 4))
 
 
-class SilvermanBW(_BandwidthCalc):
+class SilvermanBW(BandwidthBase):
     """Silverman's [#]_ implementation
 
     .. math::
@@ -215,12 +201,10 @@ class SilvermanBW(_BandwidthCalc):
     """
     def __init__(self, data):
         """Instantiate a new bandwith calculator"""
-        super(SilvermanBW, self).__init__()
         self._data = np.asarray(data)
 
     @property
     def bandwidth(self):
-        """The bandwidth"""
         data = self._data
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
         return 0.9 * sigma * (data.shape[0] * (data.shape[1] + 2) / 4.) ** (-1. / (data.shape[1] + 4))
