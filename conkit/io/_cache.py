@@ -100,13 +100,13 @@ class _ParserCache(object):
     def contact_file_parsers(self):
         """A dict of contact file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._parsers if c.group == "_ContactFileParser" or c.group == "_GenericStructureParser"}
+        return {c.id: c for c in self._parsers if c.group == "ContactFileParser" or c.group == "GenericStructureParser"}
 
     @property
     def sequence_file_parsers(self):
         """A dict of sequence file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._parsers if c.group == "_SequenceFileParser"}
+        return {c.id: c for c in self._parsers if c.group == "SequenceFileParser"}
 
     @property
     def file_parsers(self):

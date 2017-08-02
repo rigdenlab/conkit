@@ -37,12 +37,12 @@ __version__ = "0.1"
 
 import os
 
-from conkit.io._parser import _SequenceFileParser
+from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
 
-class FastaParser(_SequenceFileParser):
+class FastaParser(SequenceFileParser):
     """Parser class for FASTA sequence files
     """
     def __init__(self):

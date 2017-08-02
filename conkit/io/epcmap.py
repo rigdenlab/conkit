@@ -37,13 +37,13 @@ __version__ = "0.1"
 
 import os
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
 
-class EPCMapParser(_ContactFileParser):
+class EPCMapParser(ContactFileParser):
     """Class to parse a EPC-Map contact prediction
     """
     def read(self, f_handle, f_id="epcmap"):

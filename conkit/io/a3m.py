@@ -44,12 +44,12 @@ import numpy as np
 import os
 import re
 
-from conkit.io._parser import _SequenceFileParser
+from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
 
-class A3mParser(_SequenceFileParser):
+class A3mParser(SequenceFileParser):
     """Parser class for A3M sequence files
 
     """

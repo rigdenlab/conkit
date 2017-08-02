@@ -40,13 +40,13 @@ __version__ = "0.1"
 import numpy as np
 import sys
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
 
-class CCMpredParser(_ContactFileParser):
+class CCMpredParser(ContactFileParser):
     """
     Class to parse a CCMpred contact matrix
 

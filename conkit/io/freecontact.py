@@ -38,7 +38,7 @@ __version__ = "0.1"
 import os
 import re
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -46,7 +46,7 @@ from conkit.core.contactfile import ContactFile
 RE_SPLIT = re.compile(r'\s+')
 
 
-class FreeContactParser(_ContactFileParser):
+class FreeContactParser(ContactFileParser):
     """Class to parse a FreeContact contact file
     """
     def __init__(self):

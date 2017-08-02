@@ -43,7 +43,7 @@ __version__ = "0.1"
 import os
 import re
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -60,7 +60,7 @@ RE_CONTACT = re.compile(r"^\s*(\d+)\s+(\d+)\s+(-?\d*\.\d+|\d+)\s*$")
 RE_SPLIT = re.compile(r'\s+')
 
 
-class PconsParser(_ContactFileParser):
+class PconsParser(ContactFileParser):
     """Class to parse a Pcons output
 
     This module can be used to parse all versions of the

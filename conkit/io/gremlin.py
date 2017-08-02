@@ -38,7 +38,7 @@ __version__ = "0.1"
 import os
 import re
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -49,7 +49,7 @@ RE_COMMENT = re.compile(r'^#+(.*)$')
 RE_SPLIT = re.compile(r'\s+')
 
 
-class GremlinParser(_ContactFileParser):
+class GremlinParser(ContactFileParser):
     """Parser class for GREMLIN contact prediction file
     """
     def __init__(self):

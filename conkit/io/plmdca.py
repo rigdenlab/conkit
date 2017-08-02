@@ -38,13 +38,13 @@ __version__ = "0.1"
 
 import os
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
 
-class PlmDCAParser(_ContactFileParser):
+class PlmDCAParser(ContactFileParser):
     """Class to parse a plmDCA contact prediction
     """
     def __init__(self):

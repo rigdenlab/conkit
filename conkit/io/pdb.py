@@ -49,20 +49,18 @@ if sys.version_info.major < 3:
 from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence, THREE_TO_ONE
 
 
-class _GenericStructureParser(_ContactFileParser):
+class GenericStructureParser(ContactFileParser):
     """
     Parent class to parse a PDB file and extract distance restraints
     as residue-residue contacts
     """
-    def __init__(self):
-        super(_GenericStructureParser, self).__init__()
 
     def _build_sequence(self, chain):
         """Build a peptide using Biopython to extract the sequence"""
@@ -220,24 +218,23 @@ class _GenericStructureParser(_ContactFileParser):
             warnings.warn(msg, FutureWarning)
         return hierarchies[0]
 
-    def _write(self):
+    def _write(self, f_handle, hierarchy):
         """Write a contact file instance to to file
 
         Raises
         ------
-        RuntimeError
-           Not available
+        NotImplementedError
+           Write function not available
 
         """
-        raise RuntimeError("Not available")
+        raise NotImplementedError("Write function not available")
 
 
-class MmCifParser(_GenericStructureParser):
+class MmCifParser(GenericStructureParser):
     """
     Class to parse a mmCIF file and extract distance restraints
     as residue-residue contacts
     """
-
     def __init__(self):
         super(MmCifParser, self).__init__()
 
@@ -275,14 +272,14 @@ class MmCifParser(_GenericStructureParser):
 
         Raises
         ------
-        RuntimeError
-           Not available
+        NotImplementedError
+           Write function not available
 
         """
-        self._write()
+        self._write(f_handle, hierarchy)
 
 
-class PdbParser(_GenericStructureParser):
+class PdbParser(GenericStructureParser):
     """
     Class to parse a PDB file and extract distance restraints
     as residue-residue contacts
@@ -324,9 +321,9 @@ class PdbParser(_GenericStructureParser):
 
         Raises
         ------
-        RuntimeError
-           Not available
+        NotImplementedError
+           Write function not available
 
         """
-        self._write()
+        self._write(f_handle, hierarchy)
 

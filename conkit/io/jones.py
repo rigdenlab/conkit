@@ -37,12 +37,12 @@ __version__ = "0.1"
 
 import os
 
-from conkit.io._parser import _SequenceFileParser
+from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
 
-class JonesParser(_SequenceFileParser):
+class JonesParser(SequenceFileParser):
     """Parser class for Jones sequence files
 
     This format is a "new" definition of sequence-only records.

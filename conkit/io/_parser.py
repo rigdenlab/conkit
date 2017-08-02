@@ -35,6 +35,10 @@ __author__ = "Felix Simkovic"
 __date__ = "04 Oct 2016"
 __version__ = "0.1"
 
+import abc
+
+ABC = abc.ABCMeta('ABC', (object,), {})
+
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -42,26 +46,20 @@ from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
 
-class _Parser(object):
-    """General purpose class for all parsers
-
-    Notes
-    -----
-    Do no instantiate this class directly
+class Parser(ABC):
+    """Abstract class for all parsers
 
     """
-    def __init__(self):
+    @abc.abstractmethod
+    def read(self):
         pass
 
+    @abc.abstractmethod
+    def write(self):
+        pass
 
-class _ContactFileParser(_Parser):
-    """General purpose class for all contact file parsers
-
-    """
-    def __init__(self):
-        super(_ContactFileParser, self).__init__()
-
-    def _reconstruct(self, hierarchy):
+    @classmethod
+    def _reconstruct(cls, hierarchy):
         """Wrapper to re-construct full hierarchy when parts are provided"""
         if isinstance(hierarchy, ContactFile):
             h = hierarchy
@@ -73,21 +71,19 @@ class _ContactFileParser(_Parser):
             m = ContactMap('1')
             m.add(hierarchy)
             h.add(m)
+        elif isinstance(hierarchy, SequenceFile):
+            h = hierarchy
+        elif isinstance(hierarchy, Sequence):
+            h = SequenceFile('conkit')
+            h.add(hierarchy)
         return h 
     
 
-class _SequenceFileParser(_Parser):
-    """General purpose class for all sequence file parsers
+class ContactFileParser(Parser):
+    """General purpose class for all contact file parsers"""
+    pass
+    
 
-    """
-    def __init__(self):
-        super(_SequenceFileParser, self).__init__()
-
-    def _reconstruct(self, hierarchy):
-        """Wrapper to re-construct full hierarchy when parts are provided"""
-        if isinstance(hierarchy, SequenceFile):
-            h = hierarchy
-        if isinstance(hierarchy, Sequence):
-            h = SequenceFile('conkit')
-            h.add(hierarchy)
-        return h
+class SequenceFileParser(Parser):
+    """General purpose class for all sequence file parsers"""
+    pass

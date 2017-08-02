@@ -39,7 +39,7 @@ __version__ = "0.1"
 import os
 import re
 
-from conkit.io._parser import _SequenceFileParser
+from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
@@ -52,7 +52,7 @@ SEQ_RECORD = re.compile(r'^(\S+)\s+([A-Z0-9~-]+)$')
 END_RECORD = re.compile(r'^//$')
 
 
-class StockholmParser(_SequenceFileParser):
+class StockholmParser(SequenceFileParser):
     """Parser class for Stockholm sequence files
     """
     def __init__(self):

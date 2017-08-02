@@ -4,11 +4,11 @@ Changelog
 
 v0.8.3dev1
 ----------
-
-- ``_BandwidthCalc`` class renamed to ``BandwidthBase`` and turned into abstract class
-- ``LinearBW`` calculator added for linear bandwidth calculation in analysis
-- Distance definitions accept floating point values
 - ``requirements.txt`` file re-added for easier dependency installation
+- Distance definitions accept floating point values
+- ``LinearBW`` calculator added for linear bandwidth calculation in analysis
+- ``_BandwidthCalc`` class renamed to ``BandwidthBase``
+- Abstractified ``BandwidthBase``, and ``Parser`` with all subparser classes 
 - Bug fix
     - ``PconsParser`` class accepts negative ``raw_score`` values
     - ``SequenceFile.neff`` returns ``float`` instead of ``int``

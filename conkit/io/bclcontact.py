@@ -37,7 +37,7 @@ __version__ = "0.1"
 
 import re
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -45,7 +45,7 @@ from conkit.core.contactfile import ContactFile
 RE_SPLIT = re.compile(r'\s+')
 
 
-class BCLContactParser(_ContactFileParser):
+class BCLContactParser(ContactFileParser):
     """Class to parse a BCL::Contact contact file
     """
     def __init__(self):
@@ -105,8 +105,9 @@ class BCLContactParser(_ContactFileParser):
 
         Raises
         ------
-        RuntimeError
-           Not available
+        NotImplementedError
+           Write function not available
 
         """
-        raise RuntimeError("Not available")
+        raise NotImplementedError("Write function not available")
+

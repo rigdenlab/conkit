@@ -39,7 +39,7 @@ __version__ = "0.1"
 import os
 import re
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -48,7 +48,7 @@ RE_HEADER = re.compile(r'^Helix\s+Position\s+Residue\s+Helix\s+Position\s+Residu
 RE_SPLIT = re.compile(r'\s+')
 
 
-class MemBrainParser(_ContactFileParser):
+class MemBrainParser(ContactFileParser):
     """Class to parse a MemBrain contact file
     """
     def __init__(self):

@@ -39,7 +39,7 @@ import collections
 import os
 import re
 
-from conkit.io._parser import _ContactFileParser
+from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
@@ -64,7 +64,7 @@ ContactTemplate = collections.namedtuple('Contact', ['res1_seq', 'res2_seq', 'lb
                                                      'res1_chain', 'res2_chain', 'res1_altseq', 'res2_altseq'])
 
 
-class CaspParser(_ContactFileParser):
+class CaspParser(ContactFileParser):
     """Parser class for CASP RR contact prediction file
 
     """
