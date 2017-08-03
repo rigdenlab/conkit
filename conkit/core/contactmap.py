@@ -219,9 +219,8 @@ class ContactMap(_Entity):
 
         """
         # ContactMap is empty
-        if len(self) == 0:
-            print('ContactMap is empty')
-            return 0.0
+        if len(self) < 1:
+            raise ValueError("ContactMap is empty")
 
         # np.unique(..., return_counts=True) added in numpy > 1.9, backward compatibility
         # requires we do it the old way :-/
@@ -462,9 +461,8 @@ class ContactMap(_Entity):
         except ImportError:
             raise RuntimeError("Cannot find SciKit package")
 
-        if len(self) == 0:
-            print("The ContactMap is empty!")
-            return []
+        if len(self) < 1:
+            raise ValueError("ContactMap is empty")
 
 	# REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
         # REM: Remember to change test cases when corrected implementation benchmarked
