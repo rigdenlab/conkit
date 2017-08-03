@@ -41,6 +41,15 @@ class TestSequence(unittest.TestCase):
         sequence = Sequence('foo', 'GSMFTPK')
         sequence.seq = '-------'
 
+    def test_seq_ascii_1(self):
+        sequence = Sequence('foo', 'GSMFTPK')
+        self.assertEqual([71, 83, 77, 70, 84, 80, 75], list(sequence.seq_ascii))
+
+    def test_seq_ascii_2(self):
+        sequence = Sequence('foo', 'GSMFTPK')
+        sequence.seq = 'AAAAAA'
+        self.assertEqual([65, 65, 65, 65, 65, 65], list(sequence.seq_ascii))
+
     def test_seq_len_1(self):
         sequence = Sequence('foo', 'GSMFTPK')
         self.assertEqual('foo', sequence.id)

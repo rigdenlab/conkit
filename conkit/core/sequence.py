@@ -38,6 +38,8 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
+import sys
+
 from Bio import pairwise2
 from conkit.core._entity import _Entity
 
@@ -157,6 +159,14 @@ class Sequence(_Entity):
         if any(c not in list(ONE_TO_THREE.keys()) for c in seq.upper() if c != '-'):
             raise ValueError('Unrecognized amino acids in sequence')
         self._seq = seq
+
+    @property
+    def seq_ascii(self):
+        """The protein sequence as ASCII-encoded :obj:`str`"""
+        if sys.version_info >= (3, ):
+            return self._seq.encode("ascii")
+        else:
+            return bytearray(self._seq, "ascii")
 
     @property
     def seq_len(self):

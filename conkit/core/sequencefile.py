@@ -105,6 +105,11 @@ class SequenceFile(_Entity):
         )
 
     @property
+    def ascii_matrix(self):
+        """The alignment encoded in a 2-D ASCII matrix"""
+        return [list(seq.seq_ascii) for seq in self]
+
+    @property
     def is_alignment(self):
         """A boolean status for the alignment
 
@@ -290,7 +295,7 @@ class SequenceFile(_Entity):
             raise ValueError("Sequence Identity needs to be between 0 and 1")
 
         # Alignment to unsigned integer matrix
-        msa_mat = self.encode_to_ascii()
+        msa_mat = np.array(self.ascii_matrix)
         # Pre-define some variables
         n = msa_mat.shape[0]                        # size of the data
         batch_size = min(n, 250)                    # size of the batches
@@ -332,7 +337,7 @@ class SequenceFile(_Entity):
             raise ValueError('This is not an alignment')
 
         # Encode matrix
-        msa_mat = self.encode_to_ascii()
+        msa_mat = np.array(self.ascii_matrix)
         # matrix of 0s and 1s; 1 if char is '-'
         aa_frequencies = np.where(msa_mat != 45, 1, 0)
         # sum all values per row
@@ -386,7 +391,7 @@ class SequenceFile(_Entity):
             raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
 
         # Alignment to ASCII matrix
-        msa_mat = self.encode_to_ascii()
+        msa_mat = np.array(self.ascii_matrix)
         # Find all throwable sequences
         throw = set()
         for i in np.arange(len(self)):
@@ -453,16 +458,4 @@ class SequenceFile(_Entity):
             return sequence_file
         else:
             raise ValueError("This is not an alignment")
-
-    def encode_to_ascii(self):
-        """Encode all sequences to ASCII characters
-
-        Returns
-        -------
-        list
-           A 2-D :obj:`np.ndarray` instance
-
-        """
-        dtype = np.uint8
-        return np.asarray([np.fromstring(entry.seq, dtype=dtype) for entry in self], dtype=dtype)
 

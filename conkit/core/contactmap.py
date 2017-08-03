@@ -123,10 +123,9 @@ class ContactMap(_Entity):
         precision
 
         """
-        seq_array = np.fromstring(self.repr_sequence.seq, dtype='uint8')
+        seq_array = np.array(list(self.repr_sequence.seq_ascii))
         gaps = np.where(seq_array == ord('-'), 1, 0)
-        cov = (seq_array.size - np.sum(gaps, axis=0)) / seq_array.size
-        return cov
+        return (seq_array.size - np.sum(gaps, axis=0)) / seq_array.size
 
     @property
     def ncontacts(self):
@@ -607,9 +606,9 @@ class ContactMap(_Entity):
         # ================================================================
 
         # Encode the sequences to uint8 character arrays for easier and faster handling
-        encoded_repr = np.asarray([
-            np.fromstring(contact_map1_repr_sequence.seq, dtype='uint8'),
-            np.fromstring(contact_map2_repr_sequence.seq, dtype='uint8')
+        encoded_repr = np.array([
+            list(contact_map1_repr_sequence.seq_ascii),
+            list(contact_map2_repr_sequence.seq_ascii)
         ])
 
         # Create mappings for both contact maps

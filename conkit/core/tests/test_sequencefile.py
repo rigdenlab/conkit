@@ -24,6 +24,15 @@ def skipUnless(condition):
 
 class TestSequenceFile(unittest.TestCase):
 
+    def test_ascii_matrix_1(self):
+        sequence_file = SequenceFile('test')
+        for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', '-CC-C-'), Sequence('doe', 'BBBBBB')]:
+            sequence_file.add(seq)
+        matrix = sequence_file.ascii_matrix
+        self.assertEqual([65, 65, 65, 65, 65, 65], list(matrix)[0])
+        self.assertEqual([45, 67, 67, 45, 67, 45], list(matrix)[1])
+        self.assertEqual([66, 66, 66, 66, 66, 66], list(matrix)[2])
+
     def test_is_alignment_1(self):
         sequence_file = SequenceFile('test')
         sequence_file.add(Sequence('foo', 'AAAAA'))
@@ -297,15 +306,6 @@ class TestSequenceFile(unittest.TestCase):
             sequence_file.add(seq)
         filtered = sequence_file.filter(min_id=0.1, max_id=0.9)
         self.assertEqual(['foo'], [s.id for s in filtered])
-
-    def test_encode_to_ascii_1(self):
-        sequence_file = SequenceFile('test')
-        for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', '-CC-C-'), Sequence('doe', 'BBBBBB')]:
-            sequence_file.add(seq)
-        matrix = sequence_file.encode_to_ascii()
-        self.assertEqual([65, 65, 65, 65, 65, 65], matrix[0, :].tolist())
-        self.assertEqual([45, 67, 67, 45, 67, 45], matrix[1, :].tolist())
-        self.assertEqual([66, 66, 66, 66, 66, 66], matrix[2, :].tolist())
 
 
 if __name__ == "__main__":
