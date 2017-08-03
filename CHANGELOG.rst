@@ -4,15 +4,21 @@ Changelog
 
 v0.8.3dev1
 ----------
-- ``requirements.txt`` file re-added for easier dependency installation
-- Distance definitions accept floating point values
-- ``LinearBW`` calculator added for linear bandwidth calculation in analysis
-- ``_BandwidthCalc`` class renamed to ``BandwidthBase``
-- Abstractified ``BandwidthBase``, and ``Parser`` with all subparser classes 
+- General
+  - ``requirements.txt`` file re-added for easier dependency installation
+  - Distance definitions accept floating point values
+  - ``_BandwidthCalc`` class renamed to ``BandwidthBase``
+  - Abstractified ``BandwidthBase``, and ``Parser`` with all subparser classes 
+
+- New features
+  - ``LinearBW`` calculator added for linear bandwidth calculation in analysis
+  - ``seq_ascii`` property to ``Sequence`` for encoded sequence
+  - ``ascii_matrix`` property to ``SequenceFile`` for encoded alignment 
+
 - Bug fix
-    - ``PconsParser`` class accepts negative ``raw_score`` values
-    - ``SequenceFile.neff`` returns ``float`` instead of ``int``
-    - ``CCMpredParser.read()`` returns empty ``ContactFile`` when matrix file empty
+  - ``PconsParser`` class accepts negative ``raw_score`` values
+  - ``SequenceFile.neff`` returns ``float`` instead of ``int``
+  - ``CCMpredParser.read()`` returns empty ``ContactFile`` when matrix file empty
 
 v0.8.2
 ------
