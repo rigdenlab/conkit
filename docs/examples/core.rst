@@ -8,7 +8,7 @@
      - .. cssclass:: btn btn-default btn-sm btn-example
 
           :ref:`Python <python_create_sequencefile>`
-   * - - Contact prediction
+   * - - Contact Prediction File
      -
      - .. cssclass:: btn btn-default btn-sm btn-example
 

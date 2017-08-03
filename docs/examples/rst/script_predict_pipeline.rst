@@ -13,7 +13,7 @@ The script to run contact prediction using `HHblits <https://github.com/soedingl
 
 .. code-block:: bash
 
-   $> conkit-predict seq <path/to/hhblits> <path/to/hhblits_database> <path/to/ccmpred> toxd/toxd.fasta fasta
+   $> conkit-predict seq <path/to/ccmpred> <path/to/hhblits> <path/to/hhblits_database> toxd/toxd.fasta fasta
 
 The call above uses your sequence file ``toxd/toxd.fasta`` in ``fasta`` format to first generate a Multiple Sequence Alignment. It will then analyse your alignment identical to the ``conkit-msatool`` script. It will also sort out all the required conversions before executing CCMpred to run the contact prediction. Finally, it will analyse your contact prediciton and plot a contact map, just like the ``conkit-plot`` script does.
 
