@@ -290,15 +290,11 @@ class SequenceFile(_Entity):
             raise ValueError("Sequence Identity needs to be between 0 and 1")
 
         # Alignment to unsigned integer matrix
-        msa_mat = np.asarray(
-            [np.fromstring(sequence_entry.seq, dtype=np.uint8) for sequence_entry in self], dtype=np.uint8
-        )
-
+        msa_mat = self.encode_to_ascii()
         # Pre-define some variables
         n = msa_mat.shape[0]                        # size of the data
         batch_size = min(n, 250)                    # size of the batches
-        hamming = np.zeros(n, dtype=np.int)   # storage for data
-
+        hamming = np.zeros(n, dtype=np.int)         # storage for data
         # Separate the distance calculations into batches to avoid MemoryError exceptions.
         # This answer was provided by a StackOverflow user. The corresponding suggestion by
         # user @WarrenWeckesser: http://stackoverflow.com/a/41090953/3046533
@@ -335,9 +331,8 @@ class SequenceFile(_Entity):
         if not self.is_alignment:
             raise ValueError('This is not an alignment')
 
-        msa_mat = np.asarray(
-            [np.fromstring(sequence_entry.seq, dtype='uint8') for sequence_entry in self], dtype='uint8'
-        )
+        # Encode matrix
+        msa_mat = self.encode_to_ascii()
         # matrix of 0s and 1s; 1 if char is '-'
         aa_frequencies = np.where(msa_mat != 45, 1, 0)
         # sum all values per row
@@ -390,10 +385,8 @@ class SequenceFile(_Entity):
         elif 0 > max_id > 1:
             raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
 
-        # Alignment to unsigned integer matrix
-        msa_mat = np.asarray(
-            [np.fromstring(sequence_entry.seq, dtype='uint8') for sequence_entry in self], dtype='uint8'
-        )
+        # Alignment to ASCII matrix
+        msa_mat = self.encode_to_ascii()
         # Find all throwable sequences
         throw = set()
         for i in np.arange(len(self)):
@@ -460,3 +453,16 @@ class SequenceFile(_Entity):
             return sequence_file
         else:
             raise ValueError("This is not an alignment")
+
+    def encode_to_ascii(self):
+        """Encode all sequences to ASCII characters
+
+        Returns
+        -------
+        list
+           A 2-D :obj:`np.ndarray` instance
+
+        """
+        dtype = np.uint8
+        return np.asarray([np.fromstring(entry.seq, dtype=dtype) for entry in self], dtype=dtype)
+
