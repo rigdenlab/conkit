@@ -210,44 +210,24 @@ class SequenceFile(_Entity):
     def calculate_meff(self, identity=0.8):
         """Calculate the number of effective sequences
 
-        This function calculates the number of effective
-        sequences (`Meff`) in the Multiple Sequence Alignment.
-
-        The mathematical function used to calculate `Meff` is
-
-        .. math::
-
-           M_{eff}=\\sum_{i}\\frac{1}{\\sum_{j}S_{i,j}}
-
-        Parameters
-        ----------
-        identity : float, optional
-           The sequence identity to use for similarity decision [default: 0.8]
-
-        Returns
-        -------
-        int
-           The number of effective sequences
-
-        Raises
-        ------
-        MemoryError
-           Too many sequences in the alignment for Hamming distance calculation
-        RuntimeError
-           SciPy package not installed
-        ValueError
-           :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
-        ValueError
-           Sequence Identity needs to be between 0 and 1
-
         See Also
         --------
         neff
 
         """
         import warnings
-        warnings.warn("This function will be deprecated in a future release!")
-        return self.neff
+        warnings.warn("This function will be deprecated in a future release! Use calculate_neff_with_identity instead!")
+        return self.calculate_neff_with_identity(identity)
+    
+    def calculate_neff_with_identity(self, identity):
+        """Calculate the number of effective sequences with specified sequence identity
+        
+        See Also
+        --------
+        neff, calculate_weights
+
+        """
+        return int(sum(self.calculate_weights(identity=identity)))
 
     def calculate_weights(self, identity=0.8):
         """Calculate the sequence weights
