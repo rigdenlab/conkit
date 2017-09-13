@@ -14,6 +14,7 @@ v0.8.3dev1
     - ``LinearBW`` calculator added for linear bandwidth calculation in analysis
     - ``seq_ascii`` property to ``Sequence`` for encoded sequence
     - ``ascii_matrix`` property to ``SequenceFile`` for encoded alignment 
+    - ``SequenceFile`` and ``ContactFile`` classes have new ``empty`` properties
 
 - Bug fix
     - ``PconsParser`` class accepts negative ``raw_score`` values
