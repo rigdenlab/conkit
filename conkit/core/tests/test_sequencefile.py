@@ -45,6 +45,15 @@ class TestSequenceFile(unittest.TestCase):
         sequence_file.add(Sequence('bar', 'BBBB'))
         self.assertFalse(sequence_file.is_alignment)
 
+    def test_empty_1(self):
+        sequence_file = SequenceFile("test")
+        self.assertTrue(sequence_file.empty)
+
+    def test_empty_2(self):
+        sequence_file = SequenceFile("test")
+        sequence_file.add(Sequence('foo', 'AAAAA'))
+        self.assertFalse(sequence_file.empty)
+
     def test_nseqs_1(self):
         sequence_file = SequenceFile('test')
         self.assertEqual(0, sequence_file.nseqs)

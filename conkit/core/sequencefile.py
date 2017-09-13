@@ -128,6 +128,11 @@ class SequenceFile(_Entity):
         return True if self.status == SequenceFile._YES_ALIGNMENT else False
 
     @property
+    def empty(self):
+        """Status of emptiness of sequencefile"""
+        return len(self) < 1
+
+    @property
     def neff(self):
         """The number of effective sequences"""
         return int(sum(self.calculate_weights()))
