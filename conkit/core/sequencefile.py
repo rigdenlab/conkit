@@ -39,10 +39,10 @@ __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 import numpy as np
-import sys 
+import sys
 
 if sys.version_info.major < 3:
-    from itertools import izip as zip 
+    from itertools import izip as zip
 
 from conkit.core._entity import _Entity
 
@@ -60,7 +60,9 @@ class SequenceFile(_Entity):
        A unique identifier
     is_alignment : bool
        A boolean status for the alignment
-    nseqs : int
+    neff : int
+       The number of effective sequences in the :obj:`SequenceFile <conkit.core.SequenceFile>`
+    nseq : int
        The number of sequences in the :obj:`SequenceFile <conkit.core.SequenceFile>`
     remark : list
        The :obj:`SequenceFile <conkit.core.SequenceFile>`-specific remarks
@@ -77,7 +79,7 @@ class SequenceFile(_Entity):
     >>> sequence_file.add(Sequence("foo", "ABCDEF"))
     >>> sequence_file.add(Sequence("bar", "ZYXWVU"))
     >>> print(sequence_file)
-    SequenceFile(id="example" nseqs=2)
+    SequenceFile(id="example" nseq=2)
 
     """
     __slots__ = ['_remark', '_status']
@@ -100,8 +102,8 @@ class SequenceFile(_Entity):
         super(SequenceFile, self).__init__(id)
 
     def __repr__(self):
-        return "{0}(id=\"{1}\" nseqs={2})".format(
-                self.__class__.__name__, self.id, self.nseqs
+        return "{0}(id=\"{1}\" nseq={2})".format(
+            self.__class__.__name__, self.id, self.nseq
         )
 
     @property
@@ -133,16 +135,8 @@ class SequenceFile(_Entity):
         return int(sum(self.calculate_weights()))
 
     @property
-    def nseqs(self):
-        """The number of :obj:`Sequence <conkit.core.Sequence>` instances
-        in the :obj:`SequenceFile <conkit.core.SequenceFile>`
-
-        Returns
-        -------
-        int
-           The number of sequences in the :obj:`SequenceFile <conkit.core.SequenceFile>`
-
-        """
+    def nseq(self):
+        """The number of sequences"""
         return len(self)
 
     @property
@@ -190,7 +184,8 @@ class SequenceFile(_Entity):
         if any(i == status for i in [SequenceFile._UNKNOWN, SequenceFile._NO_ALIGNMENT, SequenceFile._YES_ALIGNMENT]):
             self._status = status
         else:
-            raise ValueError("Cannot determine if your sequence file is an alignment or not")
+            raise ValueError(
+                "Cannot determine if your sequence file is an alignment or not")
 
     @property
     def top_sequence(self):
@@ -309,8 +304,9 @@ class SequenceFile(_Entity):
             batches.append(last_batch)
         for k, batch in enumerate(batches):
             i = batch_size * k
-            dists = scipy.spatial.distance.cdist(msa_mat[i:i+batch], msa_mat, metric='hamming')
-            hamming[i:i+batch] = (dists < (1 - identity)).sum(axis=1)
+            dists = scipy.spatial.distance.cdist(
+                msa_mat[i:i + batch], msa_mat, metric='hamming')
+            hamming[i:i + batch] = (dists < (1 - identity)).sum(axis=1)
         return (1. / hamming).tolist()
 
     def calculate_freq(self):
@@ -386,17 +382,22 @@ class SequenceFile(_Entity):
             raise ValueError('This is not an alignment')
 
         if 0 > min_id > 1:
-            raise ValueError("Minimum sequence Identity needs to be between 0 and 1")
+            raise ValueError(
+                "Minimum sequence Identity needs to be between 0 and 1")
         elif 0 > max_id > 1:
-            raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
+            raise ValueError(
+                "Maximum sequence Identity needs to be between 0 and 1")
 
         # Alignment to ASCII matrix
         msa_mat = np.array(self.ascii_matrix)
         # Find all throwable sequences
         throw = set()
         for i in np.arange(len(self)):
-            ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i+1:], metric='hamming')[0]
-            throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
+            ident = 1 - \
+                scipy.spatial.distance.cdist(
+                    [msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
+            throw.update((1 + i + np.argwhere((ident < min_id) |
+                                              (ident > max_id)).flatten()).tolist())
         # Throw the previously selected sequences
         sequence_file = self._inplace(inplace)
         for i in reversed(list(throw)):
@@ -452,10 +453,9 @@ class SequenceFile(_Entity):
         sequence_file = self._inplace(inplace)
 
         if self.is_alignment:
-            i, j = start-1, end
+            i, j = start - 1, end
             for sequence in sequence_file:
                 sequence.seq = sequence.seq[i:j]
             return sequence_file
         else:
             raise ValueError("This is not an alignment")
-

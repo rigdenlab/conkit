@@ -62,16 +62,20 @@ def add_default_args(parser):
     """Define default arguments"""
     parser.add_argument('-prefix', default='conkit', help='Job ID')
     parser.add_argument('-wdir', default=os.getcwd(), help='Working directory')
-    parser.add_argument('--demo', default=False, action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument('--demo', default=False,
+                        action="store_true", help=argparse.SUPPRESS)
 
 
 def add_alignment_args(subparsers):
     """Parser with alignment as starting point"""
     from_alignment_subparser = subparsers.add_parser('aln')
     add_default_args(from_alignment_subparser)
-    from_alignment_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
-    from_alignment_subparser.add_argument('alignment_file', help='Path to alignment file')
-    from_alignment_subparser.add_argument('alignment_format', help='Alignment format')
+    from_alignment_subparser.add_argument(
+        'ccmpred', help='Path to the CCMpred executable')
+    from_alignment_subparser.add_argument(
+        'alignment_file', help='Path to alignment file')
+    from_alignment_subparser.add_argument(
+        'alignment_format', help='Alignment format')
     from_alignment_subparser.set_defaults(which='alignment')
 
 
@@ -81,11 +85,16 @@ def add_sequence_args(subparsers):
     add_default_args(from_sequence_subparser)
     from_sequence_subparser.add_argument('--nodca', default=False, action='store_true',
                                          help=argparse.SUPPRESS)
-    from_sequence_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
-    from_sequence_subparser.add_argument('hhblits', help='Path to the HHblits executable')
-    from_sequence_subparser.add_argument('hhblitsdb', help='Path to HHblits database')
-    from_sequence_subparser.add_argument('sequence_file', help='Path to sequence file')
-    from_sequence_subparser.add_argument('sequence_format', help='Sequence format')
+    from_sequence_subparser.add_argument(
+        'ccmpred', help='Path to the CCMpred executable')
+    from_sequence_subparser.add_argument(
+        'hhblits', help='Path to the HHblits executable')
+    from_sequence_subparser.add_argument(
+        'hhblitsdb', help='Path to HHblits database')
+    from_sequence_subparser.add_argument(
+        'sequence_file', help='Path to sequence file')
+    from_sequence_subparser.add_argument(
+        'sequence_format', help='Sequence format')
     from_sequence_subparser.set_defaults(which='sequence')
 
 
@@ -98,7 +107,8 @@ def main(argl=None):
        A list containing the command line flags
 
     """
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
     # Add the subparsers
     add_alignment_args(subparsers)
@@ -170,7 +180,7 @@ def main(argl=None):
         else:
             hhblits_cline()
 
-        jon_fname = os.path.join(args.wdir, args.prefix + '.jones') 
+        jon_fname = os.path.join(args.wdir, args.prefix + '.jones')
         conkit.io.convert(a3m_fname, 'a3m', jon_fname, 'jones')
 
     else:
@@ -180,7 +190,7 @@ def main(argl=None):
     # and used by David Jones in PSICOV
     logger.info('Final alignment file: %s', jon_fname)
     msa_h = conkit.io.read(jon_fname, 'jones')
-    logger.info('|- Total Number of sequences: %d', msa_h.nseqs)
+    logger.info('|- Total Number of sequences: %d', msa_h.nseq)
     logger.info('|- Number of effective sequences: %d', msa_h.neff)
     freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.pdf')
     conkit.plot.SequenceCoverageFigure(msa_h, file_name=freq_plot_fname)
@@ -226,7 +236,7 @@ def main(argl=None):
 
 
 if __name__ == "__main__":
-    import sys 
+    import sys
     import traceback
     try:
         main()
@@ -236,4 +246,3 @@ if __name__ == "__main__":
             msg = "".join(traceback.format_exception(*sys.exc_info()))
             logger.critical(msg)
         sys.exit(1)
-

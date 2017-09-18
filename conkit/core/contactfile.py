@@ -68,7 +68,7 @@ class ContactFile(_Entity):
     >>> contact_file.add(ContactMap("foo"))
     >>> contact_file.add(ContactMap("bar"))
     >>> print(contact_file)
-    ContactFile(id="example" nseqs=2)
+    ContactFile(id="example" nseq=2)
 
     """
     __slots__ = ['_author', '_method', '_remark', '_target']
@@ -90,7 +90,7 @@ class ContactFile(_Entity):
 
     def __repr__(self):
         return "{0}(id=\"{1}\" nmaps={2})".format(
-                self.__class__.__name__, self.id, len(self)
+            self.__class__.__name__, self.id, len(self)
         )
 
     @property

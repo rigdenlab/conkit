@@ -51,7 +51,8 @@ logger = None
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('msafile', help='Multiple Sequence Alignment file')
     parser.add_argument('msaformat', help='Multiple Sequence Alignment format')
     args = parser.parse_args()
@@ -67,14 +68,15 @@ def main():
 
     logger.info('Input MSA File:                            %s', args.msafile)
     logger.info('Input MSA Format:                          %s', args.msaformat)
-    logger.info('Length of the Target Sequence:             %d', msa.top_sequence.seq_len)
-    logger.info('Total Number of Sequences:                 %d', msa.nseqs)
+    logger.info('Length of the Target Sequence:             %d',
+                msa.top_sequence.seq_len)
+    logger.info('Total Number of Sequences:                 %d', msa.nseq)
     logger.info('Number of Effective Sequences:             %d', msa.neff)
     logger.info('Sequence Coverage Plot:                    %s', plot)
 
 
 if __name__ == "__main__":
-    import sys 
+    import sys
     import traceback
     try:
         main()
@@ -84,4 +86,3 @@ if __name__ == "__main__":
             msg = "".join(traceback.format_exception(*sys.exc_info()))
             logger.critical(msg)
         sys.exit(1)
-
