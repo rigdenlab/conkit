@@ -26,14 +26,14 @@ This tells you the first sequence in the alignment has 59 residues, i.e. the cha
 
 .. code-block:: python
 
-   >>> print('Total number of sequences: %d' % msa.nseqs)
+   >>> print('Total number of sequences: %d' % msa.nseq)
    Total number of sequences: 13488
 
 **4. ... and the number of effective sequences in the alignment at 70% identity cutoff.**
 
 .. code-block:: python
 
-   >>> n_eff = msa.calculate_meff(identity=0.7)
+   >>> n_eff = msa.neff
    >>> print('Number of Effective Sequences: %d' % n_eff)
    Number of Effective Sequences: 3318
 

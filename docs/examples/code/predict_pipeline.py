@@ -34,8 +34,8 @@ hhblits_cline()  # Execute HHblits
 # Analyse the alignment
 msa = conkit.io.read(a3m_file, "a3m")
 print("Length of the Target Sequence:    %d" % msa.top_sequence.seq_len)
-print("Total Number of Sequences:        %d" % msa.nseqs)
-print("Number of Effective Sequences:    %d" % msa.calculate_meff())
+print("Total Number of Sequences:        %d" % msa.nseq)
+print("Number of Effective Sequences:    %d" % msa.neff)
 
 # Plot the amino acid coverage per position in the alignment
 seq_cov_file = "toxd/toxd.freq.png"
@@ -56,8 +56,10 @@ ccmpred_cline()  # Execute CCMpred
 
 # Plot the top-30 contacts
 conpred = conkit.io.read(mat_file,  "ccmpred").top_map
-conpred.remove_neighbors(inplace=True)                  # Remove contacts of neigbouring residues
-conpred.sort("raw_score", reverse=True, inplace=True)   # Sort the list of contacts by their score
+# Remove contacts of neigbouring residues
+conpred.remove_neighbors(inplace=True)
+# Sort the list of contacts by their score
+conpred.sort("raw_score", reverse=True, inplace=True)
 conpred = conpred[:30]                                  # Slice the contact map
 contact_map_file = "toxd/toxd.map.png"
 conkit.plot.ContactMapFigure(conpred, file_name=contact_map_file)

@@ -128,6 +128,11 @@ class ContactMap(_Entity):
         return (seq_array.size - np.sum(gaps, axis=0)) / seq_array.size
 
     @property
+    def empty(self):
+        """Empty contact map"""
+        return len(self) < 1
+
+    @property
     def ncontacts(self):
         """The number of :obj:`Contact <conkit.core.Contact>` instances in the :obj:`ContactMap <conkit.core.ContactMap>`
 
@@ -219,7 +224,7 @@ class ContactMap(_Entity):
 
         """
         # ContactMap is empty
-        if len(self) < 1:
+        if self.empty:
             raise ValueError("ContactMap is empty")
 
         # np.unique(..., return_counts=True) added in numpy > 1.9, backward compatibility

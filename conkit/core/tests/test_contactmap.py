@@ -47,6 +47,15 @@ class TestContactMap(unittest.TestCase):
         contact_map.remove((3, 6))
         self.assertEqual(0.375, contact_map.coverage)
 
+    def test_empty_1(self):
+        contact_map = ContactMap("test")
+        self.assertTrue(contact_map.empty)
+
+    def test_empty_2(self):
+        contact_map = ContactMap('test')
+        contact_map.add(Contact(1, 5, 1.0))
+        self.assertFalse(contact_map.empty)
+
     def test_ncontacts_1(self):
         contact_map = ContactMap('test')
         self.assertEqual(0, contact_map.ncontacts)

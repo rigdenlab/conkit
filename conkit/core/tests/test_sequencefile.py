@@ -14,8 +14,6 @@ except ImportError:
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
-# Required for Python2.6 support
-
 
 def skipUnless(condition):
     if condition:
@@ -46,6 +44,15 @@ class TestSequenceFile(unittest.TestCase):
         sequence_file.add(Sequence('foo', 'AAAAA'))
         sequence_file.add(Sequence('bar', 'BBBB'))
         self.assertFalse(sequence_file.is_alignment)
+
+    def test_empty_1(self):
+        sequence_file = SequenceFile("test")
+        self.assertTrue(sequence_file.empty)
+
+    def test_empty_2(self):
+        sequence_file = SequenceFile("test")
+        sequence_file.add(Sequence('foo', 'AAAAA'))
+        self.assertFalse(sequence_file.empty)
 
     def test_nseq_1(self):
         sequence_file = SequenceFile('test')
