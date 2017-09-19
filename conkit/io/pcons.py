@@ -57,7 +57,6 @@ RE_SEQUENCE = re.compile(r"^Sequence:\s*$")
 RE_PRED_CONTACTS = re.compile(r"^Predicted\s+contacts:\s*$")
 RE_CONTACT_HEADER = re.compile(r"^Res1\s+Res2\s+Score\s*$")
 RE_CONTACT = re.compile(r"^\s*(\d+)\s+(\d+)\s+(-?\d*\.\d+|\d+)\s*$")
-RE_SPLIT = re.compile(r'\s+')
 
 
 class PconsParser(ContactFileParser):
@@ -67,6 +66,7 @@ class PconsParser(ContactFileParser):
     Pcons programs, i.e. PconsC, PconsC2, and PconsC3.
 
     """
+
     def __init__(self):
         super(PconsParser, self).__init__()
 
@@ -123,8 +123,11 @@ class PconsParser(ContactFileParser):
                     line = next(lines, done)
 
             if RE_CONTACT.match(line):
-                res1_seq, res2_seq, raw_score = RE_SPLIT.split(line)
-                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
+                res1_seq, res2_seq, raw_score = line.split()
+                contact = Contact(
+                    int(res1_seq), int(res2_seq),
+                    float(raw_score)
+                )
                 contact_map.add(contact)
 
             line = next(lines, done)
@@ -173,8 +176,10 @@ class PconsParser(ContactFileParser):
 
             if contact_map.sequence is not None:
                 content += "Sequence number: 1" + os.linesep
-                content += "Sequence name: {0}".format(contact_map.sequence.id) + os.linesep
-                content += "Sequence length: {0} aa.".format(contact_map.sequence.seq_len) + os.linesep
+                content += "Sequence name: {0}".format(
+                    contact_map.sequence.id) + os.linesep
+                content += "Sequence length: {0} aa.".format(
+                    contact_map.sequence.seq_len) + os.linesep
                 content += "Sequence:" + os.linesep
                 content += contact_map.sequence.seq + os.linesep * 3
 
