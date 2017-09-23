@@ -9,12 +9,14 @@ v0.8.3dev1
     - Distance definitions accept floating point values
     - ``_BandwidthCalc`` class renamed to ``BandwidthBase``
     - Abstractified ``BandwidthBase``, and ``Parser`` with all subparser classes 
+    - Refactored ``conkit/io/__init__.py`` to avoid duplication of code
 
 - New features
     - ``LinearBW`` calculator added for linear bandwidth calculation in analysis
     - ``seq_ascii`` property to ``Sequence`` for encoded sequence
     - ``ascii_matrix`` property to ``SequenceFile`` for encoded alignment 
     - ``SequenceFile`` and ``ContactFile`` classes have new ``empty`` properties
+    - ``flib`` format for ``ContactFile`` classes to allow easier conversions for the Flib-Coevo fragment picking library
 
 - Bug fix
     - ``PconsParser`` class accepts negative ``raw_score`` values
