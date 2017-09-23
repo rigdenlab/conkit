@@ -67,6 +67,7 @@ class PconsParser(ContactFileParser):
     Pcons programs, i.e. PconsC, PconsC2, and PconsC3.
 
     """
+
     def __init__(self):
         super(PconsParser, self).__init__()
 
@@ -124,7 +125,8 @@ class PconsParser(ContactFileParser):
 
             if RE_CONTACT.match(line):
                 res1_seq, res2_seq, raw_score = RE_SPLIT.split(line)
-                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
+                contact = Contact(int(res1_seq), int(
+                    res2_seq), float(raw_score))
                 contact_map.add(contact)
 
             line = next(lines, done)
@@ -136,7 +138,7 @@ class PconsParser(ContactFileParser):
 
         return contact_file
 
-    def write(self, f_handle, hierarchy):
+    def write(self, f_handle, hierarchy, write_header_footer=True):
         """Write a contact file instance to to file
 
         Default format is ``PconsC3`` style, including comments
@@ -148,6 +150,8 @@ class PconsParser(ContactFileParser):
            Open file handle [write permissions]
         hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
                     or :obj:`Contact <conkit.core.Contact>`
+        write_header_footer : bool
+           Write a PconsC3-typical header
 
         Raises
         ------
@@ -166,20 +170,23 @@ class PconsParser(ContactFileParser):
         content = ""
 
         for contact_map in contact_file:
-            content += comment_line + os.linesep
-            content += "PconsC3 result file" + os.linesep
-            content += "Generated from ConKit" + os.linesep
-            content += comment_line + os.linesep
+            if write_header_footer:
+                content += comment_line + os.linesep
+                content += "PconsC3 result file" + os.linesep
+                content += "Generated using ConKit" + os.linesep
+                content += comment_line + os.linesep
 
-            if contact_map.sequence is not None:
-                content += "Sequence number: 1" + os.linesep
-                content += "Sequence name: {0}".format(contact_map.sequence.id) + os.linesep
-                content += "Sequence length: {0} aa.".format(contact_map.sequence.seq_len) + os.linesep
-                content += "Sequence:" + os.linesep
-                content += contact_map.sequence.seq + os.linesep * 3
+                if contact_map.sequence is not None:
+                    content += "Sequence number: 1" + os.linesep
+                    content += "Sequence name: {0}".format(
+                        contact_map.sequence.id) + os.linesep
+                    content += "Sequence length: {0} aa.".format(
+                        contact_map.sequence.seq_len) + os.linesep
+                    content += "Sequence:" + os.linesep
+                    content += contact_map.sequence.seq + os.linesep * 3
 
-            content += "Predicted contacts:" + os.linesep
-            content += "Res1 Res2 Score" + os.linesep
+                content += "Predicted contacts:" + os.linesep
+                content += "Res1 Res2 Score" + os.linesep
 
             for contact in contact_map:
                 res1_seq = contact.res1_seq
@@ -189,6 +196,7 @@ class PconsParser(ContactFileParser):
                                                                           raw_score=raw_score)
                 content += l + os.linesep
 
-            content += os.linesep + comment_line + os.linesep
+            if write_header_footer:
+                content += os.linesep + comment_line + os.linesep
 
         f_handle.write(content)
