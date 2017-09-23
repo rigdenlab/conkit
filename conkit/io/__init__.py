@@ -36,7 +36,7 @@ __version__ = "0.1"
 import importlib
 import os
 
-from conkit.io._cache import PARSER_CACHE 
+from conkit.io._cache import PARSER_CACHE
 from conkit.io._iotools import open_f_handle
 
 # Accessed by some modules - might be deprecated in the future
@@ -76,25 +76,13 @@ def convert(fname_in, format_in, fname_out, format_out):
     ...     io.convert(f_in, 'pconsc3', f_out, 'casprr'))
 
     """
-    if format_in not in PARSER_CACHE:
-        raise ValueError("Unrecognised input file format: '{selected}'".format(selected=format_in))
-    elif format_out not in PARSER_CACHE:
-        raise ValueError("Unrecognised output file format: '{selected}'".format(selected=format_out))
-    elif format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
+    if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
     else:
-        parser_in = PARSER_CACHE.import_class(format_in)()
-        parser_out = PARSER_CACHE.import_class(format_out)()
-
-    kwargs = {}
-    if format_in == 'a3m-inserts':
-        kwargs['remove_inserts'] = False
-
-    with open_f_handle(fname_in, 'read') as f_in, open_f_handle(fname_out, 'write') as f_out: 
-        hierarchy = parser_in.read(f_in, **kwargs)
-        parser_out.write(f_out, hierarchy)
+        hierarchy = read(fname_in, format_in)
+        write(fname_out, format_out, hierarchy)
 
 
 def read(fname, format, f_id='conkit'):
@@ -131,14 +119,15 @@ def read(fname, format, f_id='conkit'):
     if format in PARSER_CACHE:
         parser_in = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
+        raise ValueError(
+            "Unrecognised format: '{}'".format(format))
 
-    kwargs = {}
-    if format == 'a3m-inserts':
-        kwargs['remove_inserts'] = False
+    kwargs = {"f_id": f_id}
+    if format == "a3m-inserts":
+        kwargs["remove_inserts"] = False
 
-    with open_f_handle(fname, 'read') as f_in:
-        hierarchy = parser_in.read(f_in, f_id=f_id)
+    with open_f_handle(fname, "read") as f_in:
+        hierarchy = parser_in.read(f_in, **kwargs)
 
     return hierarchy
 
@@ -174,8 +163,12 @@ def write(fname, format, hierarchy):
     if format in PARSER_CACHE:
         parser_out = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError("Unrecognised format: '{selected}'".format(selected=format))
+        raise ValueError(
+            "Unrecognised format: '{}'".format(format))
+
+    kwargs = {}
+    if format == "pconsc" or format == "pconsc2":
+        kwargs["write_header_footer"] = False
 
     with open_f_handle(fname, 'write') as f_out:
-        parser_out.write(f_out, hierarchy)
-
+        parser_out.write(f_out, hierarchy, **kwargs)
