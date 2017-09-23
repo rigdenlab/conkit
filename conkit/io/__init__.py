@@ -167,7 +167,7 @@ def write(fname, format, hierarchy):
             "Unrecognised format: '{}'".format(format))
 
     kwargs = {}
-    if format == "pconsc" or format == "pconsc2":
+    if format in ["flib", "pconsc", "pconsc2"]:
         kwargs["write_header_footer"] = False
 
     with open_f_handle(fname, 'write') as f_out:

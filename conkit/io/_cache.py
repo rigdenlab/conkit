@@ -71,12 +71,12 @@ class _CacheObj(object):
 
 class _ParserCache(object):
     """Cache to hold handlers to each file parser"""
-    
+
     # This mask is for backward-compatibility and extensions to avoid re-writing the same algorithms
     MASKS = {
-        "a3m": ["a3m", "a3m-inserts"], 
+        "a3m": ["a3m", "a3m-inserts"],
         "casp": ["casp", "casprr"],
-        "pcons": ["pconsc", "pconsc2", "pconsc3"], 
+        "pcons": ["flib", "pconsc", "pconsc2", "pconsc3"],
         "psicov": ["psicov", "metapsicov"]
     }
 
@@ -93,20 +93,23 @@ class _ParserCache(object):
 
     def __repr__(self):
         return "{0}(nparsers={1})".format(
-            self.__class__.__name__, len(self._cfile_parsers) + len(self._sfile_parsers)
+            self.__class__.__name__,
+            len(self._cfile_parsers) + len(self._sfile_parsers)
         )
 
     @property
     def contact_file_parsers(self):
         """A dict of contact file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._parsers if c.group == "ContactFileParser" or c.group == "GenericStructureParser"}
+        return {c.id: c for c in self._parsers
+                if c.group in ["ContactFileParser", "GenericStructureParser"]}
 
     @property
     def sequence_file_parsers(self):
         """A dict of sequence file parsers"""
         # Mask as dictionaries to not break existing code
-        return {c.id: c for c in self._parsers if c.group == "SequenceFileParser"}
+        return {c.id: c for c in self._parsers
+                if c.group in ["SequenceFileParser"]}
 
     @property
     def file_parsers(self):
@@ -119,7 +122,10 @@ class _ParserCache(object):
         path = os.path.abspath(os.path.dirname(__file__))
         for m in glob.glob(os.path.join(path, "[!_]*.py")):
             with open(m, "r") as f_in:
-                lines = [RE_CLASS_DECLARATION.match(l.strip()) for l in f_in if RE_CLASS_DECLARATION.match(l.strip())]
+                lines = [
+                    RE_CLASS_DECLARATION.match(l.strip()) for l in f_in
+                    if RE_CLASS_DECLARATION.match(l.strip())
+                ]
             for match in lines:
                 decl = _CacheObj(None, None, match.group(1), None)
                 ggroup = match.group(2)
@@ -142,7 +148,7 @@ class _ParserCache(object):
     def import_module(self, format):
         """Import a module defined in the cache"""
         return importlib.import_module(self[format].module)
-    
+
     def import_class(self, format):
         """Import a class defined the cache"""
         return getattr(self.import_module(format), PARSER_CACHE[format].object)
@@ -150,4 +156,3 @@ class _ParserCache(object):
 
 # Only allow this to be seen from outside
 PARSER_CACHE = _ParserCache()
-
