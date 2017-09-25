@@ -29,11 +29,5 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """The version number of ConKit is recorded here"""
-
-# Maintain sematantic versioning. Further information can
-# be found here [http://semver.org/]
-__version_info__ = (0, 8, "3.dev1")
-
-# ======================================================
-# Do __NOT__ change anything below here
+__version_info__ = (0, 8, 3)
 __version__ = '.'.join(map(str, __version_info__))

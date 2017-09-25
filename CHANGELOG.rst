@@ -2,8 +2,8 @@
 Changelog
 =========
 
-v0.8.3dev1
-----------
+v0.8.3
+------
 - General
     - ``requirements.txt`` file re-added for easier dependency installation
     - Distance definitions accept floating point values
