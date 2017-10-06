@@ -35,6 +35,7 @@ __version__ = "0.1"
 
 import logging
 import os
+import sys
 
 
 def setup_logging(level='info', logfile=None):
@@ -55,26 +56,27 @@ def setup_logging(level='info', logfile=None):
        Instance of a :obj:`logger <logging.Logger>`
 
     """
-    
+
     class ColorFormatter(logging.Formatter):
         """Formatter to color console logging output"""
-    
+
         # ANSI foreground color codes
-        colors = { 
+        colors = {
             logging.DEBUG: 34,           # blue
-            logging.INFO: 0   ,          # reset to default
             logging.WARNING: 33,         # yellow
             logging.ERROR: 31,           # red
             logging.CRITICAL: 31,        # red
         }
 
         def format(self, record):
-            if record.exc_info is None:
-                # REM: get the ANSI FG color code
-                color = ColorFormatter.colors[record.levelno]
-                prefix = '\033[{}m'.format(color)
-                record.msg = os.linesep.join([prefix + l for l in str(record.msg).splitlines()])
-
+            if record.levelno in self.colors:
+                prefix = '\033[1;{}m'.format(
+                    ColorFormatter.colors[record.levelno])
+                postfix = '\033[0m'
+                record.msg = os.linesep.join(
+                    [prefix + l +
+                        postfix for l in str(record.msg).splitlines()]
+                )
             return logging.Formatter.format(self, record)
 
     # Reset any Handlers or Filters already in the logger to start from scratch
@@ -91,7 +93,7 @@ def setup_logging(level='info', logfile=None):
     logging.getLogger().setLevel(logging.DEBUG)
 
     # create console handler with a higher log level
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(stream=sys.stdout)
     ch.setLevel(logging_levels.get(level, logging.INFO))
     ch.setFormatter(ColorFormatter('%(message)s'))
     logging.getLogger().addHandler(ch)
@@ -101,12 +103,13 @@ def setup_logging(level='info', logfile=None):
         fh = logging.FileHandler(logfile)
         fh.setLevel(logging.NOTSET)
         fh.setFormatter(
-            logging.Formatter('%(asctime)s\t%(name)s [%(lineno)d]\t%(levelname)s\t%(message)s')
+            logging.Formatter(
+                '%(asctime)s\t%(name)s [%(lineno)d]\t%(levelname)s\t%(message)s')
         )
         logging.getLogger().addHandler(fh)
 
-    logging.getLogger().debug('Console logger level: %s', logging_levels.get(level, logging.INFO))
+    logging.getLogger().debug('Console logger level: %s',
+                              logging_levels.get(level, logging.INFO))
     logging.getLogger().debug('File logger level: %s', logging.NOTSET)
 
     return logging.getLogger()
-
