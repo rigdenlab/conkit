@@ -43,7 +43,7 @@ import itertools
 import sys
 import warnings
 
-if sys.version_info.major < 3: 
+if sys.version_info.major < 3:
     from itertools import izip as zip
 
 from Bio.PDB import MMCIFParser
@@ -82,28 +82,25 @@ class GenericStructureParser(ContactFileParser):
            A list of tuples containing the contact information
 
         """
-        Atom = collections.namedtuple('Atom', 'resname resseq resseq_alt reschain')
+        Atom = collections.namedtuple('Atom',
+                                      'resname resseq resseq_alt reschain')
 
         if chain1 == chain2:
             range1 = range2 = list(range(1, len(chain1) + 1))
         else:
             range1 = list(range(1, len(chain1) + 1))
-            range2 = list(range(len(chain1) + 1, len(chain1)+len(chain2) + 1))
+            range2 = list(range(len(chain1) + 1,
+                                len(chain1) + len(chain2) + 1))
+        assert len(range1) == len(chain1) and len(range2) == len(chain2)
 
-        assert len(range1) == len(chain1)
-        assert len(range2) == len(chain2)
-
-        for (resseq1_alt, residue1), (resseq2_alt, residue2) in itertools.product(list(zip(range1, chain1)),
-                                                                                  list(zip(range2, chain2))):
+        iterator = itertools.product(
+            list(zip(range1, chain1)),
+            list(zip(range2, chain2))
+        )
+        for (resseq1_alt, residue1), (resseq2_alt, residue2) in iterator:
             for atom1, atom2 in itertools.product(residue1, residue2):
-
-                # Ignore duplicates
                 if chain1 == chain2 and int(residue1.id[1]) >= int(residue2.id[1]):
                     continue
-
-                # Biopython implementation to calculate distance between atoms
-                distance = atom1 - atom2
-
                 construct1 = Atom(
                     resname=residue1.resname,
                     resseq=int(residue1.id[1]),
@@ -116,7 +113,7 @@ class GenericStructureParser(ContactFileParser):
                     resseq_alt=resseq2_alt,
                     reschain=chain2.id,
                 )
-                yield (construct1, construct2, distance)
+                yield (construct1, construct2, atom1 - atom2)
 
     def _remove_atom(self, chain, type):
         """Tidy up a chain removing all HETATM entries"""
@@ -156,30 +153,24 @@ class GenericStructureParser(ContactFileParser):
         """
         hierarchies = []
         for model in structure:
-
-            # Create a per-model hierarchy
             hierarchy = ContactFile(f_id + '_' + str(model.id))
             chains = list(chain for chain in model)
 
-            # Tidy the chains of this model
             for chain in chains:
                 self._remove_hetatm(chain)
                 self._remove_atom(chain, atom_type)
 
             for chain1, chain2 in itertools.product(chains, chains):
-
-                # Define the ContactMap Id
                 if chain1.id == chain2.id:                          # intra
                     contact_map = ContactMap(chain1.id)
                 else:                                               # inter
                     contact_map = ContactMap(chain1.id + chain2.id)
 
-                # Find all contacts between the two chains
                 for (atom1, atom2, distance) in self._chain_contacts(chain1, chain2):
                     contact = Contact(
                         atom1.resseq,
                         atom2.resseq,
-                        round(1.0-(distance/100), 6),
+                        round(1.0 - (distance / 100), 6),
                         distance_bound=(0., float(distance_cutoff))
                     )
 
@@ -194,20 +185,21 @@ class GenericStructureParser(ContactFileParser):
                         contact.define_match()
                         contact_map.add(contact)
 
-                # Tidy up empty maps
-                if len(contact_map) > 0:
-                    # Get the full length of the peptide sequence and store it
-                    if len(contact_map.id) == 1:                                                # INTRA !!!
-                        contact_map.sequence = self._build_sequence(chain1)
-                        assert len(contact_map.sequence.seq) == len(chain1)                     # Check that ncon analyzed == len_chains
-                    else:                                                                       # INTER !!!
-                        contact_map.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
-                        assert len(contact_map.sequence.seq) == len(chain1) + len(chain2)       # Check that ncon analyzed == len_chains
-                    hierarchy.add(contact_map)                                                  # Save the map into the hierarchy
+                if contact_map.empty:
+                    del contact_map
                 else:
-                    del contact_map                                                             # Delete the empty contact map
+                    if len(contact_map.id) == 1:
+                        contact_map.sequence = self._build_sequence(chain1)
+                        assert len(contact_map.sequence.seq) == len(chain1)
+                    else:
+                        contact_map.sequence = self._build_sequence(chain1) \
+                            + self._build_sequence(chain2)
+                        assert len(contact_map.sequence.seq) \
+                            == len(chain1) + len(chain2)
+                    hierarchy.add(contact_map)
 
-            hierarchy.method = 'Contact map extracted from PDB {0}'.format(model.id)
+            hierarchy.method = 'Contact map extracted from PDB ' + \
+                str(model.id)
             hierarchy.remark = ['The model id is the chain identifier, i.e XY equates to chain X and chain Y.',
                                 'Residue numbers in column 1 are chain X, and numbers in column 2 are chain Y.']
             hierarchies.append(hierarchy)
@@ -235,6 +227,7 @@ class MmCifParser(GenericStructureParser):
     Class to parse a mmCIF file and extract distance restraints
     as residue-residue contacts
     """
+
     def __init__(self):
         super(MmCifParser, self).__init__()
 
@@ -284,6 +277,7 @@ class PdbParser(GenericStructureParser):
     Class to parse a PDB file and extract distance restraints
     as residue-residue contacts
     """
+
     def __init__(self):
         super(PdbParser, self).__init__()
 
@@ -326,4 +320,3 @@ class PdbParser(GenericStructureParser):
 
         """
         self._write(f_handle, hierarchy)
-
