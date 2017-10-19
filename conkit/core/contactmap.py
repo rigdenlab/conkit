@@ -479,7 +479,7 @@ class ContactMap(_Entity):
         if self.empty:
             raise ValueError("ContactMap is empty")
 
-	# REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
+        # REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
         # REM: Remember to change test cases when corrected implementation benchmarked
         #  x = np.asarray(
         #      [i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)]
