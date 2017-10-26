@@ -235,7 +235,7 @@ class _Entity(object):
         if inplace:
             return self
         else:
-            return self.copy()
+            return self.deepcopy()
 
     def _sort(self, kword, reverse):
         """Sort the :obj:`Entity <conkit.core.Entity>`"""
