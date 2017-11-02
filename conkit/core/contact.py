@@ -205,11 +205,11 @@ class Contact(_Entity):
            Lower bound must be smaller than upper bound
 
         """
-        if value < 0:
-            raise ValueError('Lower bound must be positive')
-        elif value >= self.upper_bound:
-            raise ValueError('Lower bound must be smaller than upper bound')
-        self._distance_bound[0] = float(value)
+        if 0 < value < self.upper_bound:
+            self._distance_bound[0] = float(value)
+        else:
+            raise ValueError('Lower bound must be positive'
+                             'and smaller than upper bound')
 
     @property
     def upper_bound(self):
@@ -232,11 +232,11 @@ class Contact(_Entity):
            Upper bound must be larger than lower bound
 
         """
-        if value < 0:
-            raise ValueError('Upper bound must be positive')
-        elif value <= self.lower_bound:
-            raise ValueError('Upper bound must be larger than lower bound')
-        self._distance_bound[1] = float(value)
+        if 0 < value > self.lower_bound:
+            self._distance_bound[1] = float(value)
+        else:
+            raise ValueError('Upper bound must be positive '
+                             'and larger than lower bound')
 
     @property
     def raw_score(self):
@@ -302,7 +302,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res1_altseq = index
         else:
@@ -322,7 +321,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res2_altseq = index
         else:
@@ -374,7 +372,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res1_seq = index
         else:
@@ -394,7 +391,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res2_seq = index
         else:
@@ -436,7 +432,8 @@ class Contact(_Entity):
            Unknown status
 
         """
-        if any(i == status for i in [Contact._UNKNOWN, Contact._MISMATCH, Contact._MATCH]):
+        options = set([Contact._UNKNOWN, Contact._MISMATCH, Contact._MATCH])
+        if any(i == status for i in options):
             self._status = status
         else:
             raise ValueError("Unknown status")
@@ -478,24 +475,13 @@ class Contact(_Entity):
     @staticmethod
     def _set_residue(amino_acid):
         """Assign the residue to the corresponding amino_acid"""
-
-        # Check that the amino acid exists
         msg = "Unknown amino acid: {0}".format(amino_acid)
-
-        # Keep if statements separate to avoid type error for int and str.upper()
         if not isinstance(amino_acid, str):
             raise ValueError(msg)
-
-        _amino_acid = amino_acid.upper()
-        if not (len(_amino_acid) == 1 or len(_amino_acid) == 3):
+        amino_acid = amino_acid.upper()
+        if amino_acid in THREE_TO_ONE:
+            return THREE_TO_ONE[amino_acid]
+        elif amino_acid in set(THREE_TO_ONE.values()):
+            return amino_acid
+        else:
             raise ValueError(msg)
-        elif len(_amino_acid) == 1 and _amino_acid not in list(THREE_TO_ONE.values()):
-            raise ValueError(msg)
-        elif len(_amino_acid) == 3 and _amino_acid not in list(THREE_TO_ONE.keys()):
-            raise ValueError(msg)
-
-        # Save the one-letter-code
-        if len(_amino_acid) == 3:
-            _amino_acid = THREE_TO_ONE[_amino_acid]
-
-        return _amino_acid
