@@ -356,10 +356,7 @@ class ContactMap(_Entity):
            The first :obj:`Contact <conkit.core.Contact>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
 
         """
-        if len(self) > 0:
-            return self[0]
-        else:
-            return None
+        return self.top
 
     def _construct_repr_sequence(self, res_seqs):
         """Construct the representative sequence"""
@@ -522,13 +519,13 @@ class ContactMap(_Entity):
         for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
 
-    def find(self, indexes, altloc=False):
-        """Find all contacts associated with ``index``
+    def find(self, register, altloc=False):
+        """Find all contacts associated with ``register``
 
         Parameters
         ----------
-        index : list, tuple
-           A list of residue indexes to find
+        register : int, list, tuple
+           A list of residue register to find
         altloc : bool
            Use the res_altloc positions [default: False]
 
@@ -539,11 +536,13 @@ class ContactMap(_Entity):
            the found contacts
 
         """
+        if isinstance(register, int):
+            index = [register]
         contact_map = self.copy()
         for contact in self:
-            if altloc and (contact.res1_altseq in indexes or contact.res2_altseq in indexes):
+            if altloc and (contact.res1_altseq in register or contact.res2_altseq in register):
                 continue
-            elif contact.res1_seq in indexes or contact.res2_seq in indexes:
+            elif contact.res1_seq in register or contact.res2_seq in register:
                 continue
             else:
                 contact_map.remove(contact.id)

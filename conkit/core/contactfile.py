@@ -171,18 +171,8 @@ class ContactFile(_Entity):
 
     @property
     def top_map(self):
-        """The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
-
-        Returns
-        -------
-        obj, None
-           The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
-
-        """
-        if len(self) > 0:
-            return self[0]
-        else:
-            return None
+        """The first :obj:`ContactMap <conkit.core.ContactMap>` entry in :obj:`ContactFile <conkit.core.ContactFile>`"""
+        return self.top
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`ContactFile <conkit.core.ContactFile>`

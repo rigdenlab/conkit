@@ -224,6 +224,14 @@ class _Entity(object):
         """
         self._parent = parent
 
+    @property
+    def top(self):
+        """The first child in the :obj:`Entity <conkit.core.Entity>`"""
+        if len(self) > 0:
+            return self._child_list[0]
+        else:
+            return None
+
     def _inplace(self, inplace):
         """Modify the current version using a copy
 

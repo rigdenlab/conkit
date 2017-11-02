@@ -202,10 +202,7 @@ class SequenceFile(_Entity):
            The first :obj:`Sequence <conkit.core.Sequence>` entry in :obj:`SequenceFile <conkit.core.SequenceFile>`
 
         """
-        if len(self) > 0:
-            return self[0]
-        else:
-            return None
+        return self.top
 
     def calculate_meff(self, identity=0.8):
         """Calculate the number of effective sequences
@@ -216,9 +213,10 @@ class SequenceFile(_Entity):
 
         """
         import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_neff_with_identity instead!")
+        warnings.warn("This function will be deprecated in a future release!"
+                      + "Use calculate_neff_with_identity instead!")
         return self.calculate_neff_with_identity(identity)
-    
+
     def calculate_neff_with_identity(self, identity):
         """Calculate the number of effective sequences with specified sequence identity
         

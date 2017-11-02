@@ -4,6 +4,9 @@ Changelog
 
 [Unreleased]
 ------------
+Added
+~~~~~
+- ``Entity.top`` property to always return the first child in the list
 
 [0.8.3]
 -------

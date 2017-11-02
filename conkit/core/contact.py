@@ -143,7 +143,7 @@ class Contact(_Entity):
 
     def __repr__(self):
         text = "{name}(id={id} res1={_res1} res1_chain={_res1_chain} res1_seq={_res1_seq} " \
-               "res2={_res2} res2_chain={_res2_chain} res2_seq={_res2_seq} raw_score={_raw_score}"
+               "res2={_res2} res2_chain={_res2_chain} res2_seq={_res2_seq} raw_score={_raw_score})"
         return text.format(name=self.__class__.__name__, id=self._id,
                            **{k: getattr(self, k) for k in self.__class__.__slots__})
 
@@ -471,8 +471,8 @@ class Contact(_Entity):
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
-        keys =  ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
-                + [k[1:] for k in self.__slots__]
+        keys = ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
+            + [k[1:] for k in self.__slots__]
         return {k: getattr(self, k) for k in keys}
 
     @staticmethod
