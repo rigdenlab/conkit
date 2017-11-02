@@ -272,9 +272,7 @@ class SequenceFile(_Entity):
         if identity < 0 or identity > 1:
             raise ValueError("Sequence Identity needs to be between 0 and 1")
 
-        # Alignment to unsigned integer matrix
         msa_mat = np.array(self.ascii_matrix)
-        # Pre-define some variables
         n = msa_mat.shape[0]                        # size of the data
         batch_size = min(n, 250)                    # size of the batches
         hamming = np.zeros(n, dtype=np.int)         # storage for data
@@ -314,14 +312,9 @@ class SequenceFile(_Entity):
         """
         if not self.is_alignment:
             raise ValueError('This is not an alignment')
-
-        # Encode matrix
         msa_mat = np.array(self.ascii_matrix)
-        # matrix of 0s and 1s; 1 if char is '-'
         aa_frequencies = np.where(msa_mat != 45, 1, 0)
-        # sum all values per row
         aa_counts = np.sum(aa_frequencies, axis=0)
-        # divide all by sequence length
         return (aa_counts / len(msa_mat[:, 0])).tolist()
 
     def filter(self, min_id=0.3, max_id=0.9, inplace=False):
@@ -436,7 +429,8 @@ class SequenceFile(_Entity):
         sequence_file = self._inplace(inplace)
 
         if self.is_alignment:
-            i, j = start - 1, end
+            i = start - 1
+            j = end
             for sequence in sequence_file:
                 sequence.seq = sequence.seq[i:j]
             return sequence_file

@@ -360,7 +360,6 @@ class ContactMap(_Entity):
 
     def _construct_repr_sequence(self, res_seqs):
         """Construct the representative sequence"""
-        # Determine which are present and which are not
         representative_sequence = ''
         for i in np.arange(1, self.sequence.seq_len + 1):
             if i in res_seqs:
@@ -380,9 +379,11 @@ class ContactMap(_Entity):
         """
         for c in self:
             if altloc:
-                res1_index, res2_index = c.res1_altseq, c.res2_altseq
+                res1_index = c.res1_altseq
+                res2_index = c.res2_altseq
             else:
-                res1_index, res2_index = c.res1_seq, c.res2_seq
+                res1_index = c.res1_seq
+                res2_index = c.res2_seq
             c.res1 = self.sequence.seq[res1_index - 1]
             c.res2 = self.sequence.seq[res2_index - 1]
 
@@ -540,6 +541,7 @@ class ContactMap(_Entity):
         """
         if isinstance(register, int):
             register = [register]
+        register = set(register)
         comparison_operator = _AND if strict else _OR
         contact_map = self.deepcopy()
         for contact in self:
@@ -794,9 +796,9 @@ class ContactMap(_Entity):
         encoder = dict((x.res_seq, x.res_altseq)
                        for x in keymap if isinstance(x, _Residue))
         for contact in contact_map:
-            if contact.res1_seq in list(encoder.keys()):
+            if contact.res1_seq in encoder:
                 contact.res1_altseq = encoder[contact.res1_seq]
-            if contact.res2_seq in list(encoder.keys()):
+            if contact.res2_seq in encoder:
                 contact.res2_altseq = encoder[contact.res2_seq]
         return contact_map
 
