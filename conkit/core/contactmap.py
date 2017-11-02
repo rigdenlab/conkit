@@ -519,8 +519,8 @@ class ContactMap(_Entity):
         for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
 
-    def find(self, register, altloc=False):
-        """Find all contacts associated with ``register``
+    def find(self, register, altloc=False, strict=False):
+        """Find all contacts with one or both residues in ``register``
 
         Parameters
         ----------
@@ -528,6 +528,8 @@ class ContactMap(_Entity):
            A list of residue register to find
         altloc : bool
            Use the res_altloc positions [default: False]
+        strict : bool
+           Both residues of :obj:`Contact <conkit.core.contact.Contact>` in register [default: False] 
 
         Returns
         -------
@@ -537,12 +539,15 @@ class ContactMap(_Entity):
 
         """
         if isinstance(register, int):
-            index = [register]
-        contact_map = self.copy()
+            register = [register]
+        comparison_operator = _AND if strict else _OR
+        contact_map = self.deepcopy()
         for contact in self:
-            if altloc and (contact.res1_altseq in register or contact.res2_altseq in register):
+            if altloc and comparison_operator(contact.res1_altseq in register,
+                                              contact.res2_altseq in register):
                 continue
-            elif contact.res1_seq in register or contact.res2_seq in register:
+            elif comparison_operator(contact.res1_seq in register,
+                                     contact.res2_seq in register):
                 continue
             else:
                 contact_map.remove(contact.id)
@@ -674,7 +679,7 @@ class ContactMap(_Entity):
         # 3. Remove unmatched contacts
         # ================================================================
         if remove_unmatched:
-            for contact in contact_map1.copy():
+            for contact in contact_map1.deepcopy():
                 if contact.is_unknown:
                     contact_map1.remove(contact.id)
 
@@ -710,7 +715,7 @@ class ContactMap(_Entity):
 
         """
         contact_map = self._inplace(inplace)
-        for contact in contact_map.copy():
+        for contact in contact_map.deepcopy():
             if min_distance <= abs(contact.res1_seq - contact.res2_seq) <= max_distance:
                 continue
             else:
@@ -872,3 +877,11 @@ class ContactMap(_Entity):
                     raise ValueError('Should never get here')
 
         return contact_map
+
+
+def _AND(a, b):
+    return a and b
+
+
+def _OR(a, b):
+    return a or b
