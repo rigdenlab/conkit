@@ -55,6 +55,8 @@ from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence, THREE_TO_ONE
 
+ATOM = collections.namedtuple('Atom', 'resname resseq resseq_alt reschain')
+
 
 class GenericStructureParser(ContactFileParser):
     """
@@ -82,9 +84,6 @@ class GenericStructureParser(ContactFileParser):
            A list of tuples containing the contact information
 
         """
-        Atom = collections.namedtuple('Atom',
-                                      'resname resseq resseq_alt reschain')
-
         if chain1 == chain2:
             range1 = range2 = list(range(1, len(chain1) + 1))
         else:
@@ -101,13 +100,13 @@ class GenericStructureParser(ContactFileParser):
             for atom1, atom2 in itertools.product(residue1, residue2):
                 if chain1 == chain2 and int(residue1.id[1]) >= int(residue2.id[1]):
                     continue
-                construct1 = Atom(
+                construct1 = ATOM(
                     resname=residue1.resname,
                     resseq=int(residue1.id[1]),
                     resseq_alt=resseq1_alt,
                     reschain=chain1.id,
                 )
-                construct2 = Atom(
+                construct2 = ATOM(
                     resname=residue2.resname,
                     resseq=int(residue2.id[1]),
                     resseq_alt=resseq2_alt,
