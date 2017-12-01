@@ -127,7 +127,7 @@ class SequenceFile(_Entity):
             if sequence.seq_len != seq_length:
                 self.status = SequenceFile._NO_ALIGNMENT
                 break
-        return True if self.status == SequenceFile._YES_ALIGNMENT else False
+        return self.status == SequenceFile._YES_ALIGNMENT
 
     @property
     def empty(self):
@@ -189,8 +189,7 @@ class SequenceFile(_Entity):
         if any(i == status for i in [SequenceFile._UNKNOWN, SequenceFile._NO_ALIGNMENT, SequenceFile._YES_ALIGNMENT]):
             self._status = status
         else:
-            raise ValueError(
-                "Cannot determine if your sequence file is an alignment or not")
+            raise ValueError("Cannot determine if your sequence file is an alignment or not")
 
     @property
     def top_sequence(self):
@@ -285,8 +284,7 @@ class SequenceFile(_Entity):
             batches.append(last_batch)
         for k, batch in enumerate(batches):
             i = batch_size * k
-            dists = scipy.spatial.distance.cdist(
-                msa_mat[i:i + batch], msa_mat, metric='hamming')
+            dists = scipy.spatial.distance.cdist(msa_mat[i:i + batch], msa_mat, metric='hamming')
             hamming[i:i + batch] = (dists < (1 - identity)).sum(axis=1)
         return (1. / hamming).tolist()
 
@@ -310,12 +308,13 @@ class SequenceFile(_Entity):
            :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
 
         """
-        if not self.is_alignment:
+        if self.is_alignment:
+            msa_mat = np.array(self.ascii_matrix)
+            aa_frequencies = np.where(msa_mat != 45, 1, 0)
+            aa_counts = np.sum(aa_frequencies, axis=0)
+            return (aa_counts / len(msa_mat[:, 0])).tolist()
+        else:
             raise ValueError('This is not an alignment')
-        msa_mat = np.array(self.ascii_matrix)
-        aa_frequencies = np.where(msa_mat != 45, 1, 0)
-        aa_counts = np.sum(aa_frequencies, axis=0)
-        return (aa_counts / len(msa_mat[:, 0])).tolist()
 
     def filter(self, min_id=0.3, max_id=0.9, inplace=False):
         """Filter an alignment
@@ -369,11 +368,8 @@ class SequenceFile(_Entity):
         # Find all throwable sequences
         throw = set()
         for i in np.arange(len(self)):
-            ident = 1 - \
-                scipy.spatial.distance.cdist(
-                    [msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
-            throw.update((1 + i + np.argwhere((ident < min_id) |
-                                              (ident > max_id)).flatten()).tolist())
+            ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
+            throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
         # Throw the previously selected sequences
         sequence_file = self._inplace(inplace)
         for i in reversed(list(throw)):
@@ -427,10 +423,8 @@ class SequenceFile(_Entity):
 
         """
         sequence_file = self._inplace(inplace)
-
         if self.is_alignment:
-            i = start - 1
-            j = end
+            i = start - 1; j = end
             for sequence in sequence_file:
                 sequence.seq = sequence.seq[i:j]
             return sequence_file

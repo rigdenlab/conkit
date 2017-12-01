@@ -132,8 +132,6 @@ class Contact(_Entity):
         self._status = Contact._UNKNOWN
         self._weight = 1.0
 
-        # Assign values post creation to use setter/getter methods
-        # Possibly very bad practice but no better alternative for now
         self.distance_bound = distance_bound
         self.raw_score = raw_score
         self.res1_seq = res1_seq
@@ -208,8 +206,7 @@ class Contact(_Entity):
         if 0 < value < self.upper_bound:
             self._distance_bound[0] = float(value)
         else:
-            raise ValueError('Lower bound must be positive'
-                             'and smaller than upper bound')
+            raise ValueError('Lower bound must be positive and smaller than upper bound')
 
     @property
     def upper_bound(self):
@@ -235,8 +232,7 @@ class Contact(_Entity):
         if 0 < value > self.lower_bound:
             self._distance_bound[1] = float(value)
         else:
-            raise ValueError('Upper bound must be positive '
-                             'and larger than lower bound')
+            raise ValueError('Upper bound must be positive and larger than lower bound')
 
     @property
     def raw_score(self):
@@ -475,13 +471,9 @@ class Contact(_Entity):
     @staticmethod
     def _set_residue(amino_acid):
         """Assign the residue to the corresponding amino_acid"""
-        msg = "Unknown amino acid: {0}".format(amino_acid)
-        if not isinstance(amino_acid, str):
-            raise ValueError(msg)
-        amino_acid = amino_acid.upper()
         if amino_acid in THREE_TO_ONE:
             return THREE_TO_ONE[amino_acid]
         elif amino_acid in set(THREE_TO_ONE.values()):
             return amino_acid
         else:
-            raise ValueError(msg)
+            raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))

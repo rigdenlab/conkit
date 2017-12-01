@@ -84,9 +84,6 @@ class _Entity(object):
         self._parent = None
         self._child_list = []
         self._child_dict = {}
-
-        # Assign values post creation to use setter/getter methods
-        # Possibly very bad practice but no better alternative for now
         self.id = id
 
     def __contains__(self, id):

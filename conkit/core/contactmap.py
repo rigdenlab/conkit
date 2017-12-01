@@ -477,6 +477,7 @@ class ContactMap(_Entity):
         if self.empty:
             raise ValueError("ContactMap is empty")
 
+        # TODO: Chunan suggested to fix this bug - results are usually marginally better
         # REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
         # REM: Remember to change test cases when corrected implementation benchmarked
         #  x = np.asarray(
@@ -751,8 +752,7 @@ class ContactMap(_Entity):
         contact_map = self._inplace(inplace)
 
         raw_scores = np.asarray([c.raw_score for c in contact_map])
-        norm_raw_scores = (raw_scores - raw_scores.min()) / \
-            (raw_scores.max() - raw_scores.min())
+        norm_raw_scores = (raw_scores - raw_scores.min()) / (raw_scores.max() - raw_scores.min())
 
         # Important to not end up with raw scores == np.nan
         if np.isnan(norm_raw_scores).all():
@@ -793,8 +793,7 @@ class ContactMap(_Entity):
     @staticmethod
     def _adjust(contact_map, keymap):
         """Adjust res_altseq entries to insertions and deletions"""
-        encoder = dict((x.res_seq, x.res_altseq)
-                       for x in keymap if isinstance(x, _Residue))
+        encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
         for contact in contact_map:
             if contact.res1_seq in encoder:
                 contact.res1_altseq = encoder[contact.res1_seq]
@@ -830,8 +829,7 @@ class ContactMap(_Entity):
             contact_map_keymap[res1_index] = pos1
             contact_map_keymap[res2_index] = pos2
         contact_map_keymap_sorted = sorted(
-            list(contact_map_keymap.items()),
-            key=lambda x: int(x[0])
+            list(contact_map_keymap.items()), key=lambda x: int(x[0])
         )
         return list(zip(*contact_map_keymap_sorted))[1]
 

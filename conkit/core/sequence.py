@@ -91,11 +91,7 @@ class Sequence(_Entity):
         """
         self._remark = []
         self._seq = None
-
-        # Assign values post creation to use setter/getter methods
-        # Possibly very bad practice but no better alternative for now
         self.seq = seq
-
         super(Sequence, self).__init__(id)
 
     def __add__(self, other):

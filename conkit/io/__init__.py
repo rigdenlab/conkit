@@ -119,8 +119,7 @@ def read(fname, format, f_id='conkit'):
     if format in PARSER_CACHE:
         parser_in = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError(
-            "Unrecognised format: '{}'".format(format))
+        raise ValueError("Unrecognised format: '{}'".format(format))
 
     kwargs = {"f_id": f_id}
     if format == "a3m-inserts":
@@ -163,8 +162,7 @@ def write(fname, format, hierarchy):
     if format in PARSER_CACHE:
         parser_out = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError(
-            "Unrecognised format: '{}'".format(format))
+        raise ValueError("Unrecognised format: '{}'".format(format))
 
     kwargs = {}
     if format in ["flib", "pconsc", "pconsc2"]:
