@@ -9,7 +9,6 @@ from conkit.core.contact import Contact
 
 
 class TestContact(unittest.TestCase):
-
     def test_distance_bound_1(self):
         contact = Contact(1, 2, 1.0)
         contact.distance_bound = (0, 8)
@@ -125,7 +124,7 @@ class TestContact(unittest.TestCase):
 
     def test_res1_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.res1 = 'Ala'
+        contact.res1 = 'ALA'
         self.assertEqual('A', contact.res1)
 
     def test_res1_2(self):
@@ -140,7 +139,7 @@ class TestContact(unittest.TestCase):
 
     def test_res2_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.res2 = 'Met'
+        contact.res2 = 'MET'
         self.assertEqual('M', contact.res2)
 
     def test_res2_2(self):
@@ -259,10 +258,25 @@ class TestContact(unittest.TestCase):
     def test__to_dict_1(self):
         contact = Contact(1, 2, 1.0)
         dict = {
-            'id': (1, 2), 'is_match': False, 'is_mismatch': False, 'is_unknown': True, 'distance_bound': (0, 8),
-            'lower_bound': 0, 'upper_bound': 8, 'raw_score': 1.0, 'res1': 'X', 'res2': 'X', 'res1_chain': '',
-            'res2_chain': '', 'res1_seq': 1, 'res2_seq': 2, 'res1_altseq': 0, 'res2_altseq': 0, 'scalar_score': 0.0,
-            'status': 0, 'weight': 1.0,
+            'id': (1, 2),
+            'is_match': False,
+            'is_mismatch': False,
+            'is_unknown': True,
+            'distance_bound': (0, 8),
+            'lower_bound': 0,
+            'upper_bound': 8,
+            'raw_score': 1.0,
+            'res1': 'X',
+            'res2': 'X',
+            'res1_chain': '',
+            'res2_chain': '',
+            'res1_seq': 1,
+            'res2_seq': 2,
+            'res1_altseq': 0,
+            'res2_altseq': 0,
+            'scalar_score': 0.0,
+            'status': 0,
+            'weight': 1.0,
         }
         self.assertEqual(dict, contact._to_dict())
 
@@ -271,21 +285,50 @@ class TestContact(unittest.TestCase):
         contact.define_match()
         contact.lower_bound = 4
         dict = {
-            'id': (1, 2), 'is_match': True, 'is_mismatch': False, 'is_unknown': False, 'distance_bound': (4, 8),
-            'lower_bound': 4, 'upper_bound': 8, 'raw_score': 1.0, 'res1': 'X', 'res2': 'X', 'res1_chain': '',
-            'res2_chain': '', 'res1_seq': 1, 'res2_seq': 2, 'res1_altseq': 0, 'res2_altseq': 0, 'scalar_score': 0.0,
-            'status': 1, 'weight': 1.0,
+            'id': (1, 2),
+            'is_match': True,
+            'is_mismatch': False,
+            'is_unknown': False,
+            'distance_bound': (4, 8),
+            'lower_bound': 4,
+            'upper_bound': 8,
+            'raw_score': 1.0,
+            'res1': 'X',
+            'res2': 'X',
+            'res1_chain': '',
+            'res2_chain': '',
+            'res1_seq': 1,
+            'res2_seq': 2,
+            'res1_altseq': 0,
+            'res2_altseq': 0,
+            'scalar_score': 0.0,
+            'status': 1,
+            'weight': 1.0,
         }
         self.assertEqual(dict, contact._to_dict())
 
     def test__set_residue_1(self):
         self.assertEqual("A", Contact._set_residue("ALA"))
-        self.assertEqual("A", Contact._set_residue("Ala"))
-        self.assertEqual("A", Contact._set_residue("ala"))
+
+    def test__set_residue_2(self):
         self.assertEqual("A", Contact._set_residue("A"))
-        self.assertEqual("A", Contact._set_residue("a"))
+
+    def test__set_residue_3(self):
+        self.assertRaises(ValueError, Contact._set_residue, "Ala")
+
+    def test__set_residue_4(self):
+        self.assertRaises(ValueError, Contact._set_residue, "ala")
+
+    def test__set_residue_5(self):
+        self.assertRaises(ValueError, Contact._set_residue, "a")
+
+    def test__set_residue_6(self):
         self.assertRaises(ValueError, Contact._set_residue, 'AL')
+
+    def test__set_residue_7(self):
         self.assertRaises(ValueError, Contact._set_residue, '-')
+
+    def test__set_residue_8(self):
         self.assertRaises(ValueError, Contact._set_residue, 1)
 
 
