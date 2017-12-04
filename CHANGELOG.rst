@@ -11,6 +11,8 @@ Added
 Changed
 ~~~~~~~
 - Optimized some functions and comparisons according to the recommended Python optimization instructions 
+- ``ContactMap.match`` does __not__ modifiy ``other`` by default anymore. Specify ``match_other=True`` as kwarg!
+- ``ContactMap.calculate_kernel_density`` renamed to ``ContactMap.calculate_contact_density`` 
 
 [0.8.3]
 -------

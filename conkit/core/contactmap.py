@@ -95,9 +95,7 @@ class ContactMap(_Entity):
         super(ContactMap, self).__init__(id)
 
     def __repr__(self):
-        return "{0}(id=\"{1}\", ncontacts={2})".format(
-            self.__class__.__name__, self.id, self.ncontacts
-        )
+        return "{0}(id=\"{1}\", ncontacts={2})".format(self.__class__.__name__, self.id, self.ncontacts)
 
     @property
     def coverage(self):
@@ -227,19 +225,13 @@ class ContactMap(_Entity):
             return 0.0
 
         s = np.asarray([c.status for c in self])
-        cdict = dict(
-            zip(
-                np.unique(s),
-                np.asarray([s[s == i].shape[0] for i in np.unique(s)])
-            )
-        )
+        cdict = dict(zip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
         fp_count = cdict[Contact._MISMATCH] if Contact._MISMATCH in cdict else 0.0
         uk_count = cdict[Contact._UNKNOWN] if Contact._UNKNOWN in cdict else 0.0
         tp_count = cdict[Contact._MATCH] if Contact._MATCH in cdict else 0.0
 
         if fp_count == 0.0 and tp_count == 0.0:
-            print("No matches or mismatches found in your contact map. "
-                  "Match two ContactMaps first.")
+            print("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
             print("Some contacts between the ContactMaps are unmatched due to non-identical "
@@ -299,12 +291,7 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res1_seqs, res2_seqs = list(
-                zip(*
-                    [(contact.res1_altseq, contact.res2_altseq)
-                     for contact in self]
-                    )
-            )
+            res1_seqs, res2_seqs = list(zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
             res_seqs = set(sorted(res1_seqs + res2_seqs))
             return self._construct_repr_sequence(list(res_seqs))
         else:
@@ -442,7 +429,13 @@ class ContactMap(_Entity):
             return 1.0
         return float(intersection) / union
 
-    def calculate_kernel_density(self, bw_method="amise"):
+    def calculate_kernel_density(self, *args, **kwargs):
+        """Calculate the contact density in the contact map using Gaussian kernels"""
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use calculate_contact_density instead!")
+        return self.calculate_contact_density(*args, **kwargs)
+
+    def calculate_contact_density(self, bw_method="amise"):
         """Calculate the contact density in the contact map using Gaussian kernels
 
         Various algorithms can be used to estimate the bandwidth. To calculate the
@@ -480,12 +473,8 @@ class ContactMap(_Entity):
         # TODO: Chunan suggested to fix this bug - results are usually marginally better
         # REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
         # REM: Remember to change test cases when corrected implementation benchmarked
-        #  x = np.asarray(
-        #      [i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)]
-        #  )[:, np.newaxis]
-        x = np.asarray(
-            [i for c in self for i in np.arange(c.res1_seq, c.res2_seq)]
-        )[:, np.newaxis]
+        #  x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+        x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
         from conkit.misc.bandwidth import bandwidth_factory
         bandwidth = bandwidth_factory(bw_method)(x).bw
@@ -531,7 +520,7 @@ class ContactMap(_Entity):
         altloc : bool
            Use the res_altloc positions [default: False]
         strict : bool
-           Both residues of :obj:`Contact <conkit.core.contact.Contact>` in register [default: False] 
+           Both residues of :obj:`Contact <conkit.core.contact.Contact>` in register [default: False]
 
         Returns
         -------
@@ -546,17 +535,15 @@ class ContactMap(_Entity):
         comparison_operator = _AND if strict else _OR
         contact_map = self.deepcopy()
         for contact in self:
-            if altloc and comparison_operator(contact.res1_altseq in register,
-                                              contact.res2_altseq in register):
+            if altloc and comparison_operator(contact.res1_altseq in register, contact.res2_altseq in register):
                 continue
-            elif comparison_operator(contact.res1_seq in register,
-                                     contact.res2_seq in register):
+            elif comparison_operator(contact.res1_seq in register, contact.res2_seq in register):
                 continue
             else:
                 contact_map.remove(contact.id)
         return contact_map
 
-    def match(self, other, remove_unmatched=False, renumber=False, inplace=False):
+    def match(self, other, match_other=False, remove_unmatched=False, renumber=False, inplace=False):
         """Modify both hierarchies so residue numbers match one another.
 
         This function is key when plotting contact maps or visualising
@@ -568,6 +555,8 @@ class ContactMap(_Entity):
         ----------
         other : :obj:`ContactMap <conkit.core.ContactMap>`
            A ConKit :obj:`ContactMap <conkit.core.ContactMap>`
+        match_other: bool, optional
+           Match `other` to `self` [default: False]
         remove_unmatched : bool, optional
            Remove all unmatched contacts [default: False]
         renumber : bool, optional
@@ -590,34 +579,38 @@ class ContactMap(_Entity):
 
         """
         contact_map1 = self._inplace(inplace)
-        contact_map2 = other._inplace(inplace)
+        if match_other:
+            contact_map2 = other._inplace(inplace)
+        else:
+            contact_map2 = other._inplace(False)
 
         # ================================================================
         # 1. Align all sequences
         # ================================================================
 
         # Align both full sequences against each other
-        aligned_sequences_full = contact_map1.sequence.align_local(contact_map2.sequence, id_chars=2,
-                                                                   nonid_chars=1, gap_open_pen=-0.5,
-                                                                   gap_ext_pen=-0.1)
+        aligned_sequences_full = contact_map1.sequence.align_local(
+            contact_map2.sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1)
         contact_map1_full_sequence, contact_map2_full_sequence = aligned_sequences_full
 
         # Align contact map 1 full sequences with representative sequence
-        aligned_sequences_map1 = contact_map1_full_sequence.align_local(contact_map1.repr_sequence,
-                                                                        id_chars=2, nonid_chars=1, gap_open_pen=-0.5,
-                                                                        gap_ext_pen=-0.2, inplace=True)
+        aligned_sequences_map1 = contact_map1_full_sequence.align_local(
+            contact_map1.repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True)
         contact_map1_repr_sequence = aligned_sequences_map1[-1]
 
         # Align contact map 2 full sequences with __ALTLOC__ representative sequence
-        aligned_sequences_map2 = contact_map2_full_sequence.align_local(contact_map2.repr_sequence_altloc,
-                                                                        id_chars=2, nonid_chars=1, gap_open_pen=-0.5,
-                                                                        gap_ext_pen=-0.2, inplace=True)
+        aligned_sequences_map2 = contact_map2_full_sequence.align_local(
+            contact_map2.repr_sequence_altloc,
+            id_chars=2,
+            nonid_chars=1,
+            gap_open_pen=-0.5,
+            gap_ext_pen=-0.2,
+            inplace=True)
         contact_map2_repr_sequence = aligned_sequences_map2[-1]
 
         # Align both aligned representative sequences
-        aligned_sequences_repr = contact_map1_repr_sequence.align_local(contact_map2_repr_sequence,
-                                                                        id_chars=2, nonid_chars=1, gap_open_pen=-1.0,
-                                                                        gap_ext_pen=-0.5, inplace=True)
+        aligned_sequences_repr = contact_map1_repr_sequence.align_local(
+            contact_map2_repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True)
         contact_map1_repr_sequence, contact_map2_repr_sequence = aligned_sequences_repr
 
         # ================================================================
@@ -625,15 +618,13 @@ class ContactMap(_Entity):
         # ================================================================
 
         # Encode the sequences to uint8 character arrays for easier and faster handling
-        encoded_repr = np.array([
-            list(contact_map1_repr_sequence.seq_ascii),
-            list(contact_map2_repr_sequence.seq_ascii)
-        ])
+        encoded_repr = np.array(
+            [list(contact_map1_repr_sequence.seq_ascii),
+             list(contact_map2_repr_sequence.seq_ascii)])
 
         # Create mappings for both contact maps
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
-        contact_map2_keymap = ContactMap._create_keymap(contact_map2,
-                                                        altloc=True)
+        contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
         # Some checks
         msg = "Error creating reliable keymap matching the sequence in ContactMap: "
@@ -643,10 +634,8 @@ class ContactMap(_Entity):
             raise ValueError(msg + contact_map2.id)
 
         # Create a sequence matching keymap including deletions and insertions
-        contact_map1_keymap = ContactMap._insert_states(encoded_repr[0],
-                                                        contact_map1_keymap)
-        contact_map2_keymap = ContactMap._insert_states(encoded_repr[1],
-                                                        contact_map2_keymap)
+        contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
+        contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
 
         # Reindex the altseq positions to account for insertions/deletions
         contact_map1_keymap = ContactMap._reindex(contact_map1_keymap)
@@ -656,24 +645,20 @@ class ContactMap(_Entity):
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
         # Get the residue list for matching UNKNOWNs
-        residues_map2 = tuple(
-            i + 1 for i, a in enumerate(aligned_sequences_full[1].seq)
-            if a != '-'
-        )
+        residues_map2 = tuple(i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
 
         # Adjust true and false positive statuses
         for contact in contact_map1:
-            id = (contact.res1_seq, contact.res2_seq)
-            id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in id
-                           if i == r.res_altseq)
+            _id = (contact.res1_seq, contact.res2_seq)
+            _id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
 
-            if any(i == _Gap.IDENTIFIER for i in id_alt) and any(j not in residues_map2 for j in id):
-                contact_map1[id].define_unknown()
-            elif all(i in residues_map2 for i in id):
-                if id_alt in contact_map2:
-                    contact_map1[id].define_match()
+            if any(i == _Gap.IDENTIFIER for i in _id_alt) and any(j not in residues_map2 for j in _id):
+                contact_map1[_id].define_unknown()
+            elif all(i in residues_map2 for i in _id):
+                if _id_alt in contact_map2:
+                    contact_map1[_id].define_match()
                 else:
-                    contact_map1[id].define_mismatch()
+                    contact_map1[_id].define_mismatch()
             else:
                 msg = "Error matching two contact maps - this should never happen"
                 raise RuntimeError(msg)
@@ -690,8 +675,7 @@ class ContactMap(_Entity):
         # 4. Renumber the contact map 1 based on contact map 2
         # ================================================================
         if renumber:
-            contact_map1 = ContactMap._renumber(
-                contact_map1, contact_map1_keymap, contact_map2_keymap)
+            contact_map1 = ContactMap._renumber(contact_map1, contact_map1_keymap, contact_map2_keymap)
 
         return contact_map1
 
@@ -818,19 +802,15 @@ class ContactMap(_Entity):
         """
         contact_map_keymap = collections.OrderedDict()
         for contact in contact_map:
-            pos1 = _Residue(contact.res1_seq, contact.res1_altseq,
-                            contact.res1, contact.res1_chain)
-            pos2 = _Residue(contact.res2_seq, contact.res2_altseq,
-                            contact.res2, contact.res2_chain)
+            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
+            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
             if altloc:
                 res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
             else:
                 res1_index, res2_index = contact.res1_seq, contact.res2_seq
             contact_map_keymap[res1_index] = pos1
             contact_map_keymap[res2_index] = pos2
-        contact_map_keymap_sorted = sorted(
-            list(contact_map_keymap.items()), key=lambda x: int(x[0])
-        )
+        contact_map_keymap_sorted = sorted(list(contact_map_keymap.items()), key=lambda x: int(x[0]))
         return list(zip(*contact_map_keymap_sorted))[1]
 
     @staticmethod
