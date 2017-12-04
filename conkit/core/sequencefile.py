@@ -102,9 +102,7 @@ class SequenceFile(_Entity):
         super(SequenceFile, self).__init__(id)
 
     def __repr__(self):
-        return "{0}(id=\"{1}\" nseq={2})".format(
-            self.__class__.__name__, self.id, self.nseq
-        )
+        return "{0}(id=\"{1}\" nseq={2})".format(self.__class__.__name__, self.id, self.nseq)
 
     @property
     def ascii_matrix(self):
@@ -212,8 +210,7 @@ class SequenceFile(_Entity):
 
         """
         import warnings
-        warnings.warn("This function will be deprecated in a future release!"
-                      + "Use calculate_neff_with_identity instead!")
+        warnings.warn("This function will be deprecated in a future release! Use calculate_neff_with_identity instead!")
         return self.calculate_neff_with_identity(identity)
 
     def calculate_neff_with_identity(self, identity):
@@ -272,9 +269,9 @@ class SequenceFile(_Entity):
             raise ValueError("Sequence Identity needs to be between 0 and 1")
 
         msa_mat = np.array(self.ascii_matrix)
-        n = msa_mat.shape[0]                        # size of the data
-        batch_size = min(n, 250)                    # size of the batches
-        hamming = np.zeros(n, dtype=np.int)         # storage for data
+        n = msa_mat.shape[0]  # size of the data
+        batch_size = min(n, 250)  # size of the batches
+        hamming = np.zeros(n, dtype=np.int)  # storage for data
         # Separate the distance calculations into batches to avoid MemoryError exceptions.
         # This answer was provided by a StackOverflow user. The corresponding suggestion by
         # user @WarrenWeckesser: http://stackoverflow.com/a/41090953/3046533
@@ -357,11 +354,9 @@ class SequenceFile(_Entity):
             raise ValueError('This is not an alignment')
 
         if 0 > min_id > 1:
-            raise ValueError(
-                "Minimum sequence Identity needs to be between 0 and 1")
+            raise ValueError("Minimum sequence Identity needs to be between 0 and 1")
         elif 0 > max_id > 1:
-            raise ValueError(
-                "Maximum sequence Identity needs to be between 0 and 1")
+            raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
 
         # Alignment to ASCII matrix
         msa_mat = np.array(self.ascii_matrix)
@@ -424,7 +419,8 @@ class SequenceFile(_Entity):
         """
         sequence_file = self._inplace(inplace)
         if self.is_alignment:
-            i = start - 1; j = end
+            i = start - 1
+            j = end
             for sequence in sequence_file:
                 sequence.seq = sequence.seq[i:j]
             return sequence_file
