@@ -224,6 +224,8 @@ class ContactMap(_Entity):
         if self.empty:
             return 0.0
 
+        import warnings
+
         s = np.asarray([c.status for c in self])
         cdict = dict(zip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
         fp_count = cdict[Contact._MISMATCH] if Contact._MISMATCH in cdict else 0.0
@@ -231,11 +233,11 @@ class ContactMap(_Entity):
         tp_count = cdict[Contact._MATCH] if Contact._MATCH in cdict else 0.0
 
         if fp_count == 0.0 and tp_count == 0.0:
-            print("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
+            warnings.warn("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
-            print("Some contacts between the ContactMaps are unmatched due to non-identical "
-                  "sequences. The precision value might be inaccurate.")
+            warnings.wargn("Some contacts between the ContactMaps are unmatched due to non-identical "
+                           "sequences. The precision value might be inaccurate.")
 
         return tp_count / (tp_count + fp_count)
 
