@@ -8,6 +8,7 @@ Added
 ~~~~~
 - ``Entity.top`` property to always return the first child in the list
 - ``ContactMap.find`` function accepts ``strict`` keyword argument to find contact pairs with both residues in ``register``
+- ``PdbParser`` takes a distance cutoff of ``0`` to include all Cb-Cb contacts in the protein structure
 Changed
 ~~~~~~~
 - Optimized some functions and comparisons according to the recommended Python optimization instructions 

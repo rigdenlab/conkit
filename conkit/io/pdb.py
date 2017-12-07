@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Parser module specific to Pdb files
 """
@@ -88,14 +87,10 @@ class GenericStructureParser(ContactFileParser):
             range1 = range2 = list(range(1, len(chain1) + 1))
         else:
             range1 = list(range(1, len(chain1) + 1))
-            range2 = list(range(len(chain1) + 1,
-                                len(chain1) + len(chain2) + 1))
+            range2 = list(range(len(chain1) + 1, len(chain1) + len(chain2) + 1))
         assert len(range1) == len(chain1) and len(range2) == len(chain2)
 
-        iterator = itertools.product(
-            list(zip(range1, chain1)),
-            list(zip(range2, chain2))
-        )
+        iterator = itertools.product(list(zip(range1, chain1)), list(zip(range2, chain2)))
         for (resseq1_alt, residue1), (resseq2_alt, residue2) in iterator:
             for atom1, atom2 in itertools.product(residue1, residue2):
                 if chain1 == chain2 and int(residue1.id[1]) >= int(residue2.id[1]):
@@ -160,9 +155,9 @@ class GenericStructureParser(ContactFileParser):
                 self._remove_atom(chain, atom_type)
 
             for chain1, chain2 in itertools.product(chains, chains):
-                if chain1.id == chain2.id:                          # intra
+                if chain1.id == chain2.id:  # intra
                     contact_map = ContactMap(chain1.id)
-                else:                                               # inter
+                else:  # inter
                     contact_map = ContactMap(chain1.id + chain2.id)
 
                 for (atom1, atom2, distance) in self._chain_contacts(chain1, chain2):
@@ -170,8 +165,7 @@ class GenericStructureParser(ContactFileParser):
                         atom1.resseq,
                         atom2.resseq,
                         round(1.0 - (distance / 100), 6),
-                        distance_bound=(0., float(distance_cutoff))
-                    )
+                        distance_bound=(0., float(distance_cutoff)))
 
                     contact.res1_altseq = atom1.resseq_alt
                     contact.res2_altseq = atom2.resseq_alt
@@ -180,7 +174,7 @@ class GenericStructureParser(ContactFileParser):
                     contact.res1_chain = atom1.reschain
                     contact.res2_chain = atom2.reschain
 
-                    if distance < distance_cutoff:
+                    if distance_cutoff == 0 or distance < distance_cutoff:
                         contact.define_match()
                         contact_map.add(contact)
 
@@ -197,10 +191,11 @@ class GenericStructureParser(ContactFileParser):
                             == len(chain1) + len(chain2)
                     hierarchy.add(contact_map)
 
-            hierarchy.method = 'Contact map extracted from PDB ' + \
-                str(model.id)
-            hierarchy.remark = ['The model id is the chain identifier, i.e XY equates to chain X and chain Y.',
-                                'Residue numbers in column 1 are chain X, and numbers in column 2 are chain Y.']
+            hierarchy.method = 'Contact map extracted from PDB ' + str(model.id)
+            hierarchy.remark = [
+                'The model id is the chain identifier, i.e XY equates to chain X and chain Y.',
+                'Residue numbers in column 1 are chain X, and numbers in column 2 are chain Y.'
+            ]
             hierarchies.append(hierarchy)
 
         if len(hierarchies) > 1:
