@@ -44,11 +44,11 @@ from conkit.core.sequence import THREE_TO_ONE
 
 
 @unique
-class ContactState(Enum):
+class ContactMatchState(Enum):
     """Enumerated class to store state constants for each contact"""
     unknown = 0
-    match = 1
-    mismatch = 2
+    matched = 1
+    mismatched = 2
 
 
 class Contact(_Entity):
@@ -135,7 +135,7 @@ class Contact(_Entity):
         self._res1_altseq = 0
         self._res2_altseq = 0
         self._scalar_score = 0.0
-        self._status = ContactState.unknown
+        self._status = ContactMatchState.unknown
         self._weight = 1.0
 
         self.distance_bound = distance_bound
@@ -175,17 +175,17 @@ class Contact(_Entity):
     @property
     def is_match(self):
         """A boolean status for the contact"""
-        return self._status == ContactState.match
+        return self._status == ContactMatchState.matched
 
     @property
     def is_mismatch(self):
         """A boolean status for the contact"""
-        return self._status == ContactState.mismatch
+        return self._status == ContactMatchState.mismatched
 
     @property
     def is_unknown(self):
         """A boolean status for the contact"""
-        return self._status == ContactState.unknown
+        return self._status == ContactMatchState.unknown
 
     @property
     def lower_bound(self):
@@ -430,10 +430,10 @@ class Contact(_Entity):
         Raises
         ------
         ValueError
-           Not a valid :obj:`ContactState`
+           Not a valid :obj:`ContactMatchState`
 
         """
-        self._status = ContactState(status)
+        self._status = ContactMatchState(status)
 
     @property
     def weight(self):
@@ -453,15 +453,15 @@ class Contact(_Entity):
 
     def define_match(self):
         """Define a contact as matching contact"""
-        self._status = ContactState.match
+        self._status = ContactMatchState.matched
 
     def define_mismatch(self):
         """Define a contact as mismatching contact"""
-        self._status = ContactState.mismatch
+        self._status = ContactMatchState.mismatched
 
     def define_unknown(self):
         """Define a contact with unknown status"""
-        self._status = ContactState.unknown
+        self._status = ContactMatchState.unknown
 
     def _to_dict(self):
         """Convert the object into a dictionary"""

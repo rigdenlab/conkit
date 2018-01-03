@@ -5,7 +5,7 @@ __date__ = "12 Aug 2016"
 
 import unittest
 
-from conkit.core.contact import Contact, ContactState
+from conkit.core.contact import Contact, ContactMatchState
 
 
 class TestContact(unittest.TestCase):
@@ -212,21 +212,21 @@ class TestContact(unittest.TestCase):
 
     def test_status_1(self):
         contact = Contact(1, 2000000, 1.0)
-        self.assertEqual(ContactState.unknown.value, contact.status)
+        self.assertEqual(ContactMatchState.unknown.value, contact.status)
         contact.define_match()
-        self.assertEqual(ContactState.match.value, contact.status)
+        self.assertEqual(ContactMatchState.matched.value, contact.status)
 
     def test_status_2(self):
         contact = Contact(1, 2000000, 1.0)
-        self.assertEqual(ContactState.unknown.value, contact.status)
+        self.assertEqual(ContactMatchState.unknown.value, contact.status)
         contact.define_mismatch()
-        self.assertEqual(ContactState.mismatch.value, contact.status)
+        self.assertEqual(ContactMatchState.mismatched.value, contact.status)
 
     def test_status_3(self):
         contact = Contact(1, 2000000, 1.0)
-        self.assertEqual(ContactState.unknown.value, contact.status)
+        self.assertEqual(ContactMatchState.unknown.value, contact.status)
         contact.define_unknown()
-        self.assertEqual(ContactState.unknown.value, contact.status)
+        self.assertEqual(ContactMatchState.unknown.value, contact.status)
 
     def test_weight_1(self):
         contact = Contact(1, 2000000, 1.0)

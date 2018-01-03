@@ -47,7 +47,7 @@ if sys.version_info.major < 3:
 
 from conkit.core._entity import _Entity
 from conkit.core._struct import _Gap, _Residue
-from conkit.core.contact import ContactState
+from conkit.core.contact import ContactMatchState
 from conkit.core.sequence import Sequence
 
 
@@ -228,9 +228,9 @@ class ContactMap(_Entity):
 
         s = np.asarray([c.status for c in self])
         cdict = dict(zip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
-        fp_count = cdict[ContactState.mismatch.value] if ContactState.mismatch.value in cdict else 0.0
-        uk_count = cdict[ContactState.unknown.value] if ContactState.unknown.value in cdict else 0.0
-        tp_count = cdict[ContactState.match.value] if ContactState.match.value in cdict else 0.0
+        fp_count = cdict[ContactMatchState.mismatched.value] if ContactMatchState.mismatched.value in cdict else 0.0
+        uk_count = cdict[ContactMatchState.unknown.value] if ContactMatchState.unknown.value in cdict else 0.0
+        tp_count = cdict[ContactMatchState.matched.value] if ContactMatchState.matched.value in cdict else 0.0
 
         if fp_count == 0.0 and tp_count == 0.0:
             warnings.warn("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")

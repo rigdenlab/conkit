@@ -12,7 +12,7 @@ except ImportError:
     SKLEARN = False
 
 from conkit.core._struct import _Gap, _Residue
-from conkit.core.contact import Contact, ContactState
+from conkit.core.contact import Contact, ContactMatchState
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
 
@@ -370,8 +370,8 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, inplace=True)
         self.assertEqual([
-            ContactState.match.value, ContactState.mismatch.value, ContactState.match.value,
-            ContactState.mismatch.value, ContactState.unknown.value
+            ContactMatchState.matched.value, ContactMatchState.mismatched.value, ContactMatchState.matched.value,
+            ContactMatchState.mismatched.value, ContactMatchState.unknown.value
         ], [c.status for c in contact_map1])
 
     def test_match_2(self):
@@ -393,9 +393,10 @@ class TestContactMap(unittest.TestCase):
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
-        self.assertEqual(
-            [ContactState.match.value, ContactState.match.value, ContactState.mismatch.value, ContactState.match.value],
-            [c.status for c in contact_map1])
+        self.assertEqual([
+            ContactMatchState.matched.value, ContactMatchState.matched.value, ContactMatchState.mismatched.value,
+            ContactMatchState.matched.value
+        ], [c.status for c in contact_map1])
 
     def test_match_3(self):
         contact_map1 = ContactMap('foo')
@@ -421,7 +422,8 @@ class TestContactMap(unittest.TestCase):
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
         self.assertEqual([(1, 5), (1, 6), (2, 7), (3, 5)], [c.id for c in contact_map1])
         self.assertEqual([
-            ContactState.mismatch.value, ContactState.mismatch.value, ContactState.match.value, ContactState.match.value
+            ContactMatchState.mismatched.value, ContactMatchState.mismatched.value, ContactMatchState.matched.value,
+            ContactMatchState.matched.value
         ], [c.status for c in contact_map1])
 
     def test_match_4(self):
@@ -443,7 +445,8 @@ class TestContactMap(unittest.TestCase):
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, match_other=True, remove_unmatched=True, inplace=True)
-        self.assertEqual([ContactState.match.value, ContactState.match.value], [c.status for c in contact_map1])
+        self.assertEqual([ContactMatchState.matched.value, ContactMatchState.matched.value],
+                         [c.status for c in contact_map1])
         self.assertEqual([2, 2, 3], [c.res1_altseq for c in contact_map2])
         self.assertEqual([6, 7, 5], [c.res2_altseq for c in contact_map2])
 
@@ -486,8 +489,8 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, inplace=True)
         self.assertEqual([
-            ContactState.match.value, ContactState.match.value, ContactState.mismatch.value, ContactState.match.value,
-            ContactState.unknown.value
+            ContactMatchState.matched.value, ContactMatchState.matched.value, ContactMatchState.mismatched.value,
+            ContactMatchState.matched.value, ContactMatchState.unknown.value
         ], [c.status for c in contact_map1])
 
     def test_match_6(self):
@@ -528,9 +531,10 @@ class TestContactMap(unittest.TestCase):
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
-        self.assertEqual(
-            [ContactState.match.value, ContactState.match.value, ContactState.mismatch.value, ContactState.match.value],
-            [c.status for c in contact_map1])
+        self.assertEqual([
+            ContactMatchState.matched.value, ContactMatchState.matched.value, ContactMatchState.mismatched.value,
+            ContactMatchState.matched.value
+        ], [c.status for c in contact_map1])
 
     def test_match_7(self):
         contact_map1 = ContactMap('foo')
@@ -571,8 +575,8 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual([
-            ContactState.match.value, ContactState.match.value, ContactState.mismatch.value, ContactState.match.value,
-            ContactState.unknown.value
+            ContactMatchState.matched.value, ContactMatchState.matched.value, ContactMatchState.mismatched.value,
+            ContactMatchState.matched.value, ContactMatchState.unknown.value
         ], [c.status for c in contact_map1])
         self.assertEqual([95, 95, _Gap.IDENTIFIER, 97, _Gap.IDENTIFIER], [c.res1_seq for c in contact_map1])
         self.assertEqual(['A', 'A', '', 'A', ''], [c.res1_chain for c in contact_map1])
@@ -614,9 +618,10 @@ class TestContactMap(unittest.TestCase):
         contact_map2.assign_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, renumber=True, inplace=True)
-        self.assertEqual(
-            [ContactState.match.value, ContactState.match.value, ContactState.mismatch.value, ContactState.match.value],
-            [c.status for c in contact_map1])
+        self.assertEqual([
+            ContactMatchState.matched.value, ContactMatchState.matched.value, ContactMatchState.mismatched.value,
+            ContactMatchState.matched.value
+        ], [c.status for c in contact_map1])
         self.assertEqual([95, 95, _Gap.IDENTIFIER, 97], [c.res1_seq for c in contact_map1])
         self.assertEqual(['A', 'A', '', 'A'], [c.res1_chain for c in contact_map1])
         self.assertEqual([30, 31, _Gap.IDENTIFIER, 30], [c.res2_seq for c in contact_map1])
@@ -672,8 +677,8 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual([
-            ContactState.match.value, ContactState.match.value, ContactState.match.value, ContactState.match.value,
-            ContactState.match.value
+            ContactMatchState.matched.value, ContactMatchState.matched.value, ContactMatchState.matched.value,
+            ContactMatchState.matched.value, ContactMatchState.matched.value
         ], [c.status for c in contact_map1])
         self.assertEqual([95, 95, 96, 97, 96], [c.res1_seq for c in contact_map1])
         self.assertEqual(['A', 'A', 'A', 'A', 'A'], [c.res1_chain for c in contact_map1])
@@ -723,8 +728,8 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual([
-            ContactState.match.value, ContactState.mismatch.value, ContactState.match.value, ContactState.match.value,
-            ContactState.mismatch.value
+            ContactMatchState.matched.value, ContactMatchState.mismatched.value, ContactMatchState.matched.value,
+            ContactMatchState.matched.value, ContactMatchState.mismatched.value
         ], [c.status for c in contact_map1])
         self.assertEqual([(6, 2), (6, _Gap.IDENTIFIER), (7, 4), (8, 2), (7, _Gap.IDENTIFIER)],
                          [(c.res1_seq, c.res2_seq) for c in contact_map1])

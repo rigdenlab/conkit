@@ -44,7 +44,15 @@ import sys
 if sys.version_info.major < 3:
     from itertools import izip as zip
 
+from enum import Enum
 from conkit.core._entity import _Entity
+
+
+class SequenceAlignmentState(Enum):
+    """Alignment states"""
+    unknown = 0
+    unaligned = 1
+    aligned = 2
 
 
 class SequenceFile(_Entity):
@@ -84,10 +92,6 @@ class SequenceFile(_Entity):
     """
     __slots__ = ['_remark', '_status']
 
-    _UNKNOWN = 0
-    _NO_ALIGNMENT = -1
-    _YES_ALIGNMENT = 1
-
     def __init__(self, id):
         """Initialise a new :obj:`SequenceFile <conkit.core.SequenceFile>`
 
@@ -98,7 +102,7 @@ class SequenceFile(_Entity):
 
         """
         self._remark = []
-        self._status = SequenceFile._UNKNOWN
+        self._status = SequenceAlignmentState.unknown
         super(SequenceFile, self).__init__(id)
 
     def __repr__(self):
@@ -120,12 +124,12 @@ class SequenceFile(_Entity):
 
         """
         seq_length = self.top_sequence.seq_len
-        self.status = SequenceFile._YES_ALIGNMENT
+        self._status = SequenceAlignmentState.aligned
         for sequence in self:
             if sequence.seq_len != seq_length:
-                self.status = SequenceFile._NO_ALIGNMENT
+                self._status = SequenceAlignmentState.unaligned
                 break
-        return self.status == SequenceFile._YES_ALIGNMENT
+        return self._status == SequenceAlignmentState.aligned
 
     @property
     def empty(self):
@@ -167,7 +171,7 @@ class SequenceFile(_Entity):
     @property
     def status(self):
         """An indication of the residue status, i.e true positive, false positive, or unknown"""
-        return self._status
+        return self._status.value
 
     @status.setter
     def status(self, status):
@@ -184,10 +188,7 @@ class SequenceFile(_Entity):
            Cannot determine if your sequence file is an alignment or not
 
         """
-        if any(i == status for i in [SequenceFile._UNKNOWN, SequenceFile._NO_ALIGNMENT, SequenceFile._YES_ALIGNMENT]):
-            self._status = status
-        else:
-            raise ValueError("Cannot determine if your sequence file is an alignment or not")
+        self._status = SequenceAlignmentState(status)
 
     @property
     def top_sequence(self):

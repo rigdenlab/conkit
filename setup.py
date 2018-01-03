@@ -37,7 +37,7 @@ class BuildCommand(build):
 
 def dependencies():
     return [
-        "enum >=1.1.6",
+        "enum34 >=1.1.6",
         "numpy >=1.8.2",
         "biopython >=1.64",
         "matplotlib >=1.3.1",
