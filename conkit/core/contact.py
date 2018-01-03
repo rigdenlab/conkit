@@ -38,8 +38,17 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
+from enum import Enum, unique
 from conkit.core._entity import _Entity
 from conkit.core.sequence import THREE_TO_ONE
+
+
+@unique
+class ContactState(Enum):
+    """Enumerated class to store state constants for each contact"""
+    unknown = 0
+    match = 1
+    mismatch = 2
 
 
 class Contact(_Entity):
@@ -94,13 +103,10 @@ class Contact(_Entity):
     Contact(id="(1, 25)" res1="A" res1_seq=1 res2="A" res2_seq=25 raw_score=1.0)
 
     """
-    __slots__ = ['_distance_bound', '_raw_score', '_res1', '_res2', '_res1_chain', '_res2_chain',
-                 '_res1_seq', '_res2_seq', '_res1_altseq', '_res2_altseq', '_scalar_score',
-                 '_status', '_weight']
-
-    _UNKNOWN = 0
-    _MISMATCH = -1
-    _MATCH = 1
+    __slots__ = [
+        '_distance_bound', '_raw_score', '_res1', '_res2', '_res1_chain', '_res2_chain', '_res1_seq', '_res2_seq',
+        '_res1_altseq', '_res2_altseq', '_scalar_score', '_status', '_weight'
+    ]
 
     def __init__(self, res1_seq, res2_seq, raw_score, distance_bound=(0, 8)):
         """Initialize a generic contact pair
@@ -118,7 +124,7 @@ class Contact(_Entity):
            The residue sequence number of residue 2
 
         """
-        self._distance_bound = [0., 8.]
+        self._distance_bound = [0.0, 8.0]
         self._raw_score = 1.0
         self._res1 = 'X'
         self._res2 = 'X'
@@ -129,7 +135,7 @@ class Contact(_Entity):
         self._res1_altseq = 0
         self._res2_altseq = 0
         self._scalar_score = 0.0
-        self._status = Contact._UNKNOWN
+        self._status = ContactState.unknown
         self._weight = 1.0
 
         self.distance_bound = distance_bound
@@ -142,8 +148,9 @@ class Contact(_Entity):
     def __repr__(self):
         text = "{name}(id={id} res1={_res1} res1_chain={_res1_chain} res1_seq={_res1_seq} " \
                "res2={_res2} res2_chain={_res2_chain} res2_seq={_res2_seq} raw_score={_raw_score})"
-        return text.format(name=self.__class__.__name__, id=self._id,
-                           **{k: getattr(self, k) for k in self.__class__.__slots__})
+        return text.format(
+            name=self.__class__.__name__, id=self._id, **{k: getattr(self, k)
+                                                          for k in self.__class__.__slots__})
 
     @property
     def distance_bound(self):
@@ -160,27 +167,25 @@ class Contact(_Entity):
            A 2-element list/tuple with a lower and upper distance boundary value
 
         """
-        if isinstance(distance_bound, tuple):
-            self._distance_bound = list(distance_bound)
-        elif isinstance(distance_bound, list):
-            self._distance_bound = distance_bound
+        if isinstance(distance_bound, tuple) or isinstance(distance_bound, list):
+            self._distance_bound = list(map(float, distance_bound))
         else:
             raise TypeError("Data of type list or tuple required")
 
     @property
     def is_match(self):
         """A boolean status for the contact"""
-        return self.status == Contact._MATCH
+        return self._status == ContactState.match
 
     @property
     def is_mismatch(self):
         """A boolean status for the contact"""
-        return self.status == Contact._MISMATCH
+        return self._status == ContactState.mismatch
 
     @property
     def is_unknown(self):
         """A boolean status for the contact"""
-        return self.status == Contact._UNKNOWN
+        return self._status == ContactState.unknown
 
     @property
     def lower_bound(self):
@@ -411,7 +416,7 @@ class Contact(_Entity):
     @property
     def status(self):
         """An indication of the residue status, i.e true positive, false positive, or unknown"""
-        return self._status
+        return self._status.value
 
     @status.setter
     def status(self, status):
@@ -425,14 +430,10 @@ class Contact(_Entity):
         Raises
         ------
         ValueError
-           Unknown status
+           Not a valid :obj:`ContactState`
 
         """
-        options = set([Contact._UNKNOWN, Contact._MISMATCH, Contact._MATCH])
-        if any(i == status for i in options):
-            self._status = status
-        else:
-            raise ValueError("Unknown status")
+        self._status = ContactState(status)
 
     @property
     def weight(self):
@@ -452,20 +453,20 @@ class Contact(_Entity):
 
     def define_match(self):
         """Define a contact as matching contact"""
-        self._status = Contact._MATCH
+        self._status = ContactState.match
 
     def define_mismatch(self):
         """Define a contact as mismatching contact"""
-        self._status = Contact._MISMATCH
+        self._status = ContactState.mismatch
 
     def define_unknown(self):
         """Define a contact with unknown status"""
-        self._status = Contact._UNKNOWN
+        self._status = ContactState.unknown
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
         keys = ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
-            + [k[1:] for k in self.__slots__]
+                + [k[1:] for k in self.__slots__]
         return {k: getattr(self, k) for k in keys}
 
     @staticmethod

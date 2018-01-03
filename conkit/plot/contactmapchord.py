@@ -41,7 +41,7 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.core.contact import Contact
+from conkit.core.contact import ContactState
 from conkit.plot._figure import Figure
 from conkit.plot._plottools import ColorDefinitions, points_on_circle
 
@@ -149,11 +149,11 @@ class ContactMapChordFigure(Figure):
             # 0.0 transparent through 1.0 opaque
             alpha = float(c[4]) if self.use_conf else 1.0
             color = {
-                Contact._MISMATCH: ColorDefinitions.MISMATCH,
-                Contact._MATCH: ColorDefinitions.MATCH,
+                ContactState.mismatch: ColorDefinitions.MISMATCH,
+                ContactState.match: ColorDefinitions.MATCH,
             }.get(int(c[5]), ColorDefinitions.MATCH)
             ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
-            if int(c[5]) == Contact._MATCH:
+            if int(c[5]) == ContactState.match:
                 ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=1, linewidth=1)
             else:
                 ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
