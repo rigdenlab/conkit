@@ -134,32 +134,24 @@ class ContactDensityFigure(Figure):
 
     def _draw(self):
         """Draw the actual plot"""
-
-        dens = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
-
         fig, ax = plt.subplots()
-
+        dens = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
         residues = np.asarray(
             list(set(sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy]))))
         x = np.arange(residues.min(), residues.max())
-
-        ax.plot(x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")
+        ax.plot(x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate", zorder=2)
 
         try:
             import scipy.signal
-            local_minima_idx = scipy.signal.argrelmin(dens)[0]
-            ax.scatter(
-                x[local_minima_idx],
-                dens[local_minima_idx],
-                marker="p",
-                color=ColorDefinitions.MISMATCH,
-                label="Local Minimum")
+            line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
+            for minimum in scipy.signal.argrelmin(dens, order=1)[0]:
+                ax.axvline(x[minimum], **line_kwargs)
+            ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
         except ImportError:
             warnings.warn("SciPy not installed - cannot determine local minima")
 
         ax.set_xlim(x.min(), x.max())
         ax.set_ylim(0., dens.max())
-
         ax.set_xlabel('Residue number')
         ax.set_ylabel('Kernel Density Estimate')
         ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
