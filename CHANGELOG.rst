@@ -11,6 +11,7 @@ Added
 - ``PdbParser`` takes a distance cutoff of ``0`` to include all Cb-Cb contacts in the protein structure
 - ``ContactMatchState`` enumerated type for definitions of state constants for contact
 - ``SequenceAlignmentState`` enumerated type for definitions of state constants for each sequence file 
+- ``NcontParser`` added to extract contact pairs identified by NCONT (CCP4 Software Suite) 
 Changed
 ~~~~~~~
 - Optimized some functions and comparisons according to the recommended Python optimization instructions 
