@@ -36,14 +36,19 @@ class BuildCommand(build):
 
 
 def dependencies():
-    return [
-        "enum34 >=1.1.6",
+    required = [
         "numpy >=1.8.2",
         "biopython >=1.64",
         "matplotlib >=1.3.1",
-        "scipy >=0.16.0",
-        "scikit-learn >=0.17",
     ]
+    optional = [
+        "scikit-learn >=0.17",
+        "scipy >=0.16.0",
+    ]
+    deps = required + optional
+    if sys.version_info < (3, 4):
+        deps += ["enum34 >=1.1.6"]
+    return deps
 
 
 def readme():
