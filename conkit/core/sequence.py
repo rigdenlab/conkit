@@ -91,11 +91,7 @@ class Sequence(_Entity):
         """
         self._remark = []
         self._seq = None
-
-        # Assign values post creation to use setter/getter methods
-        # Possibly very bad practice but no better alternative for now
         self.seq = seq
-
         super(Sequence, self).__init__(id)
 
     def __add__(self, other):
@@ -106,11 +102,11 @@ class Sequence(_Entity):
 
     def __repr__(self):
         if self.seq_len > 12:
-            seq_string = self.seq[:5] + '...' + self.seq[-5:]
+            seq_string = ''.join([self.seq[:5], '...', self.seq[-5:]])
         else:
             seq_string = self.seq
         return "{0}(id=\"{1}\" seq=\"{2}\" seq_len={3})".format(
-            self.__class__.__name__, self.id, seq_string, len(self.seq)
+            self.__class__.__name__, self.id, seq_string, self.seq_len
         )
 
     @property
@@ -154,9 +150,10 @@ class Sequence(_Entity):
            One or more amino acids in the sequence are not recognised
 
         """
-        if any(c not in list(ONE_TO_THREE.keys()) for c in seq.upper() if c != '-'):
+        if all(c in ONE_TO_THREE for c in seq.upper() if c != '-'):
+            self._seq = seq
+        else:
             raise ValueError('Unrecognized amino acids in sequence')
-        self._seq = seq
 
     @property
     def seq_ascii(self):

@@ -84,9 +84,6 @@ class _Entity(object):
         self._parent = None
         self._child_list = []
         self._child_dict = {}
-
-        # Assign values post creation to use setter/getter methods
-        # Possibly very bad practice but no better alternative for now
         self.id = id
 
     def __contains__(self, id):
@@ -103,7 +100,7 @@ class _Entity(object):
     def __getitem__(self, id):
         """Return the child with the given id"""
         if isinstance(id, slice):
-            indexes_to_keep = list(range(*id.indices(len(self))))
+            indexes_to_keep = set(range(*id.indices(len(self))))
             copy_to_return = self.copy()
             for i, child in enumerate(self):
                 if i not in indexes_to_keep:
@@ -224,6 +221,14 @@ class _Entity(object):
         """
         self._parent = parent
 
+    @property
+    def top(self):
+        """The first child in the :obj:`Entity <conkit.core.Entity>`"""
+        if len(self) > 0:
+            return self._child_list[0]
+        else:
+            return None
+
     def _inplace(self, inplace):
         """Modify the current version using a copy
 
@@ -235,7 +240,7 @@ class _Entity(object):
         if inplace:
             return self
         else:
-            return self.copy()
+            return self.deepcopy()
 
     def _sort(self, kword, reverse):
         """Sort the :obj:`Entity <conkit.core.Entity>`"""

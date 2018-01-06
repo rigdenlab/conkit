@@ -44,7 +44,15 @@ import sys
 if sys.version_info.major < 3:
     from itertools import izip as zip
 
+from enum import Enum
 from conkit.core._entity import _Entity
+
+
+class SequenceAlignmentState(Enum):
+    """Alignment states"""
+    unknown = 0
+    unaligned = 1
+    aligned = 2
 
 
 class SequenceFile(_Entity):
@@ -84,10 +92,6 @@ class SequenceFile(_Entity):
     """
     __slots__ = ['_remark', '_status']
 
-    _UNKNOWN = 0
-    _NO_ALIGNMENT = -1
-    _YES_ALIGNMENT = 1
-
     def __init__(self, id):
         """Initialise a new :obj:`SequenceFile <conkit.core.SequenceFile>`
 
@@ -98,13 +102,11 @@ class SequenceFile(_Entity):
 
         """
         self._remark = []
-        self._status = SequenceFile._UNKNOWN
+        self._status = SequenceAlignmentState.unknown
         super(SequenceFile, self).__init__(id)
 
     def __repr__(self):
-        return "{0}(id=\"{1}\" nseq={2})".format(
-            self.__class__.__name__, self.id, self.nseq
-        )
+        return "{0}(id=\"{1}\" nseq={2})".format(self.__class__.__name__, self.id, self.nseq)
 
     @property
     def ascii_matrix(self):
@@ -122,12 +124,12 @@ class SequenceFile(_Entity):
 
         """
         seq_length = self.top_sequence.seq_len
-        self.status = SequenceFile._YES_ALIGNMENT
+        self._status = SequenceAlignmentState.aligned
         for sequence in self:
             if sequence.seq_len != seq_length:
-                self.status = SequenceFile._NO_ALIGNMENT
+                self._status = SequenceAlignmentState.unaligned
                 break
-        return True if self.status == SequenceFile._YES_ALIGNMENT else False
+        return self._status == SequenceAlignmentState.aligned
 
     @property
     def empty(self):
@@ -169,7 +171,7 @@ class SequenceFile(_Entity):
     @property
     def status(self):
         """An indication of the residue status, i.e true positive, false positive, or unknown"""
-        return self._status
+        return self._status.value
 
     @status.setter
     def status(self, status):
@@ -186,11 +188,7 @@ class SequenceFile(_Entity):
            Cannot determine if your sequence file is an alignment or not
 
         """
-        if any(i == status for i in [SequenceFile._UNKNOWN, SequenceFile._NO_ALIGNMENT, SequenceFile._YES_ALIGNMENT]):
-            self._status = status
-        else:
-            raise ValueError(
-                "Cannot determine if your sequence file is an alignment or not")
+        self._status = SequenceAlignmentState(status)
 
     @property
     def top_sequence(self):
@@ -202,10 +200,7 @@ class SequenceFile(_Entity):
            The first :obj:`Sequence <conkit.core.Sequence>` entry in :obj:`SequenceFile <conkit.core.SequenceFile>`
 
         """
-        if len(self) > 0:
-            return self[0]
-        else:
-            return None
+        return self.top
 
     def calculate_meff(self, identity=0.8):
         """Calculate the number of effective sequences
@@ -218,7 +213,7 @@ class SequenceFile(_Entity):
         import warnings
         warnings.warn("This function will be deprecated in a future release! Use calculate_neff_with_identity instead!")
         return self.calculate_neff_with_identity(identity)
-    
+
     def calculate_neff_with_identity(self, identity):
         """Calculate the number of effective sequences with specified sequence identity
         
@@ -274,12 +269,10 @@ class SequenceFile(_Entity):
         if identity < 0 or identity > 1:
             raise ValueError("Sequence Identity needs to be between 0 and 1")
 
-        # Alignment to unsigned integer matrix
         msa_mat = np.array(self.ascii_matrix)
-        # Pre-define some variables
-        n = msa_mat.shape[0]                        # size of the data
-        batch_size = min(n, 250)                    # size of the batches
-        hamming = np.zeros(n, dtype=np.int)         # storage for data
+        n = msa_mat.shape[0]  # size of the data
+        batch_size = min(n, 250)  # size of the batches
+        hamming = np.zeros(n, dtype=np.int)  # storage for data
         # Separate the distance calculations into batches to avoid MemoryError exceptions.
         # This answer was provided by a StackOverflow user. The corresponding suggestion by
         # user @WarrenWeckesser: http://stackoverflow.com/a/41090953/3046533
@@ -289,8 +282,7 @@ class SequenceFile(_Entity):
             batches.append(last_batch)
         for k, batch in enumerate(batches):
             i = batch_size * k
-            dists = scipy.spatial.distance.cdist(
-                msa_mat[i:i + batch], msa_mat, metric='hamming')
+            dists = scipy.spatial.distance.cdist(msa_mat[i:i + batch], msa_mat, metric='hamming')
             hamming[i:i + batch] = (dists < (1 - identity)).sum(axis=1)
         return (1. / hamming).tolist()
 
@@ -314,17 +306,13 @@ class SequenceFile(_Entity):
            :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
 
         """
-        if not self.is_alignment:
+        if self.is_alignment:
+            msa_mat = np.array(self.ascii_matrix)
+            aa_frequencies = np.where(msa_mat != 45, 1, 0)
+            aa_counts = np.sum(aa_frequencies, axis=0)
+            return (aa_counts / len(msa_mat[:, 0])).tolist()
+        else:
             raise ValueError('This is not an alignment')
-
-        # Encode matrix
-        msa_mat = np.array(self.ascii_matrix)
-        # matrix of 0s and 1s; 1 if char is '-'
-        aa_frequencies = np.where(msa_mat != 45, 1, 0)
-        # sum all values per row
-        aa_counts = np.sum(aa_frequencies, axis=0)
-        # divide all by sequence length
-        return (aa_counts / len(msa_mat[:, 0])).tolist()
 
     def filter(self, min_id=0.3, max_id=0.9, inplace=False):
         """Filter an alignment
@@ -367,22 +355,17 @@ class SequenceFile(_Entity):
             raise ValueError('This is not an alignment')
 
         if 0 > min_id > 1:
-            raise ValueError(
-                "Minimum sequence Identity needs to be between 0 and 1")
+            raise ValueError("Minimum sequence Identity needs to be between 0 and 1")
         elif 0 > max_id > 1:
-            raise ValueError(
-                "Maximum sequence Identity needs to be between 0 and 1")
+            raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
 
         # Alignment to ASCII matrix
         msa_mat = np.array(self.ascii_matrix)
         # Find all throwable sequences
         throw = set()
         for i in np.arange(len(self)):
-            ident = 1 - \
-                scipy.spatial.distance.cdist(
-                    [msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
-            throw.update((1 + i + np.argwhere((ident < min_id) |
-                                              (ident > max_id)).flatten()).tolist())
+            ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
+            throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
         # Throw the previously selected sequences
         sequence_file = self._inplace(inplace)
         for i in reversed(list(throw)):
@@ -436,9 +419,9 @@ class SequenceFile(_Entity):
 
         """
         sequence_file = self._inplace(inplace)
-
         if self.is_alignment:
-            i, j = start - 1, end
+            i = start - 1
+            j = end
             for sequence in sequence_file:
                 sequence.seq = sequence.seq[i:j]
             return sequence_file

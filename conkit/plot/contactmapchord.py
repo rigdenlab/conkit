@@ -41,7 +41,7 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.core.contact import Contact
+from conkit.core.contact import ContactMatchState
 from conkit.plot._figure import Figure
 from conkit.plot._plottools import ColorDefinitions, points_on_circle
 
@@ -100,9 +100,7 @@ class ContactMapChordFigure(Figure):
         self._draw()
 
     def __repr__(self):
-        return "{0}(file_name=\"{1}\")".format(
-                self.__class__.__name__, self.file_name
-        )
+        return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
 
     @property
     def hierarchy(self):
@@ -139,23 +137,23 @@ class ContactMapChordFigure(Figure):
 
         # Instantiate the figure
         fig, ax = plt.subplots()
-        
+
         # Calculate and plot the Bezier curves
         bezier_path = np.arange(0, 1.01, 0.01)
         for c in self_data:
             x1, y1 = coords[int(c[1]) - self_data_range.min()]
             x2, y2 = coords[int(c[3]) - self_data_range.min()]
-            xb, yb = [0, 0]                  # Midpoint the curve is supposed to approach
-            x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path ** 2 * x2
-            y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path ** 2 * y2
+            xb, yb = [0, 0]  # Midpoint the curve is supposed to approach
+            x = (1 - bezier_path)**2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path**2 * x2
+            y = (1 - bezier_path)**2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path**2 * y2
             # 0.0 transparent through 1.0 opaque
             alpha = float(c[4]) if self.use_conf else 1.0
             color = {
-                Contact._MISMATCH: ColorDefinitions.MISMATCH,
-                Contact._MATCH: ColorDefinitions.MATCH,
+                ContactMatchState.mismatched: ColorDefinitions.MISMATCH,
+                ContactMatchState.matched: ColorDefinitions.MATCH,
             }.get(int(c[5]), ColorDefinitions.MATCH)
             ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
-            if int(c[5]) == Contact._MATCH:
+            if int(c[5]) == ContactMatchState.matched:
                 ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=1, linewidth=1)
             else:
                 ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
@@ -180,14 +178,13 @@ class ContactMapChordFigure(Figure):
 
         # Annotate some residue
         # TODO: Use _plottools module to process this
-        label_data = set([int(x) for x in zip(*residue_data)[0]])
+        x, _ = zip(*residue_data)
+        label_data = set(map(int, x))
         label_coords = np.zeros((npoints, 2))
         space = 2 * np.pi / npoints
         for i in np.arange(npoints):
-            label_coords[i] = [
-                (npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
-                (npoints + npoints / 10) * np.sin(space * i) - npoints / 40 
-            ]
+            label_coords[i] = [(npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
+                               (npoints + npoints / 10) * np.sin(space * i) - npoints / 40]
         for r in sorted(label_data)[::int(npoints / (npoints / 10))]:
             i = r - self_data_range.min()
             xy = x, y = coords[i]

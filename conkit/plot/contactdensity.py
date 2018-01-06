@@ -67,6 +67,7 @@ class ContactDensityFigure(Figure):
     >>> conkit.plot.ContactDensityFigure(cmap)
 
     """
+
     def __init__(self, hierarchy, bw_method='bowman', **kwargs):
         """A new contact density plot
 
@@ -91,16 +92,15 @@ class ContactDensityFigure(Figure):
         self._draw()
 
     def __repr__(self):
-        return "{0}(file_name=\"{1}\" bw_method=\"{2}\")".format(
-            self.__class__.__name__, self.file_name, self.bw_method
-        )
+        return "{0}(file_name=\"{1}\" bw_method=\"{2}\")".format(self.__class__.__name__, self.file_name,
+                                                                 self.bw_method)
 
     @property
     def bw_method(self):
         """The method to estimate the bandwidth
         
         For a full list of options, please refer to 
-        :func:`calculate_kernel_density() <conkit.core.ContactMap.calculate_kernel_density>`
+        :func:`calculate_contact_density() <conkit.core.ContactMap.calculate_contact_density>`
         """
         return self._bw_method
 
@@ -134,43 +134,28 @@ class ContactDensityFigure(Figure):
 
     def _draw(self):
         """Draw the actual plot"""
-
-        # Estimate the Kernel Density using original data
-        dens = np.asarray(self.hierarchy.calculate_kernel_density(self.bw_method))
-        
-        # Plot the data
         fig, ax = plt.subplots()
-
-        # The residues for the x-axis
+        dens = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
         residues = np.asarray(
-            list(set(
-                sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy])
-            ))
-        )
+            list(set(sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy]))))
         x = np.arange(residues.min(), residues.max())
+        ax.plot(x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate", zorder=2)
 
-        ax.plot(x, dens, linestyle="solid",
-                color=ColorDefinitions.GENERAL, label="Kernel Density Estimate")
-
-        # Find all local minima
         try:
             import scipy.signal
-            local_minima_idx = scipy.signal.argrelmin(dens)[0]
-            ax.scatter(x[local_minima_idx], dens[local_minima_idx], marker="p",
-                       color=ColorDefinitions.MISMATCH, label="Local Minimum")
+            line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
+            for minimum in scipy.signal.argrelmin(dens, order=1)[0]:
+                ax.axvline(x[minimum], **line_kwargs)
+            ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
         except ImportError:
             warnings.warn("SciPy not installed - cannot determine local minima")
 
-        # Prettify the plot
         ax.set_xlim(x.min(), x.max())
         ax.set_ylim(0., dens.max())
-
         ax.set_xlabel('Residue number')
         ax.set_ylabel('Kernel Density Estimate')
-        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.,
-                  scatterpoints=1)
+        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
 
-        # Make axes length proportional and remove whitespace around the plot
         aspectratio = Figure._correct_aspect(ax, 0.3)
         ax.set(aspect=aspectratio)
         fig.tight_layout()

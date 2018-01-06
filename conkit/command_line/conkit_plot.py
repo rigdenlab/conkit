@@ -47,7 +47,7 @@ import inspect
 import conkit.command_line
 import conkit.io
 import conkit.plot
- 
+
 logger = None
 
 # Note:
@@ -55,12 +55,35 @@ logger = None
 #     I.e., To add a new function automatically, call it add_*_args and it will be
 #     picked up here.
 
+
 def _add_default_args(parser):
-    """Define default arguments"""
-    parser.add_argument('-dpi', dest='dpi', default=300, type=int,
-                        help="the resolution in DPI [default: 300]")
-    parser.add_argument('-o', dest='output', default=None, type=str,
-                        help="the figure file. Note, the format is determined by the suffix")
+    parser.add_argument('-dpi', dest='dpi', default=300, type=int, help="the resolution in DPI [default: 300]")
+    parser.add_argument(
+        '-o',
+        dest='output',
+        default=None,
+        type=str,
+        help="the figure file. Note, the format is determined by the suffix")
+
+
+def _add_contact_default_args(parser):
+    parser.add_argument('confile', help="Path to contact file")
+    parser.add_argument('conformat', help="Format of contact file")
+
+
+def _add_sequence_default_args(parser):
+    parser.add_argument('seqfile', help="Path to sequence file")
+    parser.add_argument('seqformat', help="Format of sequence file")
+
+
+def _add_msa_default_args(parser):
+    parser.add_argument("msafile", help="Path to MSA file")
+    parser.add_argument("msaformat", help="Format of MSA file")
+
+
+def _add_structure_default_args(parser):
+    parser.add_argument('pdbfile', help="Path to structure file")
+    parser.add_argument('pdbformat', help="Format of structure file")
 
 
 def add_contact_map_args(subparsers):
@@ -80,38 +103,35 @@ If contacts cannot be matched between your prediction and the
 reference structure, they will not be plotted.
 
 """
-    contact_map_subparser = subparsers.add_parser('cmap', help="Plot a contact map", description=description,
-                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    _add_default_args(contact_map_subparser)
-    contact_map_subparser.add_argument('-c', dest='refid', default=None,
-                                       help='Reference identifier to use [default: first in file]. '
-                                            'Inter-molecular predictions use two letter convention, '
-                                            'i.e AD for contacts between A and D.')
-    contact_map_subparser.add_argument('-d', dest='dtn', default=5, type=int,
-                                       help='Minimum sequence separation [default: 5]')
-    contact_map_subparser.add_argument('-e', dest='otherfile', default=None,
-                                       help='a second contact map to plot for comparison')
-    contact_map_subparser.add_argument('-ef', dest='otherformat', default=None,
-                                       help='the format of the second contact map')
-    contact_map_subparser.add_argument('-f', dest='dfactor', default=1.0, type=float,
-                                       help='number of contacts to include relative to sequence length [default: 1.0]')
-    contact_map_subparser.add_argument('-p', dest='reffile', default=None, type=str,
-                                       help="A reference file")
-    contact_map_subparser.add_argument('-pf', dest='refformat', default=None, type=str,
-                                       help="A reference file")
-    contact_map_subparser.add_argument('--confidence', action="store_true", default=False,
-                                       help='Plot the confidence scores')
-    contact_map_subparser.add_argument('--interchain', action="store_true", default=False,
-                                       help='Plot inter-chain contacts')
-    contact_map_subparser.add_argument('seqfile',
-                                       help="Path to the sequence file")
-    contact_map_subparser.add_argument('seqformat',
-                                       help="Format of the sequence file")
-    contact_map_subparser.add_argument('confile',
-                                       help="Path to the contact file")
-    contact_map_subparser.add_argument('conformat',
-                                       help="Format of the contact file")
-    contact_map_subparser.set_defaults(which='contact_map')
+    subparser = subparsers.add_parser(
+        'cmap',
+        help="Plot a contact map",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser.add_argument(
+        '-c',
+        dest='refid',
+        default=None,
+        help='Reference identifier to use [default: first in file]. '
+        'Inter-molecular predictions use two letter convention, '
+        'i.e AD for contacts between A and D.')
+    subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
+    subparser.add_argument('-e', dest='otherfile', default=None, help='a second contact map to plot for comparison')
+    subparser.add_argument('-ef', dest='otherformat', default=None, help='the format of the second contact map')
+    subparser.add_argument(
+        '-f',
+        dest='dfactor',
+        default=1.0,
+        type=float,
+        help='number of contacts to include relative to sequence length [default: 1.0]')
+    subparser.add_argument('-p', dest='reffile', default=None, type=str, help="A reference file")
+    subparser.add_argument('-pf', dest='refformat', default=None, type=str, help="A reference file")
+    subparser.add_argument('--confidence', action="store_true", default=False, help='Plot the confidence scores')
+    subparser.add_argument('--interchain', action="store_true", default=False, help='Plot inter-chain contacts')
+    _add_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_contact_default_args(subparser)
+    subparser.set_defaults(which='contact_map')
 
 
 def add_contact_map_chord_args(subparsers):
@@ -120,26 +140,24 @@ This command will plot a contact map using the provided contacts
 in a Chord diagram. This will illustrate your sequence in circular
 style with residues being connected by their contacts
 """
-    contact_map_chord_subparser = subparsers.add_parser('chord', help="Plot a contact map chord diagram",
-                                                        description=description,
-                                                        formatter_class=argparse.RawDescriptionHelpFormatter)
-    _add_default_args(contact_map_chord_subparser)
-    contact_map_chord_subparser.add_argument('-d', dest='dtn', default=5, type=int,
-                                             help='Minimum sequence separation [default: 5]')
-    contact_map_chord_subparser.add_argument('-f', dest='dfactor', default=1.0, type=float,
-                                             help='number of contacts to include relative to '
-                                                  'sequence length [default: 1.0]')
-    contact_map_chord_subparser.add_argument('--confidence', action="store_true", default=False,
-                                             help='Plot the confidence scores')
-    contact_map_chord_subparser.add_argument('seqfile',
-                                             help="Path to the sequence file")
-    contact_map_chord_subparser.add_argument('seqformat',
-                                             help="Format of the sequence file")
-    contact_map_chord_subparser.add_argument('confile',
-                                             help="Path to the contact file")
-    contact_map_chord_subparser.add_argument('conformat',
-                                             help="Format of the contact file")
-    contact_map_chord_subparser.set_defaults(which='contact_map_chord')
+    subparser = subparsers.add_parser(
+        'chord',
+        help="Plot a contact map chord diagram",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
+    subparser.add_argument(
+        '-f',
+        dest='dfactor',
+        default=1.0,
+        type=float,
+        help='number of contacts to include relative to '
+        'sequence length [default: 1.0]')
+    subparser.add_argument('--confidence', action="store_true", default=False, help='Plot the confidence scores')
+    _add_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_contact_default_args(subparser)
+    subparser.set_defaults(which='contact_map_chord')
 
 
 def add_contact_density_args(subparsers):
@@ -148,26 +166,25 @@ This command will plot a contact density plot using the provided
 contacts. It will illustrate the density to help define domain
 boundaries better.
 """
-    contact_density_subparser = subparsers.add_parser('cdens', help="Plot a contact density plot",
-                                                        description=description,
-                                                        formatter_class=argparse.RawDescriptionHelpFormatter)
-    _add_default_args(contact_density_subparser)
-    contact_density_subparser.add_argument('-b', dest='bw_method', default='amise',
-                                           help='The bandwidth estimation method [default: amise]')
-    contact_density_subparser.add_argument('-d', dest='dtn', default=5, type=int,
-                                           help='Minimum sequence separation [default: 5]')
-    contact_density_subparser.add_argument('-f', dest='dfactor', default=5.0, type=float,
-                                           help='number of contacts to include relative to '
-                                                'sequence length [default: 10.0]')
-    contact_density_subparser.add_argument('seqfile',
-                                           help="Path to the sequence file")
-    contact_density_subparser.add_argument('seqformat',
-                                           help="Format of the sequence file")
-    contact_density_subparser.add_argument('confile',
-                                           help="Path to the contact file")
-    contact_density_subparser.add_argument('conformat',
-                                           help="Format of the contact file")
-    contact_density_subparser.set_defaults(which='contact_density')
+    subparser = subparsers.add_parser(
+        'cdens',
+        help="Plot a contact density plot",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser.add_argument(
+        '-b', dest='bw_method', default='amise', help='The bandwidth estimation method [default: amise]')
+    subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
+    subparser.add_argument(
+        '-f',
+        dest='dfactor',
+        default=5.0,
+        type=float,
+        help='number of contacts to include relative to '
+        'sequence length [default: 10.0]')
+    _add_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_contact_default_args(subparser)
+    subparser.set_defaults(which='contact_density')
 
 
 def add_precision_evaluation_args(subparsers):
@@ -177,37 +194,39 @@ the provided contact prediction compared against a protein structure at differen
 cutoff thresholds.
 
 """
-    precision_evaluation_subparser = subparsers.add_parser('peval', help="Plot the precision evaluation plot",
-                                                           description=description,
-                                                           formatter_class=argparse.RawDescriptionHelpFormatter)
-    _add_default_args(precision_evaluation_subparser)
-    precision_evaluation_subparser.add_argument('-c', dest='pdbchain', default=None,
-                                                help='PDB chain to use [default: first in file]. Inter-molecular '
-                                                     'predictions use two letter convention, i.e AD for contacts '
-                                                     'between A and D.')
-    precision_evaluation_subparser.add_argument('-d', dest='dtn', default=5, type=int,
-                                                help='Minimum sequence separation [default: 5]')
-    precision_evaluation_subparser.add_argument('-j', dest='cutoff_step', default=0.2, type=float,
-                                                help='The cutoff step for contact selection [default: 0.2]')
-    precision_evaluation_subparser.add_argument('-min', dest='min_cutoff', default=0.0, type=float,
-                                                help='The minimum factor for contact selection [default: 0.0]')
-    precision_evaluation_subparser.add_argument('-max', dest='max_cutoff', default=100.0, type=float,
-                                                help='The maximum factor for contact selection [default: 100.0]')
-    precision_evaluation_subparser.add_argument('--interchain', action="store_true", default=False,
-                                                help='Plot inter-chain contacts')
-    precision_evaluation_subparser.add_argument('pdbfile',
-                                                help="A reference PDB file")
-    precision_evaluation_subparser.add_argument('pdbformat',
-                                                help="A reference PDB file")
-    precision_evaluation_subparser.add_argument('seqfile',
-                                                help="Path to the sequence file")
-    precision_evaluation_subparser.add_argument('seqformat',
-                                                help="Format of the sequence file")
-    precision_evaluation_subparser.add_argument('confile',
-                                                help="Path to the contact file")
-    precision_evaluation_subparser.add_argument('conformat',
-                                                help="Format of the contact file")
-    precision_evaluation_subparser.set_defaults(which='precision_evaluation')
+    subparser = subparsers.add_parser(
+        'peval',
+        help="Plot the precision evaluation plot",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser.add_argument(
+        '-c',
+        dest='pdbchain',
+        default=None,
+        help='PDB chain to use [default: first in file]. Inter-molecular '
+        'predictions use two letter convention, i.e AD for contacts '
+        'between A and D.')
+    subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
+    subparser.add_argument(
+        '-j', dest='cutoff_step', default=0.2, type=float, help='The cutoff step for contact selection [default: 0.2]')
+    subparser.add_argument(
+        '-min',
+        dest='min_cutoff',
+        default=0.0,
+        type=float,
+        help='The minimum factor for contact selection [default: 0.0]')
+    subparser.add_argument(
+        '-max',
+        dest='max_cutoff',
+        default=100.0,
+        type=float,
+        help='The maximum factor for contact selection [default: 100.0]')
+    subparser.add_argument('--interchain', action="store_true", default=False, help='Plot inter-chain contacts')
+    _add_default_args(subparser)
+    _add_structure_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_contact_default_args(subparser)
+    subparser.set_defaults(which='precision_evaluation')
 
 
 def add_sequence_coverage_args(subparsers):
@@ -215,17 +234,15 @@ def add_sequence_coverage_args(subparsers):
 This command will plot a coverage plot for every position in your alignment.
 
 """
-    sequence_coverage_subparser = subparsers.add_parser('scov', help="Plot the sequence coverage",
-                                                        description=description,
-                                                        formatter_class=argparse.RawDescriptionHelpFormatter)
-    _add_default_args(sequence_coverage_subparser)
-    sequence_coverage_subparser.add_argument('-id', dest='identity', default=0.7, type=float,
-                                             help='sequence identity [default: 0.7]')
-    sequence_coverage_subparser.add_argument('msafile',
-                                             help='Multiple Sequence Alignment file')
-    sequence_coverage_subparser.add_argument('msaformat',
-                                             help='Multiple Sequence Alignment format')
-    sequence_coverage_subparser.set_defaults(which='sequence_coverage')
+    subparser = subparsers.add_parser(
+        'scov',
+        help="Plot the sequence coverage",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser.add_argument('-id', dest='identity', default=0.7, type=float, help='sequence identity [default: 0.7]')
+    _add_default_args(subparser)
+    _add_msa_default_args(subparser)
+    subparser.set_defaults(which='sequence_coverage')
 
 
 def main():
@@ -238,8 +255,11 @@ def main():
     #     New subparsers can be added automatically as long as the convention is followed.
     #     I.e., To add a new function automatically, call it add_*_args and it will be
     #     picked up here.
-    functions = [k for k in globals() if k.startswith("add") and k.endswith("args")
-                 and (inspect.ismethod(globals()[k]) or inspect.isfunction(globals()[k]))]
+    functions = [
+        k for k in globals()
+        if k.startswith("add") and k.endswith("args") and (
+            inspect.ismethod(globals()[k]) or inspect.isfunction(globals()[k]))
+    ]
     for f_name in functions:
         globals()[f_name](subparsers)
 
@@ -287,7 +307,7 @@ def main():
                 msg = "The provided format {0} is not yet implemented for the reference flag".format(args.refformat)
                 raise RuntimeError(msg)
 
-            con_matched = con_sliced.match(reference, renumber=True, remove_unmatched=True)
+            con_matched = con_sliced.match(reference, match_other=True, renumber=True, remove_unmatched=True)
             if other_sliced:
                 other_matched = other_sliced.match(reference, renumber=True, remove_unmatched=True)
             else:
@@ -318,9 +338,14 @@ def main():
 
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
-        plot = conkit.plot.ContactMapFigure(con_matched, other=other_matched, reference=reference,
-                                            file_name=outfile, altloc=altloc, use_conf=args.confidence,
-                                            dpi=args.dpi)
+        plot = conkit.plot.ContactMapFigure(
+            con_matched,
+            other=other_matched,
+            reference=reference,
+            file_name=outfile,
+            altloc=altloc,
+            use_conf=args.confidence,
+            dpi=args.dpi)
 
     elif args.which == 'contact_map_chord':
         logger.info('Min sequence separation for contacting residues: %d', args.dtn)
@@ -337,8 +362,7 @@ def main():
         con_sliced = con[:ncontacts]
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
-        plot = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence, file_name=outfile, 
-                                                 dpi=args.dpi)
+        plot = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence, file_name=outfile, dpi=args.dpi)
 
     elif args.which == 'contact_density':
         logger.info('Min sequence separation for contacting residues: %d', args.dtn)
@@ -383,9 +407,13 @@ def main():
 
         outformat = 'png'
         outfile = args.output if args.output else args.confile.rsplit('.', 1)[0] + '.' + outformat
-        plot = conkit.plot.PrecisionEvaluationFigure(con_matched, cutoff_step=args.cutoff_step, file_name=outfile,
-                                                     min_cutoff=args.min_cutoff, max_cutoff=args.max_cutoff,
-                                                     dpi=args.dpi)
+        plot = conkit.plot.PrecisionEvaluationFigure(
+            con_matched,
+            cutoff_step=args.cutoff_step,
+            file_name=outfile,
+            min_cutoff=args.min_cutoff,
+            max_cutoff=args.max_cutoff,
+            dpi=args.dpi)
 
     elif args.which == 'sequence_coverage':
         hierarchy = conkit.io.read(args.msafile, args.msaformat)
@@ -399,14 +427,4 @@ def main():
 
 
 if __name__ == "__main__":
-    import sys 
-    import traceback
-    try:
-        main()
-        sys.exit(0)
-    except Exception as e:
-        if not isinstance(e, SystemExit):
-            msg = "".join(traceback.format_exception(*sys.exc_info()))
-            logger.critical(msg)
-        sys.exit(1)
-
+    main()

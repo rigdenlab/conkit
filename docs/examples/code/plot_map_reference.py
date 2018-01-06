@@ -32,7 +32,7 @@ conpred.sort('raw_score', reverse=True, inplace=True)
 
 # Finally, we don't want to plot all contacts but only the top-L,
 # so we need to slice the contact map
-map = conpred[:conpred.sequence.seq_len]
+cmap = conpred[:conpred.sequence.seq_len]
 
 # ====================================================
 # The code above is identical to the previous example
@@ -40,9 +40,10 @@ map = conpred[:conpred.sequence.seq_len]
 pdb_file = "toxd/toxd.pdb"
 pdb = conkit.io.read(pdb_file, "pdb").top_map
 # The two keywords do the following:
+#       - match_other      : renumber the pdb to match gaps in target
 #       - remove_unmatched : remove contacts absent from the pdb_file
 #       - renumber         : match the numbering to the pdb_file
-map_matched = map.match(pdb, remove_unmatched=True, renumber=True)
+map_matched = cmap.match(pdb, match_other=True, remove_unmatched=True, renumber=True)
 
 # Then we can plot the map
 contact_plot = "toxd/toxd.png"

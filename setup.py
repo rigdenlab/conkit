@@ -11,11 +11,11 @@ import sys
 # Setup.py command extensions
 # ==============================================================
 
+
 # Credits to http://stackoverflow.com/a/33181352
 class BuildCommand(build):
-    user_options = build.user_options + [
-        ('script-python-path=', None, 'Path to Python interpreter to be included in the scripts')
-    ]
+    user_options = build.user_options + [('script-python-path=', None,
+                                          'Path to Python interpreter to be included in the scripts')]
 
     def initialize_options(self):
         build.initialize_options(self)
@@ -29,18 +29,26 @@ class BuildCommand(build):
         script_python_path = self.script_python_path
         build.run(self)
 
+
 # ==============================================================
 # Functions, functions, functions ...
 # ==============================================================
 
+
 def dependencies():
-    return [
+    required = [
         "numpy >=1.8.2",
         "biopython >=1.64",
         "matplotlib >=1.3.1",
-        "scipy >=0.16.0",
-        "scikit-learn >=0.17",
     ]
+    optional = [
+        "scikit-learn >=0.17",
+        "scipy >=0.16.0",
+    ]
+    deps = required + optional
+    if sys.version_info < (3, 4):
+        deps += ["enum34 >=1.1.6"]
+    return deps
 
 
 def readme():
@@ -84,6 +92,7 @@ def version():
         exec(f_in.read(), main_ns)
     return main_ns['__version__']
 
+
 # ==============================================================
 # Determine the Python executable
 # ==============================================================
@@ -98,7 +107,6 @@ for arg in sys.argv:
 
 if not PYTHON_EXE:
     PYTHON_EXE = sys.executable
-
 
 # ==============================================================
 # Define all the relevant options
@@ -117,12 +125,12 @@ URL = "http://www.conkit.org/en/latest/"
 VERSION = version()
 
 PACKAGES = [
-    'conkit', 
+    'conkit',
     'conkit/applications',
     'conkit/command_line',
-    'conkit/core', 
+    'conkit/core',
     'conkit/io',
-    'conkit/plot', 
+    'conkit/plot',
 ]
 
 CLASSIFIERS = [
@@ -137,7 +145,6 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.6",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
-
 
 # Do the actual setup below
 setup(
@@ -163,4 +170,3 @@ setup(
     include_package_data=True,
     zip_safe=False,
 )
-

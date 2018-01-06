@@ -38,8 +38,17 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
+from enum import Enum, unique
 from conkit.core._entity import _Entity
 from conkit.core.sequence import THREE_TO_ONE
+
+
+@unique
+class ContactMatchState(Enum):
+    """Enumerated class to store state constants for each contact"""
+    unknown = 0
+    matched = 1
+    mismatched = 2
 
 
 class Contact(_Entity):
@@ -94,13 +103,10 @@ class Contact(_Entity):
     Contact(id="(1, 25)" res1="A" res1_seq=1 res2="A" res2_seq=25 raw_score=1.0)
 
     """
-    __slots__ = ['_distance_bound', '_raw_score', '_res1', '_res2', '_res1_chain', '_res2_chain',
-                 '_res1_seq', '_res2_seq', '_res1_altseq', '_res2_altseq', '_scalar_score',
-                 '_status', '_weight']
-
-    _UNKNOWN = 0
-    _MISMATCH = -1
-    _MATCH = 1
+    __slots__ = [
+        '_distance_bound', '_raw_score', '_res1', '_res2', '_res1_chain', '_res2_chain', '_res1_seq', '_res2_seq',
+        '_res1_altseq', '_res2_altseq', '_scalar_score', '_status', '_weight'
+    ]
 
     def __init__(self, res1_seq, res2_seq, raw_score, distance_bound=(0, 8)):
         """Initialize a generic contact pair
@@ -118,7 +124,7 @@ class Contact(_Entity):
            The residue sequence number of residue 2
 
         """
-        self._distance_bound = [0., 8.]
+        self._distance_bound = [0.0, 8.0]
         self._raw_score = 1.0
         self._res1 = 'X'
         self._res2 = 'X'
@@ -129,11 +135,9 @@ class Contact(_Entity):
         self._res1_altseq = 0
         self._res2_altseq = 0
         self._scalar_score = 0.0
-        self._status = Contact._UNKNOWN
+        self._status = ContactMatchState.unknown
         self._weight = 1.0
 
-        # Assign values post creation to use setter/getter methods
-        # Possibly very bad practice but no better alternative for now
         self.distance_bound = distance_bound
         self.raw_score = raw_score
         self.res1_seq = res1_seq
@@ -143,9 +147,10 @@ class Contact(_Entity):
 
     def __repr__(self):
         text = "{name}(id={id} res1={_res1} res1_chain={_res1_chain} res1_seq={_res1_seq} " \
-               "res2={_res2} res2_chain={_res2_chain} res2_seq={_res2_seq} raw_score={_raw_score}"
-        return text.format(name=self.__class__.__name__, id=self._id,
-                           **{k: getattr(self, k) for k in self.__class__.__slots__})
+               "res2={_res2} res2_chain={_res2_chain} res2_seq={_res2_seq} raw_score={_raw_score})"
+        return text.format(
+            name=self.__class__.__name__, id=self._id, **{k: getattr(self, k)
+                                                          for k in self.__class__.__slots__})
 
     @property
     def distance_bound(self):
@@ -162,27 +167,25 @@ class Contact(_Entity):
            A 2-element list/tuple with a lower and upper distance boundary value
 
         """
-        if isinstance(distance_bound, tuple):
-            self._distance_bound = list(distance_bound)
-        elif isinstance(distance_bound, list):
-            self._distance_bound = distance_bound
+        if isinstance(distance_bound, tuple) or isinstance(distance_bound, list):
+            self._distance_bound = list(map(float, distance_bound))
         else:
             raise TypeError("Data of type list or tuple required")
 
     @property
     def is_match(self):
         """A boolean status for the contact"""
-        return self.status == Contact._MATCH
+        return self._status == ContactMatchState.matched
 
     @property
     def is_mismatch(self):
         """A boolean status for the contact"""
-        return self.status == Contact._MISMATCH
+        return self._status == ContactMatchState.mismatched
 
     @property
     def is_unknown(self):
         """A boolean status for the contact"""
-        return self.status == Contact._UNKNOWN
+        return self._status == ContactMatchState.unknown
 
     @property
     def lower_bound(self):
@@ -205,11 +208,10 @@ class Contact(_Entity):
            Lower bound must be smaller than upper bound
 
         """
-        if value < 0:
-            raise ValueError('Lower bound must be positive')
-        elif value >= self.upper_bound:
-            raise ValueError('Lower bound must be smaller than upper bound')
-        self._distance_bound[0] = float(value)
+        if 0 < value < self.upper_bound:
+            self._distance_bound[0] = float(value)
+        else:
+            raise ValueError('Lower bound must be positive and smaller than upper bound')
 
     @property
     def upper_bound(self):
@@ -232,11 +234,10 @@ class Contact(_Entity):
            Upper bound must be larger than lower bound
 
         """
-        if value < 0:
-            raise ValueError('Upper bound must be positive')
-        elif value <= self.lower_bound:
-            raise ValueError('Upper bound must be larger than lower bound')
-        self._distance_bound[1] = float(value)
+        if 0 < value > self.lower_bound:
+            self._distance_bound[1] = float(value)
+        else:
+            raise ValueError('Upper bound must be positive and larger than lower bound')
 
     @property
     def raw_score(self):
@@ -302,7 +303,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res1_altseq = index
         else:
@@ -322,7 +322,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res2_altseq = index
         else:
@@ -374,7 +373,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res1_seq = index
         else:
@@ -394,7 +392,6 @@ class Contact(_Entity):
         index : int
 
         """
-        # Keep this statement in case we get a float
         if isinstance(index, int):
             self._res2_seq = index
         else:
@@ -419,7 +416,7 @@ class Contact(_Entity):
     @property
     def status(self):
         """An indication of the residue status, i.e true positive, false positive, or unknown"""
-        return self._status
+        return self._status.value
 
     @status.setter
     def status(self, status):
@@ -433,13 +430,10 @@ class Contact(_Entity):
         Raises
         ------
         ValueError
-           Unknown status
+           Not a valid :obj:`ContactMatchState`
 
         """
-        if any(i == status for i in [Contact._UNKNOWN, Contact._MISMATCH, Contact._MATCH]):
-            self._status = status
-        else:
-            raise ValueError("Unknown status")
+        self._status = ContactMatchState(status)
 
     @property
     def weight(self):
@@ -459,43 +453,28 @@ class Contact(_Entity):
 
     def define_match(self):
         """Define a contact as matching contact"""
-        self._status = Contact._MATCH
+        self._status = ContactMatchState.matched
 
     def define_mismatch(self):
         """Define a contact as mismatching contact"""
-        self._status = Contact._MISMATCH
+        self._status = ContactMatchState.mismatched
 
     def define_unknown(self):
         """Define a contact with unknown status"""
-        self._status = Contact._UNKNOWN
+        self._status = ContactMatchState.unknown
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
-        keys =  ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
+        keys = ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
                 + [k[1:] for k in self.__slots__]
         return {k: getattr(self, k) for k in keys}
 
     @staticmethod
     def _set_residue(amino_acid):
         """Assign the residue to the corresponding amino_acid"""
-
-        # Check that the amino acid exists
-        msg = "Unknown amino acid: {0}".format(amino_acid)
-
-        # Keep if statements separate to avoid type error for int and str.upper()
-        if not isinstance(amino_acid, str):
-            raise ValueError(msg)
-
-        _amino_acid = amino_acid.upper()
-        if not (len(_amino_acid) == 1 or len(_amino_acid) == 3):
-            raise ValueError(msg)
-        elif len(_amino_acid) == 1 and _amino_acid not in list(THREE_TO_ONE.values()):
-            raise ValueError(msg)
-        elif len(_amino_acid) == 3 and _amino_acid not in list(THREE_TO_ONE.keys()):
-            raise ValueError(msg)
-
-        # Save the one-letter-code
-        if len(_amino_acid) == 3:
-            _amino_acid = THREE_TO_ONE[_amino_acid]
-
-        return _amino_acid
+        if amino_acid in THREE_TO_ONE:
+            return THREE_TO_ONE[amino_acid]
+        elif amino_acid in set(THREE_TO_ONE.values()):
+            return amino_acid
+        else:
+            raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))
