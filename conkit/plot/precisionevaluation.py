@@ -105,9 +105,7 @@ class PrecisionEvaluationFigure(Figure):
         self._draw()
 
     def __repr__(self):
-        return "{0}(file_name=\"{1}\")".format(
-                self.__class__.__name__, self.file_name
-        )
+        return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
 
     @property
     def cutoff_step(self):
@@ -134,9 +132,10 @@ class PrecisionEvaluationFigure(Figure):
            The hierarchy is not an alignment
 
         """
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "ContactMap")
-        self._hierarchy = hierarchy
+        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+            self._hierarchy = hierarchy
+        else:
+            raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     @property
     def min_cutoff(self):
@@ -199,11 +198,18 @@ class PrecisionEvaluationFigure(Figure):
         fig, ax = plt.subplots()
 
         # Add data points itself
-        ax.plot(factors, precisions, color=ColorDefinitions.GENERAL, marker='o', markersize=5, linestyle='-',
-                label='Precision score', zorder=1)
+        ax.plot(
+            factors,
+            precisions,
+            color=ColorDefinitions.GENERAL,
+            marker='o',
+            markersize=5,
+            linestyle='-',
+            label='Precision score',
+            zorder=1)
 
         # Add indicator lines for clarity of data
-        ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-',  label='50% Precision', zorder=0)
+        ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-', label='50% Precision', zorder=0)
         if self.min_cutoff <= 1.0:
             ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='-', label='Factor L', zorder=0)
         if self.min_cutoff <= 0.5:

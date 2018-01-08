@@ -105,15 +105,15 @@ class ContactMapFigure(Figure):
         self.use_conf = use_conf
 
         self.hierarchy = hierarchy
-        self.other = other
-        self.reference = reference
+        if other:
+            self.other = other
+        if reference:
+            self.reference = reference
 
         self._draw()
 
     def __repr__(self):
-        return "{0}(file_name=\"{1}\")".format(
-                self.__class__.__name__, self.file_name
-        )
+        return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
 
     @property
     def hierarchy(self):
@@ -123,9 +123,10 @@ class ContactMapFigure(Figure):
     @hierarchy.setter
     def hierarchy(self, hierarchy):
         """Define the default contact map hierarchy"""
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "ContactMap")
-        self._hierarchy = hierarchy
+        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+            self._hierarchy = hierarchy
+        else:
+            raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     @property
     def other(self):
@@ -135,9 +136,10 @@ class ContactMapFigure(Figure):
     @other.setter
     def other(self, hierarchy):
         """Define the default contact map hierarchy"""
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "ContactMap")
-        self._other = hierarchy
+        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+            self._other = hierarchy
+        else:
+            raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     @property
     def reference(self):
@@ -147,9 +149,10 @@ class ContactMapFigure(Figure):
     @reference.setter
     def reference(self, hierarchy):
         """Define the reference contact map hierarchy"""
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "ContactMap")
-        self._reference = hierarchy
+        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+            self._reference = hierarchy
+        else:
+            raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     def redraw(self):
         """Re-draw the plot with updated parameters"""
@@ -167,14 +170,26 @@ class ContactMapFigure(Figure):
             else:
                 reference_data = np.asarray([(c.res1_seq, c.res2_seq) for c in self._reference])
             reference_colors = [ColorDefinitions.STRUCTURAL for _ in range(len(reference_data))]
-            ax.scatter(reference_data[:, 0], reference_data[:, 1], color=reference_colors,
-                       s=10, marker='o', edgecolor='none', linewidths=0.0)
-            ax.scatter(reference_data[:, 1], reference_data[:, 0], color=reference_colors,
-                       s=10, marker='o', edgecolor='none', linewidths=0.0)
+            ax.scatter(
+                reference_data[:, 0],
+                reference_data[:, 1],
+                color=reference_colors,
+                s=10,
+                marker='o',
+                edgecolor='none',
+                linewidths=0.0)
+            ax.scatter(
+                reference_data[:, 1],
+                reference_data[:, 0],
+                color=reference_colors,
+                s=10,
+                marker='o',
+                edgecolor='none',
+                linewidths=0.0)
 
         # Plot the self contacts
         self_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy
-                                   if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
+                                if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
         if self.use_conf:
             # ptp is (max - min)
@@ -184,13 +199,19 @@ class ContactMapFigure(Figure):
             self_sizes = [10] * len(self_data[:, 2])
 
         # This is the bottom triangle
-        ax.scatter(self_data[:, 1], self_data[:, 0], color=self_colors, marker='o',
-                   s=self_sizes, edgecolor='none', linewidths=0.0)
+        ax.scatter(
+            self_data[:, 1],
+            self_data[:, 0],
+            color=self_colors,
+            marker='o',
+            s=self_sizes,
+            edgecolor='none',
+            linewidths=0.0)
 
         # Plot the other contacts
         if self._other:
             other_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other
-                                        if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
+                                     if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
             other_colors = ContactMapFigure._determine_color(self._other)
             if self.use_conf:
                 # ptp is (max - min)
@@ -199,12 +220,24 @@ class ContactMapFigure(Figure):
             else:
                 other_sizes = [10] * len(other_data[:, 2])
             # This is the upper triangle
-            ax.scatter(other_data[:, 0], other_data[:, 1], color=other_colors, marker='o',
-                       s=other_sizes, edgecolor='none', linewidths=0.0)
+            ax.scatter(
+                other_data[:, 0],
+                other_data[:, 1],
+                color=other_colors,
+                marker='o',
+                s=other_sizes,
+                edgecolor='none',
+                linewidths=0.0)
         else:
             # This is the upper triangle
-            ax.scatter(self_data[:, 0], self_data[:, 1], color=self_colors, marker='o',
-                       s=self_sizes, edgecolor='none', linewidths=0.0)
+            ax.scatter(
+                self_data[:, 0],
+                self_data[:, 1],
+                color=self_colors,
+                marker='o',
+                s=self_sizes,
+                edgecolor='none',
+                linewidths=0.0)
 
         # Allow dynamic x and y limits
         min_max_data = np.append(self_data[:, 0], self_data[:, 1])
@@ -229,19 +262,26 @@ class ContactMapFigure(Figure):
 
         # Create a custom legend
         if self._reference:
-            tp_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.MATCH,
-                                   marker='o', linestyle='', label='Match')
-            fp_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.MISMATCH,
-                                   marker='o', linestyle='', label='Mismatch')
-            rf_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.STRUCTURAL,
-                                   marker='o', linestyle='', label='Structural')
+            tp_artist = plt.Line2D(
+                (0, 1), (0, 0), color=ColorDefinitions.MATCH, marker='o', linestyle='', label='Match')
+            fp_artist = plt.Line2D(
+                (0, 1), (0, 0), color=ColorDefinitions.MISMATCH, marker='o', linestyle='', label='Mismatch')
+            rf_artist = plt.Line2D(
+                (0, 1), (0, 0), color=ColorDefinitions.STRUCTURAL, marker='o', linestyle='', label='Structural')
             artists = [tp_artist, fp_artist, rf_artist]
         else:
-            nt_artist = plt.Line2D((0, 1), (0, 0), color=ColorDefinitions.GENERAL,
-                                   marker='o', linestyle='', label='Contact')
+            nt_artist = plt.Line2D(
+                (0, 1), (0, 0), color=ColorDefinitions.GENERAL, marker='o', linestyle='', label='Contact')
             artists = [nt_artist]
-        ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102),
-                  loc=3, ncol=3, mode="expand", borderaxespad=0.)
+        ax.legend(
+            handles=artists,
+            numpoints=1,
+            fontsize=10,
+            bbox_to_anchor=(0., 1.02, 1., .102),
+            loc=3,
+            ncol=3,
+            mode="expand",
+            borderaxespad=0.)
 
         # Make both axes identical in length and remove whitespace around the plot
         aspectratio = Figure._correct_aspect(ax, 1.0)
@@ -254,7 +294,6 @@ class ContactMapFigure(Figure):
     def _determine_color(h):
         """Determine the color of the contacts in order"""
         return [
-            ColorDefinitions.MATCH if contact.is_match
-            else ColorDefinitions.MISMATCH if contact.is_mismatch
-            else ColorDefinitions.GENERAL for contact in h
+            ColorDefinitions.MATCH if contact.is_match else ColorDefinitions.MISMATCH
+            if contact.is_mismatch else ColorDefinitions.GENERAL for contact in h
         ]

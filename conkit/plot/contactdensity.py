@@ -120,13 +120,14 @@ class ContactDensityFigure(Figure):
 
         Raises
         ------
-        RuntimeError
+        TypeError
            The hierarchy is not an contact map
 
         """
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "ContactMap")
-        self._hierarchy = hierarchy
+        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+            self._hierarchy = hierarchy
+        else:
+            raise TypeError("The hierarchy is not an contact map")
 
     def redraw(self):
         """Re-draw the plot with updated parameters"""

@@ -98,19 +98,13 @@ class SequenceCoverageFigure(Figure):
 
     @hierarchy.setter
     def hierarchy(self, hierarchy):
-        """Define the ConKit :obj:`SequenceFile <conkit.core.SequenceFile>`
-
-        Raises
-        ------
-        RuntimeError
-           The hierarchy is not an alignment
-
-        """
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "SequenceFile")
-            if not hierarchy.is_alignment:
-                raise RuntimeError("Provided hierarchy does not show characteristics of an alignment")
-        self._hierarchy = hierarchy
+        """Define the ConKit :obj:`SequenceFile <conkit.core.SequenceFile>` """
+        if hierarchy and Figure._isinstance(hierarchy, "SequenceFile") and hierarchy.is_alignment:
+            self._hierarchy = hierarchy
+        elif hierarchy and Figure._isinstance(hierarchy, "SequenceFile"):
+            raise TypeError("Provided hierarchy does not show characteristics of an alignment")
+        else:
+            raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     def redraw(self):
         """Re-draw the plot with updated parameters"""

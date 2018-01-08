@@ -110,11 +110,10 @@ class ContactMapChordFigure(Figure):
     @hierarchy.setter
     def hierarchy(self, hierarchy):
         """Define the default contact map hierarchy"""
-        if hierarchy:
-            Figure._check_hierarchy(hierarchy, "ContactMap")
-        if hierarchy.sequence:
-            Figure._check_hierarchy(hierarchy.sequence, "Sequence")
-        self._hierarchy = hierarchy
+        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+            self._hierarchy = hierarchy
+        else:
+            raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     def redraw(self):
         """Re-draw the plot with updated parameters"""
