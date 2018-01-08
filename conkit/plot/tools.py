@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Internal utility functions"""
 
 __author__ = "Felix Simkovic"
@@ -36,12 +35,26 @@ __version__ = "0.1"
 
 import numpy as np
 
+from conkit.core.contact import Contact
+from conkit.core.contactmap import ContactMap
+from conkit.core.contactfile import ContactFile
+from conkit.core.sequence import Sequence
+from conkit.core.sequencefile import SequenceFile
+
+HierarchyIndex = {
+    'Contact': Contact,
+    'ContactMap': ContactMap,
+    'ContactFile': ContactFile,
+    'Sequence': Sequence,
+    'SequenceFile': SequenceFile
+}
+
 
 class ColorDefinitions(object):
     """A class storing all color definitions for the various plots
     for fast and easy handling
     """
-    
+
     # Contact map colors
     MATCH = '#0F0B2C'
     MISMATCH = '#DC4869'
@@ -56,15 +69,30 @@ class ColorDefinitions(object):
     FACTOR1 = L20CUTOFF
 
     # Chord plot encoding
-    AA_ENCODING = { 
-        'A': '#882D17', 'C': '#F3C300', 'D': '#875692', 'E': '#F38400',
-        'F': '#A1CAF1', 'G': '#BE0032', 'H': '#C2B280', 'I': '#848482',
-        'K': '#008856', 'L': '#E68FAC', 'M': '#0067A5', 'N': '#F99379',
-        'P': '#604E97', 'Q': '#F6A600', 'R': '#B3446C', 'S': '#DCD300',
-        'T': '#8DB600', 'V': '#654522', 'W': '#E25822', 'Y': '#2B3D26',
+    AA_ENCODING = {
+        'A': '#882D17',
+        'C': '#F3C300',
+        'D': '#875692',
+        'E': '#F38400',
+        'F': '#A1CAF1',
+        'G': '#BE0032',
+        'H': '#C2B280',
+        'I': '#848482',
+        'K': '#008856',
+        'L': '#E68FAC',
+        'M': '#0067A5',
+        'N': '#F99379',
+        'P': '#604E97',
+        'Q': '#F6A600',
+        'R': '#B3446C',
+        'S': '#DCD300',
+        'T': '#8DB600',
+        'V': '#654522',
+        'W': '#E25822',
+        'Y': '#2B3D26',
         'X': '#000000'
-    } 
-    
+    }
+
     # General
     GENERAL = '#000000'
 
@@ -90,9 +118,26 @@ def points_on_circle(radius, h=0, k=0):
     space = 2 * np.pi / radius
     coords = np.zeros((radius, 2))
     for i in np.arange(radius):
-        coords[i] = [
-            round(h + radius * np.cos(space * i), 6),
-            round(k + radius * np.sin(space * i), 6)
-        ]
+        coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
     return coords.tolist()
 
+
+def get_adjusted_aspect(ax, aspect_ratio):
+    """Adjust the aspect ratio
+
+    Warnings
+    --------
+    This function only works for non-logarithmic axes.
+
+    """
+    # Credits to http://stackoverflow.com/q/4747051/3046533
+    default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
+    return float(default_ratio * aspect_ratio)
+
+
+def _isinstance(hierarchy, hierarchy_type):
+    """Confirm the data structure to be a ConKit definition"""
+    if isinstance(hierarchy_type, str) and hierarchy_type in HierarchyIndex:
+        return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
+    else:
+        return isinstance(hierarchy, hierarchy_type)

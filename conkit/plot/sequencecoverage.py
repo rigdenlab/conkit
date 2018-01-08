@@ -41,8 +41,8 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.plot._figure import Figure
-from conkit.plot._plottools import ColorDefinitions
+from conkit.plot.figure import Figure
+from conkit.plot.tools import ColorDefinitions, _isinstance
 
 
 class SequenceCoverageFigure(Figure):
@@ -86,7 +86,7 @@ class SequenceCoverageFigure(Figure):
 
         self.hierarchy = hierarchy
 
-        self._draw()
+        self.draw()
 
     def __repr__(self):
         return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
@@ -99,60 +99,48 @@ class SequenceCoverageFigure(Figure):
     @hierarchy.setter
     def hierarchy(self, hierarchy):
         """Define the ConKit :obj:`SequenceFile <conkit.core.SequenceFile>` """
-        if hierarchy and Figure._isinstance(hierarchy, "SequenceFile") and hierarchy.is_alignment:
+        if hierarchy and _isinstance(hierarchy, "SequenceFile") and hierarchy.is_alignment:
             self._hierarchy = hierarchy
-        elif hierarchy and Figure._isinstance(hierarchy, "SequenceFile"):
+        elif hierarchy and _isinstance(hierarchy, "SequenceFile"):
             raise TypeError("Provided hierarchy does not show characteristics of an alignment")
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     def redraw(self):
-        """Re-draw the plot with updated parameters"""
-        self._draw()
+        import warnings
+        warnings.warn("This method has been deprecated, use draw() instead")
+        draw()
 
-    def _draw(self):
-        """Draw the actual plot"""
-
+    def draw(self):
         residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
         aa_counts = np.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseq
 
-        fig, ax = plt.subplots()
-
-        ax.plot(
+        self.ax.plot(
             residues,
             aa_counts,
             color=ColorDefinitions.GENERAL,
-            marker='o',
-            markersize=5,
+            marker=None,
             linestyle='-',
             label='Amino acid count',
             zorder=1)
 
-        # Add lines as quality indicators
-        ax.axhline(
+        self.ax.axhline(
             self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label='5 x Nresidues', zorder=0)
         if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
-            ax.axhline(
+            self.ax.axhline(
                 self._hierarchy.top_sequence.seq_len * 20,
                 color=ColorDefinitions.L20CUTOFF,
                 label='20 x Nresidues',
                 zorder=0)
 
-        # Prettify the plot
-        ax.set_xlim(residues[0], residues[-1])
-        xticks = ax.get_xticks().astype(np.int64) + residues[0]
-        # Remove any excess xticks
+        self.ax.set_xlim(residues[0], residues[-1])
+        xticks = self.ax.get_xticks().astype(np.int64) + residues[0]
         xticks = np.delete(xticks, [i for i, t in enumerate(xticks) if t > residues[-1]])
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks)
+        self.ax.set_xticks(xticks)
+        self.ax.set_xticklabels(xticks)
 
-        ax.set_xlabel('Residue number')
-        ax.set_ylabel('Sequence Count')
-        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+        self.ax.set_xlabel('Residue number')
+        self.ax.set_ylabel('Sequence Count')
 
-        # Make axes length proportional and remove whitespace around the plot
-        aspectratio = Figure._correct_aspect(ax, 0.3)
-        ax.set(aspect=aspectratio)
-        fig.tight_layout()
-
-        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
+        if self.legend:
+            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)

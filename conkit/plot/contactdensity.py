@@ -40,8 +40,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 
-from conkit.plot._figure import Figure
-from conkit.plot._plottools import ColorDefinitions
+from conkit.plot.figure import Figure
+from conkit.plot.tools import ColorDefinitions, _isinstance
 
 
 class ContactDensityFigure(Figure):
@@ -89,7 +89,7 @@ class ContactDensityFigure(Figure):
         self.bw_method = bw_method
         self.hierarchy = hierarchy
 
-        self._draw()
+        self.draw()
 
     def __repr__(self):
         return "{0}(file_name=\"{1}\" bw_method=\"{2}\")".format(self.__class__.__name__, self.file_name,
@@ -124,41 +124,40 @@ class ContactDensityFigure(Figure):
            The hierarchy is not an contact map
 
         """
-        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+        if hierarchy and _isinstance(hierarchy, "ContactMap"):
             self._hierarchy = hierarchy
         else:
             raise TypeError("The hierarchy is not an contact map")
 
     def redraw(self):
-        """Re-draw the plot with updated parameters"""
-        self._draw()
+        import warnings
+        warnings.warn("This method has been deprecated, use draw() instead")
+        draw()
 
-    def _draw(self):
+    def draw(self):
         """Draw the actual plot"""
-        fig, ax = plt.subplots()
         dens = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
+
         residues = np.asarray(
             list(set(sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy]))))
         x = np.arange(residues.min(), residues.max())
-        ax.plot(x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate", zorder=2)
+        self.ax.plot(
+            x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate", zorder=2)
 
         try:
             import scipy.signal
             line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
             for minimum in scipy.signal.argrelmin(dens, order=1)[0]:
-                ax.axvline(x[minimum], **line_kwargs)
-            ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
+                self.ax.axvline(x[minimum], **line_kwargs)
+            self.ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
         except ImportError:
             warnings.warn("SciPy not installed - cannot determine local minima")
 
-        ax.set_xlim(x.min(), x.max())
-        ax.set_ylim(0., dens.max())
-        ax.set_xlabel('Residue number')
-        ax.set_ylabel('Kernel Density Estimate')
-        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
+        self.ax.set_xlim(x.min(), x.max())
+        self.ax.set_ylim(0., dens.max())
+        self.ax.set_xlabel('Residue number')
+        self.ax.set_ylabel('Kernel Density Estimate')
 
-        aspectratio = Figure._correct_aspect(ax, 0.3)
-        ax.set(aspect=aspectratio)
-        fig.tight_layout()
-
-        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
+        if self.legend:
+            self.ax.legend(
+                bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)

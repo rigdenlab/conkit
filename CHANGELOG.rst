@@ -4,8 +4,13 @@ Changelog
 
 [Unreleased]
 ------------
+Added
+~~~~~
+- ``conkit.plot`` subpackage refactored to allow ``matplotlib`` access of ``Figure`` instances. This provides
+  functionality similar to ``seaborn``, so ``matplotlib.Axes`` can be provided into which a plot is drawn.
 Changed
 ~~~~~~~
+- Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
 - Typos corrected in documentation 
 
 [0.8.4]

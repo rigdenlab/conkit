@@ -46,30 +46,30 @@ import argparse
 import conkit.command_line
 import conkit.io
 import conkit.plot
+import conkit.plot.tools
 
 logger = None
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('msafile', help='Multiple Sequence Alignment file')
     parser.add_argument('msaformat', help='Multiple Sequence Alignment format')
     args = parser.parse_args()
 
-    # Setup the logger
     global logger
     logger = conkit.command_line.setup_logging(level='info')
 
-    # Compute all the data
     msa = conkit.io.read(args.msafile, args.msaformat)
+
     plot = args.msafile.rsplit('.', 1)[0] + '.png'
-    conkit.plot.SequenceCoverageFigure(msa, file_name=plot)
+    figure = conkit.plot.SequenceCoverageFigure(msa)
+    figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, 0.3))
+    figure.savefig(plot)
 
     logger.info('Input MSA File:                            %s', args.msafile)
     logger.info('Input MSA Format:                          %s', args.msaformat)
-    logger.info('Length of the Target Sequence:             %d',
-                msa.top_sequence.seq_len)
+    logger.info('Length of the Target Sequence:             %d', msa.top_sequence.seq_len)
     logger.info('Total Number of Sequences:                 %d', msa.nseq)
     logger.info('Number of Effective Sequences:             %d', msa.neff)
     logger.info('Sequence Coverage Plot:                    %s', plot)

@@ -41,8 +41,8 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.plot._figure import Figure
-from conkit.plot._plottools import ColorDefinitions
+from conkit.plot.figure import Figure
+from conkit.plot.tools import ColorDefinitions, _isinstance
 
 
 class PrecisionEvaluationFigure(Figure):
@@ -102,7 +102,7 @@ class PrecisionEvaluationFigure(Figure):
         self.min_cutoff = min_cutoff
         self.max_cutoff = max_cutoff
 
-        self._draw()
+        self.draw()
 
     def __repr__(self):
         return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
@@ -132,7 +132,7 @@ class PrecisionEvaluationFigure(Figure):
            The hierarchy is not an alignment
 
         """
-        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+        if hierarchy and _isinstance(hierarchy, "ContactMap"):
             self._hierarchy = hierarchy
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
@@ -182,12 +182,11 @@ class PrecisionEvaluationFigure(Figure):
         self._cutoff_boundaries[1] = max_cutoff
 
     def redraw(self):
-        """Re-draw the plot with updated parameters"""
-        self._draw()
+        import warnings
+        warnings.warn("This method has been deprecated, use draw() instead")
+        draw()
 
-    def _draw(self):
-        """Draw the actual plot"""
-
+    def draw(self):
         factors = np.arange(self.min_cutoff, self.max_cutoff + 0.1, self.cutoff_step)
         precisions = np.zeros(factors.shape[0])
         for i, factor in enumerate(factors):
@@ -195,43 +194,33 @@ class PrecisionEvaluationFigure(Figure):
             m = self._hierarchy[:ncontacts]
             precisions[i] = m.precision
 
-        fig, ax = plt.subplots()
-
-        # Add data points itself
-        ax.plot(
+        self.ax.plot(
             factors,
             precisions,
             color=ColorDefinitions.GENERAL,
-            marker='o',
-            markersize=5,
+            marker=None,
             linestyle='-',
             label='Precision score',
             zorder=1)
 
-        # Add indicator lines for clarity of data
-        ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-', label='50% Precision', zorder=0)
+        self.ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-', label='50% Precision', zorder=0)
         if self.min_cutoff <= 1.0:
-            ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='-', label='Factor L', zorder=0)
+            self.ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='-', label='Factor L', zorder=0)
         if self.min_cutoff <= 0.5:
-            ax.axvline(0.5, color=ColorDefinitions.FACTOR1, linestyle='--', label='Factor L/2', zorder=0)
+            self.ax.axvline(0.5, color=ColorDefinitions.FACTOR1, linestyle='--', label='Factor L/2', zorder=0)
         if self.min_cutoff <= 0.2:
-            ax.axvline(0.2, color=ColorDefinitions.FACTOR1, linestyle='-.', label='Factor L/5', zorder=0)
+            self.ax.axvline(0.2, color=ColorDefinitions.FACTOR1, linestyle='-.', label='Factor L/5', zorder=0)
         if self.min_cutoff <= 0.1:
-            ax.axvline(0.1, color=ColorDefinitions.FACTOR1, linestyle=':', label='Factor L/10', zorder=0)
+            self.ax.axvline(0.1, color=ColorDefinitions.FACTOR1, linestyle=':', label='Factor L/10', zorder=0)
 
         # Prettify the plot
-        ax.set_xlim(self.min_cutoff, self.max_cutoff)
-        xticks = (ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(np.int64)
-        ax.set_xticklabels(xticks)
-        ax.set_ylim(0.0, 1.0)
+        self.ax.set_xlim(self.min_cutoff, self.max_cutoff)
+        xticks = (self.ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(np.int64)
+        self.ax.set_xticklabels(xticks)
+        self.ax.set_ylim(0.0, 1.0)
 
-        ax.set_xlabel('Number of Contacts')
-        ax.set_ylabel('Precision')
-        ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+        self.ax.set_xlabel('Number of Contacts')
+        self.ax.set_ylabel('Precision')
 
-        # Make axes length proportional and remove whitespace around the plot
-        aspectratio = Figure._correct_aspect(ax, 0.3)
-        ax.set(aspect=aspectratio)
-        fig.tight_layout()
-
-        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
+        if self.legend:
+            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)

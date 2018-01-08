@@ -42,8 +42,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from conkit.core.contact import ContactMatchState
-from conkit.plot._figure import Figure
-from conkit.plot._plottools import ColorDefinitions, points_on_circle
+from conkit.plot.figure import Figure
+from conkit.plot.tools import ColorDefinitions, points_on_circle, _isinstance
 
 
 class ContactMapChordFigure(Figure):
@@ -97,7 +97,7 @@ class ContactMapChordFigure(Figure):
         self.hierarchy = hierarchy
         self.use_conf = use_conf
 
-        self._draw()
+        self.draw()
 
     def __repr__(self):
         return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
@@ -110,16 +110,17 @@ class ContactMapChordFigure(Figure):
     @hierarchy.setter
     def hierarchy(self, hierarchy):
         """Define the default contact map hierarchy"""
-        if hierarchy and Figure._isinstance(hierarchy, "ContactMap"):
+        if hierarchy and _isinstance(hierarchy, "ContactMap"):
             self._hierarchy = hierarchy
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
     def redraw(self):
-        """Re-draw the plot with updated parameters"""
-        self._draw()
+        import warnings
+        warnings.warn("This method has been deprecated, use draw() instead")
+        draw()
 
-    def _draw(self):
+    def draw(self):
         """Draw the actual plot"""
 
         # Re-normalize the data for the lines
@@ -133,9 +134,6 @@ class ContactMapChordFigure(Figure):
         # The number of points on the outer circle and their coordinates
         npoints = self_data_range.shape[0]
         coords = np.asarray(points_on_circle(npoints))
-
-        # Instantiate the figure
-        fig, ax = plt.subplots()
 
         # Calculate and plot the Bezier curves
         bezier_path = np.arange(0, 1.01, 0.01)
@@ -151,11 +149,11 @@ class ContactMapChordFigure(Figure):
                 ContactMatchState.mismatched: ColorDefinitions.MISMATCH,
                 ContactMatchState.matched: ColorDefinitions.MATCH,
             }.get(int(c[5]), ColorDefinitions.MATCH)
-            ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
+            self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
             if int(c[5]) == ContactMatchState.matched:
-                ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=1, linewidth=1)
+                self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=1, linewidth=1)
             else:
-                ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
+                self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
 
         # Get the amino acids if available
         #     - get the residue data from the original data array
@@ -172,11 +170,10 @@ class ContactMapChordFigure(Figure):
         #     - create a color list
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
-        # Plot the residue points
-        ax.scatter(coords[:, 0], coords[:, 1], marker='o', color=colors, edgecolors="none", zorder=1)
+        self.ax.scatter(coords[:, 0], coords[:, 1], marker='o', color=colors, edgecolors="none", zorder=1)
 
         # Annotate some residue
-        # TODO: Use _plottools module to process this
+        # TODO: Use tools module to process this
         x, _ = zip(*residue_data)
         label_data = set(map(int, x))
         label_coords = np.zeros((npoints, 2))
@@ -188,21 +185,12 @@ class ContactMapChordFigure(Figure):
             i = r - self_data_range.min()
             xy = x, y = coords[i]
             xytext = label_coords[i]
-            ax.annotate(r, xy=xy, xytext=xytext)
-            ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=2)
+            self.ax.annotate(r, xy=xy, xytext=xytext)
+            self.ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=2)
 
-        # Arrow for the start
         arrow_x, arrow_y = (npoints + npoints / 5, 0)
-        ax.arrow(arrow_x, arrow_y, 0, npoints / 10, head_width=1.5, color="#000000")
+        self.ax.arrow(arrow_x, arrow_y, 0, npoints / 10, head_width=1.5, color="#000000")
 
-        # Prettify the plot
-        ax.set_xlim(-arrow_x, arrow_x + 2)
-        ax.set_ylim(-arrow_x, arrow_x)
-        ax.axis("off")
-
-        # Make both axes identical in length and remove whitespace around the plot
-        aspectratio = Figure._correct_aspect(ax, 1.0)
-        ax.set(aspect=aspectratio)
-        fig.tight_layout()
-
-        fig.savefig(self.file_name, bbox_inches='tight', dpi=self.dpi)
+        self.ax.set_xlim(-arrow_x, arrow_x + 2)
+        self.ax.set_ylim(-arrow_x, arrow_x)
+        self.ax.axis("off")
