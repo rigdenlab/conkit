@@ -48,6 +48,7 @@ RE_COMMENT = re.compile(r'^#+.*$')
 class BbcontactsParser(ContactFileParser):
     """Class to parse a Bbcontacts contact file
     """
+
     def __init__(self):
         super(BbcontactsParser, self).__init__()
 
@@ -104,7 +105,7 @@ class BbcontactsParser(ContactFileParser):
 
         Notes
         -----
-        Creating a :func`write` function for the Bbcontacts parser
+        Creating a :func:`write` function for the Bbcontacts parser
         would come with a lot of issues, such as the parallel/antiparallel
         direction, scoring etc.
 

@@ -2,6 +2,12 @@
 Changelog
 =========
 
+[Unreleased]
+------------
+Changed
+~~~~~~~
+- Typos corrected in documentation 
+
 [0.8.4]
 -------
 Added

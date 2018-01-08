@@ -1,5 +1,5 @@
 
-.. list-table:: ConKit Data Model
+.. list-table:: Data Model
    :class: table-hover
    :widths: 1000, 10, 10
 

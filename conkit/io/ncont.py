@@ -89,8 +89,7 @@ class NcontParser(ContactFileParser):
                     warnings.warn(msg)
                     continue
 
-                contact = Contact(res1_seq, res2_seq, 1.0,
-                                  distance_bound=(lb, ub))
+                contact = Contact(res1_seq, res2_seq, 1.0, distance_bound=(lb, ub))
                 contact.res1_chain = matches.group(1)
                 contact.res2_chain = matches.group(4)
                 contact.res1 = matches.group(3)
@@ -112,7 +111,7 @@ class NcontParser(ContactFileParser):
 
         Notes
         -----
-        Creating a :func`write` function for the Ncont parser
+        Creating a :func:`write` function for the Ncont parser
         would come with a lot of issues, such as the parallel/antiparallel
         direction, scoring etc.
 
