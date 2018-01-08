@@ -24,6 +24,7 @@ Submodules
    conkit.io.gremlin
    conkit.io.jones
    conkit.io.membrain
+   conkit.io.ncont
    conkit.io.pcons
    conkit.io.pdb
    conkit.io.plmdca
