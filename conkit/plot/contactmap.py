@@ -76,7 +76,7 @@ class ContactMapFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, other=None, reference=None, altloc=False, use_conf=False, **kwargs):
+    def __init__(self, hierarchy, other=None, reference=None, altloc=False, use_conf=False, lim=None, **kwargs):
         """A new contact map plot
 
         Parameters
@@ -91,6 +91,8 @@ class ContactMapFigure(Figure):
            Use the res_altloc positions [default: False]
         use_conf : bool, optional
            The marker size will correspond to the raw score [default: False]
+        lim : tuple, list, optional
+           The [min, max] residue numbers to show
         **kwargs
            General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
 
@@ -100,6 +102,7 @@ class ContactMapFigure(Figure):
         self._hierarchy = None
         self._other = None
         self._reference = None
+        self._lim = None
 
         self.altloc = altloc
         self.use_conf = use_conf
@@ -109,6 +112,8 @@ class ContactMapFigure(Figure):
             self.other = other
         if reference:
             self.reference = reference
+        if lim:
+            self.lim = lim
 
         self.draw()
 
@@ -147,6 +152,19 @@ class ContactMapFigure(Figure):
             self._reference = hierarchy
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
+
+    @property
+    def lim(self):
+        return self._lim
+
+    @lim.setter
+    def lim(self, lim):
+        if (isinstance(lim, list) or isinstance(lim, tuple)) and len(lim) == 2:
+            self._lim = lim
+        elif (isinstance(lim, list) or isinstance(lim, tuple)):
+            raise ValueError("A list with 2 entries is required!")
+        else:
+            raise TypeError("A list with [min, max] limits is required!")
 
     def redraw(self):
         import warnings
@@ -223,18 +241,24 @@ class ContactMapFigure(Figure):
                 edgecolor='none',
                 linewidths=0.0)
 
-        min_max_data = np.append(self_data[:, 0], self_data[:, 1])
-        if self._reference:
-            min_max_data = np.append(min_max_data, reference_data[:, 0])
-            min_max_data = np.append(min_max_data, reference_data[:, 1])
-        if self._other:
-            min_max_data = np.append(min_max_data, other_data[:, 0])
-            min_max_data = np.append(min_max_data, other_data[:, 1])
+        if self.lim:
+            min_max_data = np.arange(self.lim[0], self.lim[1] + 1)
+            self.ax.set_xlim(self.lim[0] - 0.5, self.lim[1] + 0.5)
+            self.ax.set_ylim(self.lim[0] - 0.5, self.lim[1] + 0.5)
+        else:
+            min_max_data = np.append(self_data[:, 0], self_data[:, 1])
+            if self._reference:
+                min_max_data = np.append(min_max_data, reference_data[:, 0])
+                min_max_data = np.append(min_max_data, reference_data[:, 1])
+            if self._other:
+                min_max_data = np.append(min_max_data, other_data[:, 0])
+                min_max_data = np.append(min_max_data, other_data[:, 1])
+
         self.ax.set_xlim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
         self.ax.set_ylim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
-
         gap = int(10 * (min_max_data.max() - min_max_data.min()) / 100)
         tick_range = np.arange(min_max_data.min(), min_max_data.max(), gap, dtype=np.int64)
+
         self.ax.set_xticks(tick_range)
         self.ax.set_yticks(tick_range)
 
