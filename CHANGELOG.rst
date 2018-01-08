@@ -2,8 +2,8 @@
 Changelog
 =========
 
-[Unreleased]
-------------
+[0.8.4]
+-------
 Added
 ~~~~~
 - ``Entity.top`` property to always return the first child in the list
