@@ -357,6 +357,20 @@ class ContactMap(_Entity):
                 representative_sequence += '-'
         return Sequence(self.sequence.id + '_repr', representative_sequence)
 
+    def as_list(self, altloc=False):
+        """The :obj:`ContactMap <conkit.core.ContactMap>` as a 2D-list containing contact-pair residue indexes
+
+        Parameters
+        ----------
+        altloc : bool
+           Use the res_altloc positions [default: False]
+
+        """
+        if altloc:
+            return [[c.res1_altseq, c.res2_altseq] for c in self]
+        else:
+            return [[c.res1_seq, c.res2_seq] for c in self]
+
     def assign_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`Sequence <conkit.core.Sequence>` to all :obj:`Contact <conkit.core.Contact>` instances
 

@@ -1011,6 +1011,34 @@ class TestContactMap(unittest.TestCase):
                          [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
+    def test_as_list_1(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[1, 30], [2, 10], [3, 20], [1, 5]], contact_map.as_list())
+
+    def test_as_list_2(self):
+        contact_map = ContactMap('test')
+        self.assertListEqual([], contact_map.as_list())
+
+    def test_as_list_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            c.res1_altseq = c.res1_seq + 1
+            c.res2_altseq = c.res2_seq + 2
+            contact_map.add(c)
+        self.assertListEqual([[2, 32], [3, 12], [4, 22], [2, 7]], contact_map.as_list(altloc=True))
+
+    def test_as_list_4(self):
+        contact_map = ContactMap("test")
+        self.assertListEqual([], contact_map.as_list(altloc=True))
+
+    def test_as_list_5(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[0, 0], [0, 0], [0, 0], [0, 0]], contact_map.as_list(altloc=True))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
