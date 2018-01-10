@@ -27,21 +27,21 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
-A module to produce a contact map plot
-"""
+"""A module to produce a contact map plot"""
 
 from __future__ import division
 from __future__ import print_function
 
 __author__ = "Felix Simkovic"
-__date__ = "07 Feb 2017"
-__version__ = "0.1"
+__date__ = "10 Jan 2018"
+__version__ = "1.0"
 
+import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt
 import numpy as np
 
 from conkit.core._struct import _Gap
+from conkit.misc import normalize
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
@@ -51,7 +51,7 @@ class ContactMapFigure(Figure):
 
     This figure will illustrate the contacts in a contact
     map. This plot is a very common representation of contacts.
-    With this figure, you can illustrate either your contact 
+    With this figure, you can illustrate either your contact
     map by itself, compared against a second contact map, and/or
     matched against contacts extracted from a contact map.
 
@@ -67,7 +67,7 @@ class ContactMapFigure(Figure):
        Use the res_altloc positions [default: False]
     use_conf : bool
        The marker size will correspond to the raw score [default: False]
-    
+
     Examples
     --------
     >>> import conkit
@@ -172,74 +172,45 @@ class ContactMapFigure(Figure):
         draw()
 
     def draw(self):
+
         if self._reference:
             if self.altloc:
-                reference_data = np.asarray([(c.res1_altseq, c.res2_altseq) for c in self._reference])
+                reference_data = np.array(self._reference.as_list(altloc=True))
             else:
-                reference_data = np.asarray([(c.res1_seq, c.res2_seq) for c in self._reference])
-            reference_colors = [ColorDefinitions.STRUCTURAL for _ in range(len(reference_data))]
-            self.ax.scatter(
-                reference_data[:, 0],
-                reference_data[:, 1],
-                color=reference_colors,
-                s=10,
-                marker='o',
-                edgecolor='none',
-                linewidths=0.0)
-            self.ax.scatter(
-                reference_data[:, 1],
-                reference_data[:, 0],
-                color=reference_colors,
-                s=10,
-                marker='o',
-                edgecolor='none',
-                linewidths=0.0)
+                reference_data = np.array(self._reference.as_list())
+            reference_colors = [ColorDefinitions.STRUCTURAL for _ in np.arange(reference_data.shape[0])]
+        else:
+            reference_data = np.empty((0, 2))
+            reference_colors = []
 
-        self_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._hierarchy
-                                if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
+        self_data = np.array([c for c in self._hierarchy.as_list() if all(ci != _Gap.IDENTIFIER for ci in c)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
-        if self.use_conf:
-            self_sizes = (self_data[:, 2] - self_data[:, 2].min()) / self_data[:, 2].ptp()
-            self_sizes = self_sizes * 20 + 10
-        else:
-            self_sizes = [10] * len(self_data[:, 2])
+        self_rawsc = np.array(
+            [c.raw_score for c in self._hierarchy if all(ci != _Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
 
-        self.ax.scatter(
-            self_data[:, 1],
-            self_data[:, 0],
-            color=self_colors,
-            marker='o',
-            s=self_sizes,
-            edgecolor='none',
-            linewidths=0.0)
-
-        # Plot the other contacts
         if self._other:
-            other_data = np.asarray([(c.res1_seq, c.res2_seq, c.raw_score) for c in self._other
-                                     if not (c.res1_seq == _Gap.IDENTIFIER or c.res2_seq == _Gap.IDENTIFIER)])
+            other_data = np.array([c for c in self._other.as_list() if any(ci != _Gap.IDENTIFIER for ci in c)])
             other_colors = ContactMapFigure._determine_color(self._other)
-            if self.use_conf:
-                other_sizes = (other_data[:, 2] - other_data[:, 2].min()) / other_data[:, 2].ptp()
-                other_sizes = other_sizes * 20 + 10
-            else:
-                other_sizes = [10] * len(other_data[:, 2])
-            self.ax.scatter(
-                other_data[:, 0],
-                other_data[:, 1],
-                color=other_colors,
-                marker='o',
-                s=other_sizes,
-                edgecolor='none',
-                linewidths=0.0)
+            other_rawsc = np.array(
+                [c.raw_score for c in self._other if all(ci != _Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
         else:
-            self.ax.scatter(
-                self_data[:, 0],
-                self_data[:, 1],
-                color=self_colors,
-                marker='o',
-                s=self_sizes,
-                edgecolor='none',
-                linewidths=0.0)
+            other_data = self_data
+            other_colors = self_colors
+            other_rawsc = self_rawsc
+
+        if self.use_conf:
+            self_radius = normalize(self_rawsc, vmin=0.2, vmax=0.48)
+            other_radius = normalize(other_rawsc, vmin=0.2, vmax=0.48)
+        else:
+            self_radius = other_radius = 0.48
+
+        self._patch_scatter(
+            reference_data[:, 0], reference_data[:, 1], facecolor=reference_colors, radius=0.5, linewidth=0)
+        self._patch_scatter(
+            reference_data[:, 1], reference_data[:, 0], facecolor=reference_colors, radius=0.5, linewidth=0)
+        self._patch_scatter(self_data[:, 1], self_data[:, 0], facecolor=self_colors, radius=self_radius, linewidth=0)
+        self._patch_scatter(
+            other_data[:, 0], other_data[:, 1], facecolor=other_colors, radius=other_radius, linewidth=0)
 
         if self.lim:
             min_max_data = np.arange(self.lim[0], self.lim[1] + 1)
@@ -265,17 +236,15 @@ class ContactMapFigure(Figure):
         self.ax.set_xlabel('Residue number')
         self.ax.set_ylabel('Residue number')
 
+        line2d_kws = dict(marker="o", linestyle="")
+        pseudo_data = [[0, 1], [0, 0]]
         if self._reference:
-            tp_artist = plt.Line2D(
-                (0, 1), (0, 0), color=ColorDefinitions.MATCH, marker='o', linestyle='', label='Match')
-            fp_artist = plt.Line2D(
-                (0, 1), (0, 0), color=ColorDefinitions.MISMATCH, marker='o', linestyle='', label='Mismatch')
-            rf_artist = plt.Line2D(
-                (0, 1), (0, 0), color=ColorDefinitions.STRUCTURAL, marker='o', linestyle='', label='Structural')
+            tp_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.MATCH, label='Match', **line2d_kws)
+            fp_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.MISMATCH, label='Mismatch', **line2d_kws)
+            rf_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.STRUCTURAL, label='Structural', **line2d_kws)
             artists = [tp_artist, fp_artist, rf_artist]
         else:
-            nt_artist = plt.Line2D(
-                (0, 1), (0, 0), color=ColorDefinitions.GENERAL, marker='o', linestyle='', label='Contact')
+            nt_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.GENERAL, label='Contact', **line2d_kws)
             artists = [nt_artist]
 
         if self.legend:
