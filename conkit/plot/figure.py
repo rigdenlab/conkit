@@ -41,20 +41,25 @@ import matplotlib.pyplot as plt
 class Figure(object):
     """A Figure class to store common features"""
 
-    def __init__(self, ax=None, legend=False):
+    def __init__(self, ax=None, legend=True):
         """Initialise a new :obj:`conkit.plot.Figure` object
             
         Parameters
         ----------
-        ax : 
-        legend : 
+        ax : :obj:`Axes <matplotlib.pyplot.Axes>`
+           A pre-defined :obj:`Axes <matplotlib.pyplot.Axes>` 
+
+           If ``None`` is provided, a new plot will be created
+
+        legend : bool, optional
+           Draw a legend on the plot [default: True]
         
         """
         if ax is None:
             import matplotlib.pyplot as plt
             self._fig, self._ax = plt.subplots()
         else:
-            self._fig = None
+            self._fig = ax.get_figure()
             self._ax = ax
         self.legend = legend
 
