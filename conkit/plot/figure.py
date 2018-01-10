@@ -104,8 +104,9 @@ class Figure(object):
             plt.Circle((xi, yi), facecolor=fci, edgecolor=eci, radius=ri, linewidth=lwi)
             for xi, yi, fci, eci, ri, lwi in zip(x, y, fc, ec, r, lw)
         ]
-        patch_collection = mcoll.PatchCollection(circles, match_original=True)
-        self.ax.add_collection(patch_collection)
+        if len(circles) > 0:
+            patch_collection = mcoll.PatchCollection(circles, match_original=True)
+            self.ax.add_collection(patch_collection)
 
     def savefig(self, filename, dpi=300, overwrite=False):
         if os.path.isfile(filename) and not overwrite:
