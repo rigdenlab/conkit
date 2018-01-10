@@ -184,7 +184,7 @@ def main(argl=None):
     # and used by David Jones in PSICOV
     msa_h = conkit.io.read(jon_fname, 'jones')
     freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.png')
-    figure = conkit.plot.SequenceCoverageFigure(msa_h)
+    figure = conkit.plot.SequenceCoverageFigure(msa_h, legend=True)
     figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, 0.3))
     figure.savefig(freq_plot_fname)
 
@@ -216,7 +216,7 @@ def main(argl=None):
     cmap = cmap[:cmap.sequence.seq_len]
 
     contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.png')
-    figure = conkit.plot.ContactMapFigure(cmap)
+    figure = conkit.plot.ContactMapFigure(cmap, legend=True)
     figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, 1.0))
     figure.savefig(contact_map_fname)
 

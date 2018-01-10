@@ -310,6 +310,7 @@ def main():
             reference=reference,
             altloc=altloc,
             use_conf=args.confidence,
+            legend=True,
         )
         figure_aspect_ratio = 1.0
 
@@ -327,7 +328,7 @@ def main():
         ncontacts = int(seq.seq_len * args.dfactor)
         con_sliced = con[:ncontacts]
 
-        figure = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence)
+        figure = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence, legend=True)
         figure_aspect_ratio = 1.0
 
     elif args.which == 'contact_density':
@@ -345,7 +346,7 @@ def main():
         ncontacts = int(seq.seq_len * args.dfactor)
         con_sliced = con[:ncontacts]
 
-        figure = conkit.plot.ContactDensityFigure(con_sliced, bw_method=args.bw_method)
+        figure = conkit.plot.ContactDensityFigure(con_sliced, bw_method=args.bw_method, legend=True)
         figure_aspect_ratio = 0.3
 
     elif args.which == 'precision_evaluation':
@@ -376,12 +377,12 @@ def main():
             cutoff_step=args.cutoff_step,
             min_cutoff=args.min_cutoff,
             max_cutoff=args.max_cutoff,
-        )
+            legend=True)
         figure_aspect_ratio = 0.3
 
     elif args.which == 'sequence_coverage':
         hierarchy = conkit.io.read(args.msafile, args.msaformat)
-        figure = conkit.plot.SequenceCoverageFigure(hierarchy)
+        figure = conkit.plot.SequenceCoverageFigure(hierarchy, legend=True)
         figure_aspect_ratio = 0.3
 
     if not args.output:

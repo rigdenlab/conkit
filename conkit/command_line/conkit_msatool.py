@@ -63,7 +63,7 @@ def main():
     msa = conkit.io.read(args.msafile, args.msaformat)
 
     plot = args.msafile.rsplit('.', 1)[0] + '.png'
-    figure = conkit.plot.SequenceCoverageFigure(msa)
+    figure = conkit.plot.SequenceCoverageFigure(msa, legend=True)
     figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, 0.3))
     figure.savefig(plot)
 
