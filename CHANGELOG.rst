@@ -14,6 +14,7 @@ Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
 - ``ContactMapFigure`` now accepts ``lim`` parameters for axes limits
+- ``ContactMapFigure`` and ``ContacctMapChordFigure`` improved to better space marker size
 - Typos corrected in documentation 
 
 [0.8.4]
