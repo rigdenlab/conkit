@@ -121,29 +121,22 @@ class ContactMapChordFigure(Figure):
         draw()
 
     def draw(self):
-        """Draw the actual plot"""
-
-        # Re-normalize the data for the lines
         hierarchy = self.hierarchy.rescale()
 
-        # Obtain the data from the hierarchy
-        self_data = np.asarray([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score, c.status) for c in hierarchy])
+        self_data = np.array([(c.res1, c.res1_seq, c.res2, c.res2_seq, c.raw_score, c.status) for c in hierarchy])
         _drange = np.append(self_data[:, 1], self_data[:, 3]).astype(np.int64)
         self_data_range = np.arange(_drange.min(), _drange.max() + 1)
 
-        # The number of points on the outer circle and their coordinates
         npoints = self_data_range.shape[0]
-        coords = np.asarray(points_on_circle(npoints))
+        coords = np.array(points_on_circle(npoints))
 
-        # Calculate and plot the Bezier curves
         bezier_path = np.arange(0, 1.01, 0.01)
         for c in self_data:
             x1, y1 = coords[int(c[1]) - self_data_range.min()]
             x2, y2 = coords[int(c[3]) - self_data_range.min()]
-            xb, yb = [0, 0]  # Midpoint the curve is supposed to approach
+            xb, yb = [0, 0]
             x = (1 - bezier_path)**2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path**2 * x2
             y = (1 - bezier_path)**2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path**2 * y2
-            # 0.0 transparent through 1.0 opaque
             alpha = float(c[4]) if self.use_conf else 1.0
             color = {
                 ContactMatchState.mismatched: ColorDefinitions.MISMATCH,
@@ -155,24 +148,13 @@ class ContactMapChordFigure(Figure):
             else:
                 self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
 
-        # Get the amino acids if available
-        #     - get the residue data from the original data array
         residue_data = np.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
         residue_data = residue_data.reshape(self_data[:, 0].shape[0] * 2, 2)
-
-        #     - compute a default color list
         color_codes = dict([(k, ColorDefinitions.AA_ENCODING['X']) for k in self_data_range])
-
-        #     - fill default dict with data we have
         for k, v in np.vstack({tuple(row) for row in residue_data}):
             color_codes[int(k)] = ColorDefinitions.AA_ENCODING[v]
-
-        #     - create a color list
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
-        self.ax.scatter(coords[:, 0], coords[:, 1], marker='o', color=colors, edgecolors="none", zorder=1)
-
-        # Annotate some residue
         # TODO: Use tools module to process this
         x, _ = zip(*residue_data)
         label_data = set(map(int, x))
@@ -181,12 +163,18 @@ class ContactMapChordFigure(Figure):
         for i in np.arange(npoints):
             label_coords[i] = [(npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
                                (npoints + npoints / 10) * np.sin(space * i) - npoints / 40]
+
+        xy_highlight = []
         for r in sorted(label_data)[::int(npoints / (npoints / 10))]:
             i = r - self_data_range.min()
-            xy = x, y = coords[i]
+            xy = coords[i]
             xytext = label_coords[i]
             self.ax.annotate(r, xy=xy, xytext=xytext)
-            self.ax.scatter(x, y, marker='o', facecolors="none", edgecolors="#000000", zorder=2)
+            xy_highlight.append(xy.tolist())
+
+        radius = ContactMapChordFigure.get_radius_around_circle(coords)
+        self._patch_scatter(coords[:, 0], coords[:, 1], facecolor=colors, linewidth=0.0, radius=radius)
+        self._patch_scatter(*zip(*xy_highlight), facecolor="none", edgecolor="#000000", radius=radius)
 
         arrow_x, arrow_y = (npoints + npoints / 5, 0)
         self.ax.arrow(arrow_x, arrow_y, 0, npoints / 10, head_width=1.5, color="#000000")
@@ -194,3 +182,8 @@ class ContactMapChordFigure(Figure):
         self.ax.set_xlim(-arrow_x, arrow_x + 2)
         self.ax.set_ylim(-arrow_x, arrow_x)
         self.ax.axis("off")
+
+    @staticmethod
+    def get_radius_around_circle(coords, pad=0.1):
+        dist = np.linalg.norm(coords[0] - coords[1])
+        return dist / 2 - dist * 0.1
