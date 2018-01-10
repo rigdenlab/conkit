@@ -1,4 +1,4 @@
-"""Testing facility for conkit.core._Entity"""
+"""Testing facility for conkit.misc.bandwidth"""
 
 __author__ = "Felix Simkovic"
 __date__ = "19 Jun 2017"
@@ -10,7 +10,6 @@ from conkit.misc import bandwidth
 
 
 class TestAmiseBW(unittest.TestCase):
-
     def test_1(self):
         xy = np.array([(1, 5), (3, 3), (2, 4)])
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
@@ -28,7 +27,6 @@ class TestAmiseBW(unittest.TestCase):
 
 
 class TestBowmanBW(unittest.TestCase):
-
     def test_1(self):
         xy = np.array([(1, 5), (3, 3), (2, 4)])
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
@@ -46,7 +44,6 @@ class TestBowmanBW(unittest.TestCase):
 
 
 class TestLinearBW(unittest.TestCase):
-
     def test_1(self):
         xy = np.array([(1, 5), (3, 3), (2, 4)])
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
@@ -63,9 +60,7 @@ class TestLinearBW(unittest.TestCase):
         self.assertEqual(round(bandwidth.LinearBW(x, threshold=15).bw, 7), 0.3333333)
 
 
-
 class TestScottBW(unittest.TestCase):
-
     def test_1(self):
         xy = np.array([(1, 5), (3, 3), (2, 4)])
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
@@ -83,7 +78,6 @@ class TestScottBW(unittest.TestCase):
 
 
 class TestSilvermanBW(unittest.TestCase):
-
     def test_1(self):
         xy = np.array([(1, 5), (3, 3), (2, 4)])
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
