@@ -34,6 +34,8 @@ __date__ = "08 Jan 2018"
 __version__ = "0.2"
 
 import os
+import matplotlib.collections as mcoll
+import matplotlib.pyplot as plt
 
 
 class Figure(object):
@@ -58,6 +60,47 @@ class Figure(object):
 
     def __repr__(self):
         return self.__class__.__name__
+
+    def _patch_scatter(self, x, y, facecolor="#ffffff", edgecolor="#000000", radius=0.5, linewidth=1.0):
+        """Draw scatter points as :obj:`Circles <matplotlib.pyplot.Circle>` to control width for discrete data"""
+        if len(x) != len(y):
+            raise ValueError("Unequal x and y data provided")
+
+        if isinstance(facecolor, str):
+            fc = [facecolor] * len(x)
+        else:
+            if len(facecolor) != len(x):
+                raise ValueError("Unequal x/y data and facecolors provided")
+            fc = facecolor
+
+        if isinstance(edgecolor, str):
+            ec = [edgecolor] * len(x)
+        else:
+            if len(edgecolor) != len(x):
+                raise ValueError("Unequal x/y data and edgecolors provided")
+            ec = edgecolor
+
+        if isinstance(linewidth, float) or isinstance(linewidth, int):
+            lw = [linewidth] * len(x)
+        else:
+            if len(linewidth) != len(x):
+                raise ValueError("Unequal x/y data and linewidths provided")
+            lw = linewidth
+
+        if isinstance(radius, float) or isinstance(radius, int):
+            r = [radius] * len(x)
+        else:
+            if len(radius) != len(x):
+                raise ValueError("Unequal x/y data and radii provided")
+            r = radius
+
+        # Credits to https://stackoverflow.com/a/48174228/3046533
+        circles = [
+            plt.Circle((xi, yi), facecolor=fci, edgecolor=eci, radius=ri, linewidth=lwi)
+            for xi, yi, fci, eci, ri, lwi in zip(x, y, fc, ec, r, lw)
+        ]
+        patch_collection = mcoll.PatchCollection(circles, match_original=True)
+        self.ax.add_collection(patch_collection)
 
     def savefig(self, filename, dpi=300, overwrite=False):
         if os.path.isfile(filename) and not overwrite:
