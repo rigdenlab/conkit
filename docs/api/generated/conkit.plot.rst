@@ -14,6 +14,8 @@ Submodules
    conkit.plot.contactdensity
    conkit.plot.contactmap
    conkit.plot.contactmapchord
+   conkit.plot.figure
    conkit.plot.precisionevaluation
    conkit.plot.sequencecoverage
+   conkit.plot.tools
 
