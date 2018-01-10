@@ -49,6 +49,7 @@ from conkit.core._entity import _Entity
 from conkit.core._struct import _Gap, _Residue
 from conkit.core.contact import ContactMatchState
 from conkit.core.sequence import Sequence
+from conkit.misc import normalize
 
 
 class ContactMap(_Entity):
@@ -728,16 +729,6 @@ class ContactMap(_Entity):
     def rescale(self, inplace=False):
         """Rescale the raw scores in :obj:`ContactMap <conkit.core.ContactMap>`
 
-        Rescaling of the data is done to normalize the raw scores
-        to be in the range [0, 1]. The formula to rescale the data is:
-
-        .. math::
-
-           {x}'=\\frac{x-min(d)}{max(d)-min(d)}
-
-        :math:`x` is the original value and :math:`d` are all values to be
-        rescaled.
-
         Parameters
         ----------
         inplace : bool, optional
@@ -752,9 +743,8 @@ class ContactMap(_Entity):
         contact_map = self._inplace(inplace)
 
         raw_scores = np.asarray([c.raw_score for c in contact_map])
-        norm_raw_scores = (raw_scores - raw_scores.min()) / (raw_scores.max() - raw_scores.min())
+        norm_raw_scores = normalize(raw_scores)
 
-        # Important to not end up with raw scores == np.nan
         if np.isnan(norm_raw_scores).all():
             norm_raw_scores = np.where(norm_raw_scores == np.isnan, 0, 1)
 
