@@ -10,6 +10,7 @@ Added
   functionality similar to ``seaborn``, so ``matplotlib.Axes`` can be provided into which a plot is drawn.
 - ``ContactMap.as_list`` function to represent the contact map as a 2D-list of residue indexes
 - ``conkit.misc.normalize`` function to apply Feature scaling normalization
+- ``CONTRIB.rst`` file to list all contributors
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above

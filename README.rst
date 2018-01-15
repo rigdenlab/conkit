@@ -62,17 +62,4 @@ Found a Bug?
 ++++++++++++
 Please use the `GitHub Issue Tracker`_.
 
-Contributors
-++++++++++++
-
-- `Felix Simkovic <https://github.com/fsimkovic>`_
-- `Jens Thomas <https://github.com/linucks>`_
-- `Daniel Rigden <https://github.com/DanielRigden>`_
-
-
-Ackowledgements
-+++++++++++++++
-- `Stefan Seemayer <https://github.com/sseemayer>`_
-
-
 .. _GitHub Issue Tracker: https://github.com/rigdenlab/conkit/issues
