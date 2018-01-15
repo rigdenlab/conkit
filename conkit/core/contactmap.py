@@ -708,7 +708,7 @@ class ContactMap(_Entity):
         min_distance : int, optional
            The minimum number of residues between contacts [default: 5]
         max_distance : int, optional
-           The maximum number of residues between contacts [defailt: maximum nr permitted by OS]
+           The maximum number of residues between contacts [default: :func:``sys.maxsize``]
         inplace : bool, optional
            Replace the saved order of contacts [default: False]
 
