@@ -11,6 +11,7 @@ Added
 - ``ContactMap.as_list`` function to represent the contact map as a 2D-list of residue indexes
 - ``conkit.misc.normalize`` function to apply Feature scaling normalization
 - ``CONTRIB.rst`` file to list all contributors
+- ``SequenceFile.diversity`` property defined by :math:`\sqrt{N}/L`
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above

@@ -132,6 +132,21 @@ class SequenceFile(_Entity):
         return self._status == SequenceAlignmentState.aligned
 
     @property
+    def diversity(self):
+        """The diversity of an alignment defined by :math:`\sqrt{N}/L`. 
+        
+        ``N`` equals the number of sequences in
+        thethe alignment and ``L`` the sequence length
+        
+        """
+        if self.empty:
+            return 0.0
+        elif self.is_alignment:
+            return (np.sqrt(len(self)) / float(self.top.seq_len)).round(decimals=3).item()
+        else:
+            raise ValueError('This is not an alignment')
+
+    @property
     def empty(self):
         """Status of emptiness of sequencefile"""
         return len(self) < 1
