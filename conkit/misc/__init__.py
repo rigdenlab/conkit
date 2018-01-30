@@ -61,5 +61,5 @@ def normalize(data, vmin=0, vmax=1):
        The normalized data
 
     """
-    data = np.array(data)
+    data = np.array(data, dtype=np.float64)
     return (vmin + (data - data.min()) * (vmax - vmin) / (data.max() - data.min())).tolist()
