@@ -265,9 +265,8 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res1_seqs, res2_seqs = list(zip(*[contact.id for contact in self]))
-            res_seqs = set(sorted(res1_seqs + res2_seqs))
-            return self._construct_repr_sequence(list(res_seqs))
+            res_seqs = np.unique(np.array(self.as_list()).flatten()).tolist()
+            return self._construct_repr_sequence(res_seqs)
         else:
             raise TypeError('Define the sequence as Sequence() instance')
 
@@ -294,9 +293,8 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res1_seqs, res2_seqs = list(zip(*[(contact.res1_altseq, contact.res2_altseq) for contact in self]))
-            res_seqs = set(sorted(res1_seqs + res2_seqs))
-            return self._construct_repr_sequence(list(res_seqs))
+            res_seqs = np.unique(np.array(self.as_list(altloc=True)).flatten()).tolist()
+            return self._construct_repr_sequence(res_seqs)
         else:
             raise TypeError('Define the sequence as Sequence() instance')
 
@@ -722,6 +720,8 @@ class ContactMap(_Entity):
         if index < 0:
             raise ValueError("Index must be positive!")
         contact_map = self._inplace(inplace)
+        if contact_map.empty:
+            return contact_map
         res1s, res2s = zip(*contact_map.as_list(altloc=altloc))
         offset = min(res1s) - index
         for contact in contact_map:
@@ -731,6 +731,8 @@ class ContactMap(_Entity):
             else:
                 contact.res1_seq -= offset
                 contact.res2_seq -= offset
+        for contact in contact_map:
+            contact.id = (contact.res1_seq, contact.res2_seq)
         return contact_map 
 
     def remove_neighbors(self, min_distance=5, max_distance=sys.maxsize, inplace=False):
