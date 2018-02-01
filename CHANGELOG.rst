@@ -12,6 +12,7 @@ Added
 - ``conkit.misc.normalize`` function to apply Feature scaling normalization
 - ``CONTRIB.rst`` file to list all contributors
 - ``SequenceFile.diversity`` property defined by :math:`\sqrt{N}/L`
+- ``ContactMap.reindex`` to reindex a contact map given a new starting index
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above

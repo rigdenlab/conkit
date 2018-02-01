@@ -696,6 +696,43 @@ class ContactMap(_Entity):
 
         return contact_map1
 
+    def reindex(self, index, altloc=False, inplace=False):
+        """Re-index the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+
+        Parameters
+        ----------
+        index : int
+           The new starting index [assigned to the lowest existing index in the contact map]
+        altloc : bool
+           Use the res_altloc positions [default: False]
+        inplace : bool
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        obj
+           The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
+
+        Raises
+        ------
+        ValueError
+           Index must be positive
+
+        """
+        if index < 0:
+            raise ValueError("Index must be positive!")
+        contact_map = self._inplace(inplace)
+        res1s, res2s = zip(*contact_map.as_list(altloc=altloc))
+        offset = min(res1s) - index
+        for contact in contact_map:
+            if altloc:
+                contact.res1_altseq -= offset
+                contact.res2_altseq -= offset
+            else:
+                contact.res1_seq -= offset
+                contact.res2_seq -= offset
+        return contact_map 
+
     def remove_neighbors(self, min_distance=5, max_distance=sys.maxsize, inplace=False):
         """Remove contacts between neighboring residues
 

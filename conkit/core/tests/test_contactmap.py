@@ -1039,6 +1039,35 @@ class TestContactMap(unittest.TestCase):
             contact_map.add(c)
         self.assertListEqual([[0, 0], [0, 0], [0, 0], [0, 0]], contact_map.as_list(altloc=True))
 
+    def test_reindex_1(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            contact_map.add(c)
+        reindexed = contact_map.reindex(1)
+        self.assertListEqual([[1, 26], [2, 6], [3, 16], [1, 6]], contact_map.reindex(1).as_list())
+        
+    def test_reindex_2(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[2, 27], [3, 7], [4, 17], [2, 7]], contact_map.reindex(2).as_list())
+
+    def test_reindex_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            contact_map.add(c)
+        with self.assertRaises(ValueError):
+            contact_map.reindex(-1)
+
+    def test_reindex_4(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            c.res1_altseq = c.res1_seq + 1
+            c.res2_altseq = c.res2_seq + 2
+            contact_map.add(c)
+        reindexed = contact_map.reindex(1, altloc=True)
+        self.assertListEqual([[5, 30], [6, 10], [7, 20], [5, 10]], reindexed.as_list())
+        self.assertListEqual([[1, 27], [2, 7], [3, 17], [1, 7]], reindexed.as_list(altloc=True))
 
 
 if __name__ == "__main__":
