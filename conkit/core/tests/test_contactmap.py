@@ -867,7 +867,7 @@ class TestContactMap(unittest.TestCase):
         contact_map_keymap = ContactMap._create_keymap(contact_map)
         sequence = [ord(x) for x in 'XXXXX']
         contact_map_keymap = ContactMap._insert_states(sequence, contact_map_keymap)
-        contact_map_keymap = ContactMap._reindex(contact_map_keymap)
+        contact_map_keymap = ContactMap._reindex_by_keymap(contact_map_keymap)
         adjusted = ContactMap._adjust(contact_map, contact_map_keymap)
         self.assertEqual([1, 3, 2, 1], [c.res1_altseq for c in adjusted])
         self.assertEqual([5, 3, 4, 1], [c.res2_altseq for c in adjusted])
@@ -881,7 +881,7 @@ class TestContactMap(unittest.TestCase):
         contact_map_keymap = ContactMap._create_keymap(contact_map)
         sequence = [ord(x) for x in 'XX-XX']
         contact_map_keymap = ContactMap._insert_states(sequence, contact_map_keymap)
-        contact_map_keymap = ContactMap._reindex(contact_map_keymap)
+        contact_map_keymap = ContactMap._reindex_by_keymap(contact_map_keymap)
         adjusted = ContactMap._adjust(contact_map, contact_map_keymap)
         self.assertEqual([1, 2, 1], [c.res1_altseq for c in adjusted])
         self.assertEqual([5, 4, 1], [c.res2_altseq for c in adjusted])
@@ -980,33 +980,33 @@ class TestContactMap(unittest.TestCase):
         self.assertEqual([2, 3], [r.res_seq for r in inserts_added if isinstance(r, _Residue)])
         self.assertEqual([10, 11], [r.res_altseq for r in inserts_added if isinstance(r, _Residue)])
 
-    def test__reindex_1(self):
+    def test__reindex_by_keymap_1(self):
         keymap = [_Residue(1, 1, 'X', ''), _Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
-    def test__reindex_2(self):
+    def test__reindex_by_keymap_2(self):
         keymap = [_Residue(1, -5, 'X', ''), _Residue(2, -4, 'X', ''), _Residue(3, -3, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
-    def test__reindex_3(self):
+    def test__reindex_by_keymap_3(self):
         keymap = [_Gap(), _Residue(2, 1, 'X', ''), _Residue(3, 2, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([_Gap.IDENTIFIER, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
-    def test__reindex_4(self):
+    def test__reindex_by_keymap_4(self):
         keymap = [_Gap(), _Residue(200000, 10000, 'X', ''), _Gap(), _Gap()]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([_Gap.IDENTIFIER, 200000, _Gap.IDENTIFIER, _Gap.IDENTIFIER], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
-    def test__reindex_5(self):
+    def test__reindex_by_keymap_5(self):
         keymap = [_Gap(), _Gap(), _Gap(), _Gap()]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([_Gap.IDENTIFIER, _Gap.IDENTIFIER, _Gap.IDENTIFIER, _Gap.IDENTIFIER],
                          [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
@@ -1038,6 +1038,7 @@ class TestContactMap(unittest.TestCase):
         for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
             contact_map.add(c)
         self.assertListEqual([[0, 0], [0, 0], [0, 0], [0, 0]], contact_map.as_list(altloc=True))
+
 
 
 if __name__ == "__main__":

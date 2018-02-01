@@ -655,8 +655,8 @@ class ContactMap(_Entity):
         contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
 
         # Reindex the altseq positions to account for insertions/deletions
-        contact_map1_keymap = ContactMap._reindex(contact_map1_keymap)
-        contact_map2_keymap = ContactMap._reindex(contact_map2_keymap)
+        contact_map1_keymap = ContactMap._reindex_by_keymap(contact_map1_keymap)
+        contact_map2_keymap = ContactMap._reindex_by_keymap(contact_map2_keymap)
 
         # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
@@ -839,7 +839,7 @@ class ContactMap(_Entity):
         return keymap_
 
     @staticmethod
-    def _reindex(keymap):
+    def _reindex_by_keymap(keymap):
         """Reindex a key map"""
         for i, residue in enumerate(keymap):
             residue.res_altseq = i + 1
