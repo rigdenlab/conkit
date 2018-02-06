@@ -62,7 +62,7 @@ class PlmDCAParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
 
@@ -92,8 +92,8 @@ class PlmDCAParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         Raises
         ------

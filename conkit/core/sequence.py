@@ -62,7 +62,7 @@ class Sequence(_Entity):
     id : str
        A unique identifier
     remark : list
-       The :obj:`Sequence <conkit.core.Sequence>`-specific remarks
+       The :obj:`Sequence <conkit.core.sequence.Sequence>`-specific remarks
     seq : str
        The protein sequence as :obj:`str`
     seq_len : int
@@ -111,12 +111,12 @@ class Sequence(_Entity):
 
     @property
     def remark(self):
-        """The :obj:`Sequence <conkit.core.Sequence>`-specific remarks"""
+        """The :obj:`Sequence <conkit.core.sequence.Sequence>`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`Sequence <conkit.core.Sequence>` remark
+        """Set the :obj:`Sequence <conkit.core.sequence.Sequence>` remark
 
         Parameters
         ----------
@@ -166,11 +166,11 @@ class Sequence(_Entity):
         return len(self.seq)
 
     def align_global(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
-        """Generate a global alignment between two :obj:`Sequence <conkit.core.Sequence>` instances
+        """Generate a global alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
 
         Parameters
         ----------
-        other : :obj:`Sequence <conkit.core.Sequence>`
+        other : :obj:`Sequence <conkit.core.sequence.Sequence>`
         id_chars : int, optional
         nonid_chars : int, optional
         gap_open_pen : float, optional
@@ -181,9 +181,9 @@ class Sequence(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`Sequence`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
         obj
-           The reference to the :obj:`Sequence`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
 
         """
         sequence1 = self._inplace(inplace)
@@ -199,11 +199,11 @@ class Sequence(_Entity):
         return sequence1, sequence2
 
     def align_local(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
-        """Generate a local alignment between two :obj:`Sequence <conkit.core.Sequence>` instances
+        """Generate a local alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
 
         Parameters
         ----------
-        other : :obj:`Sequence <conkit.core.Sequence>`
+        other : :obj:`Sequence <conkit.core.sequence.Sequence>`
         id_chars : int, optional
         nonid_chars : int, optional
         gap_open_pen : float, optional
@@ -214,9 +214,9 @@ class Sequence(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`Sequence <conkit.core.Sequence>`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
         obj
-           The reference to the :obj:`Sequence <conkit.core.Sequence>`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
 
         """
         sequence1 = self._inplace(inplace)

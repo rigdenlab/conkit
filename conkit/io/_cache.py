@@ -33,9 +33,9 @@ Description
 -----------
 This module is an import caching facility used for the I/O package in ConKit.
 
-To allow fast access to individual modules required for read(), write() and convert()
-functions, we don't want to import everything every time. Thus, we only cache the 
-results to ultimately import the bits we really require.
+To allow fast access to individual modules required for :func:`read <conkit.io.read>`, :func:`write <conkit.io.write>`
+and :func:`convert <conkit.io.convert>` functions, we don't want to import everything every time. 
+Thus, we only cache the results to ultimately import the bits we really require.
 
 """
 
@@ -99,26 +99,19 @@ class _ParserCache(object):
 
     @property
     def contact_file_parsers(self):
-        """A dict of contact file parsers"""
-        # Mask as dictionaries to not break existing code
         return {c.id: c for c in self._parsers
                 if c.group in ["ContactFileParser", "GenericStructureParser"]}
 
     @property
     def sequence_file_parsers(self):
-        """A dict of sequence file parsers"""
-        # Mask as dictionaries to not break existing code
         return {c.id: c for c in self._parsers
                 if c.group in ["SequenceFileParser"]}
 
     @property
     def file_parsers(self):
-        """A dict of all file parsers"""
-        # Mask as dictionaries to not break existing code
         return {c.id: c for c in self._parsers}
 
     def __construct(self):
-        """Create the handles"""
         path = os.path.abspath(os.path.dirname(__file__))
         for m in glob.glob(os.path.join(path, "[!_]*.py")):
             with open(m, "r") as f_in:
@@ -146,11 +139,9 @@ class _ParserCache(object):
                     self._parsers += [decl]
 
     def import_module(self, format):
-        """Import a module defined in the cache"""
         return importlib.import_module(self[format].module)
 
     def import_class(self, format):
-        """Import a class defined the cache"""
         return getattr(self.import_module(format), PARSER_CACHE[format].object)
 
 

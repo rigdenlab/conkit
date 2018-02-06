@@ -59,7 +59,7 @@ class SequenceCoverageFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`SequenceFile <conkit.core.SequenceFile>`
+    hierarchy : :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
        The Multiple Sequence Alignment hierarchy
 
     Examples
@@ -75,10 +75,10 @@ class SequenceCoverageFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`SequenceFile <conkit.core.SequenceFile>`
+        hierarchy : :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
            The Multiple Sequence Alignment hierarchy
         **kwargs
-           General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
+           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
 
         """
         super(SequenceCoverageFigure, self).__init__(**kwargs)
@@ -93,12 +93,12 @@ class SequenceCoverageFigure(Figure):
 
     @property
     def hierarchy(self):
-        """A ConKit :obj:`SequenceFile <conkit.core.SequenceFile>`"""
+        """A ConKit :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`"""
         return self._hierarchy
 
     @hierarchy.setter
     def hierarchy(self, hierarchy):
-        """Define the ConKit :obj:`SequenceFile <conkit.core.SequenceFile>` """
+        """Define the ConKit :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` """
         if hierarchy and _isinstance(hierarchy, "SequenceFile") and hierarchy.is_alignment:
             self._hierarchy = hierarchy
         elif hierarchy and _isinstance(hierarchy, "SequenceFile"):

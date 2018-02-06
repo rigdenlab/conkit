@@ -57,11 +57,11 @@ class ContactMapFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
+    hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
        The default contact map hierarchy
-    other : :obj:`ContactMap <conkit.core.ContactMap>`
+    other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
        The second contact map hierarchy
-    reference : :obj:`ContactMap <conkit.core.ContactMap>`
+    reference : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
        The reference contact map hierarchy
     altloc : bool
        Use the res_altloc positions [default: False]
@@ -81,11 +81,11 @@ class ContactMapFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
+        hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
            The default contact map hierarchy
-        other : :obj:`ContactMap <conkit.core.ContactMap>`, optional
+        other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, optional
            The second contact map hierarchy
-        reference : :obj:`ContactMap <conkit.core.ContactMap>`, optional
+        reference : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, optional
            The reference contact map hierarchy
         altloc : bool, optional
            Use the res_altloc positions [default: False]
@@ -94,7 +94,7 @@ class ContactMapFigure(Figure):
         lim : tuple, list, optional
            The [min, max] residue numbers to show
         **kwargs
-           General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
+           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
 
         """
         super(ContactMapFigure, self).__init__(**kwargs)

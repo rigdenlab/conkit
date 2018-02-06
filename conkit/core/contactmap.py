@@ -55,9 +55,9 @@ from conkit.misc import normalize
 class ContactMap(_Entity):
     """A contact map object representing a single prediction
 
-    The :obj:`ContactMap <conkit.core.ContactMap>` class represents a data structure to hold a single
+    The :obj:`ContactMap <conkit.core.contactmap.ContactMap>` class represents a data structure to hold a single
     contact map prediction in one place. It contains functions to store,
-    manipulate and organise :obj:`Contact <conkit.core.Contact>` instances.
+    manipulate and organise :obj:`Contact <conkit.core.contact.Contact>` instances.
 
     Attributes
     ----------
@@ -66,17 +66,22 @@ class ContactMap(_Entity):
     id : str
        A unique identifier
     ncontacts : int
-       The number of :obj:`Contact <conkit.core.Contact>` instances in the :obj:`ContactMap <conkit.core.ContactMap>`
+       The number of :obj:`Contact <conkit.core.contact.Contact>` instances in the :obj:`ContactMap 
+       <conkit.core.contactmap.ContactMap>`
     precision : float
        The precision (Positive Predictive Value) score
-    repr_sequence : :obj:`Sequence <conkit.core.Sequence>`
-       The representative :obj:`Sequence <conkit.core.Sequence>` associated with the :obj:`ContactMap <conkit.core.ContactMap>`
-    repr_sequence_altloc : :obj:`Sequence <conkit.core.Sequence>`
-       The representative altloc :obj:`Sequence <conkit.core.Sequence>` associated with the :obj:`ContactMap <conkit.core.ContactMap>`
-    sequence : :obj:`Sequence <conkit.core.Sequence>`
-       The :obj:`Sequence <conkit.core.Sequence>` associated with the :obj:`ContactMap <conkit.core.ContactMap>`
-    top_contact : :obj:`Contact <conkit.core.Contact>`
-       The first :obj:`Contact <conkit.core.Contact>` entry in :obj:`ContactMap <conkit.core.ContactMap>`
+    repr_sequence : :obj:`Sequence <conkit.core.sequence.Sequence>`
+       The representative :obj:`Sequence <conkit.core.sequence.Sequence>` associated with the :obj:`ContactMap
+       <conkit.core.contactmap.ContactMap>`
+    repr_sequence_altloc : :obj:`Sequence <conkit.core.sequence.Sequence>`
+       The representative altloc :obj:`Sequence <conkit.core.sequence.Sequence>` associated with the :obj:`ContactMap 
+       <conkit.core.contactmap.ContactMap>`
+    sequence : :obj:`Sequence <conkit.core.sequence.Sequence>`
+       The :obj:`Sequence <conkit.core.sequence.Sequence>` associated with the :obj:`ContactMap 
+       <conkit.core.contactmap.ContactMap>`
+    top_contact : :obj:`Contact <conkit.core.contact.Contact>`
+       The first :obj:`Contact <conkit.core.contact.Contact>` entry in :obj:`ContactMap 
+       <conkit.core.contactmap.ContactMap>`
 
     Examples
     --------
@@ -133,26 +138,26 @@ class ContactMap(_Entity):
 
     @property
     def ncontacts(self):
-        """The number of :obj:`Contact <conkit.core.Contact>` instances in the :obj:`ContactMap <conkit.core.ContactMap>`
+        """The number of :obj:`Contact <conkit.core.contact.Contact>` instances in the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Returns
         -------
         int
-           The number of contacts in the :obj:`ContactMap <conkit.core.ContactMap>`
+           The number of contacts in the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         """
         return len(self)
 
     @property
     def short_range_contacts(self):
-        """The short range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
+        """The short range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Short range contacts are defined as 6 <= x <= 11 residues apart
 
         Returns
         -------
         obj
-           A copy of the :obj:`ContactMap <conkit.core.ContactMap>` with short-range contacts only
+           A copy of the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` with short-range contacts only
 
         See Also
         --------
@@ -163,14 +168,14 @@ class ContactMap(_Entity):
 
     @property
     def medium_range_contacts(self):
-        """The medium range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
+        """The medium range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Medium range contacts are defined as 12 <= x <= 23 residues apart
 
         Returns
         -------
         obj
-           A copy of the :obj:`ContactMap <conkit.core.ContactMap>` with medium-range contacts only
+           A copy of the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` with medium-range contacts only
 
         See Also
         --------
@@ -181,14 +186,14 @@ class ContactMap(_Entity):
 
     @property
     def long_range_contacts(self):
-        """The long range contacts found :obj:`ContactMap <conkit.core.ContactMap>`
+        """The long range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         long range contacts are defined as 24 <= x residues apart
 
         Returns
         -------
         obj
-           A copy of the :obj:`ContactMap <conkit.core.ContactMap>` with long-range contacts only
+           A copy of the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` with long-range contacts only
 
         See Also
         --------
@@ -245,7 +250,8 @@ class ContactMap(_Entity):
 
     @property
     def repr_sequence(self):
-        """The representative :obj:`Sequence <conkit.core.Sequence>` associated with the :obj:`ContactMap <conkit.core.ContactMap>`
+        """The representative :obj:`Sequence <conkit.core.sequence.Sequence>` associated with the :obj:`ContactMap
+        <conkit.core.contactmap.ContactMap>`
 
         The peptide sequence constructed from the available
         contacts using the normal res_seq positions
@@ -273,7 +279,8 @@ class ContactMap(_Entity):
 
     @property
     def repr_sequence_altloc(self):
-        """The representative altloc :obj:`Sequence <conkit.core.Sequence>` associated with the :obj:`ContactMap <conkit.core.ContactMap>`
+        """The representative altloc :obj:`Sequence <conkit.core.sequence.Sequence>` associated with the :obj:`ContactMap
+        <conkit.core.contactmap.ContactMap>`
 
         The peptide sequence constructed from the available
         contacts using the altloc res_seq positions
@@ -281,7 +288,7 @@ class ContactMap(_Entity):
         Returns
         -------
         obj
-           A :obj:`Sequence <conkit.core.Sequence>` object
+           A :obj:`Sequence <conkit.core.sequence.Sequence>` object
 
         Raises
         ------
@@ -302,12 +309,12 @@ class ContactMap(_Entity):
 
     @property
     def sequence(self):
-        """The :obj:`Sequence <conkit.core.Sequence>` associated with the :obj:`ContactMap <conkit.core.ContactMap>`
+        """The :obj:`Sequence <conkit.core.sequence.Sequence>` associated with the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Returns
         -------
         obj
-           A :obj:`Sequence <conkit.core.Sequence>` object
+           A :obj:`Sequence <conkit.core.sequence.Sequence>` object
 
         See Also
         --------
@@ -318,11 +325,12 @@ class ContactMap(_Entity):
 
     @sequence.setter
     def sequence(self, sequence):
-        """Associate a :obj:`Sequence <conkit.core.Sequence>` instance with the :obj:`ContactMap <conkit.core.ContactMap>`
+        """Associate a :obj:`Sequence <conkit.core.sequence.Sequence>` instance with the :obj:`ContactMap
+        <conkit.core.contactmap.ContactMap>`
 
         Parameters
         ----------
-        sequence : :obj:`Sequence <conkit.core.Sequence>`
+        sequence : :obj:`Sequence <conkit.core.sequence.Sequence>`
 
         Raises
         ------
@@ -338,12 +346,12 @@ class ContactMap(_Entity):
 
     @property
     def top_contact(self):
-        """The first :obj:`Contact <conkit.core.Contact>` entry in :obj:`ContactMap <conkit.core.ContactMap>`
+        """The first :obj:`Contact <conkit.core.contact.Contact>` entry in :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Returns
         -------
         obj, None
-           The first :obj:`Contact <conkit.core.Contact>` entry in :obj:`ContactFile <conkit.core.ContactFile>`
+           The first :obj:`Contact <conkit.core.contact.Contact>` entry in :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         return self.top
@@ -359,7 +367,7 @@ class ContactMap(_Entity):
         return Sequence(self.sequence.id + '_repr', representative_sequence)
 
     def as_list(self, altloc=False):
-        """The :obj:`ContactMap <conkit.core.ContactMap>` as a 2D-list containing contact-pair residue indexes
+        """The :obj:`ContactMap <conkit.core.contactmap.ContactMap>` as a 2D-list containing contact-pair residue indexes
 
         Parameters
         ----------
@@ -373,7 +381,7 @@ class ContactMap(_Entity):
             return [[c.res1_seq, c.res2_seq] for c in self]
 
     def assign_sequence_register(self, altloc=False):
-        """Assign the amino acids from :obj:`Sequence <conkit.core.Sequence>` to all :obj:`Contact <conkit.core.Contact>` instances
+        """Assign the amino acids from :obj:`Sequence <conkit.core.sequence.Sequence>` to all :obj:`Contact <conkit.core.contact.Contact>` instances
 
         Parameters
         ----------
@@ -392,7 +400,7 @@ class ContactMap(_Entity):
             c.res2 = self.sequence.seq[res2_index - 1]
 
     def calculate_jaccard_index(self, other):
-        """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.ContactMap>` instances
+        """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instances
 
         This score analyzes the difference of the predicted contacts from two maps,
 
@@ -411,8 +419,8 @@ class ContactMap(_Entity):
 
         Parameters
         ----------
-        other : :obj:`ContactMap <conkit.core.ContactMap>`
-           A ConKit :obj:`ContactMap <conkit.core.ContactMap>`
+        other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+           A ConKit :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Returns
         -------
@@ -500,7 +508,7 @@ class ContactMap(_Entity):
         return np.exp(kde.score_samples(x_fit)).tolist()
 
     def calculate_scalar_score(self):
-        """Calculate a scaled score for the :obj:`ContactMap <conkit.core.ContactMap>`
+        """Calculate a scaled score for the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         This score is a scaled score for all raw scores in a contact
         map. It is defined by the formula
@@ -512,8 +520,7 @@ class ContactMap(_Entity):
         where :math:`x` corresponds to the raw score of each predicted
         contact and :math:`\overline{d}` to the mean of all raw scores.
 
-        The score is saved in a separate :obj:`Contact <conkit.core.Contact>` attribute called
-        ``scalar_score``
+        The score is saved in a separate :obj:`Contact <conkit.core.contact.Contact>` attribute called ``scalar_score``
 
         This score is described in more detail in [#]_.
 
@@ -543,7 +550,7 @@ class ContactMap(_Entity):
         Returns
         -------
         obj
-           A modified version of the :obj:`ContactMap <conkit.core.ContactMap>` containing
+           A modified version of the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` containing
            the found contacts
 
         """
@@ -571,8 +578,8 @@ class ContactMap(_Entity):
 
         Parameters
         ----------
-        other : :obj:`ContactMap <conkit.core.ContactMap>`
-           A ConKit :obj:`ContactMap <conkit.core.ContactMap>`
+        other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+           A ConKit :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
         match_other: bool, optional
            Match `other` to `self` [default: False]
         remove_unmatched : bool, optional
@@ -588,12 +595,12 @@ class ContactMap(_Entity):
         Returns
         -------
         obj
-            :obj:`ContactMap <conkit.core.ContactMap>` instance, regardless of inplace
+            :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instance, regardless of inplace
 
         Raises
         ------
         ValueError
-           Error creating reliable keymap matching the sequence in :obj:`ContactMap <conkit.core.ContactMap>`
+           Error creating reliable keymap matching the sequence in :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         """
         contact_map1 = self._inplace(inplace)
@@ -762,7 +769,7 @@ class ContactMap(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
+           The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
 
         """
         contact_map = self._inplace(inplace)
@@ -774,7 +781,7 @@ class ContactMap(_Entity):
         return contact_map
 
     def rescale(self, inplace=False):
-        """Rescale the raw scores in :obj:`ContactMap <conkit.core.ContactMap>`
+        """Rescale the raw scores in :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Parameters
         ----------
@@ -784,7 +791,7 @@ class ContactMap(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
+           The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
 
         """
         contact_map = self._inplace(inplace)
@@ -801,7 +808,7 @@ class ContactMap(_Entity):
         return contact_map
 
     def sort(self, kword, reverse=False, inplace=False):
-        """Sort the :obj:`ContactMap <conkit.core.ContactMap>`
+        """Sort the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Parameters
         ----------
@@ -815,12 +822,12 @@ class ContactMap(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`ContactMap <conkit.core.ContactMap>`, regardless of inplace
+           The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
 
         Raises
         ------
         ValueError
-           ``kword`` not in :obj:`ContactMap <conkit.core.ContactMap>`
+           ``kword`` not in :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         """
         contact_map = self._inplace(inplace)

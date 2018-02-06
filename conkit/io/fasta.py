@@ -60,7 +60,7 @@ class FastaParser(SequenceFileParser):
 
         Returns
         -------
-        :obj:`SequenceFile <conkit.core.SequenceFile>`
+        :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         """
 
@@ -114,7 +114,7 @@ class FastaParser(SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`SequenceFile <conkit.core.SequenceFile>`, :obj:`Sequence <conkit.core.Sequence>`
+        hierarchy : :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, :obj:`Sequence <conkit.core.sequence.Sequence>`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary

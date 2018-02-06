@@ -67,7 +67,7 @@ class ContactMapChordFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
+    hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
        The default contact map hierarchy
 
     Examples
@@ -83,12 +83,12 @@ class ContactMapChordFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`ContactMap <conkit.core.ContactMap>`
+        hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
            The default contact map hierarchy
         use_conf : bool, optional
            The marker size will correspond to the raw score [default: False]
         **kwargs
-           General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
+           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
 
         """
         super(ContactMapChordFigure, self).__init__(**kwargs)

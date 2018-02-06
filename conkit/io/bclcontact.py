@@ -63,7 +63,7 @@ class BCLContactParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
 
@@ -73,24 +73,14 @@ class BCLContactParser(ContactFileParser):
 
         for line in f_handle:
             line = line.rstrip()
-
-            if not line:
-                continue
-
-            else:
+            if line:
                 res1_seq, res1, res2_seq, res2, _, _, _, _, _, raw_score = RE_SPLIT.split(line)
-
-                contact = Contact(
-                    int(res1_seq),
-                    int(res2_seq),
-                    float(raw_score)
-                )
+                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact.res1 = res1
                 contact.res2 = res2
                 contact_map.add(contact)
 
         hierarchy.method = 'Contact map predicted using BCL::Contact'
-
         return hierarchy
 
     def write(self, f_handle, hierarchy):
@@ -100,8 +90,8 @@ class BCLContactParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         Raises
         ------

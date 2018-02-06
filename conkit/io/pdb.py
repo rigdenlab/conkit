@@ -142,7 +142,7 @@ class GenericStructureParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         hierarchies = []
@@ -241,7 +241,7 @@ class MmCifParser(GenericStructureParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         structure = MMCIFParser(QUIET=True).get_structure("mmcif", f_handle)
@@ -254,8 +254,8 @@ class MmCifParser(GenericStructureParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`ContactMap <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`ContactMap <conkit.core.contact.Contact>`
 
         Raises
         ------
@@ -291,7 +291,7 @@ class PdbParser(GenericStructureParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
@@ -304,8 +304,8 @@ class PdbParser(GenericStructureParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`ContactMap <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`ContactMap <conkit.core.contact.Contact>`
 
         Raises
         ------
