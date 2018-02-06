@@ -227,14 +227,15 @@ class ContactMap(_Entity):
 
         import warnings
 
-        s = np.asarray([c.status for c in self])
-        cdict = dict(zip(np.unique(s), np.asarray([s[s == i].shape[0] for i in np.unique(s)])))
+        s = np.array([c.status for c in self])
+        cdict = dict(zip(np.unique(s), np.array([s[s == i].shape[0] for i in np.unique(s)])))
         fp_count = cdict[ContactMatchState.mismatched.value] if ContactMatchState.mismatched.value in cdict else 0.0
         uk_count = cdict[ContactMatchState.unknown.value] if ContactMatchState.unknown.value in cdict else 0.0
         tp_count = cdict[ContactMatchState.matched.value] if ContactMatchState.matched.value in cdict else 0.0
 
         if fp_count == 0.0 and tp_count == 0.0:
-            warnings.warn("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
+            warnings.warn(
+                "No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
             warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical "
@@ -293,7 +294,8 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res_seqs = np.unique(np.array(self.as_list(altloc=True)).flatten()).tolist()
+            res_seqs = np.unique(
+                np.array(self.as_list(altloc=True)).flatten()).tolist()
             return self._construct_repr_sequence(res_seqs)
         else:
             raise TypeError('Define the sequence as Sequence() instance')
@@ -447,7 +449,8 @@ class ContactMap(_Entity):
     def calculate_kernel_density(self, *args, **kwargs):
         """Calculate the contact density in the contact map using Gaussian kernels"""
         import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_contact_density instead!")
+        warnings.warn(
+            "This function will be deprecated in a future release! Use calculate_contact_density instead!")
         return self.calculate_contact_density(*args, **kwargs)
 
     def calculate_contact_density(self, bw_method="amise"):
@@ -488,8 +491,8 @@ class ContactMap(_Entity):
         # TODO: Chunan suggested to fix this bug - results are usually marginally better
         # REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
         # REM: Remember to change test cases when corrected implementation benchmarked
-        #  x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
-        x = np.asarray([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
+        #  x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+        x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
         from conkit.misc.bandwidth import bandwidth_factory
         bandwidth = bandwidth_factory(bw_method)(x).bw
@@ -520,7 +523,7 @@ class ContactMap(_Entity):
            *Elife* **4**, e09248.
 
         """
-        raw_scores = np.asarray([c.raw_score for c in self])
+        raw_scores = np.array([c.raw_score for c in self])
         sca_scores = raw_scores / np.mean(raw_scores)
         for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
@@ -633,9 +636,7 @@ class ContactMap(_Entity):
         # ================================================================
 
         # Encode the sequences to uint8 character arrays for easier and faster handling
-        encoded_repr = np.array(
-            [list(contact_map1_repr_sequence.seq_ascii),
-             list(contact_map2_repr_sequence.seq_ascii)])
+        encoded_repr = np.array([list(contact_map1_repr_sequence.seq_ascii), list(contact_map2_repr_sequence.seq_ascii)])
 
         # Create mappings for both contact maps
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
@@ -649,23 +650,29 @@ class ContactMap(_Entity):
             raise ValueError(msg + contact_map2.id)
 
         # Create a sequence matching keymap including deletions and insertions
-        contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
-        contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
+        contact_map1_keymap = ContactMap._insert_states(
+            encoded_repr[0], contact_map1_keymap)
+        contact_map2_keymap = ContactMap._insert_states(
+            encoded_repr[1], contact_map2_keymap)
 
         # Reindex the altseq positions to account for insertions/deletions
-        contact_map1_keymap = ContactMap._reindex_by_keymap(contact_map1_keymap)
-        contact_map2_keymap = ContactMap._reindex_by_keymap(contact_map2_keymap)
+        contact_map1_keymap = ContactMap._reindex_by_keymap(
+            contact_map1_keymap)
+        contact_map2_keymap = ContactMap._reindex_by_keymap(
+            contact_map2_keymap)
 
         # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
         # Get the residue list for matching UNKNOWNs
-        residues_map2 = tuple(i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
+        residues_map2 = tuple(
+            i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
 
         # Adjust true and false positive statuses
         for contact in contact_map1:
             _id = (contact.res1_seq, contact.res2_seq)
-            _id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
+            _id_alt = tuple(
+                r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
 
             if any(i == _Gap.IDENTIFIER for i in _id_alt) and any(j not in residues_map2 for j in _id):
                 contact_map1[_id].define_unknown()
@@ -690,7 +697,8 @@ class ContactMap(_Entity):
         # 4. Renumber the contact map 1 based on contact map 2
         # ================================================================
         if renumber:
-            contact_map1 = ContactMap._renumber(contact_map1, contact_map1_keymap, contact_map2_keymap)
+            contact_map1 = ContactMap._renumber(
+                contact_map1, contact_map1_keymap, contact_map2_keymap)
 
         return contact_map1
 
@@ -733,7 +741,7 @@ class ContactMap(_Entity):
                 contact.res2_seq -= offset
         for contact in contact_map:
             contact.id = (contact.res1_seq, contact.res2_seq)
-        return contact_map 
+        return contact_map
 
     def remove_neighbors(self, min_distance=5, max_distance=sys.maxsize, inplace=False):
         """Remove contacts between neighboring residues
@@ -781,7 +789,7 @@ class ContactMap(_Entity):
         """
         contact_map = self._inplace(inplace)
 
-        raw_scores = np.asarray([c.raw_score for c in contact_map])
+        raw_scores = np.array([c.raw_score for c in contact_map])
         norm_raw_scores = normalize(raw_scores)
 
         if np.isnan(norm_raw_scores).all():
@@ -822,7 +830,8 @@ class ContactMap(_Entity):
     @staticmethod
     def _adjust(contact_map, keymap):
         """Adjust res_altseq entries to insertions and deletions"""
-        encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
+        encoder = dict((x.res_seq, x.res_altseq)
+                       for x in keymap if isinstance(x, _Residue))
         for contact in contact_map:
             if contact.res1_seq in encoder:
                 contact.res1_altseq = encoder[contact.res1_seq]
@@ -847,8 +856,10 @@ class ContactMap(_Entity):
         """
         contact_map_keymap = collections.OrderedDict()
         for contact in contact_map:
-            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
-            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
+            pos1 = _Residue(contact.res1_seq, contact.res1_altseq,
+                            contact.res1, contact.res1_chain)
+            pos2 = _Residue(contact.res2_seq, contact.res2_altseq,
+                            contact.res2, contact.res2_chain)
             if altloc:
                 res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
             else:
