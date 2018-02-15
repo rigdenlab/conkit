@@ -239,8 +239,7 @@ class ContactMap(_Entity):
         tp_count = cdict[ContactMatchState.matched.value] if ContactMatchState.matched.value in cdict else 0.0
 
         if fp_count == 0.0 and tp_count == 0.0:
-            warnings.warn(
-                "No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
+            warnings.warn("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
             warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical "
@@ -301,11 +300,39 @@ class ContactMap(_Entity):
 
         """
         if isinstance(self.sequence, Sequence):
-            res_seqs = np.unique(
-                np.array(self.as_list(altloc=True)).flatten()).tolist()
+            res_seqs = np.unique(np.array(self.as_list(altloc=True)).flatten()).tolist()
             return self._construct_repr_sequence(res_seqs)
         else:
             raise TypeError('Define the sequence as Sequence() instance')
+
+    @property
+    def singletons(self):
+        """Singleton contact pairs in the current :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        
+        Contacts are identified by a distance-based cluster analysis. A :obj:`Contact <conkit.core.contact.Contact>` is
+        classified as singleton if not other contacts are found within 3 residues.
+
+        Returns
+        -------
+        :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+
+        Raises
+        ------
+        RuntimeError
+           Cannot find SciPy package
+
+        """
+        try:
+            import scipy.cluster
+        except ImportError:
+            raise RuntimeError('Cannot find SciPy package')
+        residues = self.as_list()
+        clusters = scipy.cluster.hierarchy.fclusterdata(residues, 3, criterion="distance")
+        unique, counts = np.unique(clusters, return_counts=True)
+        singleton_indexes = np.argwhere(np.in1d(clusters, unique[counts == 1])).flatten()
+        singletons = ContactMap("%s singletons" % self.id)
+        [singletons.add(self._child_list[i].copy()) for i in singleton_indexes]
+        return singletons
 
     @property
     def sequence(self):
@@ -457,8 +484,7 @@ class ContactMap(_Entity):
     def calculate_kernel_density(self, *args, **kwargs):
         """Calculate the contact density in the contact map using Gaussian kernels"""
         import warnings
-        warnings.warn(
-            "This function will be deprecated in a future release! Use calculate_contact_density instead!")
+        warnings.warn("This function will be deprecated in a future release! Use calculate_contact_density instead!")
         return self.calculate_contact_density(*args, **kwargs)
 
     def calculate_contact_density(self, bw_method="amise"):
@@ -643,7 +669,9 @@ class ContactMap(_Entity):
         # ================================================================
 
         # Encode the sequences to uint8 character arrays for easier and faster handling
-        encoded_repr = np.array([list(contact_map1_repr_sequence.seq_ascii), list(contact_map2_repr_sequence.seq_ascii)])
+        encoded_repr = np.array(
+            [list(contact_map1_repr_sequence.seq_ascii),
+             list(contact_map2_repr_sequence.seq_ascii)])
 
         # Create mappings for both contact maps
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
@@ -657,29 +685,23 @@ class ContactMap(_Entity):
             raise ValueError(msg + contact_map2.id)
 
         # Create a sequence matching keymap including deletions and insertions
-        contact_map1_keymap = ContactMap._insert_states(
-            encoded_repr[0], contact_map1_keymap)
-        contact_map2_keymap = ContactMap._insert_states(
-            encoded_repr[1], contact_map2_keymap)
+        contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
+        contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
 
         # Reindex the altseq positions to account for insertions/deletions
-        contact_map1_keymap = ContactMap._reindex_by_keymap(
-            contact_map1_keymap)
-        contact_map2_keymap = ContactMap._reindex_by_keymap(
-            contact_map2_keymap)
+        contact_map1_keymap = ContactMap._reindex_by_keymap(contact_map1_keymap)
+        contact_map2_keymap = ContactMap._reindex_by_keymap(contact_map2_keymap)
 
         # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
         # Get the residue list for matching UNKNOWNs
-        residues_map2 = tuple(
-            i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
+        residues_map2 = tuple(i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
 
         # Adjust true and false positive statuses
         for contact in contact_map1:
             _id = (contact.res1_seq, contact.res2_seq)
-            _id_alt = tuple(
-                r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
+            _id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
 
             if any(i == _Gap.IDENTIFIER for i in _id_alt) and any(j not in residues_map2 for j in _id):
                 contact_map1[_id].define_unknown()
@@ -704,8 +726,7 @@ class ContactMap(_Entity):
         # 4. Renumber the contact map 1 based on contact map 2
         # ================================================================
         if renumber:
-            contact_map1 = ContactMap._renumber(
-                contact_map1, contact_map1_keymap, contact_map2_keymap)
+            contact_map1 = ContactMap._renumber(contact_map1, contact_map1_keymap, contact_map2_keymap)
 
         return contact_map1
 
@@ -837,8 +858,7 @@ class ContactMap(_Entity):
     @staticmethod
     def _adjust(contact_map, keymap):
         """Adjust res_altseq entries to insertions and deletions"""
-        encoder = dict((x.res_seq, x.res_altseq)
-                       for x in keymap if isinstance(x, _Residue))
+        encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
         for contact in contact_map:
             if contact.res1_seq in encoder:
                 contact.res1_altseq = encoder[contact.res1_seq]
@@ -863,10 +883,8 @@ class ContactMap(_Entity):
         """
         contact_map_keymap = collections.OrderedDict()
         for contact in contact_map:
-            pos1 = _Residue(contact.res1_seq, contact.res1_altseq,
-                            contact.res1, contact.res1_chain)
-            pos2 = _Residue(contact.res2_seq, contact.res2_altseq,
-                            contact.res2, contact.res2_chain)
+            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
+            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
             if altloc:
                 res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
             else:

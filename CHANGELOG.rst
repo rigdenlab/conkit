@@ -13,6 +13,7 @@ Added
 - ``CONTRIB.rst`` file to list all contributors
 - ``SequenceFile.diversity`` property defined by :math:`\sqrt{N}/L`
 - ``ContactMap.reindex`` to reindex a contact map given a new starting index
+- ``ContactMap.singletons`` returns a copy of the contact map with singleton contacts, i.e. ones without neighbors
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
