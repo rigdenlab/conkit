@@ -309,17 +309,12 @@ class ContactMap(_Entity):
     def singletons(self):
         """Singleton contact pairs in the current :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
         
-        Contacts are identified by a distance-based cluster analysis. A :obj:`Contact <conkit.core.contact.Contact>` is
-        classified as singleton if not other contacts are found within 3 residues.
+        Contacts are identified by a distance-based grouping analysis. A :obj:`Contact <conkit.core.contact.Contact>` is
+        classified as singleton if not other contacts are found within 2 residues.
 
         Returns
         -------
         :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-
-        Raises
-        ------
-        RuntimeError
-           Cannot find SciPy package
 
         """
         maxd = 2
