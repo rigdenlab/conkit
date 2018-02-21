@@ -322,16 +322,18 @@ class ContactMap(_Entity):
            Cannot find SciPy package
 
         """
-        try:
-            import scipy.cluster
-        except ImportError:
-            raise RuntimeError('Cannot find SciPy package')
-        residues = self.as_list()
-        clusters = scipy.cluster.hierarchy.fclusterdata(residues, 3, criterion="distance")
-        unique, counts = np.unique(clusters, return_counts=True)
-        singleton_indexes = np.argwhere(np.in1d(clusters, unique[counts == 1])).flatten()
-        singletons = ContactMap("%s singletons" % self.id)
-        [singletons.add(self._child_list[i].copy()) for i in singleton_indexes]
+        maxd = 2
+        contacts = np.asarray(self.as_list())
+        iterator = np.arange(self.ncontacts)
+        removables = set()
+        for i in iterator:
+            for j in iterator[i + 1:]:
+                dist = np.abs(contacts[i] - contacts[j])
+                if dist[0] <= maxd and dist[1] <= maxd:
+                    removables.add(tuple(contacts[i]))
+                    removables.add(tuple(contacts[j]))
+        singletons = self.deepcopy()
+        [singletons.remove(i) for i in removables]
         return singletons
 
     @property

@@ -1071,51 +1071,45 @@ class TestContactMap(unittest.TestCase):
 
     def test_singletons_1(self):
         contact_map = ContactMap("test")
-        for c in [Contact(4, 4, 1.0), Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(3, 5, 0.2)]:
+        for c in [Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(3, 5, 0.2)]:
             contact_map.add(c)
         self.assertListEqual([], contact_map.singletons.as_list())
 
     def test_singletons_2(self):
         contact_map = ContactMap("test")
-        for c in [Contact(4, 4, 1.0), Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(10, 10, 0.2)]:
+        for c in [Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(10, 10, 0.2)]:
             contact_map.add(c)
         self.assertListEqual([[10, 10]], contact_map.singletons.as_list())
 
     def test_singletons_3(self):
         contact_map = ContactMap("test")
-        for c in [
-                Contact(4, 4, 1.0),
-                Contact(5, 5, 0.4),
-                Contact(4, 6, 0.1),
-                Contact(10, 10, 0.2),
-                Contact(10, 11, 0.2)
-        ]:
+        for c in [Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(10, 10, 0.2), Contact(10, 11, 0.2)]:
             contact_map.add(c)
         self.assertListEqual([], contact_map.singletons.as_list())
 
     def test_singletons_4(self):
         contact_map = ContactMap("test")
-        for c in [Contact(4, 4, 1.0), Contact(4, 6, 0.4)]:
+        for c in [Contact(4, 5, 1.0), Contact(4, 6, 0.4)]:
             contact_map.add(c)
         self.assertListEqual([], contact_map.singletons.as_list())
 
     def test_singletons_5(self):
         contact_map = ContactMap("test")
-        for c in [Contact(4, 4, 1.0), Contact(4, 8, 0.4)]:
+        for c in [Contact(3, 4, 1.0), Contact(4, 8, 0.4)]:
             contact_map.add(c)
-        self.assertListEqual([[4, 4], [4, 8]], contact_map.singletons.as_list())
+        self.assertListEqual([[3, 4], [4, 8]], contact_map.singletons.as_list())
 
     def test_singletons_6(self):
         contact_map = ContactMap("test")
-        for c in [Contact(4, 4, 1.0), Contact(6, 6, 0.4)]:
+        for c in [Contact(4, 5, 1.0), Contact(6, 7, 0.4)]:
             contact_map.add(c)
         self.assertListEqual([], contact_map.singletons.as_list())
 
     def test_singletons_7(self):
         contact_map = ContactMap("test")
-        for c in [Contact(4, 4, 1.0), Contact(7, 7, 0.4)]:
+        for c in [Contact(4, 5, 1.0), Contact(7, 8, 0.4)]:
             contact_map.add(c)
-        self.assertListEqual([[4, 4], [7, 7]], contact_map.singletons.as_list())
+        self.assertListEqual([[4, 5], [7, 8]], contact_map.singletons.as_list())
 
 
 if __name__ == "__main__":
