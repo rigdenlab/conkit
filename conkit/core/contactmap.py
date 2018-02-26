@@ -582,13 +582,9 @@ class ContactMap(_Entity):
         register = set(register)
         comparison_operator = _AND if strict else _OR
         contact_map = self.deepcopy()
-        for contact in self:
-            if altloc and comparison_operator(contact.res1_altseq in register, contact.res2_altseq in register):
-                continue
-            elif comparison_operator(contact.res1_seq in register, contact.res2_seq in register):
-                continue
-            else:
-                contact_map.remove(contact.id)
+        for contactid in self.as_list(altloc=altloc):
+            if not comparison_operator(contactid[0] in register, contactid[1] in register):
+                contact_map.remove(tuple(contactid))
         return contact_map
 
     def match(self, other, match_other=False, remove_unmatched=False, renumber=False, inplace=False):
@@ -715,9 +711,9 @@ class ContactMap(_Entity):
         # 3. Remove unmatched contacts
         # ================================================================
         if remove_unmatched:
-            for contact in contact_map1.deepcopy():
-                if contact.is_unknown:
-                    contact_map1.remove(contact.id)
+            for contactid in contact_map1.as_list():
+                if contact_map1[tuple(contactid)].is_unknown:
+                    contact_map1.remove(tuple(contactid))
 
         # ================================================================
         # 4. Renumber the contact map 1 based on contact map 2
@@ -791,11 +787,11 @@ class ContactMap(_Entity):
 
         """
         contact_map = self._inplace(inplace)
-        for contact in contact_map.deepcopy():
-            if min_distance <= abs(contact.res1_seq - contact.res2_seq) <= max_distance:
+        for contactid in contact_map.as_list():
+            if min_distance <= abs(contactid[1] - contactid[0]) <= max_distance:
                 continue
             else:
-                contact_map.remove(contact.id)
+                contact_map.remove(tuple(contactid))
         return contact_map
 
     def rescale(self, inplace=False):
