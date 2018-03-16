@@ -47,7 +47,7 @@ if sys.version_info.major < 3:
 
 from conkit.core._entity import _Entity
 from conkit.core._struct import _Gap, _Residue
-from conkit.core.contact import ContactMatchState
+from conkit.core.mappings import ContactMatchState
 from conkit.core.sequence import Sequence
 from conkit.misc import normalize
 

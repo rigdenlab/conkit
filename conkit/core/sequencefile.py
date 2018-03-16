@@ -114,6 +114,11 @@ class SequenceFile(_Entity):
         return [list(seq.seq_ascii) for seq in self]
 
     @property
+    def encoded_matrix(self):
+        """The alignment encoded for contact prediction"""
+        return [list(seq.seq_encoded) for seq in self]
+
+    @property
     def is_alignment(self):
         """A boolean status for the alignment
 

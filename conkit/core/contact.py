@@ -40,15 +40,7 @@ __version__ = "1.0"
 
 from enum import Enum, unique
 from conkit.core._entity import _Entity
-from conkit.core.sequence import THREE_TO_ONE
-
-
-@unique
-class ContactMatchState(Enum):
-    """Enumerated class to store state constants for each contact"""
-    unknown = 0
-    matched = 1
-    mismatched = 2
+from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState 
 
 
 class Contact(_Entity):
@@ -472,9 +464,10 @@ class Contact(_Entity):
     @staticmethod
     def _set_residue(amino_acid):
         """Assign the residue to the corresponding amino_acid"""
-        if amino_acid in THREE_TO_ONE:
-            return THREE_TO_ONE[amino_acid]
-        elif amino_acid in set(THREE_TO_ONE.values()):
-            return amino_acid
+        a_a = amino_acid.upper()
+        if a_a in dir(AminoAcidOneToThree):
+            return a_a
+        elif a_a in dir(AminoAcidThreeToOne):
+            return AminoAcidThreeToOne[a_a].value 
         else:
             raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))

@@ -12,8 +12,9 @@ except ImportError:
     SKLEARN = False
 
 from conkit.core._struct import _Gap, _Residue
-from conkit.core.contact import Contact, ContactMatchState
+from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
+from conkit.core.mappings import ContactMatchState
 from conkit.core.sequence import Sequence
 
 

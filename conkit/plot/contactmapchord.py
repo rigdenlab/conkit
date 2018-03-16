@@ -41,7 +41,7 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.core.contact import ContactMatchState
+from conkit.core.mappings import ContactMatchState
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, points_on_circle, _isinstance
 
