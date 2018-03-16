@@ -14,12 +14,15 @@ Added
 - ``SequenceFile.diversity`` property defined by :math:`\sqrt{N}/L`
 - ``ContactMap.reindex`` to reindex a contact map given a new starting index
 - ``ContactMap.singletons`` returns a copy of the contact map with singleton contacts, i.e. ones without neighbors
+- ``Sequence.seq_encoded`` to allow turning a sequence into an encoded list
+- ``Sequence.encoded_matrix`` to give the entire alignment as encoded matrix
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
 - ``ContactMapFigure`` now accepts ``lim`` parameters for axes limits
 - ``ContactMapFigure`` and ``ContacctMapChordFigure`` improved to better space marker size
 - Typos corrected in documentation 
+- ``THREE_TO_ONE`` and ``ONE_TO_THREE`` dictionaries modified to ``Enum`` objects
 
 [0.8.4]
 -------

@@ -44,15 +44,8 @@ import sys
 if sys.version_info.major < 3:
     from itertools import izip as zip
 
-from enum import Enum
 from conkit.core._entity import _Entity
-
-
-class SequenceAlignmentState(Enum):
-    """Alignment states"""
-    unknown = 0
-    unaligned = 1
-    aligned = 2
+from conkit.core.mappings import SequenceAlignmentState
 
 
 class SequenceFile(_Entity):

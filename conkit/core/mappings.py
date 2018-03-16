@@ -100,3 +100,11 @@ class ContactMatchState(Enum):
     unknown = 0
     matched = 1
     mismatched = 2
+
+
+@unique
+class SequenceAlignmentState(Enum):
+    """Alignment states"""
+    unknown = 0
+    unaligned = 1
+    aligned = 2
