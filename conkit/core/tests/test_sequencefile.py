@@ -210,7 +210,7 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('nop', 'AAAAAAB')
         ]:
             sequence_file.add(s)
-        self.assertEqual(5, sequence_file.neff)
+        self.assertEqual(5, sequence_file.meff)
 
     def test_calculate_freq_1(self):
         sequence_file = SequenceFile('test')
@@ -344,6 +344,44 @@ class TestSequenceFile(unittest.TestCase):
             sequence_file.add(seq)
         filtered = sequence_file.filter(min_id=0.1, max_id=0.9)
         self.assertEqual(['foo'], [s.id for s in filtered])
+
+    @skipUnless(SCIPY)
+    def test_filter_6(self):
+        sequence_file = SequenceFile('test')
+        for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AACCCC'), Sequence('doe', 'BBBBBB')]:
+            sequence_file.add(seq)
+        filtered = sequence_file.filter(min_id=0.1, max_id=0.9)
+        self.assertEqual(['foo', 'bar'], [s.id for s in filtered])
+
+    def test_filter_gapped_1(self):
+        sequence_file = SequenceFile('test')
+        sequence_file.add(Sequence('foo', '-----'))
+        filtered = sequence_file.filter_gapped(min_prop=0.0, max_prop=1.0)
+        self.assertEqual(['foo'], [s.id for s in filtered])
+
+    def test_filter_gapped_2(self):
+        sequence_file = SequenceFile('test')
+        sequence_file.add(Sequence('foo', 'AAA--'))
+        filtered = sequence_file.filter_gapped(min_prop=0.0, max_prop=0.6)
+        self.assertEqual(['foo'], [s.id for s in filtered])
+
+    def test_filter_gapped_3(self):
+        sequence_file = SequenceFile('test')
+        sequence_file.add(Sequence('foo', 'AAA--'))
+        filtered = sequence_file.filter_gapped(min_prop=0.0, max_prop=0.599999999)
+        self.assertEqual(['foo'], [s.id for s in filtered])
+
+    def test_filter_gapped_4(self):
+        sequence_file = SequenceFile('test')
+        sequence_file.add(Sequence('foo', 'AAAA-'))
+        filtered = sequence_file.filter_gapped(min_prop=0.2, max_prop=1.0)
+        self.assertEqual(['foo'], [s.id for s in filtered])
+
+    def test_filter_gapped_5(self):
+        sequence_file = SequenceFile('test')
+        sequence_file.add(Sequence('foo', 'AAAAA'))
+        filtered = sequence_file.filter_gapped(min_prop=0.199999999, max_prop=1.0)
+        self.assertEqual([], [s.id for s in filtered])
 
     def test_diversity_1(self):
         sequence_file = SequenceFile('test')

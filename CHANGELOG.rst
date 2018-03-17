@@ -16,6 +16,7 @@ Added
 - ``ContactMap.singletons`` returns a copy of the contact map with singleton contacts, i.e. ones without neighbors
 - ``Sequence.seq_encoded`` to allow turning a sequence into an encoded list
 - ``Sequence.encoded_matrix`` to give the entire alignment as encoded matrix
+- ``SequenceFile.filter_gapped`` to filter sequences with a certain threshold of gaps
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
@@ -23,6 +24,7 @@ Changed
 - ``ContactMapFigure`` and ``ContacctMapChordFigure`` improved to better space marker size
 - Typos corrected in documentation 
 - ``THREE_TO_ONE`` and ``ONE_TO_THREE`` dictionaries modified to ``Enum`` objects
+- ``SequeneFile.neff`` renamed to ``SequenceFile.meff``
 
 [0.8.4]
 -------
