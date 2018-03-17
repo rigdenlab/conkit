@@ -465,9 +465,9 @@ class Contact(_Entity):
     def _set_residue(amino_acid):
         """Assign the residue to the corresponding amino_acid"""
         a_a = amino_acid.upper()
-        if a_a in dir(AminoAcidOneToThree):
+        if a_a in AminoAcidOneToThree.__members__:
             return a_a
-        elif a_a in dir(AminoAcidThreeToOne):
+        elif a_a in AminoAcidThreeToOne.__members__:
             return AminoAcidThreeToOne[a_a].value 
         else:
             raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))

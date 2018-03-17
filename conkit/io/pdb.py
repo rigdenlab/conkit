@@ -124,7 +124,7 @@ class GenericStructureParser(ContactFileParser):
     def _remove_hetatm(self, chain):
         """Tidy up a chain removing all HETATM entries"""
         for residue in chain.copy():
-            if residue.id[0].strip() and residue.resname not in dir(AminoAcidThreeToOne):
+            if residue.id[0].strip() and residue.resname not in AminoAcidThreeToOne.__members__:
                 chain.detach_child(residue.id)
 
     def _read(self, structure, f_id, distance_cutoff, atom_type):

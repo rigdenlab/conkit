@@ -90,13 +90,13 @@ class AminoAcidMappingTest(unittest.TestCase):
 
 class AminoAcidThreeToOneTest(unittest.TestCase):
     def test_single_1(self):
-        self.assertTrue("ALA" in dir(AminoAcidThreeToOne))
+        self.assertTrue("ALA" in AminoAcidThreeToOne.__members__)
 
     def test_single_2(self):
-        self.assertFalse("ala" in dir(AminoAcidThreeToOne))
+        self.assertFalse("ala" in AminoAcidThreeToOne.__members__)
 
     def test_single_3(self):
-        self.assertFalse("Ala" in dir(AminoAcidThreeToOne))
+        self.assertFalse("Ala" in AminoAcidThreeToOne.__members__)
 
     def test_single_4(self):
         self.assertEqual("A", AminoAcidThreeToOne.ALA.value)
@@ -107,10 +107,10 @@ class AminoAcidThreeToOneTest(unittest.TestCase):
 
 class AminoAcidOneToThreeTest(unittest.TestCase):
     def test_single_1(self):
-        self.assertTrue("A" in dir(AminoAcidOneToThree))
+        self.assertTrue("A" in AminoAcidOneToThree.__members__)
 
     def test_single_2(self):
-        self.assertFalse("a" in dir(AminoAcidOneToThree))
+        self.assertFalse("a" in AminoAcidOneToThree.__members__)
 
     def test_single_3(self):
         self.assertEqual("ALA", AminoAcidOneToThree.A.value)
