@@ -12,9 +12,6 @@ class AminoAcidMappingTest(unittest.TestCase):
     def test_A_1(self):
         self.assertEqual(1, AminoAcidMapping["A"].value)
 
-    def test_B_1(self):
-        self.assertEqual(21, AminoAcidMapping["B"].value)
-
     def test_C_1(self):
         self.assertEqual(2, AminoAcidMapping["C"].value)
 
@@ -36,9 +33,6 @@ class AminoAcidMappingTest(unittest.TestCase):
     def test_I_1(self):
         self.assertEqual(8, AminoAcidMapping["I"].value)
 
-    def test_J_1(self):
-        self.assertEqual(21, AminoAcidMapping["J"].value)
-
     def test_K_1(self):
         self.assertEqual(9, AminoAcidMapping["K"].value)
 
@@ -50,9 +44,6 @@ class AminoAcidMappingTest(unittest.TestCase):
 
     def test_N_1(self):
         self.assertEqual(12, AminoAcidMapping["N"].value)
-
-    def test_O_1(self):
-        self.assertEqual(21, AminoAcidMapping["O"].value)
 
     def test_P_1(self):
         self.assertEqual(13, AminoAcidMapping["P"].value)
@@ -69,9 +60,6 @@ class AminoAcidMappingTest(unittest.TestCase):
     def test_T_1(self):
         self.assertEqual(17, AminoAcidMapping["T"].value)
 
-    def test_U_1(self):
-        self.assertEqual(21, AminoAcidMapping["U"].value)
-
     def test_V_1(self):
         self.assertEqual(18, AminoAcidMapping["V"].value)
 
@@ -85,7 +73,7 @@ class AminoAcidMappingTest(unittest.TestCase):
         self.assertEqual(20, AminoAcidMapping["Y"].value)
 
     def test_Z_1(self):
-        self.assertEqual(21, AminoAcidMapping["Z"].value)
+        self.assertEqual(21, getattr(AminoAcidMapping, "Z", AminoAcidMapping.X.value))
 
 
 class AminoAcidThreeToOneTest(unittest.TestCase):

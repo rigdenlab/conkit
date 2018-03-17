@@ -4,7 +4,6 @@ from enum import Enum, unique
 class AminoAcidMapping(Enum):
     """Amino acid mapping to encode an alignment"""
     A = 1
-    B = 21
     C = 2
     D = 3
     E = 4
@@ -12,23 +11,19 @@ class AminoAcidMapping(Enum):
     G = 6
     H = 7
     I = 8
-    J = 21
     K = 9
     L = 10
     M = 11
     N = 12
-    O = 21
     P = 13
     Q = 14
     R = 15
     S = 16
     T = 17
-    U = 21
     V = 18
     W = 19
     X = 21
     Y = 20
-    Z = 21
 
 
 class AminoAcidOneToThree(Enum):

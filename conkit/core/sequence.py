@@ -151,7 +151,7 @@ class Sequence(_Entity):
     @property
     def seq_encoded(self):
         """The protein sequence encoded by numbers"""
-        return [AminoAcidMapping[c].value for c in self.seq]
+        return [getattr(AminoAcidMapping, c, AminoAcidMapping.X).value for c in self.seq]
 
     @property
     def seq_len(self):
