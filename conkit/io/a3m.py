@@ -56,7 +56,7 @@ class A3mParser(SequenceFileParser):
     def __init__(self):
         super(A3mParser, self).__init__()
 
-    def read(self, f_handle, f_id='a3m', remove_insert=True):
+    def read(self, f_handle, f_id='a3m', remove_inserts=True):
         """Read a sequence file
 
         Parameters
@@ -65,7 +65,7 @@ class A3mParser(SequenceFileParser):
            Open file handle [read permissions]
         f_id : str, optional
            Unique sequence file identifier
-        remove_insert : bool, optional
+        remove_inserts : bool, optional
            Remove insert states [default: True]
 
         Returns
@@ -88,13 +88,10 @@ class A3mParser(SequenceFileParser):
             elif line.startswith('>'):
                 break
 
-        # Read the sequence record(s) and store them
         while True:
             if not line.startswith('>'):
                 raise ValueError("Fasta record needs to start with '>'")
-
-            id = line[1:]  # Header without '>'
-
+            id = line[1:]
             chunks = []
             line = f_handle.readline().rstrip()
             while True:
@@ -104,16 +101,10 @@ class A3mParser(SequenceFileParser):
                     break
                 chunks.append(line)
                 line = f_handle.readline().rstrip()
-            seq_string = "".join(chunks)   # Sequence from chunks
-
-            # Remove insert states
-            if remove_insert:
-                seq_string = self._remove_insert(seq_string)
-
-            # Create the sequence record instance
+            seq_string = "".join(chunks)
+            if remove_inserts:
+                seq_string = self._remove_inserts(seq_string)
             sequence_entry = Sequence(id, seq_string)
-
-            # Store the sequence in the file
             try:
                 sequence_file.add(sequence_entry)
             except ValueError:
@@ -125,12 +116,10 @@ class A3mParser(SequenceFileParser):
                         break
                 sequence_entry.id = new_id
                 sequence_file.add(sequence_entry)
-
             if not line:
                 break
 
-        # Match the insert states of the sequence
-        if not remove_insert:
+        if not remove_inserts:
             self._adjust_insert(sequence_file)
 
         return sequence_file
@@ -173,7 +162,7 @@ class A3mParser(SequenceFileParser):
                                          in zip(seq, insert_max_lengths))
         return
 
-    def _remove_insert(self, seq):
+    def _remove_inserts(self, seq):
         """Remove insert states"""
         return "".join([char for char in seq if not char.islower()])
 

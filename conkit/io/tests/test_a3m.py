@@ -37,7 +37,7 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
         f_name = create_tmp_f(content=msa)
         parser = A3mParser()
         with open(f_name, 'r') as f_in:
-            sequence_file = parser.read(f_in, remove_insert=True)     # <------------
+            sequence_file = parser.read(f_in, remove_inserts=True)     # <------------
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual('d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}',
@@ -116,7 +116,7 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
         f_name = create_tmp_f(content=msa)
         parser = A3mParser()
         with open(f_name, 'r') as f_in:
-            sequence_file = parser.read(f_in, remove_insert=False)     # <------------
+            sequence_file = parser.read(f_in, remove_inserts=False)     # <------------
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual('d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}',
@@ -185,7 +185,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
         f_name = create_tmp_f(content=msa)
         parser = A3mParser()
         with open(f_name, 'r') as f_in:
-            sequence_file = parser.read(f_in, remove_insert=False)  # <------------
+            sequence_file = parser.read(f_in, remove_inserts=False)  # <------------
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual('d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}',
@@ -240,7 +240,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
         f_name_out = create_tmp_f()
         parser = A3mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
-            sequence_file = parser.read(f_in, remove_insert=True)
+            sequence_file = parser.read(f_in, remove_inserts=True)
             parser.write(f_out, sequence_file)
         ref = [
             ">d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}",
@@ -300,7 +300,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
         f_name_out = create_tmp_f()
         parser = A3mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
-            sequence_file = parser.read(f_in, remove_insert=False)
+            sequence_file = parser.read(f_in, remove_inserts=False)
             parser.write(f_out, sequence_file)
         ref = [
             ">d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}",

@@ -25,6 +25,9 @@ Changed
 - Typos corrected in documentation 
 - ``THREE_TO_ONE`` and ``ONE_TO_THREE`` dictionaries modified to ``Enum`` objects
 - ``SequeneFile.neff`` renamed to ``SequenceFile.meff``
+Fixed
+~~~~~
+- ``A3mParser`` keyword argument mismatch sorted
 
 [0.8.4]
 -------
