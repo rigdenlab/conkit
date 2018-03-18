@@ -12,8 +12,9 @@ except ImportError:
     SKLEARN = False
 
 from conkit.core._struct import _Gap, _Residue
-from conkit.core.contact import Contact, ContactMatchState
+from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
+from conkit.core.mappings import ContactMatchState
 from conkit.core.sequence import Sequence
 
 
@@ -867,7 +868,7 @@ class TestContactMap(unittest.TestCase):
         contact_map_keymap = ContactMap._create_keymap(contact_map)
         sequence = [ord(x) for x in 'XXXXX']
         contact_map_keymap = ContactMap._insert_states(sequence, contact_map_keymap)
-        contact_map_keymap = ContactMap._reindex(contact_map_keymap)
+        contact_map_keymap = ContactMap._reindex_by_keymap(contact_map_keymap)
         adjusted = ContactMap._adjust(contact_map, contact_map_keymap)
         self.assertEqual([1, 3, 2, 1], [c.res1_altseq for c in adjusted])
         self.assertEqual([5, 3, 4, 1], [c.res2_altseq for c in adjusted])
@@ -881,7 +882,7 @@ class TestContactMap(unittest.TestCase):
         contact_map_keymap = ContactMap._create_keymap(contact_map)
         sequence = [ord(x) for x in 'XX-XX']
         contact_map_keymap = ContactMap._insert_states(sequence, contact_map_keymap)
-        contact_map_keymap = ContactMap._reindex(contact_map_keymap)
+        contact_map_keymap = ContactMap._reindex_by_keymap(contact_map_keymap)
         adjusted = ContactMap._adjust(contact_map, contact_map_keymap)
         self.assertEqual([1, 2, 1], [c.res1_altseq for c in adjusted])
         self.assertEqual([5, 4, 1], [c.res2_altseq for c in adjusted])
@@ -980,36 +981,136 @@ class TestContactMap(unittest.TestCase):
         self.assertEqual([2, 3], [r.res_seq for r in inserts_added if isinstance(r, _Residue)])
         self.assertEqual([10, 11], [r.res_altseq for r in inserts_added if isinstance(r, _Residue)])
 
-    def test__reindex_1(self):
+    def test__reindex_by_keymap_1(self):
         keymap = [_Residue(1, 1, 'X', ''), _Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
-    def test__reindex_2(self):
+    def test__reindex_by_keymap_2(self):
         keymap = [_Residue(1, -5, 'X', ''), _Residue(2, -4, 'X', ''), _Residue(3, -3, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
-    def test__reindex_3(self):
+    def test__reindex_by_keymap_3(self):
         keymap = [_Gap(), _Residue(2, 1, 'X', ''), _Residue(3, 2, 'X', '')]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([_Gap.IDENTIFIER, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
-    def test__reindex_4(self):
+    def test__reindex_by_keymap_4(self):
         keymap = [_Gap(), _Residue(200000, 10000, 'X', ''), _Gap(), _Gap()]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([_Gap.IDENTIFIER, 200000, _Gap.IDENTIFIER, _Gap.IDENTIFIER], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
-    def test__reindex_5(self):
+    def test__reindex_by_keymap_5(self):
         keymap = [_Gap(), _Gap(), _Gap(), _Gap()]
-        reindex = ContactMap._reindex(keymap)
+        reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([_Gap.IDENTIFIER, _Gap.IDENTIFIER, _Gap.IDENTIFIER, _Gap.IDENTIFIER],
                          [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
+
+    def test_as_list_1(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[1, 30], [2, 10], [3, 20], [1, 5]], contact_map.as_list())
+
+    def test_as_list_2(self):
+        contact_map = ContactMap('test')
+        self.assertListEqual([], contact_map.as_list())
+
+    def test_as_list_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            c.res1_altseq = c.res1_seq + 1
+            c.res2_altseq = c.res2_seq + 2
+            contact_map.add(c)
+        self.assertListEqual([[2, 32], [3, 12], [4, 22], [2, 7]], contact_map.as_list(altloc=True))
+
+    def test_as_list_4(self):
+        contact_map = ContactMap("test")
+        self.assertListEqual([], contact_map.as_list(altloc=True))
+
+    def test_as_list_5(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 30, 1.0), Contact(2, 10, 0.4), Contact(3, 20, 0.1), Contact(1, 5, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[0, 0], [0, 0], [0, 0], [0, 0]], contact_map.as_list(altloc=True))
+
+    def test_reindex_1(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            contact_map.add(c)
+        reindexed = contact_map.reindex(1)
+        self.assertListEqual([[1, 26], [2, 6], [3, 16], [1, 6]], contact_map.reindex(1).as_list())
+
+    def test_reindex_2(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[2, 27], [3, 7], [4, 17], [2, 7]], contact_map.reindex(2).as_list())
+
+    def test_reindex_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            contact_map.add(c)
+        with self.assertRaises(ValueError):
+            contact_map.reindex(-1)
+
+    def test_reindex_4(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 30, 1.0), Contact(6, 10, 0.4), Contact(7, 20, 0.1), Contact(5, 10, 0.2)]:
+            c.res1_altseq = c.res1_seq + 1
+            c.res2_altseq = c.res2_seq + 2
+            contact_map.add(c)
+        reindexed = contact_map.reindex(1, altloc=True)
+        self.assertListEqual([[5, 30], [6, 10], [7, 20], [5, 10]], reindexed.as_list())
+        self.assertListEqual([[1, 27], [2, 7], [3, 17], [1, 7]], reindexed.as_list(altloc=True))
+
+    def test_singletons_1(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(3, 5, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([], contact_map.singletons.as_list())
+
+    def test_singletons_2(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(10, 10, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([[10, 10]], contact_map.singletons.as_list())
+
+    def test_singletons_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(5, 5, 0.4), Contact(4, 6, 0.1), Contact(10, 10, 0.2), Contact(10, 11, 0.2)]:
+            contact_map.add(c)
+        self.assertListEqual([], contact_map.singletons.as_list())
+
+    def test_singletons_4(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(4, 5, 1.0), Contact(4, 6, 0.4)]:
+            contact_map.add(c)
+        self.assertListEqual([], contact_map.singletons.as_list())
+
+    def test_singletons_5(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(3, 4, 1.0), Contact(4, 8, 0.4)]:
+            contact_map.add(c)
+        self.assertListEqual([[3, 4], [4, 8]], contact_map.singletons.as_list())
+
+    def test_singletons_6(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(4, 5, 1.0), Contact(6, 7, 0.4)]:
+            contact_map.add(c)
+        self.assertListEqual([], contact_map.singletons.as_list())
+
+    def test_singletons_7(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(4, 5, 1.0), Contact(7, 8, 0.4)]:
+            contact_map.add(c)
+        self.assertListEqual([[4, 5], [7, 8]], contact_map.singletons.as_list())
 
 
 if __name__ == "__main__":

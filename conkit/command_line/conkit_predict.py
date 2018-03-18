@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@ import conkit.applications
 import conkit.command_line
 import conkit.io
 import conkit.plot
+import conkit.plot.tools
 
 logger = None
 
@@ -62,20 +63,16 @@ def add_default_args(parser):
     """Define default arguments"""
     parser.add_argument('-prefix', default='conkit', help='Job ID')
     parser.add_argument('-wdir', default=os.getcwd(), help='Working directory')
-    parser.add_argument('--demo', default=False,
-                        action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument('--demo', default=False, action="store_true", help=argparse.SUPPRESS)
 
 
 def add_alignment_args(subparsers):
     """Parser with alignment as starting point"""
     from_alignment_subparser = subparsers.add_parser('aln')
     add_default_args(from_alignment_subparser)
-    from_alignment_subparser.add_argument(
-        'ccmpred', help='Path to the CCMpred executable')
-    from_alignment_subparser.add_argument(
-        'alignment_file', help='Path to alignment file')
-    from_alignment_subparser.add_argument(
-        'alignment_format', help='Alignment format')
+    from_alignment_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
+    from_alignment_subparser.add_argument('alignment_file', help='Path to alignment file')
+    from_alignment_subparser.add_argument('alignment_format', help='Alignment format')
     from_alignment_subparser.set_defaults(which='alignment')
 
 
@@ -83,18 +80,12 @@ def add_sequence_args(subparsers):
     """Parser with sequence as starting point"""
     from_sequence_subparser = subparsers.add_parser('seq')
     add_default_args(from_sequence_subparser)
-    from_sequence_subparser.add_argument('--nodca', default=False, action='store_true',
-                                         help=argparse.SUPPRESS)
-    from_sequence_subparser.add_argument(
-        'ccmpred', help='Path to the CCMpred executable')
-    from_sequence_subparser.add_argument(
-        'hhblits', help='Path to the HHblits executable')
-    from_sequence_subparser.add_argument(
-        'hhblitsdb', help='Path to HHblits database')
-    from_sequence_subparser.add_argument(
-        'sequence_file', help='Path to sequence file')
-    from_sequence_subparser.add_argument(
-        'sequence_format', help='Sequence format')
+    from_sequence_subparser.add_argument('--nodca', default=False, action='store_true', help=argparse.SUPPRESS)
+    from_sequence_subparser.add_argument('ccmpred', help='Path to the CCMpred executable')
+    from_sequence_subparser.add_argument('hhblits', help='Path to the HHblits executable')
+    from_sequence_subparser.add_argument('hhblitsdb', help='Path to HHblits database')
+    from_sequence_subparser.add_argument('sequence_file', help='Path to sequence file')
+    from_sequence_subparser.add_argument('sequence_format', help='Sequence format')
     from_sequence_subparser.set_defaults(which='sequence')
 
 
@@ -107,16 +98,12 @@ def main(argl=None):
        A list containing the command line flags
 
     """
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     subparsers = parser.add_subparsers()
-    # Add the subparsers
     add_alignment_args(subparsers)
     add_sequence_args(subparsers)
-    # Parse all arguments
     args = parser.parse_args(argl)
 
-    # Setup the logger
     global logger
     logger = conkit.command_line.setup_logging(level='info')
 
@@ -168,11 +155,18 @@ def main(argl=None):
             seq_fname = seq_fname_tmp
 
         # Generate a multiple sequence alignment
-        hhblits_cline = conkit.applications.HHblitsCommandline(cmd=hhblits,
-                                                               input=seq_fname, output=hhr_fname,
-                                                               database=hhblitsdb, oa3m=a3m_fname,
-                                                               niterations=3, id=99, show_all=True,
-                                                               cov=60, diff='inf', maxfilt=500000)
+        hhblits_cline = conkit.applications.HHblitsCommandline(
+            cmd=hhblits,
+            input=seq_fname,
+            output=hhr_fname,
+            database=hhblitsdb,
+            oa3m=a3m_fname,
+            niterations=3,
+            id=99,
+            show_all=True,
+            cov=60,
+            diff='inf',
+            maxfilt=500000)
         logger.info('Executing: %s', hhblits_cline)
         if args.demo:
             assert os.path.isfile(a3m_fname)
@@ -188,24 +182,24 @@ def main(argl=None):
 
     # CCMpred requires alignments to be in the *jones* format - i.e. the format created
     # and used by David Jones in PSICOV
-    logger.info('Final alignment file: %s', jon_fname)
     msa_h = conkit.io.read(jon_fname, 'jones')
+    freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.png')
+    figure = conkit.plot.SequenceCoverageFigure(msa_h, legend=True)
+    figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, 0.3))
+    figure.savefig(freq_plot_fname)
+
+    logger.info('Final alignment file: %s', jon_fname)
     logger.info('|- Total Number of sequences: %d', msa_h.nseq)
     logger.info('|- Number of effective sequences: %d', msa_h.neff)
-    freq_plot_fname = os.path.join(args.wdir, args.prefix + 'freq.pdf')
-    conkit.plot.SequenceCoverageFigure(msa_h, file_name=freq_plot_fname)
     logger.info('|- Plotted sequence coverage: %s', freq_plot_fname)
 
-    # Kill switch to not run CCMpred DCA
     if args.which == 'sequence' and args.nodca:
         return
 
-    # Use the re-formatted alignment for contact prediction
     ccmpred = args.ccmpred
     matrix_fname = os.path.join(args.wdir, args.prefix + '.mat')
-    ccmpred_cline = conkit.applications.CCMpredCommandline(cmd=ccmpred,
-                                                           alnfile=jon_fname, matfile=matrix_fname,
-                                                           threads=2, renormalize=True)
+    ccmpred_cline = conkit.applications.CCMpredCommandline(
+        cmd=ccmpred, alnfile=jon_fname, matfile=matrix_fname, threads=2, renormalize=True)
     logger.info('Executing: %s', ccmpred_cline)
     if args.demo:
         assert os.path.isfile(matrix_fname)
@@ -213,26 +207,26 @@ def main(argl=None):
     else:
         ccmpred_cline()
 
-    # Add sequence information to contact hierarchy
     dtn = 5
     dfactor = 1.
     cmap = conkit.io.read(matrix_fname, 'ccmpred').top_map
     cmap.sequence = conkit.io.read(jon_fname, 'jones').top_sequence
     cmap.remove_neighbors(min_distance=dtn, inplace=True)
     cmap.sort('raw_score', reverse=True, inplace=True)
-    cmap = cmap[:cmap.sequence.seq_len]                 # subset the selection
-    contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.pdf')
-    conkit.plot.ContactMapFigure(cmap, file_name=contact_map_fname)
+    cmap = cmap[:cmap.sequence.seq_len]
+
+    contact_map_fname = os.path.join(args.wdir, args.prefix + 'cmap.png')
+    figure = conkit.plot.ContactMapFigure(cmap, legend=True)
+    figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, 1.0))
+    figure.savefig(contact_map_fname)
+
     logger.info('Plotted contact map: %s', contact_map_fname)
     logger.info('|- Min sequence separation for contacting residues: %d', dtn)
     logger.info('|- Contact list cutoff factor: %f * L', dfactor)
 
-    # Use the ccmpred parser to write a contact file
     casprr_fname = os.path.join(args.wdir, args.prefix + '.rr')
     conkit.io.convert(matrix_fname, 'ccmpred', casprr_fname, 'casprr')
     logger.info('Final prediction file: %s', casprr_fname)
-
-    return
 
 
 if __name__ == "__main__":

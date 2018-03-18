@@ -19,8 +19,8 @@ contact_format = "ccmpred"
 # Create ConKit hierarchies
 #       Note, we only need the first Sequence/ContactMap
 #       from each file
-seq = conkit.io.read(sequence_file, sequence_format).top_sequence
-conpred = conkit.io.read(contact_file, contact_format).top_map
+seq = conkit.io.read(sequence_file, sequence_format).top
+conpred = conkit.io.read(contact_file, contact_format).top
 
 # Assign the sequence register to your contact prediction
 conpred.sequence = seq
@@ -38,7 +38,7 @@ cmap = conpred[:conpred.sequence.seq_len]
 # The code above is identical to the previous example
 # Now we need to compare it to our reference structure
 pdb_file = "toxd/toxd.pdb"
-pdb = conkit.io.read(pdb_file, "pdb").top_map
+pdb = conkit.io.read(pdb_file, "pdb").top
 # The two keywords do the following:
 #       - match_other      : renumber the pdb to match gaps in target
 #       - remove_unmatched : remove contacts absent from the pdb_file
@@ -46,5 +46,5 @@ pdb = conkit.io.read(pdb_file, "pdb").top_map
 map_matched = cmap.match(pdb, match_other=True, remove_unmatched=True, renumber=True)
 
 # Then we can plot the map
-contact_plot = "toxd/toxd.png"
-conkit.plot.ContactMapFigure(map_matched, reference=pdb, file_name=contact_plot)
+fig = conkit.plot.ContactMapFigure(map_matched, reference=pdb)
+fig.savefig("toxd/toxd.png")

@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,39 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Various miscellaneous code required by ConKit"""
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
+
+import numpy as np
+
+
+def normalize(data, vmin=0, vmax=1):
+    """Apply a Feature scaling algorithm to normalize the data
+
+    This normalization will bring all values into the range [0, 1]. This function
+    allows range restrictions by values ``vmin`` and ``vmax``.
+
+    .. math::
+
+       {X}'=\\frac{(X-X_{min})(vmax-vmin)}{X_{max}-X_{min}}
+
+    Parameters
+    ----------
+    data : list, tuple
+       The data to normalize
+    vmin : int, float, optional
+       The minimum value
+    vmax : int, float, optional
+       The maximum value
+
+    Returns
+    -------
+    list
+       The normalized data
+
+    """
+    data = np.array(data, dtype=np.float64)
+    return (vmin + (data - data.min()) * (vmax - vmin) / (data.max() - data.min())).tolist()

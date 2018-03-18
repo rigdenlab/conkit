@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ class MemBrainParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
 
@@ -106,8 +106,8 @@ class MemBrainParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         Raises
         ------

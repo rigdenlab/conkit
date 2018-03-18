@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -162,15 +162,15 @@ class _Entity(object):
         """A traceback id including all parent classes
 
         The full id is a tuple containing all id's starting from
-        the top object (:obj:`ContactFile <conkit.core.ContactFile>`) down to the current object.
-        A full id for a :obj:`Contact <conkit.core.Contact>` e.g. is something like:
+        the top object (:obj:`ContactFile <conkit.core.contactfile.ContactFile>`) down to the current object.
+        A full id for a :obj:`Contact <conkit.core.contact.Contact>` e.g. is something like:
         ('1aa', 1, (1, 10))
 
         This corresponds to:
 
-        :obj:`ContactFile <conkit.core.ContactFile>` identifier => 1aaa
-        :obj:`ContactMap <conkit.core.ContactMap>` identifier => 1
-        :obj:`Contact <conkit.core.Contact>` identifier => (1, 10)
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>` identifier => 1aaa
+        :obj:`ContactMap <conkit.core.contactmap.ContactMap>` identifier => 1
+        :obj:`Contact <conkit.core.contact.Contact>` identifier => (1, 10)
 
         """
         traceback = [self.id]

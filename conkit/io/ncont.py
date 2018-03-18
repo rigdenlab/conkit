@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ class NcontParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
 
@@ -89,8 +89,7 @@ class NcontParser(ContactFileParser):
                     warnings.warn(msg)
                     continue
 
-                contact = Contact(res1_seq, res2_seq, 1.0,
-                                  distance_bound=(lb, ub))
+                contact = Contact(res1_seq, res2_seq, 1.0, distance_bound=(lb, ub))
                 contact.res1_chain = matches.group(1)
                 contact.res2_chain = matches.group(4)
                 contact.res1 = matches.group(3)
@@ -107,12 +106,12 @@ class NcontParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         Notes
         -----
-        Creating a :func`write` function for the Ncont parser
+        Creating a :func:`write` function for the Ncont parser
         would come with a lot of issues, such as the parallel/antiparallel
         direction, scoring etc.
 

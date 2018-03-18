@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ class JonesParser(SequenceFileParser):
 
         Returns
         -------
-        :obj:`SequenceFile <conkit.core.SequenceFile>`
+        :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         """
 
@@ -105,7 +105,7 @@ class JonesParser(SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`SequenceFile <conkit.core.SequenceFile>` or :obj:`Sequence <conkit.core.Sequence>`
+        hierarchy : :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` or :obj:`Sequence <conkit.core.sequence.Sequence>`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary

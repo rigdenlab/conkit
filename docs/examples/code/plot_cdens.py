@@ -19,8 +19,8 @@ contact_format = "ccmpred"
 # Create ConKit hierarchies
 #       Note, we only need the first Sequence/ContactMap
 #       from each file
-seq = conkit.io.read(sequence_file, sequence_format).top_sequence
-conpred = conkit.io.read(contact_file, contact_format).top_map
+seq = conkit.io.read(sequence_file, sequence_format).top
+conpred = conkit.io.read(contact_file, contact_format).top
 
 # Assign the sequence register to your contact prediction
 conpred.sequence = seq
@@ -34,5 +34,5 @@ conpred.sort('raw_score', reverse=True, inplace=True)
 conpred = conpred[:int(seq.seq_len * 10.)]
 
 # Then we can plot the density plot
-cdens_plot = "4p9g/4p9g_cdens.png"
-conkit.plot.ContactDensityFigure(conpred, file_name=cdens_plot)
+fig = conkit.plot.ContactDensityFigure(conpred, legend=True)
+fig.savefig("4p9g/4p9g_cdens.png")

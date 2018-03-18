@@ -5,7 +5,8 @@ __date__ = "12 Aug 2016"
 
 import unittest
 
-from conkit.core.contact import Contact, ContactMatchState
+from conkit.core.contact import Contact
+from conkit.core.mappings import ContactMatchState
 
 
 class TestContact(unittest.TestCase):
@@ -318,13 +319,13 @@ class TestContact(unittest.TestCase):
         self.assertEqual("A", Contact._set_residue("A"))
 
     def test__set_residue_3(self):
-        self.assertRaises(ValueError, Contact._set_residue, "Ala")
+        self.assertEqual("A", Contact._set_residue("Ala"))
 
     def test__set_residue_4(self):
-        self.assertRaises(ValueError, Contact._set_residue, "ala")
+        self.assertEqual("A", Contact._set_residue("ala"))
 
     def test__set_residue_5(self):
-        self.assertRaises(ValueError, Contact._set_residue, "a")
+        self.assertEqual("A", Contact._set_residue("a"))
 
     def test__set_residue_6(self):
         self.assertRaises(ValueError, Contact._set_residue, 'AL')
@@ -333,7 +334,7 @@ class TestContact(unittest.TestCase):
         self.assertRaises(ValueError, Contact._set_residue, '-')
 
     def test__set_residue_8(self):
-        self.assertRaises(ValueError, Contact._set_residue, 1)
+        self.assertRaises(AttributeError, Contact._set_residue, 1)
 
 
 if __name__ == "__main__":

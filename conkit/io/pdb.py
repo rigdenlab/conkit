@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,8 @@ from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
-from conkit.core.sequence import Sequence, THREE_TO_ONE
+from conkit.core.sequence import Sequence
+from conkit.core.mappings import AminoAcidThreeToOne
 
 ATOM = collections.namedtuple('Atom', 'resname resseq resseq_alt reschain')
 
@@ -65,7 +66,7 @@ class GenericStructureParser(ContactFileParser):
 
     def _build_sequence(self, chain):
         """Build a peptide using Biopython to extract the sequence"""
-        return Sequence(chain.id + '_seq', ''.join(THREE_TO_ONE[residue.resname] for residue in chain))
+        return Sequence(chain.id + '_seq', ''.join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
 
     def _chain_contacts(self, chain1, chain2):
         """Determine the contact pairs intra- or inter-molecular
@@ -123,7 +124,7 @@ class GenericStructureParser(ContactFileParser):
     def _remove_hetatm(self, chain):
         """Tidy up a chain removing all HETATM entries"""
         for residue in chain.copy():
-            if residue.id[0].strip() and residue.resname not in THREE_TO_ONE:
+            if residue.id[0].strip() and residue.resname not in AminoAcidThreeToOne.__members__:
                 chain.detach_child(residue.id)
 
     def _read(self, structure, f_id, distance_cutoff, atom_type):
@@ -142,7 +143,7 @@ class GenericStructureParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         hierarchies = []
@@ -241,7 +242,7 @@ class MmCifParser(GenericStructureParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         structure = MMCIFParser(QUIET=True).get_structure("mmcif", f_handle)
@@ -254,8 +255,8 @@ class MmCifParser(GenericStructureParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`ContactMap <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`ContactMap <conkit.core.contact.Contact>`
 
         Raises
         ------
@@ -291,7 +292,7 @@ class PdbParser(GenericStructureParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
@@ -304,8 +305,8 @@ class PdbParser(GenericStructureParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`ContactMap <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`ContactMap <conkit.core.contact.Contact>`
 
         Raises
         ------

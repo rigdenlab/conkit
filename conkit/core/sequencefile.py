@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,22 +44,15 @@ import sys
 if sys.version_info.major < 3:
     from itertools import izip as zip
 
-from enum import Enum
 from conkit.core._entity import _Entity
-
-
-class SequenceAlignmentState(Enum):
-    """Alignment states"""
-    unknown = 0
-    unaligned = 1
-    aligned = 2
+from conkit.core.mappings import SequenceAlignmentState
 
 
 class SequenceFile(_Entity):
     """A sequence file object representing a single sequence file
 
-    The :obj:`SequenceFile <conkit.core.SequenceFile>` class represents a data structure to hold
-    :obj:`Sequence <conkit.core.Sequence>` instances in a single sequence file. It contains
+    The :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` class represents a data structure to hold
+    :obj:`Sequence <conkit.core.sequence.Sequence>` instances in a single sequence file. It contains
     functions to store and analyze sequences.
 
     Attributes
@@ -69,15 +62,15 @@ class SequenceFile(_Entity):
     is_alignment : bool
        A boolean status for the alignment
     neff : int
-       The number of effective sequences in the :obj:`SequenceFile <conkit.core.SequenceFile>`
+       The number of effective sequences in the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
     nseq : int
-       The number of sequences in the :obj:`SequenceFile <conkit.core.SequenceFile>`
+       The number of sequences in the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
     remark : list
-       The :obj:`SequenceFile <conkit.core.SequenceFile>`-specific remarks
+       The :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`-specific remarks
     status : int
        An indication of the sequence file, i.e alignment, no alignment, or unknown
-    top_sequence : :obj:`Sequence <conkit.core.Sequence>`, None
-       The first :obj:`Sequence <conkit.core.Sequence>` entry in the file
+    top_sequence : :obj:`Sequence <conkit.core.sequence.Sequence>`, None
+       The first :obj:`Sequence <conkit.core.sequence.Sequence>` entry in the file
 
 
     Examples
@@ -93,7 +86,7 @@ class SequenceFile(_Entity):
     __slots__ = ['_remark', '_status']
 
     def __init__(self, id):
-        """Initialise a new :obj:`SequenceFile <conkit.core.SequenceFile>`
+        """Initialise a new :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         Parameters
         ----------
@@ -114,6 +107,11 @@ class SequenceFile(_Entity):
         return [list(seq.seq_ascii) for seq in self]
 
     @property
+    def encoded_matrix(self):
+        """The alignment encoded for contact prediction"""
+        return [list(seq.seq_encoded) for seq in self]
+
+    @property
     def is_alignment(self):
         """A boolean status for the alignment
 
@@ -132,6 +130,21 @@ class SequenceFile(_Entity):
         return self._status == SequenceAlignmentState.aligned
 
     @property
+    def diversity(self):
+        """The diversity of an alignment defined by :math:`\sqrt{N}/L`. 
+        
+        ``N`` equals the number of sequences in
+        thethe alignment and ``L`` the sequence length
+        
+        """
+        if self.empty:
+            return 0.0
+        elif self.is_alignment:
+            return (np.sqrt(len(self)) / float(self.top.seq_len)).round(decimals=3).item()
+        else:
+            raise ValueError('This is not an alignment')
+
+    @property
     def empty(self):
         """Status of emptiness of sequencefile"""
         return len(self) < 1
@@ -148,12 +161,12 @@ class SequenceFile(_Entity):
 
     @property
     def remark(self):
-        """The :obj:`SequenceFile <conkit.core.SequenceFile>`-specific remarks"""
+        """The :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`SequenceFile <conkit.core.SequenceFile>` remark
+        """Set the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` remark
 
         Parameters
         ----------
@@ -192,12 +205,12 @@ class SequenceFile(_Entity):
 
     @property
     def top_sequence(self):
-        """The first :obj:`Sequence <conkit.core.Sequence>` entry in :obj:`SequenceFile <conkit.core.SequenceFile>`
+        """The first :obj:`Sequence <conkit.core.sequence.Sequence>` entry in :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         Returns
         -------
         obj
-           The first :obj:`Sequence <conkit.core.Sequence>` entry in :obj:`SequenceFile <conkit.core.SequenceFile>`
+           The first :obj:`Sequence <conkit.core.sequence.Sequence>` entry in :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         """
         return self.top
@@ -253,7 +266,7 @@ class SequenceFile(_Entity):
         RuntimeError
            SciPy package not installed
         ValueError
-           :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
+           :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
         ValueError
            Sequence Identity needs to be between 0 and 1
 
@@ -303,7 +316,7 @@ class SequenceFile(_Entity):
         MemoryError
            Too many sequences in the alignment
         RuntimeError
-           :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
+           :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
 
         """
         if self.is_alignment:
@@ -330,7 +343,7 @@ class SequenceFile(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`SequenceFile <conkit.core.SequenceFile>`, regardless of inplace
+           The reference to the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, regardless of inplace
 
         Raises
         ------
@@ -339,7 +352,7 @@ class SequenceFile(_Entity):
         RuntimeError
            SciPy package not installed
         ValueError
-           :obj:`SequenceFile <conkit.core.SequenceFile>` is not an alignment
+           :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
         ValueError
            Minimum sequence Identity needs to be between 0 and 1
         ValueError
@@ -374,7 +387,7 @@ class SequenceFile(_Entity):
         return sequence_file
 
     def sort(self, kword, reverse=False, inplace=False):
-        """Sort the :obj:`SequenceFile <conkit.core.SequenceFile>`
+        """Sort the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         Parameters
         ----------
@@ -388,12 +401,12 @@ class SequenceFile(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`SequenceFile <conkit.core.SequenceFile>`, regardless of inplace
+           The reference to the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, regardless of inplace
 
         Raises
         ------
         ValueError
-           ``kword`` not in :obj:`SequenceFile <conkit.core.SequenceFile>`
+           ``kword`` not in :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         """
         sequence_file = self._inplace(inplace)
@@ -401,7 +414,7 @@ class SequenceFile(_Entity):
         return sequence_file
 
     def trim(self, start, end, inplace=False):
-        """Trim the :obj:`SequenceFile <conkit.core.SequenceFile>`
+        """Trim the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
 
         Parameters
         ----------
@@ -415,7 +428,7 @@ class SequenceFile(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`SequenceFile <conkit.core.SequenceFile>`, regardless of inplace
+           The reference to the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, regardless of inplace
 
         """
         sequence_file = self._inplace(inplace)

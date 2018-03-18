@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -51,9 +51,10 @@ class CCMpredParser(ContactFileParser):
     Class to parse a CCMpred contact matrix
 
     """
+
     def __init__(self):
         super(CCMpredParser, self).__init__()
-    
+
     def read(self, f_handle, f_id="ccmpred"):
         """Read a contact file
 
@@ -66,7 +67,7 @@ class CCMpredParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         contact_file = ContactFile(f_id)
@@ -82,11 +83,11 @@ class CCMpredParser(ContactFileParser):
                 if res1_seq > res2_seq:
                     continue
                 # Matrix starts count at 0 so increment numbers by one straight away
-                contact = Contact(int(res1_seq+1), int(res2_seq+1), float(raw_score))
+                contact = Contact(int(res1_seq + 1), int(res2_seq + 1), float(raw_score))
                 contact_map.add(contact)
 
         return contact_file
-        
+
     def _get_contact_pairs(self, mat):
         """Get all contact pairs in the matrix
 
@@ -113,8 +114,8 @@ class CCMpredParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         Raises
         ------
@@ -141,7 +142,7 @@ class CCMpredParser(ContactFileParser):
             for contact in contact_map:
                 mat[contact.res1_seq - 1][contact.res2_seq - 1] = contact.raw_score
                 mat[contact.res2_seq - 1][contact.res1_seq - 1] = contact.raw_score
-            
-            np.savetxt(f_handle, mat)
+
+            np.savetxt(f_handle, mat, delimiter="\t")
 
         return

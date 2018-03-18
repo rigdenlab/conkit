@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,18 +40,7 @@ __version__ = "1.0"
 
 from Bio import pairwise2
 from conkit.core._entity import _Entity
-
-# One to three amino acid letter code conversions
-ONE_TO_THREE = {'A': 'ALA', 'C': 'CYS', 'B': 'ASX', 'E': 'GLU', 'D': 'ASP', 'G': 'GLY', 'F': 'PHE', 'I': 'ILE',
-                'H': 'HIS', 'K': 'LYS', 'J': 'XLE', 'M': 'MET', 'L': 'LEU', 'O': 'PYL', 'N': 'ASN', 'Q': 'GLN',
-                'P': 'PRO', 'S': 'SER', 'R': 'ARG', 'U': 'SEC', 'T': 'THR', 'W': 'TRP', 'V': 'VAL', 'Y': 'TYR',
-                'X': 'XAA', 'Z': 'GLX'}
-
-# Three to one amino acid letter code conversions
-THREE_TO_ONE = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CME': 'C', 'CYS': 'C', 'GLN': 'Q', 'GLU': 'E',
-                'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LEU': 'L', 'LYS': 'K', 'MET': 'M', 'MSE': 'M', 'PHE': 'F',
-                'PRO': 'P', 'PYL': 'O', 'SER': 'S', 'SEC': 'U', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y', 'VAL': 'V',
-                'ASX': 'B', 'GLX': 'Z', 'XAA': 'X', 'UNK': 'X', 'XLE': 'J'}
+from conkit.core.mappings import AminoAcidMapping, AminoAcidOneToThree
 
 
 class Sequence(_Entity):
@@ -62,7 +51,7 @@ class Sequence(_Entity):
     id : str
        A unique identifier
     remark : list
-       The :obj:`Sequence <conkit.core.Sequence>`-specific remarks
+       The :obj:`Sequence <conkit.core.sequence.Sequence>`-specific remarks
     seq : str
        The protein sequence as :obj:`str`
     seq_len : int
@@ -106,17 +95,16 @@ class Sequence(_Entity):
         else:
             seq_string = self.seq
         return "{0}(id=\"{1}\" seq=\"{2}\" seq_len={3})".format(
-            self.__class__.__name__, self.id, seq_string, self.seq_len
-        )
+            self.__class__.__name__, self.id, seq_string, self.seq_len)
 
     @property
     def remark(self):
-        """The :obj:`Sequence <conkit.core.Sequence>`-specific remarks"""
+        """The :obj:`Sequence <conkit.core.sequence.Sequence>`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`Sequence <conkit.core.Sequence>` remark
+        """Set the :obj:`Sequence <conkit.core.sequence.Sequence>` remark
 
         Parameters
         ----------
@@ -150,7 +138,7 @@ class Sequence(_Entity):
            One or more amino acids in the sequence are not recognised
 
         """
-        if all(c in ONE_TO_THREE for c in seq.upper() if c != '-'):
+        if all(AminoAcidOneToThree[c].value for c in seq.upper() if c != '-'):
             self._seq = seq
         else:
             raise ValueError('Unrecognized amino acids in sequence')
@@ -161,16 +149,21 @@ class Sequence(_Entity):
         return bytearray(self._seq, "ascii")
 
     @property
+    def seq_encoded(self):
+        """The protein sequence encoded by numbers"""
+        return [getattr(AminoAcidMapping, c, AminoAcidMapping.X).value for c in self.seq]
+
+    @property
     def seq_len(self):
         """The protein sequence length"""
         return len(self.seq)
 
     def align_global(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
-        """Generate a global alignment between two :obj:`Sequence <conkit.core.Sequence>` instances
+        """Generate a global alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
 
         Parameters
         ----------
-        other : :obj:`Sequence <conkit.core.Sequence>`
+        other : :obj:`Sequence <conkit.core.sequence.Sequence>`
         id_chars : int, optional
         nonid_chars : int, optional
         gap_open_pen : float, optional
@@ -181,9 +174,9 @@ class Sequence(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`Sequence`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
         obj
-           The reference to the :obj:`Sequence`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
 
         """
         sequence1 = self._inplace(inplace)
@@ -191,19 +184,18 @@ class Sequence(_Entity):
 
         alignment = pairwise2.align.globalms(
             sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
-        )
-
+        ) 
         sequence1.seq = alignment[-1][0]
         sequence2.seq = alignment[-1][1]
 
         return sequence1, sequence2
 
     def align_local(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
-        """Generate a local alignment between two :obj:`Sequence <conkit.core.Sequence>` instances
+        """Generate a local alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
 
         Parameters
         ----------
-        other : :obj:`Sequence <conkit.core.Sequence>`
+        other : :obj:`Sequence <conkit.core.sequence.Sequence>`
         id_chars : int, optional
         nonid_chars : int, optional
         gap_open_pen : float, optional
@@ -214,9 +206,9 @@ class Sequence(_Entity):
         Returns
         -------
         obj
-           The reference to the :obj:`Sequence <conkit.core.Sequence>`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
         obj
-           The reference to the :obj:`Sequence <conkit.core.Sequence>`, regardless of inplace
+           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
 
         """
         sequence1 = self._inplace(inplace)

@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -65,15 +65,13 @@ ContactTemplate = collections.namedtuple('Contact', ['res1_seq', 'res2_seq', 'lb
 
 
 class CaspParser(ContactFileParser):
-    """Parser class for CASP RR contact prediction file
-
-    """
+    """Parser class for CASP RR contact prediction file"""
 
     def __init__(self):
         super(CaspParser, self).__init__()
 
     def read(self, f_handle, f_id="casp"):
-        """Read a contact file into a :obj:`conkit.core.ContactFile` instance
+        """Read a contact file into a :obj:`conkit.core.contactfile.ContactFile` instance
 
         Parameters
         ----------
@@ -84,7 +82,7 @@ class CaspParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
         lines = [l.strip() for l in f_handle.readlines()]
@@ -184,8 +182,8 @@ class CaspParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         """
 

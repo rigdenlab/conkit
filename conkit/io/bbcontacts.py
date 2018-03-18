@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-17, University of Liverpool
+# Copyright (c) 2016-18, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@ RE_COMMENT = re.compile(r'^#+.*$')
 class BbcontactsParser(ContactFileParser):
     """Class to parse a Bbcontacts contact file
     """
+
     def __init__(self):
         super(BbcontactsParser, self).__init__()
 
@@ -63,7 +64,7 @@ class BbcontactsParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.ContactFile>`
+        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
 
         """
 
@@ -99,12 +100,12 @@ class BbcontactsParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.ContactFile>`, :obj:`ContactMap <conkit.core.ContactMap>`
-                    or :obj:`Contact <conkit.core.Contact>`
+        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+                    or :obj:`Contact <conkit.core.contact.Contact>`
 
         Notes
         -----
-        Creating a :func`write` function for the Bbcontacts parser
+        Creating a :func:`write` function for the Bbcontacts parser
         would come with a lot of issues, such as the parallel/antiparallel
         direction, scoring etc.
 
