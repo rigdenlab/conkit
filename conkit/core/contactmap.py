@@ -317,16 +317,13 @@ class ContactMap(_Entity):
         :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         """
-        maxd = 2
-        contacts = np.asarray(self.as_list())
-        iterator = np.arange(self.ncontacts)
+        contacts = np.array(self.as_list(), dtype=np.int64)
         removables = set()
-        for i in iterator:
-            for j in iterator[i + 1:]:
+        for i in np.arange(contacts.shape[0]):
+            for j in np.arange(i + 1, contacts.shape[0]):
                 dist = np.abs(contacts[i] - contacts[j])
-                if dist[0] <= maxd and dist[1] <= maxd:
-                    removables.add(tuple(contacts[i]))
-                    removables.add(tuple(contacts[j]))
+                if np.all(dist <= 2):
+                    removables.update({tuple(contacts[i]), tuple(contacts[j])})
         singletons = self.deepcopy()
         [singletons.remove(i) for i in removables]
         return singletons
