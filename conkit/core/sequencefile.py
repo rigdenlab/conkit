@@ -45,8 +45,7 @@ if sys.version_info.major < 3:
     from itertools import izip as zip
 
 from conkit.core._entity import _Entity
-from conkit.core.mappings import SequenceAlignmentState
-
+from conkit.core.mappings import AminoAcidMapping, SequenceAlignmentState
 
 class SequenceFile(_Entity):
     """A sequence file object representing a single sequence file
@@ -61,7 +60,7 @@ class SequenceFile(_Entity):
        A unique identifier
     is_alignment : bool
        A boolean status for the alignment
-    neff : int
+    meff : int
        The number of effective sequences in the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
     nseq : int
        The number of sequences in the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
@@ -134,7 +133,7 @@ class SequenceFile(_Entity):
         """The diversity of an alignment defined by :math:`\sqrt{N}/L`. 
         
         ``N`` equals the number of sequences in
-        thethe alignment and ``L`` the sequence length
+        the alignment and ``L`` the sequence length
         
         """
         if self.empty:
@@ -151,6 +150,13 @@ class SequenceFile(_Entity):
 
     @property
     def neff(self):
+        """The number of effective sequences"""
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use meff instead!")
+        return self.meff
+
+    @property
+    def meff(self):
         """The number of effective sequences"""
         return int(sum(self.calculate_weights()))
 
@@ -220,12 +226,11 @@ class SequenceFile(_Entity):
 
         See Also
         --------
-        neff
+        meff
 
         """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_neff_with_identity instead!")
-        return self.calculate_neff_with_identity(identity)
+        warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
+        return self.calculate_meff_with_identity(identity)
 
     def calculate_neff_with_identity(self, identity):
         """Calculate the number of effective sequences with specified sequence identity
@@ -233,6 +238,18 @@ class SequenceFile(_Entity):
         See Also
         --------
         neff, calculate_weights
+
+        """
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
+        return self.calculate_meff_with_identity(identity) 
+
+    def calculate_meff_with_identity(self, identity):
+        """Calculate the number of effective sequences with specified sequence identity
+        
+        See Also
+        --------
+        meff, calculate_weights
 
         """
         return int(sum(self.calculate_weights(identity=identity)))
@@ -261,43 +278,39 @@ class SequenceFile(_Entity):
 
         Raises
         ------
-        MemoryError
-           Too many sequences in the alignment for Hamming distance calculation
-        RuntimeError
-           SciPy package not installed
+        ImportError
+           Cannot find SciPy package
         ValueError
            :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
         ValueError
            Sequence Identity needs to be between 0 and 1
 
         """
+        # http://stackoverflow.com/a/41090953/3046533
         try:
             import scipy.spatial
         except ImportError:
-            raise RuntimeError('Cannot find SciPy package')
-
-        if not self.is_alignment:
-            raise ValueError('This is not an alignment')
+            raise ImportError('Cannot find SciPy package')
 
         if identity < 0 or identity > 1:
             raise ValueError("Sequence Identity needs to be between 0 and 1")
-
-        msa_mat = np.array(self.ascii_matrix)
-        n = msa_mat.shape[0]  # size of the data
-        batch_size = min(n, 250)  # size of the batches
-        hamming = np.zeros(n, dtype=np.int)  # storage for data
-        # Separate the distance calculations into batches to avoid MemoryError exceptions.
-        # This answer was provided by a StackOverflow user. The corresponding suggestion by
-        # user @WarrenWeckesser: http://stackoverflow.com/a/41090953/3046533
-        num_full_batches, last_batch = divmod(n, batch_size)
-        batches = [batch_size] * num_full_batches
-        if last_batch != 0:
-            batches.append(last_batch)
-        for k, batch in enumerate(batches):
-            i = batch_size * k
-            dists = scipy.spatial.distance.cdist(msa_mat[i:i + batch], msa_mat, metric='hamming')
-            hamming[i:i + batch] = (dists < (1 - identity)).sum(axis=1)
-        return (1. / hamming).tolist()
+        
+        if self.is_alignment:
+            msa_mat = np.array(self.ascii_matrix)
+            M = msa_mat.shape[0]  # size of the data
+            batch_size = min(M, 250)  # size of the batches
+            hamming = np.zeros(M, dtype=np.int)  # storage for data
+            num_full_batches, last_batch = divmod(M, batch_size)
+            batches = [batch_size] * num_full_batches
+            if last_batch != 0:
+                batches.append(last_batch)
+            for k, batch in enumerate(batches):
+                i = batch_size * k
+                dists = scipy.spatial.distance.cdist(msa_mat[i:i + batch], msa_mat, metric='hamming')
+                hamming[i:i + batch] = (dists < (1 - identity)).sum(axis=1)
+            return (1. / hamming).tolist()
+        else:
+            raise ValueError('This is not an alignment')
 
     def calculate_freq(self):
         """Calculate the gap frequency in each alignment column
@@ -308,8 +321,7 @@ class SequenceFile(_Entity):
         Returns
         -------
         list
-           A list containing the per alignment-column amino acid
-           frequency count
+           A list containing the per alignment-column amino acid frequency count
 
         Raises
         ------
@@ -320,25 +332,23 @@ class SequenceFile(_Entity):
 
         """
         if self.is_alignment:
-            msa_mat = np.array(self.ascii_matrix)
-            aa_frequencies = np.where(msa_mat != 45, 1, 0)
-            aa_counts = np.sum(aa_frequencies, axis=0)
-            return (aa_counts / len(msa_mat[:, 0])).tolist()
+            msa_mat = np.array(self.encoded_matrix, dtype=np.int64)
+            return 1.0 - (msa_mat == AminoAcidMapping["X"].value).sum(axis=0) / self.nseq
         else:
             raise ValueError('This is not an alignment')
 
     def filter(self, min_id=0.3, max_id=0.9, inplace=False):
-        """Filter an alignment
+        """Filter sequences from an alignment according to the minimum and maximum identity
+        between the sequences
 
         Parameters
         ----------
         min_id : float, optional
-
+           Minimum sequence identity
         max_id : float, optional
-
+           Maximum sequence identity
         inplace : bool, optional
            Replace the saved order of sequences [default: False]
-
 
         Returns
         -------
@@ -354,9 +364,9 @@ class SequenceFile(_Entity):
         ValueError
            :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
         ValueError
-           Minimum sequence Identity needs to be between 0 and 1
+           Minimum sequence identity needs to be between 0 and 1
         ValueError
-           Maximum sequence Identity needs to be between 0 and 1
+           Maximum sequence identity needs to be between 0 and 1
 
         """
         try:
@@ -372,18 +382,43 @@ class SequenceFile(_Entity):
         elif 0 > max_id > 1:
             raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
 
-        # Alignment to ASCII matrix
         msa_mat = np.array(self.ascii_matrix)
-        # Find all throwable sequences
         throw = set()
         for i in np.arange(len(self)):
             ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
             throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
-        # Throw the previously selected sequences
         sequence_file = self._inplace(inplace)
         for i in reversed(list(throw)):
             sequence_file.remove(self[i].id)
+        return sequence_file
 
+    def filter_gapped(self, min_prop=0.0, max_prop=0.9, inplace=True):
+        """Filter all sequences a gap proportion greater than the limit
+        
+        Parameters
+        ----------
+        min_prop : float, optional
+           Minimum allowed gap proportion [default: 0.0]
+        max_prop : float, optional
+           Maximum allowed gap proportion [default: 0.9]
+        inplace : bool, optional
+           Replace the saved order of sequences [default: False]
+
+        Returns
+        -------
+        obj
+           The reference to the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, regardless of inplace
+
+        """
+        msa_mat = np.array(self.encoded_matrix)
+        throw = set()
+        for i in np.arange(len(self)):
+            gap_prop = (msa_mat[i] == AminoAcidMapping["X"].value).sum() / float(msa_mat[i].shape[0])
+            if gap_prop < min_prop or gap_prop > max_prop:
+                throw.add(self._child_list[i].id)
+        sequence_file = self._inplace(inplace)
+        for id_ in throw:
+            sequence_file.remove(id_)
         return sequence_file
 
     def sort(self, kword, reverse=False, inplace=False):
