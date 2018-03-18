@@ -60,7 +60,7 @@ class SequenceFile(_Entity):
        A unique identifier
     is_alignment : bool
        A boolean status for the alignment
-    neff : int
+    meff : int
        The number of effective sequences in the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
     nseq : int
        The number of sequences in the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
@@ -229,9 +229,8 @@ class SequenceFile(_Entity):
         meff
 
         """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_neff_with_identity instead!")
-        return self.calculate_neff_with_identity(identity)
+        warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
+        return self.calculate_meff_with_identity(identity)
 
     def calculate_neff_with_identity(self, identity):
         """Calculate the number of effective sequences with specified sequence identity
@@ -243,20 +242,17 @@ class SequenceFile(_Entity):
         """
         import warnings
         warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
-        return self.calculate_neff_with_identity(identity) 
+        return self.calculate_meff_with_identity(identity) 
 
     def calculate_meff_with_identity(self, identity):
         """Calculate the number of effective sequences with specified sequence identity
         
         See Also
         --------
-        neff, calculate_weights
+        meff, calculate_weights
 
         """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
         return int(sum(self.calculate_weights(identity=identity)))
-
 
     def calculate_weights(self, identity=0.8):
         """Calculate the sequence weights
