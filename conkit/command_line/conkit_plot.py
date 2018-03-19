@@ -144,6 +144,25 @@ style with residues being connected by their contacts
     subparser.set_defaults(which='contact_map_chord')
 
 
+def add_contact_map_matrix_args(subparsers):
+    description = u"""
+This command will plot a contact map matrix using the provided contacts
+alongside any additional information.
+
+"""
+    subparser = subparsers.add_parser(
+        'cmat',
+        help="Plot a contact map matrix",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser.add_argument('-e', dest='otherfile', default=None, help='a second contact map to plot for comparison')
+    subparser.add_argument('-ef', dest='otherformat', default=None, help='the format of the second contact map')
+    _add_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_contact_default_args(subparser)
+    subparser.set_defaults(which='contact_map_matrix')
+
+
 def add_contact_density_args(subparsers):
     description = u"""
 This command will plot a contact density plot using the provided
@@ -329,6 +348,24 @@ def main():
         con_sliced = con[:ncontacts]
 
         figure = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence, legend=True)
+        figure_aspect_ratio = 1.0
+
+    elif args.which == 'contact_map_matrix':
+
+        seq = conkit.io.read(args.seqfile, args.seqformat)[0]
+        con = conkit.io.read(args.confile, args.conformat)[0]
+
+        con.sequence = seq
+        con.assign_sequence_register()
+
+        if args.otherfile:
+            other = conkit.io.read(args.otherfile, args.otherformat)[0]
+            other.sequence = seq
+            other.assign_sequence_register()
+        else:
+            other = con
+
+        figure = conkit.plot.ContactMapMatrixFigure(con, other=other, legend=True)
         figure_aspect_ratio = 1.0
 
     elif args.which == 'contact_density':

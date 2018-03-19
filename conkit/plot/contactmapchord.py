@@ -173,8 +173,8 @@ class ContactMapChordFigure(Figure):
             xy_highlight.append(xy.tolist())
 
         radius = ContactMapChordFigure.get_radius_around_circle(coords)
-        self._patch_scatter(coords[:, 0], coords[:, 1], facecolor=colors, linewidth=0.0, radius=radius)
-        self._patch_scatter(*zip(*xy_highlight), facecolor="none", edgecolor="#000000", radius=radius)
+        self._patch_scatter(coords[:, 0], coords[:, 1], symbol="o", facecolor=colors, linewidth=0.0, radius=radius)
+        self._patch_scatter(*zip(*xy_highlight), symbol="o", facecolor="none", edgecolor="#000000", radius=radius)
 
         arrow_x, arrow_y = (npoints + npoints / 5, 0)
         self.ax.arrow(arrow_x, arrow_y, 0, npoints / 10, head_width=1.5, color="#000000")

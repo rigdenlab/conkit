@@ -11,6 +11,14 @@
 
           :ref:`Python <python_plot_map>`
 
+   * - - Contact Map Matrix
+     - .. cssclass:: btn btn-primary btn-sm btn-example
+
+          :ref:`Script <script_plot_mat>`
+     - .. cssclass:: btn btn-default btn-sm btn-example
+
+          :ref:`Python <python_plot_mat>`
+
    * - - Contact Map Chord Diagram
      - .. cssclass:: btn btn-primary btn-sm btn-example
 

@@ -50,6 +50,12 @@ def ContactMapChordFigure(*args, **kwargs):
     return ContactMapChordFigure(*args, **kwargs)
 
 
+def ContactMapMatrixFigure(*args, **kwargs):
+    """:obj:`ContactMapMatrixFigure <conkit.plot.contactmatrix.ContactMapMatrixFigure>` instance"""
+    from conkit.plot.contactmapmatrix import ContactMapMatrixFigure
+    return ContactMapMatrixFigure(*args, **kwargs)
+
+
 def ContactDensityFigure(*args, **kwargs):
     """:obj:`ContactDensityFigure <conkit.plot.contactdensity.ContactDensityFigure>` instance"""
     from conkit.plot.contactdensity import ContactDensityFigure

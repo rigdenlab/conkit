@@ -66,7 +66,7 @@ class Figure(object):
     def __repr__(self):
         return self.__class__.__name__
 
-    def _patch_scatter(self, x, y, facecolor="#ffffff", edgecolor="#000000", radius=0.5, linewidth=1.0):
+    def _patch_scatter(self, x, y, symbol="o", facecolor="#ffffff", edgecolor="#000000", radius=0.5, linewidth=1.0):
         """Draw scatter points as :obj:`Circles <matplotlib.pyplot.Circle>` to control width for discrete data"""
         if len(x) != len(y):
             raise ValueError("Unequal x and y data provided")
@@ -99,13 +99,22 @@ class Figure(object):
                 raise ValueError("Unequal x/y data and radii provided")
             r = radius
 
+        if symbol not in ["o", "s"]:
+            raise ValueError("Symbol needs to be circle (\"o\") or square (\"s\")")
+
         # Credits to https://stackoverflow.com/a/48174228/3046533
-        circles = [
-            plt.Circle((xi, yi), facecolor=fci, edgecolor=eci, radius=ri, linewidth=lwi)
-            for xi, yi, fci, eci, ri, lwi in zip(x, y, fc, ec, r, lw)
-        ]
-        if len(circles) > 0:
-            patch_collection = mcoll.PatchCollection(circles, match_original=True)
+        if symbol == "o":
+            patches = [
+                plt.Circle((xi, yi), facecolor=fci, edgecolor=eci, radius=ri, linewidth=lwi)
+                for xi, yi, fci, eci, ri, lwi in zip(x, y, fc, ec, r, lw)
+            ]
+        elif symbol == "s":
+            patches = [
+                plt.Rectangle((xi, yi), facecolor=fci, edgecolor=eci, height=ri, width=ri, linewidth=lwi)
+                for xi, yi, fci, eci, ri, lwi in zip(x, y, fc, ec, r, lw)
+            ]
+        if len(patches) > 0:
+            patch_collection = mcoll.PatchCollection(patches, match_original=True)
             self.ax.add_collection(patch_collection)
 
     def savefig(self, filename, dpi=300, overwrite=False):

@@ -18,6 +18,7 @@ Added
 - ``Sequence.encoded_matrix`` to give the entire alignment as encoded matrix
 - ``SequenceFile.filter_gapped`` to filter sequences with a certain threshold of gaps
 - ``SequenceFile.to_string`` and ``ContactMap.to_string`` methods
+- ``ContactMapMatrixFigure`` added to illustrate prediction signal of entire ``ContactMap``
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
