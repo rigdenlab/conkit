@@ -40,6 +40,7 @@ __version__ = "1.0"
 
 import collections
 import numpy as np
+import os
 import sys
 
 if sys.version_info.major < 3:
@@ -467,12 +468,10 @@ class ContactMap(_Entity):
            [doi: 10.1093/bib/bbw106].
 
         """
-        intersection = np.sum([1 for contact in self if contact.id in other])
-        union = len(self) \
-            + np.sum([1 for contact in other if contact.id not in self])
-        # If self and other are both empty, we define J(x,y) = 1
+        union = len(self) + np.sum([1 for contact in other if contact.id not in self])
         if union == 0:
             return 1.0
+        intersection = np.sum([1 for contact in self if contact.id in other])
         return float(intersection) / union
 
     def calculate_kernel_density(self, *args, **kwargs):
@@ -844,6 +843,11 @@ class ContactMap(_Entity):
         contact_map = self._inplace(inplace)
         contact_map._sort(kword, reverse)
         return contact_map
+
+    def to_string(self):
+        """Return the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` as :obj:`str`"""
+        content = ["%d\t%d\t%.5f" % (c.res1_seq, c.res2_seq, c.raw_score) for c in self]
+        return os.linesep.join(content)
 
     @staticmethod
     def _adjust(contact_map, keymap):

@@ -39,6 +39,7 @@ __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 import numpy as np
+import os
 import sys
 
 if sys.version_info.major < 3:
@@ -447,6 +448,11 @@ class SequenceFile(_Entity):
         sequence_file = self._inplace(inplace)
         sequence_file._sort(kword, reverse)
         return sequence_file
+
+    def to_string(self):
+        """Return the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` as :obj:`str`"""
+        content = [s.seq for s in self]
+        return os.linesep.join(content)
 
     def trim(self, start, end, inplace=False):
         """Trim the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
