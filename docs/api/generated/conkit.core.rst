@@ -14,6 +14,7 @@ Submodules
    conkit.core.contact
    conkit.core.contactfile
    conkit.core.contactmap
+   conkit.core.mappings
    conkit.core.sequence
    conkit.core.sequencefile
 
