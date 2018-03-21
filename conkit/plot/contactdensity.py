@@ -131,17 +131,16 @@ class ContactDensityFigure(Figure):
     def redraw(self):
         import warnings
         warnings.warn("This method has been deprecated, use draw() instead")
-        draw()
+        self.draw()
 
     def draw(self):
-        """Draw the actual plot"""
         dens = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
-
-        residues = np.asarray(
-            list(set(sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy]))))
+        residues = np.asarray(list(set(sorted(
+            [c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy]
+        ))))
         x = np.arange(residues.min(), residues.max())
-        self.ax.plot(
-            x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate", zorder=2)
+        self.ax.plot(x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Contact Density Estimate", 
+                     zorder=2)
 
         try:
             import scipy.signal
@@ -158,5 +157,8 @@ class ContactDensityFigure(Figure):
         self.ax.set_ylabel('Kernel Density Estimate')
 
         if self.legend:
-            self.ax.legend(
-                bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
+            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., 
+                           scatterpoints=1)
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)

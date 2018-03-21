@@ -33,15 +33,16 @@ __author__ = "Felix Simkovic"
 __date__ = "08 Jan 2018"
 __version__ = "0.2"
 
-import os
 import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt
+import os
+import warnings
 
 
 class Figure(object):
     """A Figure class to store common features"""
 
-    def __init__(self, ax=None, legend=True):
+    def __init__(self, ax=None, legend=True, **kwargs):
         """Initialise a new :obj:`conkit.plot.Figure` object
             
         Parameters
@@ -50,7 +51,6 @@ class Figure(object):
            A pre-defined :obj:`Axes <matplotlib.pyplot.Axes>` 
 
            If ``None`` is provided, a new plot will be created
-
         legend : bool, optional
            Draw a legend on the plot [default: True]
         
@@ -62,6 +62,19 @@ class Figure(object):
             self._fig = ax.get_figure()
             self._ax = ax
         self.legend = legend
+        
+        # TODO: deprecate in 0.10
+        self._dpi = 600
+        self._file_name = "do-not-use-me.png"
+        if "dpi" in kwargs:
+            warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
+            self._dpi = kwargs["dpi"]
+        if "file_name" in kwargs:
+            warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
+            self._file_name = kwargs["file_name"]
+        elif "format" in kwargs and "prefix" in kwargs:
+            warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
+            self._file_name = kwargs["prefix"] + "." + kwargs["format"]
 
     def __repr__(self):
         return self.__class__.__name__

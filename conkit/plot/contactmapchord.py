@@ -118,7 +118,7 @@ class ContactMapChordFigure(Figure):
     def redraw(self):
         import warnings
         warnings.warn("This method has been deprecated, use draw() instead")
-        draw()
+        self.draw()
 
     def draw(self):
         hierarchy = self.hierarchy.rescale()
@@ -182,6 +182,10 @@ class ContactMapChordFigure(Figure):
         self.ax.set_xlim(-arrow_x, arrow_x + 2)
         self.ax.set_ylim(-arrow_x, arrow_x)
         self.ax.axis("off")
+
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)
 
     @staticmethod
     def get_radius_around_circle(coords, pad=0.1):

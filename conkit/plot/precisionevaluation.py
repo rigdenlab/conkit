@@ -184,7 +184,7 @@ class PrecisionEvaluationFigure(Figure):
     def redraw(self):
         import warnings
         warnings.warn("This method has been deprecated, use draw() instead")
-        draw()
+        self.draw()
 
     def draw(self):
         factors = np.arange(self.min_cutoff, self.max_cutoff + 0.1, self.cutoff_step)
@@ -194,14 +194,8 @@ class PrecisionEvaluationFigure(Figure):
             m = self._hierarchy[:ncontacts]
             precisions[i] = m.precision
 
-        self.ax.plot(
-            factors,
-            precisions,
-            color=ColorDefinitions.GENERAL,
-            marker=None,
-            linestyle='-',
-            label='Precision score',
-            zorder=1)
+        self.ax.plot(factors, precisions, color=ColorDefinitions.GENERAL, marker=None, linestyle='-', 
+                     label='Precision score', zorder=1)
 
         self.ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-', label='50% Precision', zorder=0)
         if self.min_cutoff <= 1.0:
@@ -213,7 +207,6 @@ class PrecisionEvaluationFigure(Figure):
         if self.min_cutoff <= 0.1:
             self.ax.axvline(0.1, color=ColorDefinitions.FACTOR1, linestyle=':', label='Factor L/10', zorder=0)
 
-        # Prettify the plot
         self.ax.set_xlim(self.min_cutoff, self.max_cutoff)
         xticks = (self.ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(np.int64)
         self.ax.set_xticklabels(xticks)
@@ -224,3 +217,6 @@ class PrecisionEvaluationFigure(Figure):
 
         if self.legend:
             self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)

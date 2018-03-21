@@ -185,6 +185,10 @@ class ContactMapMatrixFigure(Figure):
         self.ax.set_xlabel('Residue number')
         self.ax.set_ylabel('Residue number')
 
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)
+
     @staticmethod
     def _determine_color(h):
         """Determine the color of the contacts in order"""
