@@ -43,7 +43,7 @@ from conkit.core.mappings import ContactMatchState
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
 from conkit.plot.tools import points_on_circle 
-from conkit.plot.tools import get_radius_around_circle
+from conkit.plot.tools import radius_around_circle
 from conkit.plot.tools import _isinstance
 
 
