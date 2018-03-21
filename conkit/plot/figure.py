@@ -65,7 +65,7 @@ class Figure(object):
         
         # TODO: deprecate in 0.10
         self._dpi = 600
-        self._file_name = "do-not-use-me.png"
+        self._file_name = None 
         if "dpi" in kwargs:
             warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
             self._dpi = kwargs["dpi"]
