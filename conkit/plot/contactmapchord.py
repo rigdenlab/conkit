@@ -27,9 +27,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
-A module to produce a contact map chord diagram
-"""
+"""A module to produce a contact map chord diagram"""
 
 from __future__ import division
 from __future__ import print_function
@@ -43,7 +41,10 @@ import numpy as np
 
 from conkit.core.mappings import ContactMatchState
 from conkit.plot.figure import Figure
-from conkit.plot.tools import ColorDefinitions, points_on_circle, _isinstance
+from conkit.plot.tools import ColorDefinitions
+from conkit.plot.tools import points_on_circle 
+from conkit.plot.tools import get_radius_around_circle
+from conkit.plot.tools import _isinstance
 
 
 class ContactMapChordFigure(Figure):
@@ -172,7 +173,7 @@ class ContactMapChordFigure(Figure):
             self.ax.annotate(r, xy=xy, xytext=xytext)
             xy_highlight.append(xy.tolist())
 
-        radius = ContactMapChordFigure.get_radius_around_circle(coords)
+        radius = radius_around_circle(coords[0], coords[1])
         self._patch_scatter(coords[:, 0], coords[:, 1], symbol="o", facecolor=colors, linewidth=0.0, radius=radius)
         self._patch_scatter(*zip(*xy_highlight), symbol="o", facecolor="none", edgecolor="#000000", radius=radius)
 
@@ -188,6 +189,7 @@ class ContactMapChordFigure(Figure):
             self.savefig(self._file_name, dpi=self._dpi)
 
     @staticmethod
-    def get_radius_around_circle(coords, pad=0.1):
-        dist = np.linalg.norm(coords[0] - coords[1])
-        return dist / 2 - dist * 0.1
+    def get_radius_around_circle(coords, pad=0.01):
+        import warnings
+        warnings.warn("This function has been deprecated! Use conkit.plot.tools.radius_around_circle() instead!")
+        return radius_around_circle(coords[0], coords[1])

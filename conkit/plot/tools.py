@@ -41,6 +41,7 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
+
 HierarchyIndex = {
     'Contact': Contact,
     'ContactMap': ContactMap,
@@ -54,21 +55,14 @@ class ColorDefinitions(object):
     """A class storing all color definitions for the various plots
     for fast and easy handling
     """
-
-    # Contact map colors
+    GENERAL = '#000000'
     MATCH = '#0F0B2C'
     MISMATCH = '#DC4869'
     STRUCTURAL = '#D8D6D6'
-
-    # Sequence coverage colors
     L5CUTOFF = '#3F4587'
     L20CUTOFF = '#B5DD2B'
-
-    # Precision evaluation colors
     PRECISION50 = L5CUTOFF
     FACTOR1 = L20CUTOFF
-
-    # Chord plot encoding
     AA_ENCODING = {
         'A': '#882D17',
         'C': '#F3C300',
@@ -93,9 +87,6 @@ class ColorDefinitions(object):
         'X': '#000000'
     }
 
-    # General
-    GENERAL = '#000000'
-
 
 def points_on_circle(radius, h=0, k=0):
     """Calculate points on a circle with even spacing
@@ -115,24 +106,58 @@ def points_on_circle(radius, h=0, k=0):
        The list of coordinates for each point
 
     """
-    space = 2 * np.pi / radius
-    coords = np.zeros((radius, 2))
-    for i in np.arange(radius):
-        coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
-    return coords.tolist()
+    if radius == 0:
+        return [[]]
+    else:
+        space = 2 * np.pi / radius
+        coords = np.zeros((radius, 2))
+        for i in np.arange(radius):
+            coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
+        return coords.tolist()
 
 
 def get_adjusted_aspect(ax, aspect_ratio):
     """Adjust the aspect ratio
+
+    Parameters
+    ----------
+    ax : :obj:`Axes <matplotlib.pyplot.Axes>`
+       A :obj:`Axes <matplotlib.pyplot.Axes>` instance
+    aspect_ratio : float
+       The desired aspect ratio for :obj:`Axes <matplotlib.pyplot.Axes>`
+
+    Returns
+    -------
+    float
+       The required aspect ratio to achieve the desired one
 
     Warnings
     --------
     This function only works for non-logarithmic axes.
 
     """
-    # Credits to http://stackoverflow.com/q/4747051/3046533
     default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
     return float(default_ratio * aspect_ratio)
+
+
+def radius_around_circle(p1, p2):
+    """Obtain the radius around a given circle
+    
+    Parameters
+    ----------
+    p1 : list, tuple
+       Point 1
+    p2 : list, tuple
+       Point 2 adjacent `p1`
+
+    Returns
+    -------
+    float
+       The radius for points so p1 and p2 do not intersect
+
+    """
+    dist = np.linalg.norm(np.array(p1) - np.array(p2))
+    return dist / 2.0 - dist * 0.1
 
 
 def _isinstance(hierarchy, hierarchy_type):
@@ -141,3 +166,4 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
     else:
         return isinstance(hierarchy, hierarchy_type)
+
