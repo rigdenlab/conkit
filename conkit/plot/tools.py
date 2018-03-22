@@ -158,6 +158,7 @@ def points_on_circle(*args, **kwargs):
     warnings.warn("This function has been renamed to get_points_on_circle()")
     return get_points_on_circle(*args, **kwargs)
 
+
 def get_points_on_circle(radius, h=0, k=0):
     """Calculate points on a circle with even spacing
 
@@ -184,11 +185,6 @@ def get_points_on_circle(radius, h=0, k=0):
         for i in np.arange(radius):
             coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
         return coords.tolist()
-
-
-def radius_around_circle(*args, **kwargs):
-    warnings.warn("This function has been renamed to get_radius_around_circle()")
-    return get_radius_around_circle(*args, **kwargs)
 
 
 def get_radius_around_circle(p1, p2):

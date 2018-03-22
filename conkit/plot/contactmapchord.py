@@ -42,8 +42,8 @@ import numpy as np
 from conkit.core.mappings import ContactMatchState
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
-from conkit.plot.tools import points_on_circle 
-from conkit.plot.tools import radius_around_circle
+from conkit.plot.tools import get_points_on_circle 
+from conkit.plot.tools import get_radius_around_circle
 from conkit.plot.tools import _isinstance
 
 
@@ -129,7 +129,7 @@ class ContactMapChordFigure(Figure):
         self_data_range = np.arange(_drange.min(), _drange.max() + 1)
 
         npoints = self_data_range.shape[0]
-        coords = np.array(points_on_circle(npoints))
+        coords = np.array(get_points_on_circle(npoints))
 
         bezier_path = np.arange(0, 1.01, 0.01)
         for c in self_data:
@@ -173,7 +173,7 @@ class ContactMapChordFigure(Figure):
             self.ax.annotate(r, xy=xy, xytext=xytext)
             xy_highlight.append(xy.tolist())
 
-        radius = radius_around_circle(coords[0], coords[1])
+        radius = get_radius_around_circle(coords[0], coords[1])
         self._patch_scatter(coords[:, 0], coords[:, 1], symbol="o", facecolor=colors, linewidth=0.0, radius=radius)
         self._patch_scatter(*zip(*xy_highlight), symbol="o", facecolor="none", edgecolor="#000000", radius=radius)
 
@@ -191,5 +191,5 @@ class ContactMapChordFigure(Figure):
     @staticmethod
     def get_radius_around_circle(coords, pad=0.01):
         import warnings
-        warnings.warn("This function has been deprecated! Use conkit.plot.tools.radius_around_circle() instead!")
-        return radius_around_circle(coords[0], coords[1])
+        warnings.warn("This function has been deprecated! Use conkit.plot.tools.get_radius_around_circle() instead!")
+        return get_radius_around_circle(coords[0], coords[1])
