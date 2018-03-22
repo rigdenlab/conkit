@@ -34,6 +34,7 @@ __date__ = "16 Feb 2017"
 __version__ = "0.1"
 
 import numpy as np
+import warnings
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -88,6 +89,47 @@ class ColorDefinitions(object):
     }
 
 
+def find_minima(data, order=1):
+    """Find the minima in a 1-D list
+
+    Parameters
+    ----------
+    data : list, tuple
+       A list of values
+    order : int, optional
+       The order, i.e. number of points next to point to consider
+
+    Returns
+    -------
+    list
+       A list of indices for minima
+
+    Warnings
+    --------
+    For multi-dimensional problems, see :func:`scipy.signal.argrelmin`.
+
+    Raises
+    ------
+    ValueError
+       Order needs to be >= 1!
+    ValueError
+       More than two elements required!
+
+    """
+    if order < 1:
+        raise ValueError("Order needs to be >= 1!")
+    data = np.asarray(data)
+    nelements = data.shape[0] 
+    if nelements < 2:
+        raise ValueError("More than two elements required!")
+    results = np.zeros(nelements, dtype=np.bool_)
+    for i in np.arange(1, nelements - 1):
+        start = 0 if i - order < 0 else i - order
+        end = nelements if i + order + 1 > nelements else i + order + 1
+        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1:end])
+    return np.where(results)[0].tolist()
+
+
 def get_adjusted_aspect(ax, aspect_ratio):
     """Adjust the aspect ratio
 
@@ -112,7 +154,11 @@ def get_adjusted_aspect(ax, aspect_ratio):
     return float(default_ratio * aspect_ratio)
 
 
-def points_on_circle(radius, h=0, k=0):
+def points_on_circle(*args, **kwargs):
+    warnings.warn("This function has been renamed to get_points_on_circle()")
+    return get_points_on_circle(*args, **kwargs)
+
+def get_points_on_circle(radius, h=0, k=0):
     """Calculate points on a circle with even spacing
 
     Parameters
@@ -140,7 +186,12 @@ def points_on_circle(radius, h=0, k=0):
         return coords.tolist()
 
 
-def radius_around_circle(p1, p2):
+def radius_around_circle(*args, **kwargs):
+    warnings.warn("This function has been renamed to get_radius_around_circle()")
+    return get_radius_around_circle(*args, **kwargs)
+
+
+def get_radius_around_circle(p1, p2):
     """Obtain the radius around a given circle
     
     Parameters
