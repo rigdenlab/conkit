@@ -88,6 +88,30 @@ class ColorDefinitions(object):
     }
 
 
+def get_adjusted_aspect(ax, aspect_ratio):
+    """Adjust the aspect ratio
+
+    Parameters
+    ----------
+    ax : :obj:`Axes <matplotlib.pyplot.Axes>`
+       A :obj:`Axes <matplotlib.pyplot.Axes>` instance
+    aspect_ratio : float
+       The desired aspect ratio for :obj:`Axes <matplotlib.pyplot.Axes>`
+
+    Returns
+    -------
+    float
+       The required aspect ratio to achieve the desired one
+
+    Warnings
+    --------
+    This function only works for non-logarithmic axes.
+
+    """
+    default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
+    return float(default_ratio * aspect_ratio)
+
+
 def points_on_circle(radius, h=0, k=0):
     """Calculate points on a circle with even spacing
 
@@ -114,30 +138,6 @@ def points_on_circle(radius, h=0, k=0):
         for i in np.arange(radius):
             coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
         return coords.tolist()
-
-
-def get_adjusted_aspect(ax, aspect_ratio):
-    """Adjust the aspect ratio
-
-    Parameters
-    ----------
-    ax : :obj:`Axes <matplotlib.pyplot.Axes>`
-       A :obj:`Axes <matplotlib.pyplot.Axes>` instance
-    aspect_ratio : float
-       The desired aspect ratio for :obj:`Axes <matplotlib.pyplot.Axes>`
-
-    Returns
-    -------
-    float
-       The required aspect ratio to achieve the desired one
-
-    Warnings
-    --------
-    This function only works for non-logarithmic axes.
-
-    """
-    default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
-    return float(default_ratio * aspect_ratio)
 
 
 def radius_around_circle(p1, p2):
