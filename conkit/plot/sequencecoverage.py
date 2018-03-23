@@ -118,7 +118,7 @@ class SequenceCoverageFigure(Figure):
 
         self.ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, 
                         label='5 x Nresidues', zorder=0)
-        if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
+        if np.any(aa_counts >= self._hierarchy.top_sequence.seq_len * 20):
             self.ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color=ColorDefinitions.L20CUTOFF, 
                             label='20 x Nresidues', zorder=0)
 
