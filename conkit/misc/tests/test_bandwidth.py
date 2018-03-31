@@ -5,7 +5,6 @@ __date__ = "19 Jun 2017"
 
 import numpy as np
 import unittest
-
 from conkit.misc import bandwidth
 
 
@@ -14,6 +13,11 @@ class TestAmiseBW(unittest.TestCase):
         min_, max_ = bandwidth.AmiseBW.extended_range(1, 5, 1.5, 3)
         self.assertEqual(min_, -3.5)
         self.assertEqual(max_, 9.5)
+
+    def test_curvature_1(self):
+        data = np.array([1, 2, 3, 4, 5, 3, 2, 3, 4], dtype=np.int64)[:, np.newaxis]
+        curvature = bandwidth.AmiseBW.curvature(data, -1.5, 0.5)
+        self.assertEqual(round(curvature, 7), 3.17e-5)
 
     def test_gauss_curvature_1(self):
         data = np.array([1, 2, 3, 4, 5, 3, 2, 3, 4], dtype=np.int64)[:, np.newaxis]
@@ -26,7 +30,7 @@ class TestAmiseBW(unittest.TestCase):
         self.assertEqual(round(integral, 7), 0.0031009)
 
     def test_optimal_bandwidth_1(self):
-        data = np.array([1, 2, 3, 4, 5, 3, 2, 3, 4], dtype=np.int64)[:, np.newaxis]
+        data = np.array([1, 2, 3, 4, 5, 3, 2, 3, 4], dtype=np.int64)[:, np.newaxis] 
         optimal = bandwidth.AmiseBW.optimal_bandwidth(data, 2.0)
         self.assertEqual(round(optimal, 7), 0.4116948)
 
@@ -112,6 +116,44 @@ class TestSilvermanBW(unittest.TestCase):
         xy = np.array([(3, 5), (2, 4), (3, 4)])
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.SilvermanBW(x).bandwidth, 7), 0.4662301)
+
+
+class Test(unittest.TestCase):
+    def test_bandwidth_factory_1(self):
+        obj = bandwidth.bandwidth_factory("amise")
+        self.assertEqual(str(obj), "<class 'conkit.misc.bandwidth.AmiseBW'>")
+
+    def test_bandwidth_factory_2(self):
+        obj = bandwidth.bandwidth_factory("bowman")
+        self.assertEqual(str(obj), "<class 'conkit.misc.bandwidth.BowmanBW'>")
+
+    def test_bandwidth_factory_3(self):
+        obj = bandwidth.bandwidth_factory("linear")
+        self.assertEqual(str(obj), "<class 'conkit.misc.bandwidth.LinearBW'>")
+
+    def test_bandwidth_factory_4(self):
+        obj = bandwidth.bandwidth_factory("scott")
+        self.assertEqual(str(obj), "<class 'conkit.misc.bandwidth.ScottBW'>")
+
+    def test_bandwidth_factory_5(self):
+        obj = bandwidth.bandwidth_factory("silverman")
+        self.assertEqual(str(obj), "<class 'conkit.misc.bandwidth.SilvermanBW'>")
+
+    def test_bandwidth_factory_6(self):
+        with self.assertRaises(ValueError):
+            bandwidth.bandwidth_factory("SILVERMAN")
+
+    def test_bandwidth_factory_7(self):
+        with self.assertRaises(ValueError):
+            bandwidth.bandwidth_factory("Silverman")
+
+    def test_bandwidth_factory_8(self):
+        with self.assertRaises(ValueError):
+            bandwidth.bandwidth_factory("silvermn")
+
+    def test_bandwidth_factory_9(self):
+        with self.assertRaises(ValueError):
+            bandwidth.bandwidth_factory("garbage")
 
 
 if __name__ == "__main__":
