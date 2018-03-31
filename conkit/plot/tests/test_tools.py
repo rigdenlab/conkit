@@ -31,6 +31,18 @@ class Test(unittest.TestCase):
     def test_find_minima_6(self):
         self.assertEqual([4], tools.find_minima([4, 5, 3, 5, 2, 6], order=10))
 
+    def test_find_minima_7(self):
+        with self.assertRaises(ValueError):
+            tools.find_minima([4, 5, 3, 5, 2, 6], order=0)
+
+    def test_find_minima_8(self):
+        with self.assertRaises(ValueError):
+            tools.find_minima([4, 5, 3, 5, 2, 6], order=-1)
+
+    def test_points_on_circle_1(self):
+        coords = tools.points_on_circle(0)
+        self.assertEqual([[]], coords)
+
     def test_get_points_on_circle_1(self):
         coords = tools.get_points_on_circle(0)
         self.assertEqual([[]], coords)
@@ -102,6 +114,12 @@ class Test(unittest.TestCase):
     def test__isinstance_5(self):
         h = SequenceFile("test")
         self.assertTrue(tools._isinstance(h, "SequenceFile"))
+
+    def test__isinstance_6(self):
+        self.assertTrue(tools._isinstance(5, int))
+
+    def test__isinstance_7(self):
+        self.assertFalse(tools._isinstance(5, str))
 
 
 if __name__ == "__main__":
