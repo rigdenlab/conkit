@@ -27,9 +27,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
-A module to produce a sequence coverage plot
-"""
+"""A module to produce a sequence coverage plot"""
 
 from __future__ import division
 from __future__ import print_function
@@ -109,29 +107,20 @@ class SequenceCoverageFigure(Figure):
     def redraw(self):
         import warnings
         warnings.warn("This method has been deprecated, use draw() instead")
-        draw()
+        self.draw()
 
     def draw(self):
         residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
         aa_counts = np.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseq
 
-        self.ax.plot(
-            residues,
-            aa_counts,
-            color=ColorDefinitions.GENERAL,
-            marker=None,
-            linestyle='-',
-            label='Amino acid count',
-            zorder=1)
+        self.ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker=None, linestyle='-', 
+                     label='Amino acid count', zorder=1)
 
-        self.ax.axhline(
-            self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label='5 x Nresidues', zorder=0)
-        if any(x >= self._hierarchy.top_sequence.seq_len * 20 for x in aa_counts):
-            self.ax.axhline(
-                self._hierarchy.top_sequence.seq_len * 20,
-                color=ColorDefinitions.L20CUTOFF,
-                label='20 x Nresidues',
-                zorder=0)
+        self.ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, 
+                        label='5 x Nresidues', zorder=0)
+        if np.any(aa_counts >= self._hierarchy.top_sequence.seq_len * 20):
+            self.ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color=ColorDefinitions.L20CUTOFF, 
+                            label='20 x Nresidues', zorder=0)
 
         self.ax.set_xlim(residues[0], residues[-1])
         xticks = self.ax.get_xticks().astype(np.int64) + residues[0]
@@ -144,3 +133,6 @@ class SequenceCoverageFigure(Figure):
 
         if self.legend:
             self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)

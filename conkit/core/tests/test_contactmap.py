@@ -264,7 +264,7 @@ class TestContactMap(unittest.TestCase):
         for c in [Contact(3, 5, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
         density = contact_map1.calculate_contact_density()
-        self.assertEqual([0.2282135747320191, 0.6337372073257503, 0.2282135747320191], density)
+        self.assertEqual([0.22821357473201903, 0.6337372073257503, 0.22821357473201903], density)
 
     def test_find_1(self):
         contact_map1 = ContactMap('1')

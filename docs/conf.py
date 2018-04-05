@@ -12,6 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import datetime
 import os
 import sys
 
@@ -77,8 +78,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ConKit'
-copyright = '2016-2017, University of Liverpool'
-author = 'Felix Simkovic & Jens Thomas'
+copyright = '2016-{}, University of Liverpool'.format(datetime.datetime.now().year)
+author = 'Felix Simkovic'
 
 # The short X.Y version.
 version = conkit.__version__

@@ -41,7 +41,9 @@ import numpy as np
 import warnings
 
 from conkit.plot.figure import Figure
-from conkit.plot.tools import ColorDefinitions, _isinstance
+from conkit.plot.tools import ColorDefinitions
+from conkit.plot.tools import find_minima
+from conkit.plot.tools import _isinstance
 
 
 class ContactDensityFigure(Figure):
@@ -100,6 +102,7 @@ class ContactDensityFigure(Figure):
         
         For a full list of options, please refer to 
         :func:`calculate_contact_density() <conkit.core.contactmap.ContactMap.calculate_contact_density>`
+
         """
         return self._bw_method
 
@@ -120,7 +123,7 @@ class ContactDensityFigure(Figure):
         Raises
         ------
         TypeError
-           The hierarchy is not an contact map
+           The hierarchy is not a :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         """
         if hierarchy and _isinstance(hierarchy, "ContactMap"):
@@ -131,32 +134,28 @@ class ContactDensityFigure(Figure):
     def redraw(self):
         import warnings
         warnings.warn("This method has been deprecated, use draw() instead")
-        draw()
+        self.draw()
 
     def draw(self):
-        """Draw the actual plot"""
-        dens = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
-
-        residues = np.asarray(
-            list(set(sorted([c.res1_seq for c in self.hierarchy] + [c.res2_seq for c in self.hierarchy]))))
-        x = np.arange(residues.min(), residues.max())
-        self.ax.plot(
-            x, dens, linestyle="solid", color=ColorDefinitions.GENERAL, label="Kernel Density Estimate", zorder=2)
-
-        try:
-            import scipy.signal
-            line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
-            for minimum in scipy.signal.argrelmin(dens, order=1)[0]:
-                self.ax.axvline(x[minimum], **line_kwargs)
-            self.ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
-        except ImportError:
-            warnings.warn("SciPy not installed - cannot determine local minima")
-
+        x, y = self.get_xy_data()
+        self.ax.plot(x, y, linestyle="solid", color=ColorDefinitions.GENERAL, label="Contact Density", zorder=2)
+        line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
+        for minimum in find_minima(y, order=1):
+            self.ax.axvline(x[minimum], **line_kwargs)
+        self.ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
         self.ax.set_xlim(x.min(), x.max())
-        self.ax.set_ylim(0., dens.max())
+        self.ax.set_ylim(0., y.max())
         self.ax.set_xlabel('Residue number')
-        self.ax.set_ylabel('Kernel Density Estimate')
-
+        self.ax.set_ylabel('Density Estimate')
         if self.legend:
-            self.ax.legend(
-                bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
+            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., 
+                           scatterpoints=1)
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)
+
+    def get_xy_data(self):
+        residues = np.asarray(self.hierarchy.as_list()).flatten()
+        x = np.arange(residues.min(), residues.max())
+        y = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
+        return x, y

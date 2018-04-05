@@ -27,6 +27,8 @@ Changed
 - Typos corrected in documentation 
 - ``THREE_TO_ONE`` and ``ONE_TO_THREE`` dictionaries modified to ``Enum`` objects
 - ``SequeneFile.neff`` renamed to ``SequenceFile.meff``
+- ``ContactMapChordFigure.get_radius_around_circle`` moved to ``conkit.plot.tools.radius_around_circle``
+- ``AmiseBW.curvature`` renamed to ``AmiseBW.gauss_curvature``
 Fixed
 ~~~~~
 - ``A3mParser`` keyword argument mismatch sorted

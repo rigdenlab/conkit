@@ -34,12 +34,14 @@ __date__ = "16 Feb 2017"
 __version__ = "0.1"
 
 import numpy as np
+import warnings
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
+
 
 HierarchyIndex = {
     'Contact': Contact,
@@ -54,21 +56,14 @@ class ColorDefinitions(object):
     """A class storing all color definitions for the various plots
     for fast and easy handling
     """
-
-    # Contact map colors
+    GENERAL = '#000000'
     MATCH = '#0F0B2C'
     MISMATCH = '#DC4869'
     STRUCTURAL = '#D8D6D6'
-
-    # Sequence coverage colors
     L5CUTOFF = '#3F4587'
     L20CUTOFF = '#B5DD2B'
-
-    # Precision evaluation colors
     PRECISION50 = L5CUTOFF
     FACTOR1 = L20CUTOFF
-
-    # Chord plot encoding
     AA_ENCODING = {
         'A': '#882D17',
         'C': '#F3C300',
@@ -93,11 +88,78 @@ class ColorDefinitions(object):
         'X': '#000000'
     }
 
-    # General
-    GENERAL = '#000000'
+
+def find_minima(data, order=1):
+    """Find the minima in a 1-D list
+
+    Parameters
+    ----------
+    data : list, tuple
+       A list of values
+    order : int, optional
+       The order, i.e. number of points next to point to consider
+
+    Returns
+    -------
+    list
+       A list of indices for minima
+
+    Warnings
+    --------
+    For multi-dimensional problems, see :func:`scipy.signal.argrelmin`.
+
+    Raises
+    ------
+    ValueError
+       Order needs to be >= 1!
+    ValueError
+       More than two elements required!
+
+    """
+    if order < 1:
+        raise ValueError("Order needs to be >= 1!")
+    data = np.asarray(data)
+    nelements = data.shape[0] 
+    if nelements < 2:
+        raise ValueError("More than two elements required!")
+    results = np.zeros(nelements, dtype=np.bool_)
+    for i in np.arange(1, nelements - 1):
+        start = 0 if i - order < 0 else i - order
+        end = nelements if i + order + 1 > nelements else i + order + 1
+        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1:end])
+    return np.where(results)[0].tolist()
 
 
-def points_on_circle(radius, h=0, k=0):
+def get_adjusted_aspect(ax, aspect_ratio):
+    """Adjust the aspect ratio
+
+    Parameters
+    ----------
+    ax : :obj:`Axes <matplotlib.pyplot.Axes>`
+       A :obj:`Axes <matplotlib.pyplot.Axes>` instance
+    aspect_ratio : float
+       The desired aspect ratio for :obj:`Axes <matplotlib.pyplot.Axes>`
+
+    Returns
+    -------
+    float
+       The required aspect ratio to achieve the desired one
+
+    Warnings
+    --------
+    This function only works for non-logarithmic axes.
+
+    """
+    default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
+    return float(default_ratio * aspect_ratio)
+
+
+def points_on_circle(*args, **kwargs):
+    warnings.warn("This function has been renamed to get_points_on_circle()")
+    return get_points_on_circle(*args, **kwargs)
+
+
+def get_points_on_circle(radius, h=0, k=0):
     """Calculate points on a circle with even spacing
 
     Parameters
@@ -115,24 +177,34 @@ def points_on_circle(radius, h=0, k=0):
        The list of coordinates for each point
 
     """
-    space = 2 * np.pi / radius
-    coords = np.zeros((radius, 2))
-    for i in np.arange(radius):
-        coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
-    return coords.tolist()
+    if radius == 0:
+        return [[]]
+    else:
+        space = 2 * np.pi / radius
+        coords = np.zeros((radius, 2))
+        for i in np.arange(radius):
+            coords[i] = [round(h + radius * np.cos(space * i), 6), round(k + radius * np.sin(space * i), 6)]
+        return coords.tolist()
 
 
-def get_adjusted_aspect(ax, aspect_ratio):
-    """Adjust the aspect ratio
+def get_radius_around_circle(p1, p2):
+    """Obtain the radius around a given circle
+    
+    Parameters
+    ----------
+    p1 : list, tuple
+       Point 1
+    p2 : list, tuple
+       Point 2 adjacent `p1`
 
-    Warnings
-    --------
-    This function only works for non-logarithmic axes.
+    Returns
+    -------
+    float
+       The radius for points so p1 and p2 do not intersect
 
     """
-    # Credits to http://stackoverflow.com/q/4747051/3046533
-    default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
-    return float(default_ratio * aspect_ratio)
+    dist = np.linalg.norm(np.array(p1) - np.array(p2))
+    return dist / 2.0 - dist * 0.1
 
 
 def _isinstance(hierarchy, hierarchy_type):
@@ -141,3 +213,4 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
     else:
         return isinstance(hierarchy, hierarchy_type)
+

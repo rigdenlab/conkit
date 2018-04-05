@@ -34,13 +34,16 @@ from __future__ import division
 from __future__ import print_function
 
 __author__ = "Felix Simkovic"
-__date__ = "02 Aug 2017"
-__version__ = "1.0"
+__date__ = "31 Mar 2018"
+__version__ = "1.0.1"
 
 import abc
 import numpy as np
 
 ABC = abc.ABCMeta('ABC', (object,), {})
+
+SQRT_PI = np.sqrt(np.pi)
+SQRT_2PI = np.sqrt(2. * np.pi)
 
 
 class BandwidthBase(ABC):
@@ -50,7 +53,6 @@ class BandwidthBase(ABC):
     def bandwidth(self):
         return 0.0
 
-    # REM: abstractproperty requires us to re-declare it in every child class
     @property
     def bw(self):
         return self.bandwidth
@@ -75,52 +77,63 @@ class AmiseBW(BandwidthBase):
     def bandwidth(self):
         data = self._data
         x0 = BowmanBW(data).bandwidth
-        y0 = AmiseBW.optimal_bandwidth_equation(data, x0)
+        y0 = AmiseBW.optimal_bandwidth(data, x0)
         x = 0.8 * x0
-        y = AmiseBW.optimal_bandwidth_equation(data, x)
+        y = AmiseBW.optimal_bandwidth(data, x)
         for _ in np.arange(self._niterations):
             x -= y * (x0 - x) / (y0 - y)
-            y = AmiseBW.optimal_bandwidth_equation(data, x)
+            y = AmiseBW.optimal_bandwidth(data, x)
             if abs(y) < (self._eps * y0):
                 break
         return x
 
     @staticmethod
-    def curvature(p, x, w):
-        z = (x - p) / w
-        y = (1 * (z ** 2 - 1.0) * np.exp(-0.5 * z * z) / (w * np.sqrt(2. * np.pi)) / w ** 2).sum()
-        return y / p.shape[0]
+    def curvature(data, x, w):
+        """
+        See Also
+        --------
+        gauss_curvature
+        """
+        import warnings
+        warnings.warn("This function will be removed in a future release! Use gauss_curvature() instead")
+        return AmiseBW.gauss_curvature(data, x, w)
 
     @staticmethod
-    def extended_range(mn, mx, bw, ext=3):
-        return mn - ext * bw, mx + ext * bw
+    def gauss_curvature(data, x, w):
+        M, N = data.shape
+        z = ((x - data) / w)**2
+        return (N * (z - 1.0) * (np.exp(-0.5 * z) / (w * SQRT_2PI)) / w**2).sum() / M
 
     @staticmethod
-    def optimal_bandwidth_equation(p, default_bw):
-        alpha = 1. / (2. * np.sqrt(np.pi))
+    def extended_range(min_, max_, bandwidth, ext=3):
+        d = bandwidth * ext
+        return min_ - d, max_ + d 
+
+    @staticmethod
+    def optimal_bandwidth(data, bandwidth):
+        M, N = data.shape
+        alpha = 1. / (2. * SQRT_PI)
         sigma = 1.0
-        n = p.shape[0]
-        q = AmiseBW.stiffness_integral(p, default_bw)
-        return default_bw - ((n * q * sigma ** 4) / alpha) ** (-1.0 / (p.shape[1] + 4))
+        integral = AmiseBW.stiffness_integral(data, bandwidth)
+        return bandwidth - ((M * integral * sigma ** 4) / alpha) ** (-1.0 / (N + 4))
 
     @staticmethod
-    def stiffness_integral(p, default_bw, eps=1e-4):
-        mn, mx = AmiseBW.extended_range(p.min(), p.max(), default_bw, ext=3)
-        n = 1
-        dx = (mx - mn) / n
-        yy = 0.5 * dx * (AmiseBW.curvature(p, mn, default_bw) ** 2 +
-                         AmiseBW.curvature(p, mx, default_bw) ** 2)
-        # The trapezoidal rule guarantees a relative error of better than eps
-        # for some number of steps less than maxn.
-        maxn = (mx - mn) / np.sqrt(eps)
-        # Cap the total computation spent
-        maxn = 2048 if maxn > 2048 else maxn
+    def stiffness_integral(data, bandwidth, eps=1e-4):
+        min_, max_ = AmiseBW.extended_range(data.min(), data.max(), bandwidth, ext=3)
+        dx = 1.0 * (max_ - min_)
+        maxn = dx / np.sqrt(eps)
+        if maxn > 2048:
+            maxn = 2048
+        yy = 0.5 * dx * (
+            AmiseBW.gauss_curvature(data, min_, bandwidth)**2 
+            + AmiseBW.gauss_curvature(data, max_, bandwidth)**2
+        )
         n = 2
         while n <= maxn:
             dx /= 2.
             y = 0
             for i in np.arange(1, n, 2):
-                y += AmiseBW.curvature(p, mn + i * dx, default_bw) ** 2
+                y += AmiseBW.gauss_curvature(data, min_ + i * dx, bandwidth) ** 2
             yy = 0.5 * yy + y * dx
             if n > 8 and abs(y * dx - 0.5 * yy) < eps * yy:
                 break
@@ -145,8 +158,8 @@ class BowmanBW(BandwidthBase):
     @property
     def bandwidth(self):
         data = self._data
-        sigma = np.sqrt((data ** 2).sum() / data.shape[0] - (data.sum() / data.shape[0]) ** 2)
-        return sigma * ((((data.shape[1] + 2) * data.shape[0]) / 4.) ** (-1. / (data.shape[1] + 4)))
+        M, N = data.shape
+        return np.sqrt((data ** 2).sum() / M - (data.sum() / M) ** 2) * ((((N + 2) * M) / 4.) ** (-1. / (N + 4)))
 
 
 class LinearBW(BandwidthBase):
@@ -185,8 +198,9 @@ class ScottBW(BandwidthBase):
     @property
     def bandwidth(self):
         data = self._data
+        M, N = data.shape
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
-        return 1.059 * sigma * data.shape[0] ** (-1. / (data.shape[1] + 4))
+        return 1.059 * sigma * M ** (-1. / (N + 4))
 
 
 class SilvermanBW(BandwidthBase):
@@ -206,8 +220,9 @@ class SilvermanBW(BandwidthBase):
     @property
     def bandwidth(self):
         data = self._data
+        M, N = data.shape
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
-        return 0.9 * sigma * (data.shape[0] * (data.shape[1] + 2) / 4.) ** (-1. / (data.shape[1] + 4))
+        return 0.9 * sigma * (M * (N + 2) / 4.) ** (-1. / (N + 4))
 
 
 def bandwidth_factory(method):

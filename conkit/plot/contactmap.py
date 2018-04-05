@@ -169,7 +169,7 @@ class ContactMapFigure(Figure):
     def redraw(self):
         import warnings
         warnings.warn("This method has been deprecated, use draw() instead")
-        draw()
+        self.draw()
 
     def draw(self):
 
@@ -245,15 +245,11 @@ class ContactMapFigure(Figure):
             artists = [nt_artist]
 
         if self.legend:
-            self.ax.legend(
-                handles=artists,
-                numpoints=1,
-                fontsize=10,
-                bbox_to_anchor=(0., 1.02, 1., .102),
-                loc=3,
-                ncol=3,
-                mode="expand",
-                borderaxespad=0.)
+            self.ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102), loc=3, 
+                           ncol=3, mode="expand", borderaxespad=0.)
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)
 
     @staticmethod
     def _determine_color(h):
