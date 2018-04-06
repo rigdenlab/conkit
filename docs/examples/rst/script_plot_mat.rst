@@ -1,7 +1,7 @@
 .. _script_plot_mat:
 
 Contact Map Matrix Plotting
---------------------
+---------------------------
 
 If you would like to plot a contact map using ConKit without the overhead of using Python, you can simply use the ``conkit-plot`` script.
 
