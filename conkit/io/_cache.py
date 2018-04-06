@@ -77,7 +77,7 @@ class _ParserCache(object):
         "a3m": ["a3m", "a3m-inserts"],
         "casp": ["casp", "casprr"],
         "pcons": ["flib", "pconsc", "pconsc2", "pconsc3"],
-        "psicov": ["psicov", "metapsicov"]
+        "psicov": ["psicov", "metapsicov", "nebcon"],
     }
 
     def __init__(self):

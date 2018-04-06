@@ -19,6 +19,7 @@ Added
 - ``SequenceFile.filter_gapped`` to filter sequences with a certain threshold of gaps
 - ``SequenceFile.to_string`` and ``ContactMap.to_string`` methods
 - ``ContactMapMatrixFigure`` added to illustrate prediction signal of entire ``ContactMap``
+- Added support for ``nebcon`` contact prediction format
 Changed
 ~~~~~~~
 - Changed API interface for ``conkit.plot`` in accordance to necessary changes for above
