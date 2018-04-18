@@ -13,6 +13,5 @@ Contact Density Plotting
 
 .. figure:: ../images/4p9g_cdens_plot.png
    :alt: 4p9g Contact Density Plot
-   :align: center
    :scale: 30
 
