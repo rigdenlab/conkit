@@ -16,36 +16,48 @@
 </div>
 {% endblock %}
 
-
 {%- block footer %}
 <footer class="footer">
-    <br/>
     <div class="container">
-      <p class="pull-right">
-          <a href="#">Back to top</a>
-          {% if theme_source_link_position == "footer" %}
-          <br/>
-          {% include "sourcelink.html" %}
-          {% endif %}
-      </p>
-      <div style="padding: 10px 0px">
-          <div style="width:50%; float:left">
-            {%- if show_copyright %}
-              {%- if hasdoc('copyright') %}
-                {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
-              {%- else %}
-                {% trans copyright=copyright|e %}&copy; Copyright {{ copyright }}.{% endtrans %}
-              {%- endif %}
-            {%- endif %}
-          </div>
-          <div style="width:50%; float:left; text-align:right">
-            {%- if last_updated %}
-              {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
-            {%- endif %}
-          </div>
-      </div>
+        <div class="row">
+            <div class="col-lg-6 col-sm-6 col-xs-12">
+                <div class="footer-links footer-links-left">
+                    <ul>
+                        {% if theme_source_link_position == "footer" %}
+                        <li>{% include "sourcelink.html" %}</li>
+                        {% endif %}
+                        <li><a href="contrib.html">Contributors</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6 col-sm-6 col-xs-12">
+                <div class="footer-links footer-links-right">
+                    <ul>
+                        <li><a href="#">Back to top</a></li>
+                    </ul>
+               </div>
+            </div>
+        </div>
+        <div class="row" style="padding-top: 20px">
+            <div class="col-lg-6 col-sm-6 col-xs-12">
+                {%- if show_copyright %}
+                    <p class="text-xs-center text-left">
+                        {%- if hasdoc('copyright') %}
+                            {% trans path=pathto('copyright'), copyright=copyright|e %}<a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
+                        {%- else %}
+                            {% trans copyright=copyright|e %}Copyright {{ copyright }}.{% endtrans %}
+                        {%- endif %}
+                    </p>
+                {%- endif %}
+            </div>
+            <div class="col-lg-6 col-sm-6 col-xs-12">
+                {%- if last_updated %}
+                    <p class="text-xs-center text-right">
+                    {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
+                    </p>
+                {%- endif %}
+            </div>
+        </div>
     </div>
-    <br/>
-    <br/>
 </footer>
 {%- endblock %}
