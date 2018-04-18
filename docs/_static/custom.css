@@ -53,6 +53,12 @@ img {
     .footer-links-right li {
         float: right;
     }
+    .footer-text-left {
+        float: left; 
+    }
+    .footer-text-right {
+        float: right;
+    }
 }
 
 @media (max-width: 768px) {
@@ -64,7 +70,7 @@ img {
         margin: auto; 
         float: none;
     }
-    .text-min-center {
+    .footer-text-left .footer-text-right {
         display: inline-block;
         margin: auto; 
         float: none;
