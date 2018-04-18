@@ -47,11 +47,27 @@ img {
         padding-left: 0;
         padding-right: 0;
     }
+    .footer-links-left li {
+        float: left;
+    }
+    .footer-links-right li {
+        float: right;
+    }
 }
 
 @media (max-width: 768px) {
     .navbar-collapse li {
         padding-left: 20px;
+    }
+    .footer-links-left .footer-links-right li {
+        display: inline-block;
+        margin: auto; 
+        float: none;
+    }
+    .text-min-center {
+        display: inline-block;
+        margin: auto; 
+        float: none;
     }
 }
 
@@ -227,14 +243,6 @@ footer {
     margin: 0;
     padding: 0;
     list-style: none;
-}
-
-.footer-links-left li {
-    float: left;
-}
-
-.footer-links-right li {
-    float: right;
 }
 
 .footer-links li a {
