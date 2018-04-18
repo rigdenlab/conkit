@@ -41,7 +41,7 @@
         <div class="row" style="padding-top: 20px">
             <div class="col-lg-6 col-sm-6 col-xs-12">
                 {%- if show_copyright %}
-                    <p class="text-xs-center text-left">
+                    <p class="text-right text-min-center">
                         {%- if hasdoc('copyright') %}
                             {% trans path=pathto('copyright'), copyright=copyright|e %}<a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
                         {%- else %}
@@ -52,7 +52,7 @@
             </div>
             <div class="col-lg-6 col-sm-6 col-xs-12">
                 {%- if last_updated %}
-                    <p class="text-xs-center text-right">
+                    <p class="text-right text-min-center">
                     {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
                     </p>
                 {%- endif %}
