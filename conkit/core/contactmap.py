@@ -240,11 +240,11 @@ class ContactMap(_Entity):
         tp_count = cdict[ContactMatchState.matched.value] if ContactMatchState.matched.value in cdict else 0.0
 
         if fp_count == 0.0 and tp_count == 0.0:
-            warnings.warn("No matches or mismatches found in your contact map. " "Match two ContactMaps first.")
+            warnings.warn("No matches or mismatches found in your contact map. Match two ContactMaps first.")
             return 0.0
         elif uk_count > 0:
-            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical "
-                          "sequences. The precision value might be inaccurate.")
+            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
+                          "The precision value might be inaccurate.")
 
         return tp_count / (tp_count + fp_count)
 
@@ -519,7 +519,6 @@ class ContactMap(_Entity):
         # REM: Bug in Sadowski's algorithm, res2 is excluded from list to train KDE
         # REM: Remember to change test cases when corrected implementation benchmarked
         #  x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
-        x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq)])[:, np.newaxis]
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
         from conkit.misc.bandwidth import bandwidth_factory
         bandwidth = bandwidth_factory(bw_method)(x).bw
@@ -628,66 +627,53 @@ class ContactMap(_Entity):
         # 1. Align all sequences
         # ================================================================
 
-        # Align both full sequences against each other
         aligned_sequences_full = contact_map1.sequence.align_local(
-            contact_map2.sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1)
+            contact_map2.sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1
+        )
         contact_map1_full_sequence, contact_map2_full_sequence = aligned_sequences_full
 
-        # Align contact map 1 full sequences with representative sequence
         aligned_sequences_map1 = contact_map1_full_sequence.align_local(
-            contact_map1.repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True)
+            contact_map1.repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True
+        )
         contact_map1_repr_sequence = aligned_sequences_map1[-1]
 
-        # Align contact map 2 full sequences with __ALTLOC__ representative sequence
         aligned_sequences_map2 = contact_map2_full_sequence.align_local(
-            contact_map2.repr_sequence_altloc,
-            id_chars=2,
-            nonid_chars=1,
-            gap_open_pen=-0.5,
-            gap_ext_pen=-0.2,
-            inplace=True)
+            contact_map2.repr_sequence_altloc, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True
+        )
         contact_map2_repr_sequence = aligned_sequences_map2[-1]
 
-        # Align both aligned representative sequences
         aligned_sequences_repr = contact_map1_repr_sequence.align_local(
-            contact_map2_repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True)
+            contact_map2_repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True
+        )
         contact_map1_repr_sequence, contact_map2_repr_sequence = aligned_sequences_repr
 
         # ================================================================
         # 2. Identify TPs in other, map them, and match them to self
         # ================================================================
 
-        # Encode the sequences to uint8 character arrays for easier and faster handling
-        encoded_repr = np.array(
-            [list(contact_map1_repr_sequence.seq_ascii),
-             list(contact_map2_repr_sequence.seq_ascii)])
+        encoded_repr = np.array([
+            list(contact_map1_repr_sequence.seq_ascii), list(contact_map2_repr_sequence.seq_ascii)
+        ])
 
-        # Create mappings for both contact maps
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
-        # Some checks
         msg = "Error creating reliable keymap matching the sequence in ContactMap: "
         if len(contact_map1_keymap) != np.where(encoded_repr[0] != ord('-'))[0].shape[0]:
             raise ValueError(msg + contact_map1.id)
         elif len(contact_map2_keymap) != np.where(encoded_repr[1] != ord('-'))[0].shape[0]:
             raise ValueError(msg + contact_map2.id)
 
-        # Create a sequence matching keymap including deletions and insertions
         contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
         contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
 
-        # Reindex the altseq positions to account for insertions/deletions
         contact_map1_keymap = ContactMap._reindex_by_keymap(contact_map1_keymap)
         contact_map2_keymap = ContactMap._reindex_by_keymap(contact_map2_keymap)
 
-        # Adjust the res_altseq based on the insertions and deletions
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
-        # Get the residue list for matching UNKNOWNs
         residues_map2 = tuple(i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
 
-        # Adjust true and false positive statuses
         for contact in contact_map1:
             _id = (contact.res1_seq, contact.res2_seq)
             _id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
@@ -700,8 +686,7 @@ class ContactMap(_Entity):
                 else:
                     contact_map1[_id].define_mismatch()
             else:
-                msg = "Error matching two contact maps - this should never happen"
-                raise RuntimeError(msg)
+                raise RuntimeError("Error matching two contact maps - this should never happen")
 
         # ================================================================
         # 3. Remove unmatched contacts
