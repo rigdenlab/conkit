@@ -235,20 +235,16 @@ class TestContactMap(unittest.TestCase):
         jindex = contact_map1.calculate_jaccard_index(contact_map2)
         self.assertEqual(1.0, jindex)
 
-    # REM: Bug in Sadowski res2(+1) error results in tests to fail.
-    # REM: For now, code reverted by @biochunan to match Sadowski's implementation
-    # REM: Corresponding results for tests 1-3 are below when code is reverted to correct implementation
-    # REM: [0.11944664492151888, 0.20124328187327287, 0.23868489948868032, 0.20124328187327284, 0.11944664492151894]
-    # REM: [0.10012592274179978, 0.19837169506444377, 0.26841488628499205, 0.23132109484153407, 0.1217899243718511]
-    # REM: [0.14422964774244934, 0.4134215939843202, 0.41342159398432, 0.14422964774244929]
-
     @skipUnless(SKLEARN)
     def test_calculate_contact_density_1(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1)]:
             contact_map1.add(c)
         density = contact_map1.calculate_contact_density()
-        self.assertEqual([0.16474084813765252, 0.24964700349773153, 0.24964700349773153, 0.16474084813765252], density)
+        self.assertEqual(
+            [0.11944664492151888, 0.20124328187327287, 0.23868489948868032, 0.20124328187327284, 0.11944664492151894],
+            density
+        )
 
     @skipUnless(SKLEARN)
     def test_calculate_contact_density_2(self):
@@ -256,7 +252,10 @@ class TestContactMap(unittest.TestCase):
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
         density = contact_map1.calculate_contact_density()
-        self.assertEqual([0.14936186609839505, 0.26262219502283973, 0.2868154978059642, 0.1768745614827941], density)
+        self.assertEqual(
+            [0.10012592274179978, 0.19837169506444377, 0.26841488628499205, 0.23132109484153407, 0.1217899243718511],
+            density
+        )
 
     @skipUnless(SKLEARN)
     def test_calculate_contact_density_3(self):
@@ -264,7 +263,10 @@ class TestContactMap(unittest.TestCase):
         for c in [Contact(3, 5, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
         density = contact_map1.calculate_contact_density()
-        self.assertEqual([0.22821357473201903, 0.6337372073257503, 0.22821357473201903], density)
+        self.assertEqual(
+            [0.14422964774244934, 0.4134215939843202, 0.41342159398432, 0.14422964774244929],
+            density
+        )
 
     def test_find_1(self):
         contact_map1 = ContactMap('1')
