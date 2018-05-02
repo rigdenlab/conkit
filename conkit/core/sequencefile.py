@@ -389,8 +389,8 @@ class SequenceFile(_Entity):
             ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
             throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
         sequence_file = self._inplace(inplace)
-        for i in reversed(list(throw)):
-            sequence_file.remove(self[i].id)
+        for s in [self[i] for i in throw]:
+            sequence_file.remove(s.id)
         return sequence_file
 
     def filter_gapped(self, min_prop=0.0, max_prop=0.9, inplace=True):

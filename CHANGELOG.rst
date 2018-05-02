@@ -6,6 +6,7 @@ Changelog
 ------------
 Fixed
 ~~~~~
+- Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably
 - Bug fix in ``ContactMapMatrixFigure`` when ``gap`` variable was less than 1
 
 [0.9]
