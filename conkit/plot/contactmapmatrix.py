@@ -174,7 +174,9 @@ class ContactMapMatrixFigure(Figure):
 
         self.ax.set_xlim(min_max_data.min(), min_max_data.max() + 1.)
         self.ax.set_ylim(min_max_data.min(), min_max_data.max() + 1.)
-        gap = int(10 * (min_max_data.max() - min_max_data.min()) / 100)
+        gap = 10 * (min_max_data.max() - min_max_data.min()) // 100
+        if gap < 1:
+            gap = 1
         tick_range = np.arange(min_max_data.min(), min_max_data.max(), gap, dtype=np.int64)
 
         self.ax.set_xticks(tick_range + 0.5)

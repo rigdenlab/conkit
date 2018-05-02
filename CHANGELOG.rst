@@ -4,6 +4,12 @@ Changelog
 
 [Unreleased]
 ------------
+Fixed
+~~~~~
+- Bug fix in ``ContactMapMatrixFigure`` when ``gap`` variable was less than 1
+
+[0.9]
+-----
 Added
 ~~~~~
 - ``conkit.plot`` subpackage refactored to allow ``matplotlib`` access of ``Figure`` instances. This provides
