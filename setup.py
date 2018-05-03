@@ -38,6 +38,7 @@ class BuildCommand(build):
 def dependencies():
     required = [
         "numpy >=1.8.2",
+        "numba >=0.36.2",
         "biopython >=1.64",
         "matplotlib >=1.3.1",
     ]
@@ -129,6 +130,7 @@ PACKAGES = [
     'conkit/applications',
     'conkit/command_line',
     'conkit/core',
+    'conkit/core/ext',
     'conkit/io',
     'conkit/misc',
     'conkit/plot',
