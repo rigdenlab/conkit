@@ -290,7 +290,8 @@ class SequenceFile(_Entity):
         
         if self.is_alignment:
             from conkit.core.ext import nb_calculate_weights
-            return nb_calculate_weights(np.array(self.ascii_matrix), identity).tolist()
+            X = np.array(self.ascii_matrix, dtype=np.int64)
+            return nb_calculate_weights(X, identity).tolist()
         else:
             raise ValueError('This is not an alignment')
 
@@ -339,10 +340,6 @@ class SequenceFile(_Entity):
 
         Raises
         ------
-        MemoryError
-           Too many sequences in the alignment for Hamming distance calculation
-        RuntimeError
-           SciPy package not installed
         ValueError
            :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
         ValueError
@@ -351,29 +348,23 @@ class SequenceFile(_Entity):
            Maximum sequence identity needs to be between 0 and 1
 
         """
-        try:
-            import scipy.spatial
-        except ImportError:
-            raise RuntimeError('Cannot find SciPy package')
-
-        if not self.is_alignment:
-            raise ValueError('This is not an alignment')
-
         if 0 > min_id > 1:
             raise ValueError("Minimum sequence Identity needs to be between 0 and 1")
         elif 0 > max_id > 1:
             raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
 
-        msa_mat = np.array(self.ascii_matrix)
-        throw = set()
-        for i in np.arange(len(self)):
-            ident = 1 - scipy.spatial.distance.cdist([msa_mat[i]], msa_mat[i + 1:], metric='hamming')[0]
-            throw.update((1 + i + np.argwhere((ident < min_id) | (ident > max_id)).flatten()).tolist())
-        sequence_file = self._inplace(inplace)
-        for s in [self[i] for i in throw]:
-            sequence_file.remove(s.id)
-        return sequence_file
-
+        if self.is_alignment:
+            from conkit.core.ext import nb_filter
+            X = np.array(self.ascii_matrix, dtype=np.int64)
+            throwables = nb_filter(X, min_id, max_id)
+            filtered = self._inplace(inplace)
+            for i, sequence in enumerate(self):
+                if throwables[i]:
+                    filtered.remove(sequence.id)
+            return filtered
+        else:
+            raise ValueError('This is not an alignment')
+        
     def filter_gapped(self, min_prop=0.0, max_prop=0.9, inplace=True):
         """Filter all sequences a gap proportion greater than the limit
         
