@@ -279,37 +279,18 @@ class SequenceFile(_Entity):
 
         Raises
         ------
-        ImportError
-           Cannot find SciPy package
         ValueError
            :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
         ValueError
            Sequence Identity needs to be between 0 and 1
 
         """
-        # http://stackoverflow.com/a/41090953/3046533
-        try:
-            import scipy.spatial
-        except ImportError:
-            raise ImportError('Cannot find SciPy package')
-
         if identity < 0 or identity > 1:
             raise ValueError("Sequence Identity needs to be between 0 and 1")
         
         if self.is_alignment:
-            msa_mat = np.array(self.ascii_matrix)
-            M = msa_mat.shape[0]  # size of the data
-            batch_size = min(M, 250)  # size of the batches
-            hamming = np.zeros(M, dtype=np.int)  # storage for data
-            num_full_batches, last_batch = divmod(M, batch_size)
-            batches = [batch_size] * num_full_batches
-            if last_batch != 0:
-                batches.append(last_batch)
-            for k, batch in enumerate(batches):
-                i = batch_size * k
-                dists = scipy.spatial.distance.cdist(msa_mat[i:i + batch], msa_mat, metric='hamming')
-                hamming[i:i + batch] = (dists < (1 - identity)).sum(axis=1)
-            return (1. / hamming).tolist()
+            from conkit.core.ext import nb_calculate_weights
+            return nb_calculate_weights(np.array(self.ascii_matrix), identity).tolist()
         else:
             raise ValueError('This is not an alignment')
 

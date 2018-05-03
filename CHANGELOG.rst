@@ -4,6 +4,12 @@ Changelog
 
 [Unreleased]
 ------------
+Added
+~~~~~
+- ``numba`` added as dependency
+Changed
+~~~~~~~
+- ``SequenceFile.calculate_weights`` backend changed from ``numpy`` to ``numba`` for faster computation
 Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably
