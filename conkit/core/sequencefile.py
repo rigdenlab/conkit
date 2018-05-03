@@ -349,9 +349,9 @@ class SequenceFile(_Entity):
 
         """
         if 0 > min_id > 1:
-            raise ValueError("Minimum sequence Identity needs to be between 0 and 1")
+            raise ValueError("Minimum sequence identity needs to be between 0 and 1")
         elif 0 > max_id > 1:
-            raise ValueError("Maximum sequence Identity needs to be between 0 and 1")
+            raise ValueError("Maximum sequence identity needs to be between 0 and 1")
 
         if self.is_alignment:
             from conkit.core.ext import nb_filter
@@ -382,17 +382,32 @@ class SequenceFile(_Entity):
         obj
            The reference to the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, regardless of inplace
 
+        Raises
+        ------
+        ValueError
+           :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
+        ValueError
+           Minimum gap proportion needs to be between 0 and 1
+        ValueError
+           Maximum gap proportion needs to be between 0 and 1
+
         """
-        msa_mat = np.array(self.encoded_matrix)
-        throw = set()
-        for i in np.arange(len(self)):
-            gap_prop = (msa_mat[i] == AminoAcidMapping["X"].value).sum() / float(msa_mat[i].shape[0])
-            if gap_prop < min_prop or gap_prop > max_prop:
-                throw.add(self._child_list[i].id)
-        sequence_file = self._inplace(inplace)
-        for id_ in throw:
-            sequence_file.remove(id_)
-        return sequence_file
+        if 0 > min_prop > 1:
+            raise ValueError("Minimum gap proportion needs to be between 0 and 1")
+        elif 0 > max_prop > 1:
+            raise ValueError("Maximum gap proportion needs to be between 0 and 1")
+
+        if self.is_alignment:
+            from conkit.core.ext import nb_filter_gapped
+            X = np.array(self.encoded_matrix, dtype=np.int64)
+            throwables = nb_filter_gapped(X, AminoAcidMapping["X"].value, min_prop, max_prop)
+            filtered = self._inplace(inplace)
+            for i, sequence in enumerate(self):
+                if throwables[i]:
+                    filtered.remove(sequence.id)
+            return filtered
+        else:
+            raise ValueError('This is not an alignment')
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`

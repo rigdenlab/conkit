@@ -56,7 +56,6 @@ def nb_calculate_weights(X, identity):
 
 @numba.jit(nopython=True, parallel=True)
 def nb_filter(X, min_id, max_id):
-    N_float = float(X.shape[1])
     throwables = np.zeros(X.shape[0], dtype=np.uint8)
     for i in range(X.shape[0]):
         for j in range(i+1, X.shape[0]):
@@ -64,6 +63,18 @@ def nb_filter(X, min_id, max_id):
                 dist = 0.0
                 for k in range(X.shape[1]):
                     dist += X[i, k] != X[j, k]
-                ident = 1.0 - dist / N_float
+                ident = 1.0 - dist / X.shape[1] 
                 throwables[j] = min_id > ident or ident > max_id
+    return throwables
+
+
+@numba.jit(nopython=True, parallel=True)
+def nb_filter_gapped(X, symbol, min_prop, max_prop):
+    throwables = np.zeros(X.shape[0], dtype=np.uint8)
+    for i in range(X.shape[0]):
+        prop = 0.0
+        for k in range(X[i].shape[0]):
+            prop += X[i, k] == symbol
+        prop = prop / X[i].shape[0]
+        throwables[i] = prop < min_prop or prop > max_prop
     return throwables
