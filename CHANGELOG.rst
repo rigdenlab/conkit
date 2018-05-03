@@ -9,6 +9,7 @@ Added
 - ``numba`` added as dependency
 Changed
 ~~~~~~~
+- ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``numba`` for faster computation
 - ``SequenceFile.calculate_weights`` backend changed from ``numpy`` to ``numba`` for faster computation
 - ``SequenceFile.filter`` backend changed from ``numpy`` to ``numba`` for faster computation
 - ``SequenceFile.filter_gapped`` backend changed from ``numpy`` to ``numba`` for faster computation

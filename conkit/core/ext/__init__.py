@@ -40,6 +40,16 @@ import numpy as np
 
 
 @numba.jit(nopython=True, parallel=True)
+def nb_calculate_freq(X, symbol):
+    freq = np.zeros(X.shape[1], dtype=np.float64)
+    for j in range(X.shape[1]):
+        for i in range(X.shape[0]):
+            freq[j] += X[i, j] == symbol
+        freq[j] = 1.0 - freq[j] / X.shape[0]
+    return freq
+
+
+@numba.jit(nopython=True, parallel=True)
 def nb_calculate_weights(X, identity):
     N_float = float(X.shape[1])
     threshold = 1.0 - identity

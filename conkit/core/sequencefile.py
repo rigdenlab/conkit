@@ -308,15 +308,14 @@ class SequenceFile(_Entity):
 
         Raises
         ------
-        MemoryError
-           Too many sequences in the alignment
         RuntimeError
            :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` is not an alignment
 
         """
         if self.is_alignment:
-            msa_mat = np.array(self.encoded_matrix, dtype=np.int64)
-            return 1.0 - (msa_mat == AminoAcidMapping["X"].value).sum(axis=0) / self.nseq
+            from conkit.core.ext import nb_calculate_freq
+            X = np.array(self.encoded_matrix, dtype=np.int64)
+            return nb_calculate_freq(X, AminoAcidMapping["X"].value).tolist()
         else:
             raise ValueError('This is not an alignment')
 
