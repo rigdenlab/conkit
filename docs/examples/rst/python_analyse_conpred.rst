@@ -10,9 +10,9 @@ Contact Prediction Analysis
    >>> import conkit.io
    >>> conpred = conkit.io.read("toxd/toxd.mat", "ccmpred").top_map
    >>> conpred.sequence = conkit.io.read("toxd/toxd.fasta", "fasta").top_sequence
-   >>> conpred.assign_sequence_register()
+   >>> conpred.set_sequence_register()
 
-Note, we've chosen the top contact map immediately because this file only contained a single one. We also added the sequence straight away and assigned the sequence register using the :func:`assign_sequence_register() <conkit.core.ContactMap.assign_sequence_register>` function. The latter makes sure that each residue number has the right amino acid assigned.
+Note, we've chosen the top contact map immediately because this file only contained a single one. We also added the sequence straight away and assigned the sequence register using the :func:`set_sequence_register() <conkit.core.ContactMap.set_sequence_register>` function. The latter makes sure that each residue number has the right amino acid assigned.
 
 2. **Plotting a contact map**
 
