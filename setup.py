@@ -44,7 +44,7 @@ def dependencies():
     ]
     optional = [
         "scikit-learn >=0.17",
-        "scipy >=0.16.0",
+        #  "scipy >=0.16.0",
     ]
     deps = required + optional
     if sys.version_info < (3, 4):

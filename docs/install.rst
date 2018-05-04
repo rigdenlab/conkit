@@ -77,8 +77,8 @@ setuptools
 
 Optional dependencies
 +++++++++++++++++++++
-SciPy 0.16 (or later)
-  `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
+.. SciPy 0.16 (or later)
+..   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
 scikit-learn 0.18 (or later)
   `Download scikit-learn <http://scikit-learn.org/stable/install.html>`_
 HHblits
