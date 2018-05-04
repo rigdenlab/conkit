@@ -246,16 +246,6 @@ class SequenceFile(_Entity):
         warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
         return self.calculate_meff_with_identity(identity) 
 
-    def calculate_meff_with_identity(self, identity):
-        """Calculate the number of effective sequences with specified sequence identity
-        
-        See Also
-        --------
-        meff, get_weights
-
-        """
-        return int(sum(self.get_weights(identity=identity)))
-
     def calculate_weights(self, identity=0.8):
         """Calculate the sequence weights
 
@@ -269,6 +259,30 @@ class SequenceFile(_Entity):
         import warnings
         warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
         return self.get_weights(identity=identity)
+    
+    def calculate_freq(self):
+        """Calculate the gap frequency in each alignment column
+
+        This function will be deprecated, use :func:``get_frequency`` instead.
+
+        See Also
+        --------
+        get_frequency
+
+        """
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
+        return self.get_frequency("X")
+
+    def get_meff_with_id(self, identity):
+        """Calculate the number of effective sequences with specified sequence identity
+        
+        See Also
+        --------
+        meff, get_weights
+
+        """
+        return int(sum(self.get_weights(identity=identity)))
 
     def get_weights(self, identity=0.8):
         """Calculate the sequence weights
@@ -309,20 +323,6 @@ class SequenceFile(_Entity):
             return nb_get_weights(X, identity).tolist()
         else:
             raise ValueError('This is not an alignment')
-
-    def calculate_freq(self):
-        """Calculate the gap frequency in each alignment column
-
-        This function will be deprecated, use :func:``get_frequency`` instead.
-
-        See Also
-        --------
-        get_frequency
-
-        """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
-        return self.get_frequency("X")
 
     def get_frequency(self, symbol):
         """Calculate the gap frequency in each alignment column
