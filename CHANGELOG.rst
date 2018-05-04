@@ -13,6 +13,8 @@ Changed
 - ``SequenceFile.calculate_weights`` backend changed from ``numpy`` to ``numba`` for faster computation
 - ``SequenceFile.filter`` backend changed from ``numpy`` to ``numba`` for faster computation
 - ``SequenceFile.filter_gapped`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``SequenceFile.calculate_weights`` renamed to ``SequenceFile.get_weights``
+- ``SequenceFile.compute_freq`` renamed to ``SequenceFile.get_frequency``
 Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably

@@ -105,7 +105,7 @@ class TestSequenceFile(unittest.TestCase):
         sequence_file.add(sequence2)
         self.assertEqual(sequence1, sequence_file.top_sequence)
 
-    def test_calculate_weights_1(self):
+    def test_get_weights_1(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -114,10 +114,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'AAAAAAA')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [0.25, 0.25, 0.25, 0.25])
 
-    def test_calculate_weights_2(self):
+    def test_get_weights_2(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -126,10 +126,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0])
 
-    def test_calculate_weights_3(self):
+    def test_get_weights_3(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -138,10 +138,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [1.0, 1.0, 1.0, 1.0])
 
-    def test_calculate_weights_4(self):
+    def test_get_weights_4(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -150,10 +150,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [0.5, 0.5, 1.0, 1.0])
 
-    def test_calculate_weights_5(self):
+    def test_get_weights_5(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -162,10 +162,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.6)
+        weights = sequence_file.get_weights(identity=0.6)
         self.assertEqual(weights, [1.0, 1.0, 1.0, 1.0])
 
-    def test_calculate_weights_6(self):
+    def test_get_weights_6(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -176,10 +176,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('nop', 'AAAAAAB')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.6)
+        weights = sequence_file.get_weights(identity=0.6)
         self.assertEqual(weights, [0.3333333333333333, 1.0, 0.5, 1.0, 1.0, 0.5])
 
-    def test_calculate_weights_6(self):
+    def test_get_weights_6(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -192,25 +192,25 @@ class TestSequenceFile(unittest.TestCase):
             sequence_file.add(s)
         self.assertEqual(5, sequence_file.meff)
 
-    def test_calculate_freq_1(self):
+    def test_get_frequency_1(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AAAA-'), Sequence('cho', '--AAA--')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
+        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("X")]
         self.assertEqual([0.666667, 0.333333, 1.0, 1.0, 1.0, 0.666667, 0.333333], calculated_freqs)
 
-    def test_calculate_freq_2(self):
+    def test_get_frequency_2(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', '-------'), Sequence('bar', '-------'), Sequence('cho', '-------')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
+        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("-")]
         self.assertEqual([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], calculated_freqs)
 
-    def test_calculate_freq_3(self):
+    def test_get_frequency_3(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'), Sequence('cho', 'AAAAAAA')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
+        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("X")]
         self.assertEqual([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], calculated_freqs)
 
     def test_sort_1(self):

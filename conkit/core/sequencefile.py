@@ -159,7 +159,7 @@ class SequenceFile(_Entity):
     @property
     def meff(self):
         """The number of effective sequences"""
-        return int(sum(self.calculate_weights()))
+        return int(sum(self.get_weights()))
 
     @property
     def nseq(self):
@@ -230,6 +230,7 @@ class SequenceFile(_Entity):
         meff
 
         """
+        import warnings
         warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
         return self.calculate_meff_with_identity(identity)
 
@@ -238,7 +239,7 @@ class SequenceFile(_Entity):
         
         See Also
         --------
-        neff, calculate_weights
+        neff, get_weights
 
         """
         import warnings
@@ -250,12 +251,26 @@ class SequenceFile(_Entity):
         
         See Also
         --------
-        meff, calculate_weights
+        meff, get_weights
 
         """
-        return int(sum(self.calculate_weights(identity=identity)))
+        return int(sum(self.get_weights(identity=identity)))
 
     def calculate_weights(self, identity=0.8):
+        """Calculate the sequence weights
+
+        This function will be deprecated, use :func:``get_weights`` instead.
+        
+        See Also
+        --------
+        get_weights
+        
+        """
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
+        return self.get_weights(identity=identity)
+
+    def get_weights(self, identity=0.8):
         """Calculate the sequence weights
 
         This function calculates the sequence weights in the
@@ -289,13 +304,27 @@ class SequenceFile(_Entity):
             raise ValueError("Sequence Identity needs to be between 0 and 1")
         
         if self.is_alignment:
-            from conkit.core.ext import nb_calculate_weights
+            from conkit.core.ext._sequencefile import nb_get_weights
             X = np.array(self.ascii_matrix, dtype=np.int64)
-            return nb_calculate_weights(X, identity).tolist()
+            return nb_get_weights(X, identity).tolist()
         else:
             raise ValueError('This is not an alignment')
 
     def calculate_freq(self):
+        """Calculate the gap frequency in each alignment column
+
+        This function will be deprecated, use :func:``get_frequency`` instead.
+
+        See Also
+        --------
+        get_frequency
+
+        """
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
+        return self.get_frequency("X")
+
+    def get_frequency(self, symbol):
         """Calculate the gap frequency in each alignment column
 
         This function calculates the frequency of gaps at each
@@ -313,9 +342,10 @@ class SequenceFile(_Entity):
 
         """
         if self.is_alignment:
-            from conkit.core.ext import nb_calculate_freq
+            from conkit.core.ext._sequencefile import nb_get_frequency
             X = np.array(self.encoded_matrix, dtype=np.int64)
-            return nb_calculate_freq(X, AminoAcidMapping["X"].value).tolist()
+            symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
+            return nb_get_frequency(X, symbol).tolist()
         else:
             raise ValueError('This is not an alignment')
 
@@ -353,7 +383,7 @@ class SequenceFile(_Entity):
             raise ValueError("Maximum sequence identity needs to be between 0 and 1")
 
         if self.is_alignment:
-            from conkit.core.ext import nb_filter
+            from conkit.core.ext._sequencefile import nb_filter
             X = np.array(self.ascii_matrix, dtype=np.int64)
             throwables = nb_filter(X, min_id, max_id)
             filtered = self._inplace(inplace)
@@ -396,10 +426,13 @@ class SequenceFile(_Entity):
         elif 0 > max_prop > 1:
             raise ValueError("Maximum gap proportion needs to be between 0 and 1")
 
+        symbol = "X"
+
         if self.is_alignment:
-            from conkit.core.ext import nb_filter_gapped
+            from conkit.core.ext._sequencefile import nb_filter_gapped
             X = np.array(self.encoded_matrix, dtype=np.int64)
-            throwables = nb_filter_gapped(X, AminoAcidMapping["X"].value, min_prop, max_prop)
+            symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
+            throwables = nb_filter_gapped(X, symbol, min_prop, max_prop)
             filtered = self._inplace(inplace)
             for i, sequence in enumerate(self):
                 if throwables[i]:
