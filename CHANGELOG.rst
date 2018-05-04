@@ -16,6 +16,7 @@ Changed
 - ``SequenceFile.calculate_weights`` renamed to ``SequenceFile.get_weights``
 - ``SequenceFile.compute_freq`` renamed to ``SequenceFile.get_frequency``
 - ``ContactMap.singletons`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``Bandwidth`` backend changed from ``numpy`` to ``numba`` for faster computation
 Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably
