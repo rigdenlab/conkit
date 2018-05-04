@@ -48,7 +48,7 @@ if sys.version_info.major < 3:
 
 from conkit.core._entity import _Entity
 from conkit.core._struct import _Gap, _Residue
-from conkit.core.mappings import ContactMatchState
+from conkit.core.mappings import AminoAcidMapping, ContactMatchState
 from conkit.core.sequence import Sequence
 from conkit.misc import normalize
 
@@ -108,15 +108,13 @@ class ContactMap(_Entity):
     def coverage(self):
         """The sequence coverage score
 
-        The coverage score is calculated by analysing the number of residues
-        covered by the predicted contact pairs.
+        The coverage score is calculated by dividing the number of residues
+        covered by the predicted contact pairs :math:`x_{cov}` by the number 
+        of residues in the sequence :math:`L`.
 
         .. math::
 
            Coverage=\\frac{x_{cov}}{L}
-
-        The coverage score is calculated by dividing the number of contacts
-        :math:`x_{cov}` by the number of residues in the sequence :math:`L`.
 
         Returns
         -------
@@ -128,9 +126,9 @@ class ContactMap(_Entity):
         precision
 
         """
-        seq_array = np.array(list(self.repr_sequence.seq_ascii))
-        gaps = np.where(seq_array == ord('-'), 1, 0)
-        return (seq_array.size - np.sum(gaps, axis=0)) / seq_array.size
+        seq = np.array(self.repr_sequence.seq_encoded, dtype=np.int64)
+        cov = seq != AminoAcidMapping["X"].value
+        return np.sum(cov) / float(seq.shape[0])
 
     @property
     def empty(self):
@@ -151,6 +149,13 @@ class ContactMap(_Entity):
 
     @property
     def short_range_contacts(self):
+        """The short range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
+        import warnings
+        warnings.warn("This attribute will be deprecated in a future release! Use short_range instead!")
+        return self.short_range
+
+    @property
+    def short_range(self):
         """The short range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Short range contacts are defined as 6 <= x <= 11 residues apart
@@ -162,13 +167,20 @@ class ContactMap(_Entity):
 
         See Also
         --------
-        medium_range_contacts, long_range_contacts
+        medium_range, long_range
 
         """
         return self.remove_neighbors(min_distance=6, max_distance=11)
 
     @property
     def medium_range_contacts(self):
+        """The medium range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
+        import warnings
+        warnings.warn("This attribute will be deprecated in a future release! Use medium_range instead!")
+        return self.medium_range
+
+    @property
+    def medium_range(self):
         """The medium range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         Medium range contacts are defined as 12 <= x <= 23 residues apart
@@ -180,16 +192,23 @@ class ContactMap(_Entity):
 
         See Also
         --------
-        short_range_contacts, long_range_contacts
+        short_range, long_range
 
         """
         return self.remove_neighbors(min_distance=12, max_distance=23)
 
     @property
     def long_range_contacts(self):
+        """The long range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
+        import warnings
+        warnings.warn("This attribute will be deprecated in a future release! Use long_range instead!")
+        return self.long_range
+
+    @property
+    def long_range(self):
         """The long range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
-        long range contacts are defined as 24 <= x residues apart
+        Long range contacts are defined as 24 <= x residues apart
 
         Returns
         -------
@@ -198,7 +217,7 @@ class ContactMap(_Entity):
 
         See Also
         --------
-        short_range_contacts, medium_range_contacts
+        short_range, medium_range
 
         """
         return self.remove_neighbors(min_distance=24)

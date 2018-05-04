@@ -32,7 +32,7 @@ class TestContactMap(unittest.TestCase):
         contact_map.add(Contact(2, 4, 1.0))
         contact_map.add(Contact(5, 8, 1.0))
         contact_map.add(Contact(3, 6, 1.0))
-        contact_map.sequence = Sequence('TEST', 'ABCDEFGH')
+        contact_map.sequence = Sequence('TEST', 'ACDEFGHK')
         self.assertEqual(0.875, contact_map.coverage)
 
     def test_coverage_2(self):
@@ -41,8 +41,16 @@ class TestContactMap(unittest.TestCase):
         contact_map.add(Contact(2, 4, 1.0))
         contact_map.add(Contact(5, 8, 1.0))
         contact_map.add(Contact(3, 6, 1.0))
-        contact_map.sequence = Sequence('TEST', 'ABCDEFGH')
+        contact_map.sequence = Sequence('TEST', 'ACDEFGHK')
         self.assertEqual(0.875, contact_map.coverage)
+
+    def test_coverage_3(self):
+        contact_map = ContactMap('test')
+        contact_map.add(Contact(1, 4, 1.0))
+        contact_map.add(Contact(2, 4, 1.0))
+        contact_map.add(Contact(5, 8, 1.0))
+        contact_map.add(Contact(3, 6, 1.0))
+        contact_map.sequence = Sequence('TEST', 'ACDEFGHK')
         contact_map.remove((5, 8))
         contact_map.remove((3, 6))
         self.assertEqual(0.375, contact_map.coverage)
