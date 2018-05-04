@@ -17,6 +17,12 @@ Changed
 - ``SequenceFile.compute_freq`` renamed to ``SequenceFile.get_frequency``
 - ``ContactMap.singletons`` backend changed from ``numpy`` to ``numba`` for faster computation
 - ``Bandwidth`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``ContactMap.short_range_contacts`` renamed to ``ContactMap.short_range``
+- ``ContactMap.medium_range_contacts`` renamed to ``ContactMap.medium_range``
+- ``ContactMap.long_range_contacts`` renamed to ``ContactMap.long_range``
+- ``ContactMap.calculate_scalar_score`` renamed to ``ContactMap.set_scalar_score``
+- ``ContactMap.calculate_contact_density`` renamed to ``ContactMap.get_contact_density``
+- ``ContactMap.calculate_jaccard_index`` renamed to ``ContactMap.get_jaccard_index``
 Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably

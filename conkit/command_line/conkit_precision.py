@@ -77,7 +77,7 @@ def main():
     con = conkit.io.read(args.confile, args.conformat)[0]
     
     con.sequence = seq
-    con.assign_sequence_register()
+    con.set_sequence_register()
 
     logger.info('Min sequence separation for contacting residues: %d', args.dtn)
     logger.info('Contact list cutoff factor: %f * L', args.dfactor)

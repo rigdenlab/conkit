@@ -268,7 +268,7 @@ def main():
         con = conkit.io.read(args.confile, args.conformat)[0]
 
         con.sequence = seq
-        con.assign_sequence_register()
+        con.set_sequence_register()
         con.remove_neighbors(min_distance=args.dtn, inplace=True)
         ncontacts = int(seq.seq_len * args.dfactor)
         con.sort('raw_score', reverse=True, inplace=True)
@@ -277,7 +277,7 @@ def main():
         if args.otherfile:
             other = conkit.io.read(args.otherfile, args.otherformat)[0]
             other.sequence = seq
-            other.assign_sequence_register()
+            other.set_sequence_register()
             other.remove_neighbors(min_distance=args.dtn, inplace=True)
             other.sort('raw_score', reverse=True, inplace=True)
             other_sliced = other[:ncontacts]
@@ -341,7 +341,7 @@ def main():
         con = conkit.io.read(args.confile, args.conformat)[0]
 
         con.sequence = seq
-        con.assign_sequence_register()
+        con.set_sequence_register()
         con.remove_neighbors(min_distance=args.dtn, inplace=True)
         con.sort('raw_score', reverse=True, inplace=True)
         ncontacts = int(seq.seq_len * args.dfactor)
@@ -356,12 +356,12 @@ def main():
         con = conkit.io.read(args.confile, args.conformat)[0]
 
         con.sequence = seq
-        con.assign_sequence_register()
+        con.set_sequence_register()
 
         if args.otherfile:
             other = conkit.io.read(args.otherfile, args.otherformat)[0]
             other.sequence = seq
-            other.assign_sequence_register()
+            other.set_sequence_register()
         else:
             other = con
 
@@ -377,7 +377,7 @@ def main():
         con = conkit.io.read(args.confile, args.conformat)[0]
 
         con.sequence = seq
-        con.assign_sequence_register()
+        con.set_sequence_register()
         con.remove_neighbors(min_distance=args.dtn, inplace=True)
         con.sort('raw_score', reverse=True, inplace=True)
         ncontacts = int(seq.seq_len * args.dfactor)
@@ -399,7 +399,7 @@ def main():
         con = conkit.io.read(args.confile, args.conformat)[0]
 
         con.sequence = seq
-        con.assign_sequence_register()
+        con.set_sequence_register()
         con.remove_neighbors(min_distance=args.dtn, inplace=True)
         con.sort('raw_score', reverse=True, inplace=True)
 

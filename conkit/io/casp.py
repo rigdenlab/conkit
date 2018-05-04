@@ -164,7 +164,7 @@ class CaspParser(ContactFileParser):
                     seq = "".join(seq_chunks)
                     sequence = Sequence('seq_{0}'.format(contact_map.id), seq)
                     contact_map.sequence = sequence
-                    contact_map.assign_sequence_register()
+                    contact_map.set_sequence_register()
                 contact_file.add(contact_map)
 
             elif RE_END.match(line):

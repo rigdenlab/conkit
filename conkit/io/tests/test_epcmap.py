@@ -55,7 +55,7 @@ class TestEPCMapParser(unittest.TestCase):
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        contact_map.assign_sequence_register()
+        contact_map.set_sequence_register()
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             EPCMapParser().write(f_out, contact_file)

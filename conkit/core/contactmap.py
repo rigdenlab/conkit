@@ -421,6 +421,13 @@ class ContactMap(_Entity):
 
     def assign_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`Sequence <conkit.core.sequence.Sequence>` to all :obj:`Contact <conkit.core.contact.Contact>` instances
+        """
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use set_sequence_register() instead!")
+        return self.set_sequence_register(altloc=altloc)
+
+    def set_sequence_register(self, altloc=False):
+        """Assign the amino acids from :obj:`Sequence <conkit.core.sequence.Sequence>` to all :obj:`Contact <conkit.core.contact.Contact>` instances
 
         Parameters
         ----------
@@ -439,6 +446,12 @@ class ContactMap(_Entity):
             c.res2 = self.sequence.seq[res2_index - 1]
 
     def calculate_jaccard_index(self, other):
+        """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instances"""
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use get_jaccard_index() instead!")
+        return self.get_jaccard_index(other)
+
+    def get_jaccard_index(self, other):
         """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instances
 
         This score analyzes the difference of the predicted contacts from two maps,
@@ -494,10 +507,10 @@ class ContactMap(_Entity):
     def calculate_kernel_density(self, *args, **kwargs):
         """Calculate the contact density in the contact map using Gaussian kernels"""
         import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_contact_density instead!")
-        return self.calculate_contact_density(*args, **kwargs)
+        warnings.warn("This function will be deprecated in a future release! Use get_contact_density instead!")
+        return self.get_contact_density(*args, **kwargs)
 
-    def calculate_contact_density(self, bw_method="amise"):
+    def get_contact_density(self, bw_method="amise"):
         """Calculate the contact density in the contact map using Gaussian kernels
 
         Various algorithms can be used to estimate the bandwidth. To calculate the
@@ -527,7 +540,7 @@ class ContactMap(_Entity):
         try:
             import sklearn.neighbors
         except ImportError:
-            raise RuntimeError("Cannot find SciKit package")
+            raise RuntimeError("Cannot find SKlearn package")
 
         if self.empty:
             raise ValueError("ContactMap is empty")
@@ -540,6 +553,12 @@ class ContactMap(_Entity):
         return np.exp(kde.score_samples(x_fit)).tolist()
 
     def calculate_scalar_score(self):
+        """Calculate a scaled score for the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
+        import warnings
+        warnings.warn("This function will be deprecated in a future release! Use set_scalar_score() instead!")
+        return self.set_scalar_score()
+
+    def set_scalar_score(self):
         """Calculate a scaled score for the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         This score is a scaled score for all raw scores in a contact
