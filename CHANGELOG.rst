@@ -4,6 +4,7 @@ Changelog
 
 [Unreleased]
 ------------
+**Python 3.4 support ended to support Numba**
 Added
 ~~~~~
 - ``numba`` added as dependency
