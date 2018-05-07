@@ -40,13 +40,11 @@ import numpy as np
 
 
 @numba.jit(nopython=True, parallel=True)
-def nb_singletons(X, threshold):
-    throwables = np.zeros(X.shape[0], dtype=np.int8)
+def nb_singletons(X, threshold, throwables):
     for i in range(X.shape[0]):
-        for j in numba.prange(i + 1, X.shape[0]):
+        for j in range(i + 1, X.shape[0]):
             if throwables[j]:
                 continue
             if abs(X[j, 0] - X[i, 0]) <= threshold and abs(X[j, 1] - X[i, 1]) <= threshold:
                 throwables[i] = 1
                 throwables[j] = 1
-    return throwables

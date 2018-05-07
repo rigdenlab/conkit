@@ -40,20 +40,17 @@ import numpy as np
 
 
 @numba.jit(nopython=True, parallel=True)
-def nb_get_frequency(X, symbol):
-    freq = np.zeros(X.shape[1], dtype=np.float64)
+def nb_get_frequency(X, symbol, frequencies):
     for j in numba.prange(X.shape[1]):
         for i in range(X.shape[0]):
-            freq[j] += X[i, j] == symbol
-        freq[j] = 1.0 - freq[j] / X.shape[0]
-    return freq
+            frequencies[j] += X[i, j] == symbol
+        frequencies[j] = 1.0 - frequencies[j] / X.shape[0]
 
 
 @numba.jit(nopython=True, parallel=True)
-def nb_get_weights(X, identity):
+def nb_get_weights(X, identity, hamming):
     N_float = float(X.shape[1])
     threshold = 1.0 - identity
-    hamming = np.zeros(X.shape[0], dtype=np.float64)
     for i in numba.prange(X.shape[0]):
         for j in range(X.shape[0]):
             dist = 0
@@ -61,12 +58,10 @@ def nb_get_weights(X, identity):
                 dist += X[i, k] != X[j, k]
             hamming[i] += (dist / N_float) < threshold
         hamming[i] = 1. / hamming[i]
-    return hamming
 
 
 @numba.jit(nopython=True, parallel=True)
-def nb_filter(X, min_id, max_id):
-    throwables = np.zeros(X.shape[0], dtype=np.uint8)
+def nb_filter(X, min_id, max_id, throwables):
     for i in range(X.shape[0]):
         for j in range(i+1, X.shape[0]):
             if not throwables[j]:
@@ -75,16 +70,13 @@ def nb_filter(X, min_id, max_id):
                     dist += X[i, k] != X[j, k]
                 ident = 1.0 - dist / X.shape[1] 
                 throwables[j] = min_id > ident or ident > max_id
-    return throwables
 
 
 @numba.jit(nopython=True, parallel=True)
-def nb_filter_gapped(X, symbol, min_prop, max_prop):
-    throwables = np.zeros(X.shape[0], dtype=np.uint8)
+def nb_filter_gapped(X, symbol, min_prop, max_prop, throwables):
     for i in numba.prange(X.shape[0]):
         prop = 0.0
         for k in range(X[i].shape[0]):
             prop += X[i, k] == symbol
         prop = prop / X[i].shape[0]
         throwables[i] = prop < min_prop or prop > max_prop
-    return throwables

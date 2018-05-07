@@ -339,7 +339,8 @@ class ContactMap(_Entity):
         """
         from conkit.core.ext._contactmap import nb_singletons
         X = np.array(self.as_list(), dtype=np.int64)
-        throwables = nb_singletons(X, 2)
+        throwables = np.zeros(X.shape[0], dtype=np.int8)
+        nb_singletons(X, 2, throwables)
         singletons = self.deepcopy()
         for i, contact in enumerate(self):
             if throwables[i]:
