@@ -47,8 +47,8 @@ class Figure(object):
             
         Parameters
         ----------
-        ax : :obj:`Axes <matplotlib.pyplot.Axes>`
-           A pre-defined :obj:`Axes <matplotlib.pyplot.Axes>` 
+        ax : :obj:`Axes <matplotlib.axes.Axes>`
+           A pre-defined :obj:`Axes <matplotlib.axes.Axes>` 
 
            If ``None`` is provided, a new plot will be created
         legend : bool, optional
@@ -80,7 +80,7 @@ class Figure(object):
         return self.__class__.__name__
 
     def _patch_scatter(self, x, y, symbol="o", facecolor="#ffffff", edgecolor="#000000", radius=0.5, linewidth=1.0):
-        """Draw scatter points as :obj:`Circles <matplotlib.pyplot.Circle>` to control width for discrete data"""
+        """Draw scatter points as :obj:`Circles <matplotlib.patches.Circle>` to control width for discrete data"""
         if len(x) != len(y):
             raise ValueError("Unequal x and y data provided")
 

@@ -1,7 +1,7 @@
 .. _python_plot_mat:
 
 Contact Map Matrix Plotting
---------------------
+---------------------------
 
 .. only:: html
 
