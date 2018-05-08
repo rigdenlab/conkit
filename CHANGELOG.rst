@@ -4,7 +4,6 @@ Changelog
 
 [Unreleased]
 ------------
-**Python 3.4 support ended to support Numba**
 Added
 ~~~~~
 - ``numba`` added as dependency
@@ -28,6 +27,9 @@ Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably
 - Bug fix in ``ContactMapMatrixFigure`` when ``gap`` variable was less than 1
+Removed
+~~~~~~~
+- Python 3.4 support
 
 [0.9]
 -----
