@@ -134,7 +134,6 @@ PACKAGES = [
     'conkit/io',
     'conkit/misc',
     'conkit/plot',
-    'conkit/predict',
 ]
 
 CLASSIFIERS = [
