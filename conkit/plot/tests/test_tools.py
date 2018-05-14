@@ -39,10 +39,6 @@ class Test(unittest.TestCase):
         with self.assertRaises(ValueError):
             tools.find_minima([4, 5, 3, 5, 2, 6], order=-1)
 
-    def test_points_on_circle_1(self):
-        coords = tools.points_on_circle(0)
-        self.assertEqual([[]], coords)
-
     def test_get_points_on_circle_1(self):
         coords = tools.get_points_on_circle(0)
         self.assertEqual([[]], coords)

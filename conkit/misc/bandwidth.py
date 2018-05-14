@@ -40,10 +40,9 @@ __version__ = "1.0.1"
 import abc
 import numpy as np
 
-ABC = abc.ABCMeta('ABC', (object,), {})
+from conkit.misc.ext import _bandwidth
 
-SQRT_PI = np.sqrt(np.pi)
-SQRT_2PI = np.sqrt(2. * np.pi)
+ABC = abc.ABCMeta('ABC', (object,), {})
 
 
 class BandwidthBase(ABC):
@@ -77,68 +76,15 @@ class AmiseBW(BandwidthBase):
     def bandwidth(self):
         data = self._data
         x0 = BowmanBW(data).bandwidth
-        y0 = AmiseBW.optimal_bandwidth(data, x0)
+        y0 = _bandwidth.optimize_bandwidth(data, x0)
         x = 0.8 * x0
-        y = AmiseBW.optimal_bandwidth(data, x)
-        for _ in np.arange(self._niterations):
+        y = _bandwidth.optimize_bandwidth(data, x)
+        for _ in range(self._niterations):
             x -= y * (x0 - x) / (y0 - y)
-            y = AmiseBW.optimal_bandwidth(data, x)
+            y = _bandwidth.optimize_bandwidth(data, x)
             if abs(y) < (self._eps * y0):
                 break
         return x
-
-    @staticmethod
-    def curvature(data, x, w):
-        """
-        See Also
-        --------
-        gauss_curvature
-        """
-        import warnings
-        warnings.warn("This function will be removed in a future release! Use gauss_curvature() instead")
-        return AmiseBW.gauss_curvature(data, x, w)
-
-    @staticmethod
-    def gauss_curvature(data, x, w):
-        M, N = data.shape
-        z = ((x - data) / w)**2
-        return (N * (z - 1.0) * (np.exp(-0.5 * z) / (w * SQRT_2PI)) / w**2).sum() / M
-
-    @staticmethod
-    def extended_range(min_, max_, bandwidth, ext=3):
-        d = bandwidth * ext
-        return min_ - d, max_ + d 
-
-    @staticmethod
-    def optimal_bandwidth(data, bandwidth):
-        M, N = data.shape
-        alpha = 1. / (2. * SQRT_PI)
-        sigma = 1.0
-        integral = AmiseBW.stiffness_integral(data, bandwidth)
-        return bandwidth - ((M * integral * sigma ** 4) / alpha) ** (-1.0 / (N + 4))
-
-    @staticmethod
-    def stiffness_integral(data, bandwidth, eps=1e-4):
-        min_, max_ = AmiseBW.extended_range(data.min(), data.max(), bandwidth, ext=3)
-        dx = 1.0 * (max_ - min_)
-        maxn = dx / np.sqrt(eps)
-        if maxn > 2048:
-            maxn = 2048
-        yy = 0.5 * dx * (
-            AmiseBW.gauss_curvature(data, min_, bandwidth)**2 
-            + AmiseBW.gauss_curvature(data, max_, bandwidth)**2
-        )
-        n = 2
-        while n <= maxn:
-            dx /= 2.
-            y = 0
-            for i in np.arange(1, n, 2):
-                y += AmiseBW.gauss_curvature(data, min_ + i * dx, bandwidth) ** 2
-            yy = 0.5 * yy + y * dx
-            if n > 8 and abs(y * dx - 0.5 * yy) < eps * yy:
-                break
-            n *= 2
-        return yy
 
 
 class BowmanBW(BandwidthBase):

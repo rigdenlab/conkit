@@ -101,7 +101,7 @@ class ContactDensityFigure(Figure):
         """The method to estimate the bandwidth
         
         For a full list of options, please refer to 
-        :func:`calculate_contact_density() <conkit.core.contactmap.ContactMap.calculate_contact_density>`
+        :func:`get_contact_density() <conkit.core.contactmap.ContactMap.get_contact_density>`
 
         """
         return self._bw_method
@@ -156,6 +156,6 @@ class ContactDensityFigure(Figure):
 
     def get_xy_data(self):
         residues = np.asarray(self.hierarchy.as_list()).flatten()
-        x = np.arange(residues.min(), residues.max())
-        y = np.asarray(self.hierarchy.calculate_contact_density(self.bw_method))
+        x = np.arange(residues.min(), residues.max() + 1)
+        y = np.asarray(self.hierarchy.get_contact_density(self.bw_method))
         return x, y

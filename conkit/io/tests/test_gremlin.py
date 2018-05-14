@@ -119,7 +119,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        contact_map.assign_sequence_register()
+        contact_map.set_sequence_register()
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             GremlinParser().write(f_out, contact_file)
@@ -175,7 +175,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
                 c.res2_chain = chain[1]
                 contact_map.add(c)
             contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-            contact_map.assign_sequence_register()
+            contact_map.set_sequence_register()
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             GremlinParser().write(f_out, contact_file)

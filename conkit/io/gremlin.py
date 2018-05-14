@@ -171,7 +171,7 @@ class GremlinParser(ContactFileParser):
                           '{raw_score}', '{scalar_score}', '1.0']
 
         for contact_map in contact_file:
-            contact_map.calculate_scalar_score()
+            contact_map.set_scalar_score()
             for c in contact_map:
                 res1_code = str(c.res1_seq) + '_' + c.res1
                 res2_code = str(c.res2_seq) + '_' + c.res2

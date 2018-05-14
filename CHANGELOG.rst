@@ -6,6 +6,35 @@ Changelog
 ------------
 Added
 ~~~~~
+- ``numba`` added as dependency
+Changed
+~~~~~~~
+- ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``SequenceFile.calculate_weights`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``SequenceFile.filter`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``SequenceFile.filter_gapped`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``SequenceFile.calculate_weights`` renamed to ``SequenceFile.get_weights``
+- ``SequenceFile.compute_freq`` renamed to ``SequenceFile.get_frequency``
+- ``ContactMap.singletons`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``Bandwidth`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``ContactMap.short_range_contacts`` renamed to ``ContactMap.short_range``
+- ``ContactMap.medium_range_contacts`` renamed to ``ContactMap.medium_range``
+- ``ContactMap.long_range_contacts`` renamed to ``ContactMap.long_range``
+- ``ContactMap.calculate_scalar_score`` renamed to ``ContactMap.set_scalar_score``
+- ``ContactMap.calculate_contact_density`` renamed to ``ContactMap.get_contact_density``
+- ``ContactMap.calculate_jaccard_index`` renamed to ``ContactMap.get_jaccard_index``
+Fixed
+~~~~~
+- Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably
+- Bug fix in ``ContactMapMatrixFigure`` when ``gap`` variable was less than 1
+Removed
+~~~~~~~
+- Python 3.4 support
+
+[0.9]
+-----
+Added
+~~~~~
 - ``conkit.plot`` subpackage refactored to allow ``matplotlib`` access of ``Figure`` instances. This provides
   functionality similar to ``seaborn``, so ``matplotlib.Axes`` can be provided into which a plot is drawn.
 - ``ContactMap.as_list`` function to represent the contact map as a 2D-list of residue indexes

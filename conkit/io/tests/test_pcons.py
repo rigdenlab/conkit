@@ -198,7 +198,7 @@ Res1 Res2 Score
             contact_map.add(contact)
         contact_map.sequence = Sequence(
             'sequence_1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
-        contact_map.assign_sequence_register()
+        contact_map.set_sequence_register()
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
             PconsParser().write(f_out, contact_file)

@@ -5,21 +5,8 @@ __date__ = "12 Aug 2016"
 
 import unittest
 
-try:
-    import scipy.spatial
-    SCIPY = True
-except ImportError:
-    SCIPY = False
-
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
-
-
-def skipUnless(condition):
-    if condition:
-        return lambda x: x
-    else:
-        return lambda x: None
 
 
 class TestSequenceFile(unittest.TestCase):
@@ -118,8 +105,7 @@ class TestSequenceFile(unittest.TestCase):
         sequence_file.add(sequence2)
         self.assertEqual(sequence1, sequence_file.top_sequence)
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_1(self):
+    def test_get_weights_1(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -128,11 +114,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'AAAAAAA')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [0.25, 0.25, 0.25, 0.25])
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_2(self):
+    def test_get_weights_2(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -141,11 +126,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0])
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_3(self):
+    def test_get_weights_3(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -154,11 +138,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [1.0, 1.0, 1.0, 1.0])
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_4(self):
+    def test_get_weights_4(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -167,11 +150,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.7)
+        weights = sequence_file.get_weights(identity=0.7)
         self.assertEqual(weights, [0.5, 0.5, 1.0, 1.0])
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_5(self):
+    def test_get_weights_5(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -180,11 +162,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('baz', 'CCCCCCC')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.6)
+        weights = sequence_file.get_weights(identity=0.6)
         self.assertEqual(weights, [1.0, 1.0, 1.0, 1.0])
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_6(self):
+    def test_get_weights_6(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -195,11 +176,10 @@ class TestSequenceFile(unittest.TestCase):
                 Sequence('nop', 'AAAAAAB')
         ]:
             sequence_file.add(s)
-        weights = sequence_file.calculate_weights(identity=0.6)
+        weights = sequence_file.get_weights(identity=0.6)
         self.assertEqual(weights, [0.3333333333333333, 1.0, 0.5, 1.0, 1.0, 0.5])
 
-    @skipUnless(SCIPY)
-    def test_calculate_weights_6(self):
+    def test_get_weights_6(self):
         sequence_file = SequenceFile('test')
         for s in [
                 Sequence('foo', 'AAAAAAA'),
@@ -212,25 +192,25 @@ class TestSequenceFile(unittest.TestCase):
             sequence_file.add(s)
         self.assertEqual(5, sequence_file.meff)
 
-    def test_calculate_freq_1(self):
+    def test_get_frequency_1(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AAAA-'), Sequence('cho', '--AAA--')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
+        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("X")]
         self.assertEqual([0.666667, 0.333333, 1.0, 1.0, 1.0, 0.666667, 0.333333], calculated_freqs)
 
-    def test_calculate_freq_2(self):
+    def test_get_frequency_2(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', '-------'), Sequence('bar', '-------'), Sequence('cho', '-------')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
+        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("-")]
         self.assertEqual([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], calculated_freqs)
 
-    def test_calculate_freq_3(self):
+    def test_get_frequency_3(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'), Sequence('cho', 'AAAAAAA')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.calculate_freq()]
+        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("X")]
         self.assertEqual([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], calculated_freqs)
 
     def test_sort_1(self):
@@ -305,7 +285,6 @@ class TestSequenceFile(unittest.TestCase):
         self.assertEqual(['CD', 'DE', 'EF'], [s.seq for s in sequence_file_trimmed])
         self.assertNotEqual(sequence_file, sequence_file_trimmed)
 
-    @skipUnless(SCIPY)
     def test_filter_1(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AAAAAA'), Sequence('doe', 'AAAAAA')]:
@@ -313,7 +292,6 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=1.0)
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in filtered])
 
-    @skipUnless(SCIPY)
     def test_filter_2(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AAAACC'), Sequence('doe', 'AAAAAA')]:
@@ -321,7 +299,6 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=0.9)
         self.assertEqual(['foo', 'bar'], [s.id for s in filtered])
 
-    @skipUnless(SCIPY)
     def test_filter_3(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AAAAAA'), Sequence('doe', 'CCCCCC')]:
@@ -329,7 +306,6 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=0.9)
         self.assertEqual(['foo', 'doe'], [s.id for s in filtered])
 
-    @skipUnless(SCIPY)
     def test_filter_4(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'CCCCCC'), Sequence('doe', 'DDDDDD')]:
@@ -337,7 +313,6 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.0, max_id=0.9)
         self.assertEqual(['foo', 'bar', 'doe'], [s.id for s in filtered])
 
-    @skipUnless(SCIPY)
     def test_filter_5(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'CCCCCC'), Sequence('doe', 'DDDDDD')]:
@@ -345,7 +320,6 @@ class TestSequenceFile(unittest.TestCase):
         filtered = sequence_file.filter(min_id=0.1, max_id=0.9)
         self.assertEqual(['foo'], [s.id for s in filtered])
 
-    @skipUnless(SCIPY)
     def test_filter_6(self):
         sequence_file = SequenceFile('test')
         for seq in [Sequence('foo', 'AAAAAA'), Sequence('bar', 'AACCCC'), Sequence('doe', 'DDDDDD')]:

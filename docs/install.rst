@@ -64,6 +64,8 @@ Required dependencies
 +++++++++++++++++++++
 Python 2.7, 3.4, 3.5, or 3.6
   `Download Python <https://www.python.org/downloads/>`_
+Numba 0.36.2 (or later)
+  `Download Numba <http://numba.pydata.org/numba-doc/dev/index.html>`_
 NumPy 1.8.2 (or later)
   `Download NumPy <http://www.scipy.org/scipylib/download.html>`_
 BioPython 1.64 (or later)
@@ -75,8 +77,8 @@ setuptools
 
 Optional dependencies
 +++++++++++++++++++++
-SciPy 0.16 (or later)
-  `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
+.. SciPy 0.16 (or later)
+..   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
 scikit-learn 0.18 (or later)
   `Download scikit-learn <http://scikit-learn.org/stable/install.html>`_
 HHblits

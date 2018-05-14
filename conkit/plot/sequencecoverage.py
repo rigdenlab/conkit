@@ -111,7 +111,7 @@ class SequenceCoverageFigure(Figure):
 
     def draw(self):
         residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
-        aa_counts = np.asarray(self._hierarchy.calculate_freq()) * self._hierarchy.nseq
+        aa_counts = np.asarray(self._hierarchy.get_frequency("X")) * self._hierarchy.nseq
 
         self.ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker=None, linestyle='-', 
                      label='Amino acid count', zorder=1)

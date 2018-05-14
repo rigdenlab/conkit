@@ -24,7 +24,7 @@ conpred = conkit.io.read(contact_file, contact_format).top
 
 # Assign the sequence register to your contact prediction
 conpred.sequence = seq
-conpred.assign_sequence_register()
+conpred.set_sequence_register()
 
 # We need to tidy our contact prediction before plotting
 conpred.remove_neighbors(inplace=True)
