@@ -106,7 +106,7 @@ class ContactMapMatrixFigure(Figure):
         self.draw()
 
     def __repr__(self):
-        return "{0}(file_name=\"{1}\")".format(self.__class__.__name__, self.file_name)
+        return self.__class__.__name__
 
     @property
     def hierarchy(self):
