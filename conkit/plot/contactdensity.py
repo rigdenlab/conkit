@@ -90,6 +90,8 @@ class ContactDensityFigure(Figure):
         self.bw_method = bw_method
         self.hierarchy = hierarchy
 
+        self.minima_ = None
+
         self.draw()
 
     def __repr__(self):
@@ -139,7 +141,9 @@ class ContactDensityFigure(Figure):
         x, y = self.get_xy_data()
         self.ax.plot(x, y, linestyle="solid", color=ColorDefinitions.GENERAL, label="Contact Density", zorder=2)
         line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
+        self.minima_ = []
         for minimum in find_minima(y, order=1):
+            self.minima_.append(x[minimum])
             self.ax.axvline(x[minimum], **line_kwargs)
         self.ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
         self.ax.set_xlim(x.min(), x.max())
