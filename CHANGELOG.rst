@@ -7,6 +7,7 @@ Changelog
 Added
 ~~~~~
 - ``numba`` added as dependency
+- ``conkit.misc.deprecate`` decorator for easier tagging
 Changed
 ~~~~~~~
 - ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``numba`` for faster computation
