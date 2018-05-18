@@ -86,7 +86,7 @@ class NcontParser(ContactFileParser):
                 if (res1_seq, res2_seq) in contact_map:
                     msg = "This parser cannot handle multiple atoms of the same residue. " \
                           "If your contact map contains such entries, only the first will be stored!"
-                    warnings.warn(msg)
+                    warnings.warn(msg, Warning)
                     continue
 
                 contact = Contact(res1_seq, res2_seq, 1.0, distance_bound=(lb, ub))
