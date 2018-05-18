@@ -8,7 +8,7 @@ import unittest
 from conkit.misc import *
 
 
-class Test(unittest.TestCase):
+class Test1(unittest.TestCase):
     def test_normalize_1(self):
         self.assertListEqual([0.0, 0.5, 1.0], normalize([1, 2, 3]))
 
@@ -35,6 +35,82 @@ class Test(unittest.TestCase):
 
     def test_normalize_9(self):
         self.assertListEqual([0.2, 0.5, 0.8], normalize([1, 2, 3], vmin=0.2, vmax=0.8))
+
+
+class Test2(unittest.TestCase):
+    def test_deprecated_1(self):
+        @deprecate('0.0.0')
+        def f():
+            return True
+
+        self.assertTrue(f())
+
+    def test_deprecated_2(self):
+        @deprecate('0.0.0', msg="hello world")
+        def f():
+            return True
+
+        self.assertTrue(f())
+
+    def test_deprecated_3(self):
+        @deprecate('0.0.0')
+        def f(a, b):
+            return a + b
+
+        self.assertEqual(2, f(1, 1))
+
+    def test_deprecated_4(self):
+        @deprecate('0.0.0')
+        class Obj(object):
+            pass
+
+        self.assertTrue(Obj())
+
+    def test_deprecated_5(self):
+        class Obj(object):
+            @deprecate('0.0.0')
+            def f(self, a, b):
+                return a + b
+
+        self.assertEqual(2, Obj().f(1, 1))
+
+    def test_deprecated_6(self):
+        class Obj(object):
+            @staticmethod
+            @deprecate('0.0.0')
+            def f(a, b):
+                return a + b
+
+        self.assertEqual(2, Obj.f(1, 1))
+
+    def test_deprecated_7(self):
+        class Obj(object):
+            @classmethod
+            @deprecate('0.0.0')
+            def f(cls, a, b):
+                return a + b
+
+        self.assertEqual(2, Obj().f(1, 1))
+
+    def test_deprecated_7(self):
+        class Obj(object):
+            @deprecate('0.0.0')
+            @staticmethod
+            def f(a, b):
+                return a + b
+
+        with self.assertRaises(Exception):
+            Obj.f(1, 1)
+
+    def test_deprecated_8(self):
+        class Obj(object):
+            @deprecate('0.0.0')
+            @classmethod
+            def f(cls, a, b):
+                return a + b
+
+        with self.assertRaises(AttributeError):
+            Obj().f(1, 1)
 
 
 if __name__ == "__main__":
