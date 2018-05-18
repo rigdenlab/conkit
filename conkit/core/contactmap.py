@@ -50,7 +50,7 @@ from conkit.core._entity import _Entity
 from conkit.core._struct import _Gap, _Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
 from conkit.core.sequence import Sequence
-from conkit.misc import deprecate, normalize
+from conkit.misc import fAND, fOR, deprecate, normalize
 
 
 class ContactMap(_Entity):
@@ -602,7 +602,7 @@ class ContactMap(_Entity):
         if isinstance(register, int):
             register = [register]
         register = set(register)
-        comparison_operator = _AND if strict else _OR
+        comparison_operator = fAND if strict else fOR
         contact_map = self.deepcopy()
         for contactid in self.as_list(altloc=altloc):
             if not comparison_operator(contactid[0] in register, contactid[1] in register):
@@ -938,11 +938,3 @@ class ContactMap(_Entity):
                     raise ValueError('Should never get here')
 
         return contact_map
-
-
-def _AND(a, b):
-    return a and b
-
-
-def _OR(a, b):
-    return a or b

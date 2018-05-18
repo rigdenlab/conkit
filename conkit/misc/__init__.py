@@ -36,6 +36,16 @@ import numpy as np
 import warnings
 
 
+def fAND(a, b):
+    """Function AND comparator for two arguments"""
+    return a and b
+
+
+def fOR(a, b):
+    """Function OR comparator for two arguments"""
+    return a or b
+
+
 def deprecate(version, msg=None):
     """Decorator to deprecate Python classes and functions
     
