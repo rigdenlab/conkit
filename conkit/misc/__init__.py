@@ -36,35 +36,6 @@ import numpy as np
 import warnings
 
 
-def normalize(data, vmin=0, vmax=1):
-    """Apply a Feature scaling algorithm to normalize the data
-
-    This normalization will bring all values into the range [0, 1]. This function
-    allows range restrictions by values ``vmin`` and ``vmax``.
-
-    .. math::
-
-       {X}'=\\frac{(X-X_{min})(vmax-vmin)}{X_{max}-X_{min}}
-
-    Parameters
-    ----------
-    data : list, tuple
-       The data to normalize
-    vmin : int, float, optional
-       The minimum value
-    vmax : int, float, optional
-       The maximum value
-
-    Returns
-    -------
-    list
-       The normalized data
-
-    """
-    data = np.array(data, dtype=np.float64)
-    return (vmin + (data - data.min()) * (vmax - vmin) / (data.max() - data.min())).tolist()
-
-
 def deprecate(version, msg=None):
     """Decorator to deprecate Python classes and functions
     
@@ -159,3 +130,32 @@ def deprecate(version, msg=None):
         return warn
 
     return deprecate_decorator
+
+
+def normalize(data, vmin=0, vmax=1):
+    """Apply a Feature scaling algorithm to normalize the data
+
+    This normalization will bring all values into the range [0, 1]. This function
+    allows range restrictions by values ``vmin`` and ``vmax``.
+
+    .. math::
+
+       {X}'=\\frac{(X-X_{min})(vmax-vmin)}{X_{max}-X_{min}}
+
+    Parameters
+    ----------
+    data : list, tuple
+       The data to normalize
+    vmin : int, float, optional
+       The minimum value
+    vmax : int, float, optional
+       The maximum value
+
+    Returns
+    -------
+    list
+       The normalized data
+
+    """
+    data = np.array(data, dtype=np.float64)
+    return (vmin + (data - data.min()) * (vmax - vmin) / (data.max() - data.min())).tolist()

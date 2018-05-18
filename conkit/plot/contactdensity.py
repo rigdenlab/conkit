@@ -38,8 +38,8 @@ __version__ = "0.1"
 
 import matplotlib.pyplot as plt
 import numpy as np
-import warnings
 
+from conkit.misc import deprecate
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
 from conkit.plot.tools import find_minima
@@ -132,9 +132,8 @@ class ContactDensityFigure(Figure):
         else:
             raise TypeError("The hierarchy is not an contact map")
 
+    @deprecate('0.11', msg='Use draw instead')
     def redraw(self):
-        import warnings
-        warnings.warn("This method has been deprecated, use draw() instead")
         self.draw()
 
     def draw(self):
@@ -151,8 +150,8 @@ class ContactDensityFigure(Figure):
         self.ax.set_xlabel('Residue number')
         self.ax.set_ylabel('Density Estimate')
         if self.legend:
-            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., 
-                           scatterpoints=1)
+            self.ax.legend(
+                bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

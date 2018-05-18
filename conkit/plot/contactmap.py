@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from conkit.core._struct import _Gap
-from conkit.misc import normalize
+from conkit.misc import deprecate, normalize
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
@@ -166,9 +166,8 @@ class ContactMapFigure(Figure):
         else:
             raise TypeError("A list with [min, max] limits is required!")
 
+    @deprecate('0.11', msg='Use draw instead')
     def redraw(self):
-        import warnings
-        warnings.warn("This method has been deprecated, use draw() instead")
         self.draw()
 
     def draw(self):
@@ -204,10 +203,14 @@ class ContactMapFigure(Figure):
         else:
             self_radius = other_radius = 0.48
 
-        self._patch_scatter(reference_data[:, 0], reference_data[:, 1], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0)
-        self._patch_scatter(reference_data[:, 1], reference_data[:, 0], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0)
-        self._patch_scatter(self_data[:, 1], self_data[:, 0], symbol="o", facecolor=self_colors, radius=self_radius, linewidth=0)
-        self._patch_scatter(other_data[:, 0], other_data[:, 1], symbol="o", facecolor=other_colors, radius=other_radius, linewidth=0)
+        self._patch_scatter(
+            reference_data[:, 0], reference_data[:, 1], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0)
+        self._patch_scatter(
+            reference_data[:, 1], reference_data[:, 0], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0)
+        self._patch_scatter(
+            self_data[:, 1], self_data[:, 0], symbol="o", facecolor=self_colors, radius=self_radius, linewidth=0)
+        self._patch_scatter(
+            other_data[:, 0], other_data[:, 1], symbol="o", facecolor=other_colors, radius=other_radius, linewidth=0)
 
         if self.lim:
             min_max_data = np.arange(self.lim[0], self.lim[1] + 1)
@@ -245,8 +248,15 @@ class ContactMapFigure(Figure):
             artists = [nt_artist]
 
         if self.legend:
-            self.ax.legend(handles=artists, numpoints=1, fontsize=10, bbox_to_anchor=(0., 1.02, 1., .102), loc=3, 
-                           ncol=3, mode="expand", borderaxespad=0.)
+            self.ax.legend(
+                handles=artists,
+                numpoints=1,
+                fontsize=10,
+                bbox_to_anchor=(0., 1.02, 1., .102),
+                loc=3,
+                ncol=3,
+                mode="expand",
+                borderaxespad=0.)
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

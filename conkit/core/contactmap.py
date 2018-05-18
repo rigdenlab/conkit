@@ -50,7 +50,7 @@ from conkit.core._entity import _Entity
 from conkit.core._struct import _Gap, _Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
 from conkit.core.sequence import Sequence
-from conkit.misc import normalize
+from conkit.misc import deprecate, normalize
 
 
 class ContactMap(_Entity):
@@ -148,10 +148,9 @@ class ContactMap(_Entity):
         return len(self)
 
     @property
+    @deprecate('0.11', msg='Use short_range instead.')
     def short_range_contacts(self):
         """The short range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        import warnings
-        warnings.warn("This attribute will be deprecated in a future release! Use short_range instead!")
         return self.short_range
 
     @property
@@ -173,10 +172,9 @@ class ContactMap(_Entity):
         return self.remove_neighbors(min_distance=6, max_distance=11)
 
     @property
+    @deprecate('0.11', msg='Use medium_range instead.')
     def medium_range_contacts(self):
         """The medium range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        import warnings
-        warnings.warn("This attribute will be deprecated in a future release! Use medium_range instead!")
         return self.medium_range
 
     @property
@@ -198,10 +196,9 @@ class ContactMap(_Entity):
         return self.remove_neighbors(min_distance=12, max_distance=23)
 
     @property
+    @deprecate('0.11', msg='Use long_range instead.')
     def long_range_contacts(self):
         """The long range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        import warnings
-        warnings.warn("This attribute will be deprecated in a future release! Use long_range instead!")
         return self.long_range
 
     @property
@@ -420,11 +417,10 @@ class ContactMap(_Entity):
         else:
             return [[c.res1_seq, c.res2_seq] for c in self]
 
+    @deprecate('0.11', msg='Use set_sequence_register instead.')
     def assign_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`Sequence <conkit.core.sequence.Sequence>` to all :obj:`Contact <conkit.core.contact.Contact>` instances
         """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use set_sequence_register() instead!")
         return self.set_sequence_register(altloc=altloc)
 
     def set_sequence_register(self, altloc=False):
@@ -446,10 +442,9 @@ class ContactMap(_Entity):
             c.res1 = self.sequence.seq[res1_index - 1]
             c.res2 = self.sequence.seq[res2_index - 1]
 
+    @deprecate('0.11', msg='Use get_jaccard_index instead.')
     def calculate_jaccard_index(self, other):
         """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instances"""
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use get_jaccard_index() instead!")
         return self.get_jaccard_index(other)
 
     def get_jaccard_index(self, other):
@@ -505,10 +500,9 @@ class ContactMap(_Entity):
         intersection = np.sum([1 for contact in self if contact.id in other])
         return float(intersection) / union
 
+    @deprecate('0.11', msg='Use get_contact_density instead.')
     def calculate_kernel_density(self, *args, **kwargs):
         """Calculate the contact density in the contact map using Gaussian kernels"""
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use get_contact_density instead!")
         return self.get_contact_density(*args, **kwargs)
 
     def get_contact_density(self, bw_method="amise"):
@@ -553,10 +547,9 @@ class ContactMap(_Entity):
         kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(x)
         return np.exp(kde.score_samples(x_fit)).tolist()
 
+    @deprecate('0.11', msg='Use set_scalar_score instead.')
     def calculate_scalar_score(self):
         """Calculate a scaled score for the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use set_scalar_score() instead!")
         return self.set_scalar_score()
 
     def set_scalar_score(self):
@@ -570,7 +563,7 @@ class ContactMap(_Entity):
            {x}'=\\frac{x}{\\overline{d}}
 
         where :math:`x` corresponds to the raw score of each predicted
-        contact and :math:`\overline{d}` to the mean of all raw scores.
+        contact and :math:`\\overline{d}` to the mean of all raw scores.
 
         The score is saved in a separate :obj:`Contact <conkit.core.contact.Contact>` attribute called ``scalar_score``
 
@@ -662,32 +655,33 @@ class ContactMap(_Entity):
         # ================================================================
 
         aligned_sequences_full = contact_map1.sequence.align_local(
-            contact_map2.sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1
-        )
+            contact_map2.sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1)
         contact_map1_full_sequence, contact_map2_full_sequence = aligned_sequences_full
 
         aligned_sequences_map1 = contact_map1_full_sequence.align_local(
-            contact_map1.repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True
-        )
+            contact_map1.repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True)
         contact_map1_repr_sequence = aligned_sequences_map1[-1]
 
         aligned_sequences_map2 = contact_map2_full_sequence.align_local(
-            contact_map2.repr_sequence_altloc, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True
-        )
+            contact_map2.repr_sequence_altloc,
+            id_chars=2,
+            nonid_chars=1,
+            gap_open_pen=-0.5,
+            gap_ext_pen=-0.2,
+            inplace=True)
         contact_map2_repr_sequence = aligned_sequences_map2[-1]
 
         aligned_sequences_repr = contact_map1_repr_sequence.align_local(
-            contact_map2_repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True
-        )
+            contact_map2_repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True)
         contact_map1_repr_sequence, contact_map2_repr_sequence = aligned_sequences_repr
 
         # ================================================================
         # 2. Identify TPs in other, map them, and match them to self
         # ================================================================
 
-        encoded_repr = np.array([
-            list(contact_map1_repr_sequence.seq_ascii), list(contact_map2_repr_sequence.seq_ascii)
-        ])
+        encoded_repr = np.array(
+            [list(contact_map1_repr_sequence.seq_ascii),
+             list(contact_map2_repr_sequence.seq_ascii)])
 
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)

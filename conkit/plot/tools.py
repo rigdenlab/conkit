@@ -34,14 +34,13 @@ __date__ = "16 Feb 2017"
 __version__ = "0.1"
 
 import numpy as np
-import warnings
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
-
+from conkit.misc import deprecate
 
 HierarchyIndex = {
     'Contact': Contact,
@@ -119,7 +118,7 @@ def find_minima(data, order=1):
     if order < 1:
         raise ValueError("Order needs to be >= 1!")
     data = np.asarray(data)
-    nelements = data.shape[0] 
+    nelements = data.shape[0]
     if nelements < 2:
         raise ValueError("More than two elements required!")
     results = np.zeros(nelements, dtype=np.bool_)
@@ -154,8 +153,8 @@ def get_adjusted_aspect(ax, aspect_ratio):
     return float(default_ratio * aspect_ratio)
 
 
+@deprecate('0.11', msg='Use get_points_on_circle instead')
 def points_on_circle(*args, **kwargs):
-    warnings.warn("This function has been renamed to get_points_on_circle()")
     return get_points_on_circle(*args, **kwargs)
 
 
@@ -213,4 +212,3 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
     else:
         return isinstance(hierarchy, hierarchy_type)
-

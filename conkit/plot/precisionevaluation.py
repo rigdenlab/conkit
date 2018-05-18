@@ -39,6 +39,7 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
+from conkit.misc import deprecate
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
@@ -179,9 +180,8 @@ class PrecisionEvaluationFigure(Figure):
             raise ValueError("Maximum factor cannot be greater than 100")
         self._cutoff_boundaries[1] = max_cutoff
 
+    @deprecate('0.11', msg='Use draw instead')
     def redraw(self):
-        import warnings
-        warnings.warn("This method has been deprecated, use draw() instead")
         self.draw()
 
     def draw(self):
@@ -192,8 +192,14 @@ class PrecisionEvaluationFigure(Figure):
             m = self._hierarchy[:ncontacts]
             precisions[i] = m.precision
 
-        self.ax.plot(factors, precisions, color=ColorDefinitions.GENERAL, marker=None, linestyle='-', 
-                     label='Precision score', zorder=1)
+        self.ax.plot(
+            factors,
+            precisions,
+            color=ColorDefinitions.GENERAL,
+            marker=None,
+            linestyle='-',
+            label='Precision score',
+            zorder=1)
 
         self.ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-', label='50% Precision', zorder=0)
         if self.min_cutoff <= 1.0:

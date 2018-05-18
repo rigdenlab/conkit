@@ -47,6 +47,8 @@ if sys.version_info.major < 3:
 
 from conkit.core._entity import _Entity
 from conkit.core.mappings import AminoAcidMapping, SequenceAlignmentState
+from conkit.misc import deprecate
+
 
 class SequenceFile(_Entity):
     """A sequence file object representing a single sequence file
@@ -150,10 +152,9 @@ class SequenceFile(_Entity):
         return len(self) < 1
 
     @property
+    @deprecate('0.11', msg='Use meff instead.')
     def neff(self):
         """The number of effective sequences"""
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use meff instead!")
         return self.meff
 
     @property
@@ -222,56 +223,24 @@ class SequenceFile(_Entity):
         """
         return self.top
 
+    @deprecate('0.11', msg='Use calculate_meff_with_identity instead.')
     def calculate_meff(self, identity=0.8):
-        """Calculate the number of effective sequences
-
-        See Also
-        --------
-        meff
-
-        """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
+        """Calculate the number of effective sequences"""
         return self.calculate_meff_with_identity(identity)
 
+    @deprecate('0.11', msg='Use calculate_meff_with_identity instead.')
     def calculate_neff_with_identity(self, identity):
-        """Calculate the number of effective sequences with specified sequence identity
-        
-        See Also
-        --------
-        neff, get_weights
+        """Calculate the number of effective sequences with specified sequence identity"""
+        return self.calculate_meff_with_identity(identity)
 
-        """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use calculate_meff_with_identity instead!")
-        return self.calculate_meff_with_identity(identity) 
-
+    @deprecate('0.11', msg='Use get_weights instead.')
     def calculate_weights(self, identity=0.8):
-        """Calculate the sequence weights
-
-        This function will be deprecated, use :func:``get_weights`` instead.
-        
-        See Also
-        --------
-        get_weights
-        
-        """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
+        """Calculate the sequence weights"""
         return self.get_weights(identity=identity)
-    
+
+    @deprecate('0.11', msg='Use get_frequency instead.')
     def calculate_freq(self):
-        """Calculate the gap frequency in each alignment column
-
-        This function will be deprecated, use :func:``get_frequency`` instead.
-
-        See Also
-        --------
-        get_frequency
-
-        """
-        import warnings
-        warnings.warn("This function will be deprecated in a future release! Use get_frequency('X') instead!")
+        """Calculate the gap frequency in each alignment column"""
         return self.get_frequency("X")
 
     def get_meff_with_id(self, identity):
@@ -316,7 +285,7 @@ class SequenceFile(_Entity):
         """
         if identity < 0 or identity > 1:
             raise ValueError("Sequence Identity needs to be between 0 and 1")
-        
+
         if self.is_alignment:
             from conkit.core.ext._sequencefile import nb_get_weights
             X = np.array(self.ascii_matrix, dtype=np.int64)
@@ -398,7 +367,7 @@ class SequenceFile(_Entity):
             return filtered
         else:
             raise ValueError('This is not an alignment')
-        
+
     def filter_gapped(self, min_prop=0.0, max_prop=0.9, inplace=True):
         """Filter all sequences a gap proportion greater than the limit
         
