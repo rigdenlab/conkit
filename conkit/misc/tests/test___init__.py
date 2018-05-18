@@ -92,7 +92,31 @@ class Test2(unittest.TestCase):
 
         self.assertEqual(2, Obj().f(1, 1))
 
-    def test_deprecated_7(self):
+    def test_deprecated_8(self):
+        class Obj(object):
+            @property
+            @deprecate('0.0.0')
+            def x(self):
+                return 1
+
+        self.assertEqual(1, Obj().x)
+
+    def test_deprecated_9(self):
+        class Obj(object):
+            @property
+            def x(self):
+                return self._x
+
+            @x.setter
+            @deprecate('0.0.0')
+            def x(self, x):
+                self._x = x
+
+        o = Obj()
+        o.x = 2
+        self.assertEqual(2, o.x)
+
+    def test_deprecated_10(self):
         class Obj(object):
             @deprecate('0.0.0')
             @staticmethod
@@ -102,7 +126,7 @@ class Test2(unittest.TestCase):
         with self.assertRaises(Exception):
             Obj.f(1, 1)
 
-    def test_deprecated_8(self):
+    def test_deprecated_11(self):
         class Obj(object):
             @deprecate('0.0.0')
             @classmethod
