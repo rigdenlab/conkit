@@ -148,7 +148,6 @@ CLASSIFIERS = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
-# Do the actual setup below
 setup(
     cmdclass={
         'build': BuildCommand,
