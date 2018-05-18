@@ -27,15 +27,11 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Plot interface for automated figure generation"""
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
 __version__ = "0.1"
-
-import matplotlib
-matplotlib.use('Agg')
 
 
 def ContactMapFigure(*args, **kwargs):
