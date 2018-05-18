@@ -654,42 +654,35 @@ class ContactMap(_Entity):
         # 1. Align all sequences
         # ================================================================
 
-        aligned_sequences_full = contact_map1.sequence.align_local(
-            contact_map2.sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1)
-        contact_map1_full_sequence, contact_map2_full_sequence = aligned_sequences_full
+        config = dict(id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False)
 
-        aligned_sequences_map1 = contact_map1_full_sequence.align_local(
-            contact_map1.repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True)
-        contact_map1_repr_sequence = aligned_sequences_map1[-1]
+        contact_map1_full_sequence, contact_map2_full_sequence = contact_map1.sequence.align_local(
+            contact_map2.sequence, **config)
 
-        aligned_sequences_map2 = contact_map2_full_sequence.align_local(
-            contact_map2.repr_sequence_altloc,
-            id_chars=2,
-            nonid_chars=1,
-            gap_open_pen=-0.5,
-            gap_ext_pen=-0.2,
-            inplace=True)
-        contact_map2_repr_sequence = aligned_sequences_map2[-1]
+        config['inplace'] = True
+        config['gap_ext_pen'] = -0.2
+        _, contact_map1_repr_sequence = contact_map1_full_sequence.align_local(contact_map1.repr_sequence, **config)
+        _, contact_map2_repr_sequence = contact_map2_full_sequence.align_local(contact_map2.repr_sequence_altloc,
+                                                                               **config)
 
-        aligned_sequences_repr = contact_map1_repr_sequence.align_local(
-            contact_map2_repr_sequence, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True)
-        contact_map1_repr_sequence, contact_map2_repr_sequence = aligned_sequences_repr
+        config['gap_open_pen'] = -1.0
+        config['gap_ext_pen'] = -0.5
+        contact_map1_repr_sequence, contact_map2_repr_sequence = contact_map1_repr_sequence.align_local(
+            contact_map2_repr_sequence, **config)
 
         # ================================================================
         # 2. Identify TPs in other, map them, and match them to self
         # ================================================================
 
-        encoded_repr = np.array(
-            [list(contact_map1_repr_sequence.seq_ascii),
-             list(contact_map2_repr_sequence.seq_ascii)])
+        encoded_repr = np.asarray([contact_map1_repr_sequence.seq_ascii, contact_map2_repr_sequence.seq_ascii])
 
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
         msg = "Error creating reliable keymap matching the sequence in ContactMap: "
-        if len(contact_map1_keymap) != np.where(encoded_repr[0] != ord('-'))[0].shape[0]:
+        if len(contact_map1_keymap) != (encoded_repr[0] != ord('-')).sum():
             raise ValueError(msg + contact_map1.id)
-        elif len(contact_map2_keymap) != np.where(encoded_repr[1] != ord('-'))[0].shape[0]:
+        elif len(contact_map2_keymap) != (encoded_repr[1] != ord('-')).sum():
             raise ValueError(msg + contact_map2.id)
 
         contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
@@ -700,7 +693,7 @@ class ContactMap(_Entity):
 
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
-        residues_map2 = tuple(i + 1 for i, a in enumerate(aligned_sequences_full[1].seq) if a != '-')
+        residues_map2 = tuple(i + 1 for i, a in enumerate(contact_map2_full_sequence.seq) if a != '-')
 
         for contact in contact_map1:
             _id = (contact.res1_seq, contact.res2_seq)
