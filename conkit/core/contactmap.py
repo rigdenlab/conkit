@@ -693,7 +693,7 @@ class ContactMap(_Entity):
 
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
-        residues_map2 = tuple(i + 1 for i, a in enumerate(contact_map2_full_sequence.seq) if a != '-')
+        residues_map2 = np.flatnonzero(np.asarray(contact_map2_full_sequence.seq_ascii) != ord('-')) + 1
 
         for contact in contact_map1:
             _id = (contact.res1_seq, contact.res2_seq)
