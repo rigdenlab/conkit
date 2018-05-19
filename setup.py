@@ -5,11 +5,12 @@ from distutils.util import convert_path
 from setuptools import setup, Extension
 from Cython.Distutils import build_ext
 
+import numpy
 import os
 import sys
 
-EXTRA_COMPILE_ARGS = ['-fopenmp']
-EXTRA_LINK_ARGS = ['-fopenmp']
+EXTRA_COMPILE_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe', '-std=c11']
+EXTRA_LINK_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe', '-std=c11']
 
 # ==============================================================
 # Setup.py command extensions
@@ -112,18 +113,21 @@ EXT_MODULES = [
         ["conkit/core/ext/c_contactmap.pyx"],
         extra_compile_args=EXTRA_COMPILE_ARGS,
         extra_link_args=EXTRA_LINK_ARGS,
+        include_dirs=[numpy.get_include()],
     ),
     Extension(
         "conkit.core.ext.c_sequencefile",
         ["conkit/core/ext/c_sequencefile.pyx"],
         extra_compile_args=EXTRA_COMPILE_ARGS,
         extra_link_args=EXTRA_LINK_ARGS,
+        include_dirs=[numpy.get_include()],
     ),
     Extension(
         "conkit.misc.ext.c_bandwidth",
         ["conkit/misc/ext/c_bandwidth.pyx"],
         extra_compile_args=EXTRA_COMPILE_ARGS,
         extra_link_args=EXTRA_LINK_ARGS,
+        include_dirs=[numpy.get_include()],
     ),
 ]
 

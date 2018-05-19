@@ -6,6 +6,8 @@ cimport numpy as np
 
 from libc.math cimport fabs
 
+np.import_array()
+
 
 def c_singletons(np.ndarray[np.int64_t, ndim=2] X, double threshold, np.ndarray[np.uint8_t, ndim=1, cast=True] throwables):
     cdef Py_ssize_t i, j

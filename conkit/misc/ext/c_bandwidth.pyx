@@ -7,6 +7,8 @@ cimport numpy as np
 from cython.parallel import prange
 from libc.math cimport exp, fabs, sqrt, M_PI
 
+np.import_array()
+
 cdef double SQRT_PI = sqrt(M_PI)
 cdef double SQRT_2PI = sqrt(2.0 * M_PI)
 

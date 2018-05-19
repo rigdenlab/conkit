@@ -6,6 +6,8 @@ cimport numpy as np
 
 from cython.parallel import prange
 
+np.import_array()
+
 
 def c_get_frequency(np.ndarray[np.int64_t, ndim=2] X, Py_ssize_t symbol, np.ndarray[double, ndim=1] frequencies):
     cdef Py_ssize_t i, j
