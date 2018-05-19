@@ -16,6 +16,7 @@ _build
 
 # C extensions
 *.so
+*.c
 
 # Packages
 *.egg

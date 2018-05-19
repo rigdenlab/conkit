@@ -287,10 +287,10 @@ class SequenceFile(_Entity):
             raise ValueError("Sequence Identity needs to be between 0 and 1")
 
         if self.is_alignment:
-            from conkit.core.ext._sequencefile import nb_get_weights
+            from conkit.core.ext.c_sequencefile import c_get_weights
             X = np.array(self.ascii_matrix, dtype=np.int64)
             hamming = np.zeros(X.shape[0], dtype=np.float64)
-            nb_get_weights(X, identity, hamming)
+            c_get_weights(X, identity, hamming)
             return hamming.tolist()
         else:
             raise ValueError('This is not an alignment')
@@ -313,11 +313,11 @@ class SequenceFile(_Entity):
 
         """
         if self.is_alignment:
-            from conkit.core.ext._sequencefile import nb_get_frequency
+            from conkit.core.ext.c_sequencefile import c_get_frequency
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
             frequencies = np.zeros(X.shape[1], dtype=np.float64)
-            nb_get_frequency(X, symbol, frequencies)
+            c_get_frequency(X, symbol, frequencies)
             return frequencies.tolist()
         else:
             raise ValueError('This is not an alignment')
@@ -356,10 +356,10 @@ class SequenceFile(_Entity):
             raise ValueError("Maximum sequence identity needs to be between 0 and 1")
 
         if self.is_alignment:
-            from conkit.core.ext._sequencefile import nb_filter
+            from conkit.core.ext.c_sequencefile import c_filter
             X = np.array(self.ascii_matrix, dtype=np.int64)
-            throwables = np.zeros(X.shape[0], dtype=np.uint8)
-            nb_filter(X, min_id, max_id, throwables)
+            throwables = np.full(X.shape[0], False, dtype=np.bool)
+            c_filter(X, min_id, max_id, throwables)
             filtered = self._inplace(inplace)
             for i, sequence in enumerate(self):
                 if throwables[i]:
@@ -395,19 +395,19 @@ class SequenceFile(_Entity):
            Maximum gap proportion needs to be between 0 and 1
 
         """
-        if 0 > min_prop > 1:
+        if 0. > min_prop > 1.:
             raise ValueError("Minimum gap proportion needs to be between 0 and 1")
-        elif 0 > max_prop > 1:
+        elif 0. > max_prop > 1.:
             raise ValueError("Maximum gap proportion needs to be between 0 and 1")
 
         symbol = "X"
 
         if self.is_alignment:
-            from conkit.core.ext._sequencefile import nb_filter_gapped
+            from conkit.core.ext.c_sequencefile import c_filter_symbol
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
-            throwables = np.zeros(X.shape[0], dtype=np.uint8)
-            nb_filter_gapped(X, symbol, min_prop, max_prop, throwables)
+            throwables = np.full(X.shape[0], False, dtype=np.bool)
+            c_filter_symbol(X, min_prop, max_prop, symbol, throwables)
             filtered = self._inplace(inplace)
             for i, sequence in enumerate(self):
                 if throwables[i]:

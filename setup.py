@@ -2,10 +2,16 @@
 
 from distutils.command.build import build
 from distutils.util import convert_path
-from setuptools import setup
+from setuptools import setup, Extension
+
+from Cython.Build import cythonize
+from Cython.Distutils import build_ext
 
 import os
 import sys
+
+EXTRA_COMPILE_ARGS = ['-fopenmp']
+EXTRA_LINK_ARGS = ['-fopenmp']
 
 # ==============================================================
 # Setup.py command extensions
@@ -37,14 +43,13 @@ class BuildCommand(build):
 
 def dependencies():
     required = [
+        "cython >=0.28.2",
         "numpy >=1.8.2",
-        "numba >=0.36.2",
         "biopython >=1.64",
         "matplotlib >=1.3.1",
     ]
     optional = [
         "scikit-learn >=0.17",
-        #  "scipy >=0.16.0",
     ]
     deps = required + optional
     if sys.version_info < (3, 4):
@@ -110,6 +115,30 @@ if not PYTHON_EXE:
     PYTHON_EXE = sys.executable
 
 # ==============================================================
+# Define all extensions
+# ==============================================================
+EXT_MODULES = [
+    Extension(
+        "conkit.core.ext.c_contactmap",
+        ["conkit/core/ext/c_contactmap.pyx"],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+        extra_link_args=EXTRA_LINK_ARGS,
+    ),
+    Extension(
+        "conkit.core.ext.c_sequencefile",
+        ["conkit/core/ext/c_sequencefile.pyx"],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+        extra_link_args=EXTRA_LINK_ARGS,
+    ),
+    Extension(
+        "conkit.misc.ext.c_bandwidth",
+        ["conkit/misc/ext/c_bandwidth.pyx"],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+        extra_link_args=EXTRA_LINK_ARGS,
+    ),
+]
+
+# ==============================================================
 # Define all the relevant options
 # ==============================================================
 AUTHOR = "Felix Simkovic"
@@ -133,6 +162,7 @@ PACKAGES = [
     'conkit/core/ext',
     'conkit/io',
     'conkit/misc',
+    'conkit/misc/ext',
     'conkit/plot',
 ]
 
@@ -151,6 +181,7 @@ CLASSIFIERS = [
 setup(
     cmdclass={
         'build': BuildCommand,
+        'build_ext': build_ext,
     },
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
@@ -162,6 +193,7 @@ setup(
     url=URL,
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
+    ext_modules=EXT_MODULES,
     install_requires=DEPENDENCIES,
     scripts=SCRIPTS,
     platforms=PLATFORMS,

@@ -334,10 +334,10 @@ class ContactMap(_Entity):
         :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
 
         """
-        from conkit.core.ext._contactmap import nb_singletons
+        from conkit.core.ext.c_contactmap import c_singletons
         X = np.array(self.as_list(), dtype=np.int64)
-        throwables = np.zeros(X.shape[0], dtype=np.int8)
-        nb_singletons(X, 2, throwables)
+        throwables = np.full(X.shape[0], False, dtype=np.bool)
+        c_singletons(X, 2, throwables)
         singletons = self.deepcopy()
         for i, contact in enumerate(self):
             if throwables[i]:
