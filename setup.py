@@ -3,8 +3,6 @@
 from distutils.command.build import build
 from distutils.util import convert_path
 from setuptools import setup, Extension
-
-from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
 import os
@@ -42,18 +40,8 @@ class BuildCommand(build):
 
 
 def dependencies():
-    required = [
-        "cython >=0.28.2",
-        "numpy >=1.8.2",
-        "biopython >=1.64",
-        "matplotlib >=1.3.1",
-    ]
-    optional = [
-        "scikit-learn >=0.17",
-    ]
-    deps = required + optional
-    if sys.version_info < (3, 4):
-        deps += ["enum34 >=1.1.6"]
+    with open('requirements.txt', 'r') as f_in:
+        deps = f_in.read().splitlines()
     return deps
 
 
@@ -117,6 +105,7 @@ if not PYTHON_EXE:
 # ==============================================================
 # Define all extensions
 # ==============================================================
+
 EXT_MODULES = [
     Extension(
         "conkit.core.ext.c_contactmap",
