@@ -46,6 +46,26 @@ def dependencies():
     return deps
 
 
+def extensions():
+    exts = [
+        "conkit/core/ext/c_contactmap.pyx",
+        "conkit/core/ext/c_sequencefile.pyx",
+        "conkit/misc/ext/c_bandwidth.pyx"
+    ]
+    extensions = []
+    for ext in exts:
+        extensions.append(
+            Extension(
+                ext.replace('/', '.').rsplit('.', 1)[0],
+                [ext],
+                extra_compile_args=EXTRA_COMPILE_ARGS,
+                extra_link_args=EXTRA_LINK_ARGS,
+                include_dirs=[numpy.get_include()],
+            )
+        )
+    return extensions
+
+
 def readme():
     with open('README.rst', 'r') as f_in:
         return f_in.read()
@@ -104,40 +124,13 @@ if not PYTHON_EXE:
     PYTHON_EXE = sys.executable
 
 # ==============================================================
-# Define all extensions
-# ==============================================================
-
-EXT_MODULES = [
-    Extension(
-        "conkit.core.ext.c_contactmap",
-        ["conkit/core/ext/c_contactmap.pyx"],
-        extra_compile_args=EXTRA_COMPILE_ARGS,
-        extra_link_args=EXTRA_LINK_ARGS,
-        include_dirs=[numpy.get_include()],
-    ),
-    Extension(
-        "conkit.core.ext.c_sequencefile",
-        ["conkit/core/ext/c_sequencefile.pyx"],
-        extra_compile_args=EXTRA_COMPILE_ARGS,
-        extra_link_args=EXTRA_LINK_ARGS,
-        include_dirs=[numpy.get_include()],
-    ),
-    Extension(
-        "conkit.misc.ext.c_bandwidth",
-        ["conkit/misc/ext/c_bandwidth.pyx"],
-        extra_compile_args=EXTRA_COMPILE_ARGS,
-        extra_link_args=EXTRA_LINK_ARGS,
-        include_dirs=[numpy.get_include()],
-    ),
-]
-
-# ==============================================================
 # Define all the relevant options
 # ==============================================================
 AUTHOR = "Felix Simkovic"
 AUTHOR_EMAIL = "felixsimkovic@me.com"
 DESCRIPTION = __doc__.replace("\n", "")
 DEPENDENCIES = dependencies()
+EXT_MODULES = extensions()
 LICENSE = "BSD License"
 LONG_DESCRIPTION = readme()
 PACKAGE_DIR = "conkit"
