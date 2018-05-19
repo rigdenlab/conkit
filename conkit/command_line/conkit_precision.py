@@ -48,14 +48,20 @@ logger = None
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-c', dest='pdbchain', default=None,
-                        help='PDB chain to use [default: first in file]. '
-                             'Inter-molecular predictions use two letter '
-                             'convention, i.e AD for contacts between A and D.')
-    parser.add_argument('-d', dest='dtn', default=5, type=int,
-                        help='Minimum sequence separation [default: 5]')
-    parser.add_argument('-f', dest='dfactor', default=1.0, type=float,
-                        help='number of contacts to include relative to sequence length [default: 1.0]')
+    parser.add_argument(
+        '-c',
+        dest='pdbchain',
+        default=None,
+        help='PDB chain to use [default: first in file]. '
+        'Inter-molecular predictions use two letter '
+        'convention, i.e AD for contacts between A and D.')
+    parser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
+    parser.add_argument(
+        '-f',
+        dest='dfactor',
+        default=1.0,
+        type=float,
+        help='number of contacts to include relative to sequence length [default: 1.0]')
     parser.add_argument('pdbfile')
     parser.add_argument('pdbformat')
     parser.add_argument('seqfile')
@@ -64,18 +70,16 @@ def main():
     parser.add_argument('conformat')
     args = parser.parse_args()
 
-    # Setup the logger
     global logger
     logger = conkit.command_line.setup_logging(level='info')
-    
-    # Compute all the data
+
     if args.pdbchain:
         pdb = conkit.io.read(args.pdbfile, args.pdbformat)[args.pdbchain]
     else:
         pdb = conkit.io.read(args.pdbfile, args.pdbformat)[0]
     seq = conkit.io.read(args.seqfile, args.seqformat)[0]
     con = conkit.io.read(args.confile, args.conformat)[0]
-    
+
     con.sequence = seq
     con.set_sequence_register()
 
@@ -87,17 +91,14 @@ def main():
     con.sort('raw_score', reverse=True, inplace=True)
     con_sliced = con[:ncontacts]
 
-
     con_matched = con_sliced.match(pdb)
     precision = con_matched.precision
-    
-    logger.info('Precision score: %f', precision)
 
-    return 
+    logger.info('Precision score: %f', precision)
 
 
 if __name__ == "__main__":
-    import sys 
+    import sys
     import traceback
     try:
         main()
@@ -107,4 +108,3 @@ if __name__ == "__main__":
             msg = "".join(traceback.format_exception(*sys.exc_info()))
             logger.critical(msg)
         sys.exit(1)
-

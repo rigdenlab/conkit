@@ -117,13 +117,11 @@ def main(argl=None):
         logger.info('Input alignment file: %s', aln_fname)
         logger.info('Input alignment format: %s', aln_format)
 
-        # Check that we can handle the alignment file
         if aln_format not in conkit.io.SEQUENCE_FILE_PARSERS:
             msg = 'Sequence format not yet implemented: %s' % aln_fname
             logger.critical(msg)
             raise ValueError(msg)
 
-        # Convert our alignment file to JONES format
         if aln_format != 'jones':
             jon_fname = os.path.join(args.wdir, args.prefix + '.jones')
             conkit.io.convert(aln_fname, aln_format, jon_fname, 'jones')
@@ -190,7 +188,7 @@ def main(argl=None):
 
     logger.info('Final alignment file: %s', jon_fname)
     logger.info('|- Total Number of sequences: %d', msa_h.nseq)
-    logger.info('|- Number of effective sequences: %d', msa_h.neff)
+    logger.info('|- Number of effective sequences: %d', msa_h.meff)
     logger.info('|- Plotted sequence coverage: %s', freq_plot_fname)
 
     if args.which == 'sequence' and args.nodca:

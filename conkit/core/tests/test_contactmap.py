@@ -251,8 +251,7 @@ class TestContactMap(unittest.TestCase):
         density = contact_map1.get_contact_density()
         self.assertEqual(
             [0.11944664492151888, 0.20124328187327287, 0.23868489948868032, 0.20124328187327284, 0.11944664492151894],
-            density
-        )
+            density)
 
     @skipUnless(SKLEARN)
     def test_get_contact_density_2(self):
@@ -262,8 +261,7 @@ class TestContactMap(unittest.TestCase):
         density = contact_map1.get_contact_density()
         self.assertEqual(
             [0.10012592274179978, 0.19837169506444377, 0.26841488628499205, 0.23132109484153407, 0.1217899243718511],
-            density
-        )
+            density)
 
     @skipUnless(SKLEARN)
     def test_get_contact_density_3(self):
@@ -271,10 +269,7 @@ class TestContactMap(unittest.TestCase):
         for c in [Contact(3, 5, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
         density = contact_map1.get_contact_density()
-        self.assertEqual(
-            [0.14422964774244934, 0.4134215939843202, 0.41342159398432, 0.14422964774244929],
-            density
-        )
+        self.assertEqual([0.14422964774244934, 0.4134215939843202, 0.41342159398432, 0.14422964774244929], density)
 
     def test_find_1(self):
         contact_map1 = ContactMap('1')
@@ -366,7 +361,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -376,7 +371,7 @@ class TestContactMap(unittest.TestCase):
             contact.res2_altseq = params[1]
             contact.define_match()
             contact_map2.add(contact)
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, inplace=True)
@@ -390,7 +385,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -400,7 +395,7 @@ class TestContactMap(unittest.TestCase):
             contact.res2_altseq = params[1]
             contact.define_match()
             contact_map2.add(contact)
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
@@ -414,7 +409,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -427,7 +422,7 @@ class TestContactMap(unittest.TestCase):
             else:
                 contact.define_mismatch()
             contact_map2.add(contact)
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
@@ -442,7 +437,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -452,7 +447,7 @@ class TestContactMap(unittest.TestCase):
             contact.res2_altseq = params[1]
             contact.define_match()
             contact_map2.add(contact)
-        contact_map2.sequence = Sequence('bar', 'BCDEFG')
+        contact_map2.sequence = Sequence('bar', 'ICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, match_other=True, remove_unmatched=True, inplace=True)
@@ -466,7 +461,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -495,7 +490,7 @@ class TestContactMap(unittest.TestCase):
         contact3.define_match()
         contact_map2.add(contact3)
 
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, inplace=True)
@@ -509,7 +504,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -538,7 +533,7 @@ class TestContactMap(unittest.TestCase):
         contact3.define_match()
         contact_map2.add(contact3)
 
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, inplace=True)
@@ -552,7 +547,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -581,7 +576,7 @@ class TestContactMap(unittest.TestCase):
         contact3.define_match()
         contact_map2.add(contact3)
 
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
@@ -599,7 +594,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -625,7 +620,7 @@ class TestContactMap(unittest.TestCase):
         contact3.res2_altseq = 5
         contact_map2.add(contact3)
 
-        contact_map2.sequence = Sequence('bar', 'ABCDEFG')
+        contact_map2.sequence = Sequence('bar', 'AICDEFG')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, remove_unmatched=True, renumber=True, inplace=True)
@@ -643,7 +638,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         contact_map2 = ContactMap('bar')
@@ -683,7 +678,7 @@ class TestContactMap(unittest.TestCase):
         contact5.res2_altseq = 8
         contact_map2.add(contact5)
 
-        contact_map2.sequence = Sequence('bar', 'ABCDEFGF')
+        contact_map2.sequence = Sequence('bar', 'AICDEFGF')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
@@ -701,7 +696,7 @@ class TestContactMap(unittest.TestCase):
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
             contact = Contact(*params)
             contact_map1.add(contact)
-        contact_map1.sequence = Sequence('foo', 'ABCDEFGH')
+        contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
         ## Encryption matrix
@@ -734,7 +729,7 @@ class TestContactMap(unittest.TestCase):
         contact3.define_match()
         contact_map2.add(contact3)
 
-        contact_map2.sequence = Sequence('bar', 'ABCDEFGH')
+        contact_map2.sequence = Sequence('bar', 'AICDEFGH')
         contact_map2.set_sequence_register(altloc=True)
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
@@ -755,10 +750,10 @@ class TestContactMap(unittest.TestCase):
             contact.res2_altseq = cparam[1]
             contact.define_match()
             reference.add(contact)
-        reference.sequence = Sequence('bar', 'ABDEFGH')
+        reference.sequence = Sequence('bar', 'AIDEFGH')
         reference.set_sequence_register(altloc=True)
 
-        sequence = Sequence("foo", "ABCDEFGH")
+        sequence = Sequence("foo", "AICDEFGH")
         for i in range(2):
             target = ContactMap("tar")
             for cparam in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:

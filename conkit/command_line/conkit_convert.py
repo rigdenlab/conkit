@@ -62,20 +62,18 @@ def main():
     parser.add_argument('outformat')
     args = parser.parse_args()
 
-    # Setup the logger
     global logger
     logger = conkit.command_line.setup_logging(level='info')
 
-    # Perform the conversion
-    logger.info("Converting file\n\t%s of format %s\nto file\n\t%s of format %s",
-                args.infile, args.informat, args.outfile, args.outformat)
+    logger.info("Converting file\n\t%s of format %s\nto file\n\t%s of format %s", args.infile, args.informat,
+                args.outfile, args.outformat)
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
 
     return
 
 
 if __name__ == "__main__":
-    import sys 
+    import sys
     import traceback
     try:
         main()
@@ -85,5 +83,3 @@ if __name__ == "__main__":
             msg = "".join(traceback.format_exception(*sys.exc_info()))
             logger.critical(msg)
         sys.exit(1)
-
-

@@ -62,19 +62,24 @@ class Figure(object):
             self._fig = ax.get_figure()
             self._ax = ax
         self.legend = legend
-        
-        # TODO: deprecate in 0.10
+
         self._dpi = 600
-        self._file_name = None 
+        self._file_name = None
         if "dpi" in kwargs:
-            warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
-            self._dpi = kwargs["dpi"]
+            warnings.warn(
+                "dpi has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
+                DeprecationWarning)
+            self._dpi = kwargs.pop("dpi")
         if "file_name" in kwargs:
-            warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
-            self._file_name = kwargs["file_name"]
+            warnings.warn(
+                "file_name has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
+                DeprecationWarning)
+            self._file_name = kwargs.pop("file_name")
         elif "format" in kwargs and "prefix" in kwargs:
-            warnings.warn("This keyword has been deprecated. Use function .savefig() instead")
-            self._file_name = kwargs["prefix"] + "." + kwargs["format"]
+            warnings.warn(
+                "format and prefix has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
+                DeprecationWarning)
+            self._file_name = kwargs.pop("prefix") + "." + kwargs.pop("format")
 
     def __repr__(self):
         return self.__class__.__name__

@@ -71,7 +71,7 @@ def main():
     logger.info('Input MSA Format:                          %s', args.msaformat)
     logger.info('Length of the Target Sequence:             %d', msa.top_sequence.seq_len)
     logger.info('Total Number of Sequences:                 %d', msa.nseq)
-    logger.info('Number of Effective Sequences:             %d', msa.neff)
+    logger.info('Number of Effective Sequences:             %d', msa.meff)
     logger.info('Sequence Coverage Plot:                    %s', plot)
 
 

@@ -39,6 +39,7 @@ __version__ = "0.1"
 import matplotlib.pyplot as plt
 import numpy as np
 
+from conkit.misc import deprecate
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
@@ -104,23 +105,31 @@ class SequenceCoverageFigure(Figure):
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
+    @deprecate('0.11', msg='Use draw instead')
     def redraw(self):
-        import warnings
-        warnings.warn("This method has been deprecated, use draw() instead")
         self.draw()
 
     def draw(self):
         residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
         aa_counts = np.asarray(self._hierarchy.get_frequency("X")) * self._hierarchy.nseq
 
-        self.ax.plot(residues, aa_counts, color=ColorDefinitions.GENERAL, marker=None, linestyle='-', 
-                     label='Amino acid count', zorder=1)
+        self.ax.plot(
+            residues,
+            aa_counts,
+            color=ColorDefinitions.GENERAL,
+            marker=None,
+            linestyle='-',
+            label='Amino acid count',
+            zorder=1)
 
-        self.ax.axhline(self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, 
-                        label='5 x Nresidues', zorder=0)
+        self.ax.axhline(
+            self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label='5 x Nresidues', zorder=0)
         if np.any(aa_counts >= self._hierarchy.top_sequence.seq_len * 20):
-            self.ax.axhline(self._hierarchy.top_sequence.seq_len * 20, color=ColorDefinitions.L20CUTOFF, 
-                            label='20 x Nresidues', zorder=0)
+            self.ax.axhline(
+                self._hierarchy.top_sequence.seq_len * 20,
+                color=ColorDefinitions.L20CUTOFF,
+                label='20 x Nresidues',
+                zorder=0)
 
         self.ax.set_xlim(residues[0], residues[-1])
         xticks = self.ax.get_xticks().astype(np.int64) + residues[0]
