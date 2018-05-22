@@ -37,12 +37,12 @@ import warnings
 
 
 def fAND(a, b):
-    """Function AND comparator for two arguments"""
+    """Function AND operator for two arguments"""
     return a and b
 
 
 def fOR(a, b):
-    """Function OR comparator for two arguments"""
+    """Function OR operator for two arguments"""
     return a or b
 
 
