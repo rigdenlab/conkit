@@ -37,12 +37,12 @@ import warnings
 
 
 def fAND(a, b):
-    """Function AND comparator for two arguments"""
+    """Function AND operator for two arguments"""
     return a and b
 
 
 def fOR(a, b):
-    """Function OR comparator for two arguments"""
+    """Function OR operator for two arguments"""
     return a or b
 
 
@@ -59,11 +59,13 @@ def deprecate(version, msg=None):
     
     Examples
     --------
-    Enable :obj:`DeprecationWarning <warnings.DeprecationWarning>` to be displayed.
+    Enable :obj:`DeprecationWarning <warnings.DeprecationWarning>` messages to be displayed.
+
     >>> import warnings
     >>> warnings.simplefilter('default')
     
     Decorate a simple Python function without additional message
+    
     >>> @deprecate('0.0.0')
     ... def sum(a, b):
     ...     return a + b
@@ -73,6 +75,7 @@ def deprecate(version, msg=None):
     3
 
     Decorate a simple Python function with additional message
+
     >>> @deprecate('0.0.1', msg='Use XXX instead!')
     ... def sum(a, b):
     ...     return a + b
@@ -82,6 +85,7 @@ def deprecate(version, msg=None):
     4
 
     Decorate an entire Python class
+
     >>> @deprecate('0.0.2')
     ... class Obj(object):
     ...     pass
@@ -91,6 +95,7 @@ def deprecate(version, msg=None):
     <__main__.Obj object at 0x7f8ee0f1ead0>
 
     Decorate a Python class method
+
     >>> class Obj(object):
     ...     def __init__(self, v):
     ...         self.v = v
@@ -103,6 +108,7 @@ def deprecate(version, msg=None):
     6
 
     Decorate a Python class staticmethod
+    
     >>> class Obj(object):
     ...     @staticmethod
     ...     @deprecate('0.0.4')
@@ -115,6 +121,7 @@ def deprecate(version, msg=None):
     1
 
     Decorate a Python class classmethod
+
     >>> class Obj(object):
     ...     CONST = 5
     ...     @classmethod

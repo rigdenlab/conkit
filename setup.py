@@ -2,10 +2,15 @@
 
 from distutils.command.build import build
 from distutils.util import convert_path
-from setuptools import setup
+from setuptools import setup, Extension
+from Cython.Distutils import build_ext
 
+import numpy
 import os
 import sys
+
+EXTRA_COMPILE_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe', '-std=c11']
+EXTRA_LINK_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe', '-std=c11']
 
 # ==============================================================
 # Setup.py command extensions
@@ -36,20 +41,29 @@ class BuildCommand(build):
 
 
 def dependencies():
-    required = [
-        "numpy >=1.8.2",
-        "numba >=0.36.2",
-        "biopython >=1.64",
-        "matplotlib >=1.3.1",
-    ]
-    optional = [
-        "scikit-learn >=0.17",
-        #  "scipy >=0.16.0",
-    ]
-    deps = required + optional
-    if sys.version_info < (3, 4):
-        deps += ["enum34 >=1.1.6"]
+    with open('requirements.txt', 'r') as f_in:
+        deps = f_in.read().splitlines()
     return deps
+
+
+def extensions():
+    exts = [
+        "conkit/core/ext/c_contactmap.pyx",
+        "conkit/core/ext/c_sequencefile.pyx",
+        "conkit/misc/ext/c_bandwidth.pyx"
+    ]
+    extensions = []
+    for ext in exts:
+        extensions.append(
+            Extension(
+                ext.replace('/', '.').rsplit('.', 1)[0],
+                [ext],
+                extra_compile_args=EXTRA_COMPILE_ARGS,
+                extra_link_args=EXTRA_LINK_ARGS,
+                include_dirs=[numpy.get_include()],
+            )
+        )
+    return extensions
 
 
 def readme():
@@ -116,6 +130,7 @@ AUTHOR = "Felix Simkovic"
 AUTHOR_EMAIL = "felixsimkovic@me.com"
 DESCRIPTION = __doc__.replace("\n", "")
 DEPENDENCIES = dependencies()
+EXT_MODULES = extensions()
 LICENSE = "BSD License"
 LONG_DESCRIPTION = readme()
 PACKAGE_DIR = "conkit"
@@ -133,6 +148,7 @@ PACKAGES = [
     'conkit/core/ext',
     'conkit/io',
     'conkit/misc',
+    'conkit/misc/ext',
     'conkit/plot',
 ]
 
@@ -151,6 +167,7 @@ CLASSIFIERS = [
 setup(
     cmdclass={
         'build': BuildCommand,
+        'build_ext': build_ext,
     },
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
@@ -162,6 +179,7 @@ setup(
     url=URL,
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
+    ext_modules=EXT_MODULES,
     install_requires=DEPENDENCIES,
     scripts=SCRIPTS,
     platforms=PLATFORMS,

@@ -18,7 +18,7 @@ import sys
 
 # Required by autosummary
 sys.path.append(os.path.abspath('.'))
-    
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -33,17 +33,9 @@ needs_sphinx = '1.6.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel',
-    'sphinx.ext.autosummary', 
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-    'sphinxext.math_symbol_table',
-    'numpydoc.numpydoc'
+    'sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel', 'sphinx.ext.autosummary', 'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode',
+    'sphinxext.math_symbol_table', 'numpydoc.numpydoc'
 ]
 
 try:
@@ -63,7 +55,6 @@ try:
 except ImportError:
     msg = "Error: ConKit must be installed before generating its documentation"
     sys.exit(msg)
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -147,7 +138,8 @@ html_theme = 'bootstrap'
 # documentation.
 html_theme_options = {
     # Tab name for entire site.
-    'navbar_site_name': 'Home',
+    'navbar_site_name':
+    'Home',
     # A list of tuples containing pages or urls to link to.
     'navbar_links': [
         ('Home', 'index'),
@@ -156,20 +148,27 @@ html_theme_options = {
         ('Documentation', 'contents'),
         ('Formats', 'formats'),
     ],
-    # Render the next and previous page links in navbar. 
-    'navbar_sidebarrel': False,
+    # Render the next and previous page links in navbar.
+    'navbar_sidebarrel':
+    False,
     # Render the current pages TOC in the navbar.)
-    'navbar_pagenav': True,
+    'navbar_pagenav':
+    True,
     # Global TOC depth for "site" navbar tab.
-    'globaltoc_depth': 2,
+    'globaltoc_depth':
+    2,
     # Fix navigation bar to top of page?
-    'navbar_fixed_top': False,
+    'navbar_fixed_top':
+    False,
     # Location of link to source.
-    'source_link_position': "footer",
+    'source_link_position':
+    "footer",
     # Bootswatch (http://bootswatch.com/) theme.
-    'bootswatch_theme': "spacelab",
+    'bootswatch_theme':
+    "spacelab",
     # Choose Bootstrap version.
-    'bootstrap_version': "3",
+    'bootstrap_version':
+    "3",
 }
 
 # Additional variables to be passed to templates
@@ -201,8 +200,10 @@ html_favicon = '_static/favicon.ico'
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path
 
+
 def setup(app):
     app.add_stylesheet("custom.css")
+
 
 #html_style = 'custom.css'
 
@@ -232,7 +233,7 @@ html_last_updated_fmt = '%d %b %Y'
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True 
+#html_domain_indices = True
 
 # If false, no index is generated.
 #html_use_index = True
@@ -316,19 +317,14 @@ htmlhelp_basename = 'ConKitdoc'
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'conkit', u'ConKit Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, 'conkit', u'ConKit Documentation', [author], 1)]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -336,8 +332,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'ConKit', u'ConKit Documentation',
-     author, 'ConKit', 'One line description of project.',
+    (master_doc, 'ConKit', u'ConKit Documentation', author, 'ConKit', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -360,4 +355,5 @@ intersphinx_mapping = {
     'numbas': ('http://numba.pydata.org/numba-doc/latest/', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'biopython': ('http://biopython.org/', None),
+    'warnings': ('https://docs.python.org/3/', None),
 }

@@ -40,7 +40,6 @@ __version__ = "1.0.1"
 import abc
 import numpy as np
 
-from conkit.misc.ext import _bandwidth
 
 ABC = abc.ABCMeta('ABC', (object,), {})
 
@@ -74,14 +73,15 @@ class AmiseBW(BandwidthBase):
 
     @property
     def bandwidth(self):
+        from conkit.misc.ext.c_bandwidth import c_optimize_bandwidth
         data = self._data
         x0 = BowmanBW(data).bandwidth
-        y0 = _bandwidth.optimize_bandwidth(data, x0)
+        y0 = c_optimize_bandwidth(data, x0)
         x = 0.8 * x0
-        y = _bandwidth.optimize_bandwidth(data, x)
+        y = c_optimize_bandwidth(data, x)
         for _ in range(self._niterations):
             x -= y * (x0 - x) / (y0 - y)
-            y = _bandwidth.optimize_bandwidth(data, x)
+            y = c_optimize_bandwidth(data, x)
             if abs(y) < (self._eps * y0):
                 break
         return x

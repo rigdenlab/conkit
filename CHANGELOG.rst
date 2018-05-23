@@ -6,18 +6,18 @@ Changelog
 ------------
 Added
 ~~~~~
-- ``numba`` added as dependency
+- ``Cython`` added as dependency and ``SciPy`` removed
 - ``conkit.misc.deprecate`` decorator for easier tagging
 Changed
 ~~~~~~~
-- ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``numba`` for faster computation
-- ``SequenceFile.calculate_weights`` backend changed from ``numpy`` to ``numba`` for faster computation
-- ``SequenceFile.filter`` backend changed from ``numpy`` to ``numba`` for faster computation
-- ``SequenceFile.filter_gapped`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``Cython`` for faster computation
+- ``SequenceFile.calculate_weights`` backend changed from ``numpy`` to ``Cython`` for faster computation
+- ``SequenceFile.filter`` backend changed from ``numpy`` to ``Cython`` for faster computation
+- ``SequenceFile.filter_gapped`` backend changed from ``numpy`` to ``Cython`` for faster computation
 - ``SequenceFile.calculate_weights`` renamed to ``SequenceFile.get_weights``
 - ``SequenceFile.compute_freq`` renamed to ``SequenceFile.get_frequency``
-- ``ContactMap.singletons`` backend changed from ``numpy`` to ``numba`` for faster computation
-- ``Bandwidth`` backend changed from ``numpy`` to ``numba`` for faster computation
+- ``ContactMap.singletons`` backend changed from ``numpy`` to ``Cython`` for faster computation
+- ``Bandwidth`` backend changed from ``numpy`` to ``Cython`` for faster computation
 - ``ContactMap.short_range_contacts`` renamed to ``ContactMap.short_range``
 - ``ContactMap.medium_range_contacts`` renamed to ``ContactMap.medium_range``
 - ``ContactMap.long_range_contacts`` renamed to ``ContactMap.long_range``
