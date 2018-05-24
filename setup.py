@@ -9,8 +9,8 @@ import numpy
 import os
 import sys
 
-EXTRA_COMPILE_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe', '-std=c11']
-EXTRA_LINK_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe', '-std=c11']
+EXTRA_COMPILE_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe']
+EXTRA_LINK_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe']
 
 # ==============================================================
 # Setup.py command extensions
