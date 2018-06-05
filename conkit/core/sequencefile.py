@@ -296,10 +296,7 @@ class SequenceFile(_Entity):
             raise ValueError('This is not an alignment')
 
     def get_frequency(self, symbol):
-        """Calculate the gap frequency in each alignment column
-
-        This function calculates the frequency of gaps at each
-        position in the Multiple Sequence Alignment.
+        """Calculate the frequency of an amino acid (symbol) in each Multiple Sequence Alignment column
 
         Returns
         -------
