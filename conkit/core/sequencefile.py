@@ -313,7 +313,7 @@ class SequenceFile(_Entity):
             from conkit.core.ext.c_sequencefile import c_get_frequency
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
-            frequencies = np.zeros(X.shape[1], dtype=np.float64)
+            frequencies = np.zeros(X.shape[1], dtype=np.int64)
             c_get_frequency(X, symbol, frequencies)
             return frequencies.tolist()
         else:
