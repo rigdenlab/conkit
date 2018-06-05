@@ -296,10 +296,7 @@ class SequenceFile(_Entity):
             raise ValueError('This is not an alignment')
 
     def get_frequency(self, symbol):
-        """Calculate the gap frequency in each alignment column
-
-        This function calculates the frequency of gaps at each
-        position in the Multiple Sequence Alignment.
+        """Calculate the frequency of an amino acid (symbol) in each Multiple Sequence Alignment column
 
         Returns
         -------
@@ -316,7 +313,7 @@ class SequenceFile(_Entity):
             from conkit.core.ext.c_sequencefile import c_get_frequency
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
-            frequencies = np.zeros(X.shape[1], dtype=np.float64)
+            frequencies = np.zeros(X.shape[1], dtype=np.int64)
             c_get_frequency(X, symbol, frequencies)
             return frequencies.tolist()
         else:

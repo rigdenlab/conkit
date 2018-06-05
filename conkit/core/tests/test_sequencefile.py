@@ -196,22 +196,19 @@ class TestSequenceFile(unittest.TestCase):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'A-AAAA-'), Sequence('cho', '--AAA--')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("X")]
-        self.assertEqual([0.666667, 0.333333, 1.0, 1.0, 1.0, 0.666667, 0.333333], calculated_freqs)
+        self.assertEqual([1, 2, 0, 0, 0, 1, 2], sequence_file.get_frequency("X"))
 
     def test_get_frequency_2(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', '-------'), Sequence('bar', '-------'), Sequence('cho', '-------')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("-")]
-        self.assertEqual([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], calculated_freqs)
+        self.assertEqual([3, 3, 3, 3, 3, 3, 3], sequence_file.get_frequency("-"))
 
     def test_get_frequency_3(self):
         sequence_file = SequenceFile('test')
         for s in [Sequence('foo', 'AAAAAAA'), Sequence('bar', 'AAAAAAA'), Sequence('cho', 'AAAAAAA')]:
             sequence_file.add(s)
-        calculated_freqs = [round(i, 6) for i in sequence_file.get_frequency("X")]
-        self.assertEqual([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], calculated_freqs)
+        self.assertEqual([0, 0, 0, 0, 0, 0, 0], sequence_file.get_frequency("X"))
 
     def test_sort_1(self):
         sequence_file = SequenceFile('test')

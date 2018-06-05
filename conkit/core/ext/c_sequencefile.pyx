@@ -9,12 +9,11 @@ from cython.parallel import prange
 np.import_array()
 
 
-def c_get_frequency(np.ndarray[np.int64_t, ndim=2] X, Py_ssize_t symbol, np.ndarray[double, ndim=1] frequencies):
+def c_get_frequency(np.ndarray[np.int64_t, ndim=2] X, Py_ssize_t symbol, np.ndarray[np.int64_t, ndim=1] frequencies):
     cdef Py_ssize_t i, j
     for j in prange(X.shape[1], nogil=True): 
         for i in xrange(X.shape[0]):
             frequencies[j] += X[i, j] == symbol
-        frequencies[j] = 1.0 - frequencies[j] / X.shape[0]
 
 
 def c_get_weights(np.ndarray[np.int64_t, ndim=2] X, double identity, np.ndarray[double, ndim=1] hamming):
