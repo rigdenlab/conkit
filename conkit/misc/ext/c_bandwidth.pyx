@@ -4,7 +4,6 @@ cimport cython
 import numpy as np
 cimport numpy as np
 
-from cython.parallel import prange
 from libc.math cimport exp, fabs, sqrt, M_PI
 
 np.import_array()

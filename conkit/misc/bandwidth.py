@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """A collection of bandwidth estimators for Kernel Density Estimation"""
 
 from __future__ import division
@@ -40,8 +39,7 @@ __version__ = "1.0.1"
 import abc
 import numpy as np
 
-
-ABC = abc.ABCMeta('ABC', (object,), {})
+ABC = abc.ABCMeta('ABC', (object, ), {})
 
 
 class BandwidthBase(ABC):
@@ -65,6 +63,7 @@ class AmiseBW(BandwidthBase):
     .. [#] Sadowski, M.I. (2013). Prediction of protein domain boundaries from inverse covariances.
 
     """
+
     def __init__(self, data, niterations=25, eps=1e-3):
         """Instantiate a new bandwith calculator"""
         self._data = np.asarray(data)
@@ -97,6 +96,7 @@ class BowmanBW(BandwidthBase):
     .. [#] Bowman, A.W. & Azzalini, A. (1997). Applied Smoothing Techniques for Data Analysis.
 
     """
+
     def __init__(self, data):
         """Instantiate a new bandwith calculator"""
         self._data = np.asarray(data)
@@ -105,7 +105,7 @@ class BowmanBW(BandwidthBase):
     def bandwidth(self):
         data = self._data
         M, N = data.shape
-        return np.sqrt((data ** 2).sum() / M - (data.sum() / M) ** 2) * ((((N + 2) * M) / 4.) ** (-1. / (N + 4)))
+        return np.sqrt((data**2).sum() / M - (data.sum() / M)**2) * ((((N + 2) * M) / 4.)**(-1. / (N + 4)))
 
 
 class LinearBW(BandwidthBase):
@@ -118,6 +118,7 @@ class LinearBW(BandwidthBase):
     .. [#] Sadowski, M.I. (2013). Prediction of protein domain boundaries from inverse covariances.
 
     """
+
     def __init__(self, data, threshold=15):
         self._data = np.asarray(data)
         self._threshold = threshold
@@ -137,6 +138,7 @@ class ScottBW(BandwidthBase):
     .. [#] Scott, D.W. (1992). Multivariate Density Estimation: Theory, Practice, and Visualization.
 
     """
+
     def __init__(self, data):
         """Instantiate a new bandwith calculator"""
         self._data = np.asarray(data)
@@ -146,7 +148,7 @@ class ScottBW(BandwidthBase):
         data = self._data
         M, N = data.shape
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
-        return 1.059 * sigma * M ** (-1. / (N + 4))
+        return 1.059 * sigma * M**(-1. / (N + 4))
 
 
 class SilvermanBW(BandwidthBase):
@@ -159,6 +161,7 @@ class SilvermanBW(BandwidthBase):
     .. [#] Silverman, B.W. (1986). Density Estimation for Statistics and Data Analysis.
 
     """
+
     def __init__(self, data):
         """Instantiate a new bandwith calculator"""
         self._data = np.asarray(data)
@@ -168,7 +171,7 @@ class SilvermanBW(BandwidthBase):
         data = self._data
         M, N = data.shape
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
-        return 0.9 * sigma * (M * (N + 2) / 4.) ** (-1. / (N + 4))
+        return 0.9 * sigma * (M * (N + 2) / 4.)**(-1. / (N + 4))
 
 
 def bandwidth_factory(method):
