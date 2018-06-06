@@ -133,7 +133,7 @@ class SequenceFile(_Entity):
 
     @property
     def diversity(self):
-        """The diversity of an alignment defined by :math:`\sqrt{N}/L`. 
+        """The diversity of an alignment defined by :math:`\\sqrt{N}/L`. 
         
         ``N`` equals the number of sequences in
         the alignment and ``L`` the sequence length

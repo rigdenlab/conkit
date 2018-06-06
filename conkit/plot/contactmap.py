@@ -264,7 +264,13 @@ class ContactMapFigure(Figure):
     @staticmethod
     def _determine_color(h):
         """Determine the color of the contacts in order"""
-        return [
-            ColorDefinitions.MATCH if contact.is_match else ColorDefinitions.MISMATCH
-            if contact.is_mismatch else ColorDefinitions.GENERAL for contact in h
-        ]
+
+        def color_selector(contact):
+            if contact.true_positive:
+                return ColorDefinitions.MATCH
+            elif contact.false_positive:
+                return ColorDefinitions.MISMATCH
+            else:
+                return ColorDefinitions.GENERAL
+
+        return [color_selector(contact) for contact in h]

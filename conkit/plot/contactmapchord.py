@@ -140,11 +140,11 @@ class ContactMapChordFigure(Figure):
             y = (1 - bezier_path)**2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path**2 * y2
             alpha = float(c[4]) if self.use_conf else 1.0
             color = {
-                ContactMatchState.mismatched: ColorDefinitions.MISMATCH,
-                ContactMatchState.matched: ColorDefinitions.MATCH,
+                ContactMatchState.false_positive: ColorDefinitions.MISMATCH,
+                ContactMatchState.true_positive: ColorDefinitions.MATCH,
             }.get(int(c[5]), ColorDefinitions.MATCH)
             self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0)
-            if int(c[5]) == ContactMatchState.matched:
+            if int(c[5]) == ContactMatchState.true_positive:
                 self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=1, linewidth=1)
             else:
                 self.ax.plot(x, y, color=color, alpha=alpha, linestyle="-", zorder=0, linewidth=1)
