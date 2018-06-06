@@ -97,6 +97,19 @@ class TestContactMap(unittest.TestCase):
                 contact.status = FP
         self.assertEqual(0.5, contact_map.precision)
 
+    def test_precision_2(self):
+        contact_map = ContactMap('test')
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            contact_map.add(c)
+        contact_map.sequence = Sequence('TEST', 'AAAAA')
+        for i, contact in enumerate(contact_map):
+            if i % 2 == 0:
+                contact.status = TP
+            else:
+                contact.status = FP
+        contact_map[(1, 1)].status = FN
+        self.assertEqual(0.5, contact_map.precision)
+
     def test_recall_1(self):
         contact_map = ContactMap('test')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
@@ -107,7 +120,7 @@ class TestContactMap(unittest.TestCase):
             else:
                 contact.status = FP
         for c in [Contact(2, 5, 1.0), Contact(3, 6, 1.0), Contact(1, 7, 1.0)]:
-            c.false_negative = True
+            c.status = FN
             contact_map.add(c)
         self.assertEqual(0.4, contact_map.recall)
 
