@@ -281,28 +281,27 @@ class TestContactMap(unittest.TestCase):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1)]:
             contact_map1.add(c)
-        density = contact_map1.get_contact_density()
-        self.assertEqual(
-            [0.11944664492151888, 0.20124328187327287, 0.23868489948868032, 0.20124328187327284, 0.11944664492151894],
-            density)
+        density = [round(x, 7) for x in contact_map1.get_contact_density()]
+        answer = [0.1194466, 0.2012433, 0.2386849, 0.2012433, 0.1194466]
+        self.assertListEqual(answer, density)
 
     @skipUnless(SKLEARN)
     def test_get_contact_density_2(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
-        density = contact_map1.get_contact_density()
-        self.assertEqual(
-            [0.10012592274179978, 0.19837169506444377, 0.26841488628499205, 0.23132109484153407, 0.1217899243718511],
-            density)
+        density = [round(x, 7) for x in contact_map1.get_contact_density()]
+        answer = [0.1001259, 0.1983717, 0.2684149, 0.2313211, 0.1217899]
+        self.assertEqual(answer, density)
 
     @skipUnless(SKLEARN)
     def test_get_contact_density_3(self):
         contact_map1 = ContactMap('foo')
         for c in [Contact(3, 5, 0.4), Contact(2, 4, 0.1), Contact(3, 4, 0.4)]:
             contact_map1.add(c)
-        density = contact_map1.get_contact_density()
-        self.assertEqual([0.14422964774244934, 0.4134215939843202, 0.41342159398432, 0.14422964774244929], density)
+        density = [round(x, 7) for x in contact_map1.get_contact_density()]
+        answer = [0.1442296, 0.4134216, 0.4134216, 0.1442296]
+        self.assertEqual(answer, density)
 
     def test_find_1(self):
         contact_map1 = ContactMap('1')
