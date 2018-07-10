@@ -36,9 +36,9 @@ END
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(2, len(contact_map1))
-        self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.is_match])
+        self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.true_positive])
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -66,9 +66,9 @@ END
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(1, len(contact_map1))
-        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.is_match])
+        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.true_positive])
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -96,9 +96,9 @@ END
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(1, len(contact_map1))
-        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.is_match])
+        self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.true_positive])
         os.unlink(f_name)
 
     def test_read_4(self):
@@ -165,8 +165,8 @@ END
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(6, len(contact_map1))
-        self.assertEqual([36, 36, 36, 86, 86, 171], [c.res1_seq for c in contact_map1 if c.is_match])
-        self.assertEqual([86, 171, 208, 171, 208, 208], [c.res2_seq for c in contact_map1 if c.is_match])
+        self.assertEqual([36, 36, 36, 86, 86, 171], [c.res1_seq for c in contact_map1 if c.true_positive])
+        self.assertEqual([86, 171, 208, 171, 208, 208], [c.res2_seq for c in contact_map1 if c.true_positive])
         os.unlink(f_name)
 
 

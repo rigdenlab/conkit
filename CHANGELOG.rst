@@ -8,6 +8,9 @@ Added
 ~~~~~
 - ``Cython`` added as dependency and ``SciPy`` removed
 - ``conkit.misc.deprecate`` decorator for easier tagging
+- ``ContactMap.match`` provides keyword to ``add_false_negatives`` found in the reference but not in contact map
+- ``ContactMap.remove_false_negatives`` allows convenient removal of false negatives
+- ``COntactMap.recall`` to calculate the recall of a contact map
 Changed
 ~~~~~~~
 - ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``Cython`` for faster computation
@@ -24,6 +27,10 @@ Changed
 - ``ContactMap.calculate_scalar_score`` renamed to ``ContactMap.set_scalar_score``
 - ``ContactMap.calculate_contact_density`` renamed to ``ContactMap.get_contact_density``
 - ``ContactMap.calculate_jaccard_index`` renamed to ``ContactMap.get_jaccard_index``
+- ``ContactMatchState`` provides options for true positive, true negative, false positive and false negative, which can be added to contacts in the map at will
+- ``Contact.is_match`` and ``Contact.define_match`` renamed to attribute ``Contact.true_positive``
+- ``Contact.is_mismatch`` and ``Contact.define_mismatch`` renamed to attribute ``Contact.false_positive``
+- ``Contact.is_unknown`` and ``Contact.define_unknown`` renamed to attribute ``Contact.status_unknown``
 Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably

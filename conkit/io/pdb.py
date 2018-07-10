@@ -176,7 +176,7 @@ class GenericStructureParser(ContactFileParser):
                     contact.res2_chain = atom2.reschain
 
                     if distance_cutoff == 0 or distance < distance_cutoff:
-                        contact.define_match()
+                        contact.true_positive = True
                         contact_map.add(contact)
 
                 if contact_map.empty:

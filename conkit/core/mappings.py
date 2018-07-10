@@ -93,8 +93,10 @@ class AminoAcidThreeToOne(Enum):
 class ContactMatchState(Enum):
     """Enumerated class to store state constants for each contact"""
     unknown = 0
-    matched = 1
-    mismatched = 2
+    true_positive = 1
+    true_negative = 2
+    false_positive = 3
+    false_negative = 4
 
 
 @unique

@@ -228,7 +228,7 @@ class ContactMap(_Entity):
 
         .. math::
 
-           Precision=\\frac{TruePositives}{TruePositives - FalsePositives}
+           Precision=\\frac{TruePositives}{TruePositives + FalsePositives}
 
         The status of each contact, i.e true or false positive status, can be
         determined by running the :func:`match` function providing a reference
@@ -241,7 +241,7 @@ class ContactMap(_Entity):
 
         See Also
         --------
-        coverage
+        coverage, recall
 
         """
         if self.empty:
@@ -249,20 +249,72 @@ class ContactMap(_Entity):
 
         import warnings
 
-        s = np.array([c.status for c in self])
-        cdict = dict(zip(np.unique(s), np.array([s[s == i].shape[0] for i in np.unique(s)])))
-        fp_count = cdict[ContactMatchState.mismatched.value] if ContactMatchState.mismatched.value in cdict else 0.0
-        uk_count = cdict[ContactMatchState.unknown.value] if ContactMatchState.unknown.value in cdict else 0.0
-        tp_count = cdict[ContactMatchState.matched.value] if ContactMatchState.matched.value in cdict else 0.0
+        statuses = np.array([c.status for c in self])
+        tp = (statuses == ContactMatchState.true_positive.value).sum()
+        fp = (statuses == ContactMatchState.false_positive.value).sum()
+        unk = (statuses == ContactMatchState.unknown.value).sum()
 
-        if fp_count == 0.0 and tp_count == 0.0:
-            warnings.warn("No matches or mismatches found in your contact map. Match two ContactMaps first.")
+        if tp + fp == 0:
+            warnings.warn("No true positive or false positive found in your contact map. Match two ContactMaps first.")
             return 0.0
-        elif uk_count > 0:
+        elif unk > 0:
             warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
                           "The precision value might be inaccurate.")
 
-        return tp_count / (tp_count + fp_count)
+        return tp / float(tp + fp)
+
+    @property
+    def recall(self):
+        """The Recall (Sensitivity) score
+
+        The recall value is calculated by analysing the true positive and
+        false negative contacts.
+
+        .. math::
+
+           Recall=\\frac{TruePositives}{TruePositives + FalseNegatives}
+
+        The status of each contact, i.e true positive and false negative status, can be
+        determined by running the :func:`match <conkit.core.contact.Contact.match>` function 
+        providing a reference structure.
+
+        Notes
+        -----
+        To determine and **save** the false negatives, please use the `add_false_negatives` keyword when 
+        running the :func:`match <conkit.core.contactmap.ContactMap.match>` function.
+
+        You may wish to run :func:`remove_false_negatives <conkit.core.contactmap.ContactMap.remove_false_negatives>`
+        afterwards.
+
+        Returns
+        -------
+        float
+           The calculated recall score
+
+        See Also
+        --------
+        coverage, precision
+
+        """
+        if self.empty:
+            return 0.0
+
+        import warnings
+
+        statuses = np.array([c.status for c in self])
+        tp = (statuses == ContactMatchState.true_positive.value).sum()
+        fn = (statuses == ContactMatchState.false_negative.value).sum()
+        unk = (statuses == ContactMatchState.unknown.value).sum()
+
+        if tp + fn == 0:
+            warnings.warn("No true positive or false negative contacts found in your contact map. "
+                          "Match two ContactMaps first.")
+            return 0.0
+        elif unk > 0:
+            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
+                          "The recall value might be inaccurate.")
+
+        return tp / float(tp + fn)
 
     @property
     def repr_sequence(self):
@@ -609,7 +661,13 @@ class ContactMap(_Entity):
                 contact_map.remove(tuple(contactid))
         return contact_map
 
-    def match(self, other, match_other=False, remove_unmatched=False, renumber=False, inplace=False):
+    def match(self,
+              other,
+              add_false_negatives=False,
+              match_other=False,
+              remove_unmatched=False,
+              renumber=False,
+              inplace=False):
         """Modify both hierarchies so residue numbers match one another.
 
         This function is key when plotting contact maps or visualising
@@ -619,6 +677,11 @@ class ContactMap(_Entity):
 
         Parameters
         ----------
+        add_false_negatives : bool
+           Add false negatives to the `self`, which are contacts in `other` but not in `self`
+
+           Required for :func:`recall <conkit.core.contactmap.ContactMap.recall>` and can be
+           undone with :func:`remove_false_negatives <conkit.core.contactmap.ContactMap.remove_false_negatives>`
         other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
            A ConKit :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
         match_other: bool, optional
@@ -700,25 +763,37 @@ class ContactMap(_Entity):
             _id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
 
             if any(i == _Gap.IDENTIFIER for i in _id_alt) and any(j not in residues_map2 for j in _id):
-                contact_map1[_id].define_unknown()
+                contact_map1[_id].status = ContactMatchState.unknown
             elif all(i in residues_map2 for i in _id):
                 if _id_alt in contact_map2:
-                    contact_map1[_id].define_match()
+                    contact_map1[_id].status = ContactMatchState.true_positive
                 else:
-                    contact_map1[_id].define_mismatch()
+                    contact_map1[_id].status = ContactMatchState.false_positive
             else:
                 raise RuntimeError("Error matching two contact maps - this should never happen")
 
         # ================================================================
-        # 3. Remove unmatched contacts
+        # 3. Add false negatives
         # ================================================================
-        if remove_unmatched:
-            for contactid in contact_map1.as_list():
-                if contact_map1[tuple(contactid)].is_unknown:
-                    contact_map1.remove(tuple(contactid))
+        if add_false_negatives:
+            for contact in contact_map2:
+                contactid = tuple([c.res1_seq, c.res2_seq])
+                if contactid not in contact_map1:
+                    contact = contact_map2[contactid].copy()
+                    contact.false_negative = True
+                    contact_map1.add(contact)
 
         # ================================================================
-        # 4. Renumber the contact map 1 based on contact map 2
+        # 4. Remove unmatched contacts
+        # ================================================================
+        if remove_unmatched:
+            for contact in contact_map1:
+                contactid = tuple([c.res1_seq, c.res2_seq])
+                if contact_map1[contactid].status_unknown:
+                    contact_map1.remove(contactid)
+
+        # ================================================================
+        # 5. Renumber the contact map 1 based on contact map 2
         # ================================================================
         if renumber:
             contact_map1 = ContactMap._renumber(contact_map1, contact_map1_keymap, contact_map2_keymap)
@@ -766,6 +841,30 @@ class ContactMap(_Entity):
             contact.id = (contact.res1_seq, contact.res2_seq)
         return contact_map
 
+    def remove_false_negatives(self, inplace=False):
+        """Remove false negatives from the contact map
+
+        Parameters
+        ----------
+        min_distance : int, optional
+           The minimum number of residues between contacts [default: 5]
+        max_distance : int, optional
+           The maximum number of residues between contacts [default: :func:``sys.maxsize``]
+        inplace : bool, optional
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+           The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
+
+        """
+        contact_map = self._inplace(inplace)
+        for contactid in contact_map.as_list():
+            if contact_map[tuple(contactid)].false_negative:
+                contact_map.remove(tuple(contactid))
+        return contact_map
+
     def remove_neighbors(self, min_distance=5, max_distance=sys.maxsize, inplace=False):
         """Remove contacts between neighboring residues
 
@@ -784,7 +883,7 @@ class ContactMap(_Entity):
 
         Returns
         -------
-        obj
+        :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
            The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
 
         """

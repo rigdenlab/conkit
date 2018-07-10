@@ -40,7 +40,8 @@ __version__ = "1.0"
 
 from enum import Enum, unique
 from conkit.core._entity import _Entity
-from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState 
+from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState
+from conkit.misc import deprecate
 
 
 class Contact(_Entity):
@@ -52,11 +53,15 @@ class Contact(_Entity):
        The lower and upper distance boundary values of a contact pair in Ångstrom [Default: 0-8Å].
     id : str
        A unique identifier
-    is_match : bool
+    true_positive: bool
        A boolean status for the contact
-    is_mismatch : bool
+    true_negative: bool
        A boolean status for the contact
-    is_unknown : bool
+    false_positive: bool
+       A boolean status for the contact
+    false_negative: bool
+       A boolean status for the contact
+    status_unknown: bool
        A boolean status for the contact
     lower_bound : int
        The lower distance boundary value
@@ -165,18 +170,18 @@ class Contact(_Entity):
             raise TypeError("Data of type list or tuple required")
 
     @property
+    @deprecate('0.11', msg='Use true_positive instead')
     def is_match(self):
-        """A boolean status for the contact"""
-        return self._status == ContactMatchState.matched
+        return self._status == ContactMatchState.true_positive
 
     @property
+    @deprecate('0.11', msg='Use false_positive instead')
     def is_mismatch(self):
-        """A boolean status for the contact"""
-        return self._status == ContactMatchState.mismatched
+        return self._status == ContactMatchState.false_positive
 
     @property
+    @deprecate('0.11', msg='Use status_unknown instead')
     def is_unknown(self):
-        """A boolean status for the contact"""
         return self._status == ContactMatchState.unknown
 
     @property
@@ -407,7 +412,7 @@ class Contact(_Entity):
 
     @property
     def status(self):
-        """An indication of the residue status, i.e true positive, false positive, or unknown"""
+        """An indication of the residue status, i.e true positive, true_negative, false positive, false_negative or unknown"""
         return self._status.value
 
     @status.setter
@@ -416,13 +421,17 @@ class Contact(_Entity):
 
         Parameters
         ----------
-        status : int
-           [0] for `unknown`, [-1] for `false positive`, or [1] for `true positive`
+        status : int, :obj:`ContactMatchState <conkit.core.mappings.ContactMatchState>`
+           [0] for `unknown`,
+           [1] for `true positive`
+           [2] for `true negative`
+           [3] for `false positive`
+           [4] for `false negative`
 
         Raises
         ------
         ValueError
-           Not a valid :obj:`ContactMatchState`
+           Not a valid :obj:`ContactMatchState <conkit.core.mappings.ContactMatchState>`
 
         """
         self._status = ContactMatchState(status)
@@ -443,21 +452,79 @@ class Contact(_Entity):
         """
         self._weight = float(weight)
 
+    @property
+    def true_positive(self):
+        return self._status == ContactMatchState.true_positive
+
+    @true_positive.setter
+    def true_positive(self, is_tp):
+        if is_tp:
+            self._status = ContactMatchState.true_positive
+        else:
+            self.status_unknown = True
+
+    @property
+    def true_negative(self):
+        return self._status == ContactMatchState.true_negative
+
+    @true_negative.setter
+    def true_negative(self, is_tn):
+        if is_tn:
+            self._status = ContactMatchState.true_negative
+        else:
+            self.status_unknown = True
+
+    @property
+    def false_positive(self):
+        return self._status == ContactMatchState.false_positive
+
+    @false_positive.setter
+    def false_positive(self, is_fp):
+        if is_fp:
+            self._status = ContactMatchState.false_positive
+        else:
+            self.status_unknown = True
+
+    @property
+    def false_negative(self):
+        return self._status == ContactMatchState.false_negative
+
+    @false_negative.setter
+    def false_negative(self, is_fn):
+        if is_fn:
+            self._status = ContactMatchState.false_negative
+        else:
+            self.status_unknown = True
+
+    @property
+    def status_unknown(self):
+        return self._status == ContactMatchState.unknown
+
+    @status_unknown.setter
+    def status_unknown(self, is_unknown):
+        if is_unknown:
+            self._status = ContactMatchState.unknown
+        else:
+            raise ValueError("Choose one of true_positive, false_positive, true_negative, false_negative instead!")
+
+    @deprecate('0.11', msg='Use true_positive instead')
     def define_match(self):
         """Define a contact as matching contact"""
-        self._status = ContactMatchState.matched
+        self._status = ContactMatchState.true_positive
 
+    @deprecate('0.11', msg='Use false_positive instead')
     def define_mismatch(self):
         """Define a contact as mismatching contact"""
-        self._status = ContactMatchState.mismatched
+        self._status = ContactMatchState.false_positive
 
+    @deprecate('0.11', msg='Use status_unknown instead')
     def define_unknown(self):
         """Define a contact with unknown status"""
         self._status = ContactMatchState.unknown
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
-        keys = ['id', 'is_match', 'is_mismatch', 'is_unknown', 'lower_bound', 'upper_bound'] \
+        keys = ['id', 'true_positive', 'false_positive', 'status_unknown', 'lower_bound', 'upper_bound'] \
                 + [k[1:] for k in self.__slots__]
         return {k: getattr(self, k) for k in keys}
 
@@ -468,6 +535,6 @@ class Contact(_Entity):
         if a_a in AminoAcidOneToThree.__members__:
             return a_a
         elif a_a in AminoAcidThreeToOne.__members__:
-            return AminoAcidThreeToOne[a_a].value 
+            return AminoAcidThreeToOne[a_a].value
         else:
             raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))
