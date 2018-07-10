@@ -776,7 +776,7 @@ class ContactMap(_Entity):
         # 3. Add false negatives
         # ================================================================
         if add_false_negatives:
-            for contact in contact_map2.as_list():
+            for contactid in contact_map2.as_list():
                 contactid = tuple(contactid)
                 if contactid not in contact_map1:
                     contact = contact_map2[contactid].copy()
