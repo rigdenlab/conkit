@@ -776,8 +776,8 @@ class ContactMap(_Entity):
         # 3. Add false negatives
         # ================================================================
         if add_false_negatives:
-            for contact in contact_map2:
-                contactid = tuple([contact.res1_seq, contact.res2_seq])
+            for contactid in contact_map2.as_list():
+                contactid = tuple(contactid)
                 if contactid not in contact_map1:
                     contact = contact_map2[contactid].copy()
                     contact.false_negative = True
@@ -787,8 +787,8 @@ class ContactMap(_Entity):
         # 4. Remove unmatched contacts
         # ================================================================
         if remove_unmatched:
-            for contact in contact_map1:
-                contactid = tuple([contact.res1_seq, contact.res2_seq])
+            for contactid in contact_map1.as_list():
+                contactid = tuple(contactid)
                 if contact_map1[contactid].status_unknown:
                     contact_map1.remove(contactid)
 

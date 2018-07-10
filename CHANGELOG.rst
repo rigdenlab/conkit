@@ -6,6 +6,7 @@ Changelog
 ------------
 Added
 ~~~~~
+- Support for Python 3.7
 - ``Cython`` added as dependency and ``SciPy`` removed
 - ``conkit.misc.deprecate`` decorator for easier tagging
 - ``ContactMap.match`` provides keyword to ``add_false_negatives`` found in the reference but not in contact map

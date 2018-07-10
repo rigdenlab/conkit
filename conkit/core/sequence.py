@@ -89,6 +89,10 @@ class Sequence(_Entity):
         seq = self.seq + other.seq
         return Sequence(id, seq)
 
+    def __len__(self):
+        """The sequence length"""
+        return len(self._seq)
+
     def __repr__(self):
         if self.seq_len > 12:
             seq_string = ''.join([self.seq[:5], '...', self.seq[-5:]])
@@ -156,7 +160,7 @@ class Sequence(_Entity):
     @property
     def seq_len(self):
         """The protein sequence length"""
-        return len(self.seq)
+        return len(self)
 
     def align_global(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
         """Generate a global alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
