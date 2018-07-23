@@ -32,8 +32,8 @@ Parser module specific to bbcontacts predictions
 """
 
 __author__ = "Felix Simkovic"
-__date__ = "26 Oct 2016"
-__version__ = "0.1"
+__date__ = "23 Jul 2018"
+__version__ = "0.2"
 
 import re
 
@@ -41,8 +41,6 @@ from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
-
-RE_COMMENT = re.compile(r'^#+.*$')
 
 
 class BbcontactsParser(ContactFileParser):
@@ -52,7 +50,7 @@ class BbcontactsParser(ContactFileParser):
     def __init__(self):
         super(BbcontactsParser, self).__init__()
 
-    def read(self, f_handle, f_id="bbcontacts"):
+    def read(self, f_handle, f_id="bbcontacts", del_one_two=False):
         """Read a contact file
 
         Parameters
@@ -61,6 +59,8 @@ class BbcontactsParser(ContactFileParser):
            Open file handle [read permissions]
         f_id : str, optional
            Unique contact file identifier
+        del_one_two : bool
+           Remove one- & two-strand sheets
 
         Returns
         -------
@@ -72,22 +72,26 @@ class BbcontactsParser(ContactFileParser):
         contact_map = ContactMap("map_1")
         contact_file.add(contact_map)
 
+        previous = 'first'
         for line in f_handle:
-            line = line.rstrip()
+            line = line.strip()
 
-            if not line:
-                continue
+            if line and not line.startswith('#'):
+                _, _, _, raw_score, _, current, res2_seq, res1_seq = line.split(
+                )
+                if del_one_two and previous == 'first' and current == 'last':
+                    contact_map.child_list.pop()
+                elif any(value == "NA"
+                         for value in [raw_score, res2_seq, res1_seq]):
+                    pass
+                else:
+                    contact = Contact(
+                        int(res1_seq), int(res2_seq), float(raw_score))
+                    contact_map.add(contact)
+                previous = current
 
-            elif RE_COMMENT.match(line):
-                continue
-
-            else:
-                # bbcontacts reverse residue numbering so swap
-                _, _, _, raw_score, _, _, res2_seq, res1_seq = line.split()
-                if any(value == "NA" for value in [raw_score, res2_seq, res1_seq]):
-                    continue
-                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
-                contact_map.add(contact)
+        if del_one_two and previous == 'first' and len(contact_map) > 0:
+            contact_map.child_list.pop()
 
         contact_file.method = 'Contact map predicted using Bbcontacts'
 
