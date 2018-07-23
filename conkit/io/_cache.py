@@ -80,6 +80,8 @@ class _ParserCache(object):
         "psicov": ["psicov", "metapsicov", "nebcon"],
     }
 
+    BLINDFOLD = set(['ContactFileParser', 'GenericStructureParser', 'SequenceFileParser'])
+
     def __init__(self):
         self._parsers = []
 
@@ -129,7 +131,9 @@ class _ParserCache(object):
                 name = os.path.basename(m).replace(".py", "")
                 decl.module = "conkit.io." + name
                 objname = decl.object.lower().replace("parser", "")
-                if objname in _ParserCache.MASKS:
+                if decl.object in _ParserCache.BLINDFOLD:
+                    continue
+                elif objname in _ParserCache.MASKS:
                     for extra in _ParserCache.MASKS[objname]:
                         decl_ = copy.copy(decl)
                         decl_.id = extra
