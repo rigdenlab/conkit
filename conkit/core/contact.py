@@ -53,15 +53,15 @@ class Contact(_Entity):
        The lower and upper distance boundary values of a contact pair in Ångstrom [Default: 0-8Å].
     id : str
        A unique identifier
-    true_positive: bool
+    true_positive : bool
        A boolean status for the contact
-    true_negative: bool
+    true_negative : bool
        A boolean status for the contact
-    false_positive: bool
+    false_positive : bool
        A boolean status for the contact
-    false_negative: bool
+    false_negative : bool
        A boolean status for the contact
-    status_unknown: bool
+    status_unknown : bool
        A boolean status for the contact
     lower_bound : int
        The lower distance boundary value
