@@ -33,6 +33,9 @@ __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
 __version__ = "0.1"
 
+import matplotlib
+matplotlib.use('Agg')
+
 
 def ContactMapFigure(*args, **kwargs):
     """:obj:`~conkit.plot.contactmap.ContactMapFigure` instance"""
