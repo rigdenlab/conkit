@@ -27,7 +27,7 @@ The following table contains the various different file formats currently implem
 +====================+========================+===========================================================+=================================================+
 | Contact Prediction | Bbcontacts             | ``bbcontacts``:sup:`*`                                    | :obj:`~conkit.io.bbcontacts.BbcontactsParser`   |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
-|                    | BCLContacts            | ``bclcontacts``:sup:`*`                                   | :obj:`~conkit.io.bclcontact.BCLContactParser`  |
+|                    | BCLContacts            | ``bclcontacts``:sup:`*`                                   | :obj:`~conkit.io.bclcontact.BCLContactParser`   |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
 |                    | Casp RR                | ``casp``, ``casprr``                                      | :obj:`~conkit.io.casp.CaspParser`               |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
