@@ -28,13 +28,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-Parser module specific to FASTA sequence files
+Parser module specific to CLUSTAL sequence files
 """
 
-__author__ = "Felix Simkovic"
-__date__ = "09 Sep 2016"
-__version__ = "0.1"
+__author__ = 'Felix Simkovic'
+__date__ = '30 Jul 2018'
+__version__ = '0.1'
 
+import collections
 import os
 
 from conkit.io._parser import SequenceFileParser
@@ -42,12 +43,12 @@ from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
 
-class FastaParser(SequenceFileParser):
-    """Parser class for FASTA sequence files
+class ClustalParser(SequenceFileParser):
+    """Parser class for CLUSTAL sequence files
     """
 
     def __init__(self):
-        super(FastaParser, self).__init__()
+        super(ClustalParser, self).__init__()
 
     def read(self, f_handle, f_id='fasta'):
         """Read a sequence file
@@ -65,45 +66,34 @@ class FastaParser(SequenceFileParser):
 
         Raises
         ------
-        :obj:`ValueError`
-           FASTA record needs to start with >
+        :obj:`TypeError` 
+           Incorrect file format
 
         """
-        hierarchy = SequenceFile(f_id)
 
-        while True:
-            line = f_handle.readline().rstrip()
+        header = f_handle.readline().rstrip()
+        if header[:7].upper() != 'CLUSTAL':
+            raise TypeError('Incorrect file format')
 
-            if not line:
+        cache = collections.OrderedDict()
+        for line in f_handle:
+            line = line.strip()
+            line_set = set(line)
+            if not line or any(char in line_set for char in ['*', ':', '.']):
                 continue
-            elif line.startswith('#'):
-                hierarchy.remark = line[1:]
-            elif line.startswith('>'):
-                break
+            else:
+                parts = line.strip().split()
+                id_, chunk = parts[:2]
+                if id_ in cache:
+                    cache[id_] += chunk
+                else:
+                    cache[id_] = chunk
 
-        while True:
-            if not line.startswith('>'):
-                raise ValueError("Fasta record needs to start with '>'")
-
-            id = line[1:]  # Header without '>'
-
-            chunks = []
-            line = f_handle.readline().rstrip()
-            while True:
-                if not line:
-                    break
-                elif line.startswith('>'):
-                    break
-                chunks.append(line)
-                line = f_handle.readline().rstrip()
-            _seq_string = "".join(chunks)  # Sequence from chunks
-
-            sequence_entry = Sequence(id, _seq_string)
-
-            hierarchy.add(sequence_entry)
-
-            if not line:
-                break
+        hierarchy = SequenceFile(f_id)
+        while len(cache) > 0:
+            id_, seq = cache.popitem(last=False)  # FIFO
+            sequence = Sequence(id_, seq)
+            hierarchy.add(sequence)
 
         return hierarchy
 
@@ -117,24 +107,25 @@ class FastaParser(SequenceFileParser):
         hierarchy : :obj:`~conkit.core.sequencefile.SequenceFile`, :obj:`~conkit.core.sequence.Sequence`
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         hierarchy = self._reconstruct(hierarchy)
+        chunker = []
+        longest = 0
+        for sequence in hierarchy:
+            this = [sequence.id]
+            if len(sequence.id) > longest:
+                longest = len(sequence.id)
+            for i in range(0, sequence.seq_len, 60):
+                this += [sequence.seq[i:i + 60]]
+            chunker += [this]
 
-        content = ""
-
-        # Write remarks
-        for remark in hierarchy.remark:
-            content += '#{remark}'.format(remark=remark) + os.linesep
-
-        for sequence_entry in hierarchy:
-            header = '>{id}'.format(id=sequence_entry.id)
-            if len(sequence_entry.remark) > 0:
-                header = '|'.join([header] + sequence_entry.remark)
-            content += header + os.linesep
-
-            # Cut the sequence into chunks [FASTA <= 60 chars per line]
-            sequence_string = sequence_entry.seq.upper()  # UPPER CASE !!!
-            for i in range(0, sequence_entry.seq_len, 60):
-                content += sequence_string[i:i + 60] + os.linesep
+        content = 'CLUSTAL FORMAT written with ConKit\n'
+        content += '\n'
+        linetemplate = '%-{}s\t%s\n'.format(longest)
+        while len(chunker) > 0:
+            entry = chunker.pop(0)
+            content += linetemplate % (entry[0], entry[1])
+            entry.pop(1)
+            if len(entry) > 1:
+                chunker.append(entry)
 
         f_handle.write(content)
