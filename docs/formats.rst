@@ -59,7 +59,9 @@ The following table contains the various different file formats currently implem
 +                    +------------------------+-----------------------------------------------------------+
 |                    | [Meta]PSICOV           | ``psicov``, ``metapsicov``                                |
 +--------------------+------------------------+-----------------------------------------------------------+
-| Sequence Alignment | A3M                    | ``a3m``, ``a3m-inserts``:sup:`a`                          |
+| Sequence Alignment | A2M                    | ``a2m``
++                    +------------------------+-----------------------------------------------------------+
+|                    | A3M                    | ``a3m``, ``a3m-inserts``:sup:`a`                          |
 +                    +------------------------+-----------------------------------------------------------+
 |                    | FASTA                  | ``fasta``                                                 |
 +                    +------------------------+-----------------------------------------------------------+
@@ -71,6 +73,6 @@ The following table contains the various different file formats currently implem
 |                                                                                                         |
 | :sup:`a` The ``a3m-inserts`` keyword stores the alignment including insert states.                      |
 |                                                                                                         |
-| :sup:`b` The ``jones`` format corresponds to one sequence per line without sequence header information. |
+| :sup:`b` The ``jones`` format corresponds to the HH-suite A2M format.                                   |
 |                                                                                                         |
 +--------------------+------------------------+-----------------------------------------------------------+

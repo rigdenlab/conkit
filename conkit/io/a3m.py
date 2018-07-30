@@ -33,6 +33,7 @@ Parser module specific to HH-suite A3M sequence files
 Credits
 -------
 Stefan Seemayer and his A3MIO project [https://github.com/sseemayer/BioPython-A3MIO]
+
 """
 
 __author__ = "Felix Simkovic"
@@ -53,6 +54,7 @@ class A3mParser(SequenceFileParser):
     """Parser class for A3M sequence files
 
     """
+
     def __init__(self):
         super(A3mParser, self).__init__()
 
@@ -137,19 +139,10 @@ class A3mParser(SequenceFileParser):
         # Determine the insert states by splitting the sequences into chunks based
         # on the case of the letter.
         INSERT_STATE = re.compile(r'([A-Z0-9~-])')
-        inserts = [
-            INSERT_STATE.split(sequence_entry.seq)
-            for sequence_entry in hierarchy
-        ]
+        inserts = [INSERT_STATE.split(sequence_entry.seq) for sequence_entry in hierarchy]
 
         # Determine maximum insert length at each position
-        insert_max_lengths = [
-            max(
-                len(inserts[i][j])
-                for i in range(len(inserts))
-            )
-            for j in range(len(inserts[0]))
-        ]
+        insert_max_lengths = [max(len(inserts[i][j]) for i in range(len(inserts))) for j in range(len(inserts[0]))]
 
         # Add gaps where gaps are needed
         def pad(chunk, length, pad_char='-'):
@@ -157,15 +150,12 @@ class A3mParser(SequenceFileParser):
 
         # Manipulate each sequence to match insert states
         for sequence_entry, seq in zip(hierarchy, inserts):
-            sequence_entry.seq = "".join(pad(insert, insert_len)
-                                         for insert, insert_len
-                                         in zip(seq, insert_max_lengths))
+            sequence_entry.seq = "".join(pad(insert, insert_len) for insert, insert_len in zip(seq, insert_max_lengths))
         return
 
     def _remove_inserts(self, seq):
         """Remove insert states"""
         return "".join([char for char in seq if not char.islower()])
-
 
     def write(self, f_handle, hierarchy):
         """Write a sequence file instance to to file
@@ -194,4 +184,3 @@ class A3mParser(SequenceFileParser):
             content += sequence_entry.seq + os.linesep
 
         f_handle.write(content)
-
