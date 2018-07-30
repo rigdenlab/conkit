@@ -32,7 +32,7 @@ help:
 	@echo "  apidoc     to create the apidoc pages"
 
 clean:
-	rm -rf $(BUILDDIR)/* api/generated/* examples/images/*
+	rm -rf $(BUILDDIR)/* api/generated/* examples/images/* _tmp
 
 
 html:
@@ -56,9 +56,8 @@ doctest:
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
 figures:
-	if [ -d _tmp ]; then rm -rf _tmp; else mkdir _tmp; fi
-	if [ -d examples/images ]; then rm -rf examples/images; else mkdir examples/images; fi
-	export MPLBACKEND=\"agg\"
+	if [ -d _tmp ]; then rm -rf _tmp; fi; mkdir _tmp;
+	if [ -d examples/images ]; then rm -rf examples/images; fi; mkdir examples/images;
 	git clone https://github.com/rigdenlab/conkit-examples.git _tmp/conkit-examples
 	conkit-plot chord --confidence --overwrite -o examples/images/toxd_chord_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred
 	conkit-plot cmap --overwrite -o examples/images/toxd_cmap_simple.png _tmp/conkit-examples/toxd/toxd.fasta fasta _tmp/conkit-examples/toxd/toxd.mat ccmpred

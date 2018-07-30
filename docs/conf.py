@@ -19,7 +19,7 @@ import os
 import subprocess
 import sys
 
-if sys.version_info.major < 3:                                                                                              
+if sys.version_info.major < 3:
     from importlib import import_module
 else:
     from importlib import __import__ as import_module
@@ -52,21 +52,24 @@ extensions = [
     'sphinxext.math_symbol_table',
 ]
 
+
 # Make sure we can import everything
 def all_modules_importable(modules):
-    def check_importable(modules):
+    def check_importable(module):
         try:
             import_module(module)
         except ImportError:
             msg = "Error: %s be installed before generating this documentation" % module
             raise ImportError(msg)
+
     for m in modules:
         check_importable(m)
+    return True
 
-check_module_importable(['sphinx_bootstrap_theme', 'conkit', 'matplotlib'])
+
+assert all_modules_importable(['sphinx_bootstrap_theme', 'conkit', 'matplotlib'])
 import sphinx_bootstrap_theme
 import conkit
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
