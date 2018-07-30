@@ -25,7 +25,8 @@ else:
     from importlib import __import__ as import_module
 
 # Required by autosummary
-sys.path.append(os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -59,7 +60,7 @@ def all_modules_importable(modules):
         try:
             import_module(module)
         except ImportError:
-            msg = "Error: %s be installed before generating this documentation" % module
+            msg = '%s must be installed before generating this documentation' % module
             raise ImportError(msg)
 
     for m in modules:
@@ -67,7 +68,7 @@ def all_modules_importable(modules):
     return True
 
 
-assert all_modules_importable(['sphinx_bootstrap_theme', 'conkit', 'matplotlib'])
+assert all_modules_importable(['sphinx_bootstrap_theme', 'conkit', 'matplotlib', 'sklearn.neighbors'])
 import sphinx_bootstrap_theme
 import conkit
 
