@@ -49,7 +49,7 @@ from conkit.plot.tools import _isinstance
 
 
 class ContactMapChordFigure(Figure):
-    """A Figure object specifically for a Contact Map chord diagram
+    """A Figure object specifically for a :obj:`~conkit.core.contactmap.ContactMap`
 
     This figure will illustrate the contacts linking the residues
     in the target sequence. This plot is a very common representation
@@ -69,7 +69,7 @@ class ContactMapChordFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
        The default contact map hierarchy
 
     Examples
@@ -85,12 +85,12 @@ class ContactMapChordFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
            The default contact map hierarchy
         use_conf : bool, optional
            The marker size will correspond to the raw score [default: False]
         **kwargs
-           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
+           General :obj:`~conkit.plot.figure.Figure` keyword arguments
 
         """
         super(ContactMapChordFigure, self).__init__(**kwargs)

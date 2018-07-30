@@ -71,13 +71,12 @@ class BbcontactsCommandline(AbstractCommandline):
     bbcontacts
 
     You would typically run the command line with :func:`bbcontacts_cline` or via
-    the Python subprocess module.
+    the :mod:`~subprocess` module.
 
-    Notes
-    -----
-    In order to use bbcontacts, head over to the `GitHub repository
-    <https://github.com/soedinglab/bbcontacts>`_, download the latest version
-    and install it using python setup.py install.
+    Note
+    ----
+    Installation instructions are available via the `GitHub repository 
+    <https://github.com/soedinglab/bbcontacts>`_.
 
     """
 
@@ -92,46 +91,32 @@ class BbcontactsCommandline(AbstractCommandline):
             raise RuntimeError(msg)
 
         self.parameters = [
-            _Option(['-c', 'config_file'],
-                    'bbcontacts configuration file',
-                    filename=True,
-                    equate=False),
-            _Option(['-s', 'smoothing_size'],
-                    'Perform local background correction of the coupling matrix '
-                    'before decoding: from each coupling, subtract the average '
-                    'coupling (smoothed background) over an area extending by '
-                    'SMOOTHINGSIZE in each direction [default=10, use 0 for no '
-                    'local background correction]',
-                    equate=False),
-            _Switch(['-l', 'long_predictions'],
-                    'Turn off (slow) prediction-shortening mode (this mode is on '
+            _Option(['-c', 'config_file'], 'bbcontacts configuration file', filename=True, equate=False),
+            _Option(
+                ['-s', 'smoothing_size'],
+                'Perform local background correction of the coupling matrix '
+                'before decoding: from each coupling, subtract the average '
+                'coupling (smoothed background) over an area extending by '
+                'SMOOTHINGSIZE in each direction [default=10, use 0 for no '
+                'local background correction]',
+                equate=False),
+            _Switch(['-l', 'long_predictions'], 'Turn off (slow) prediction-shortening mode (this mode is on '
                     'by default but will only get triggered when long predictions occur)'),
-            _Option(['-n', 'pdb_name'],
-                    'Provide a PDB identifier (when also using -e, this will be the '
-                    'PDB name to look for in EVALUATIONFILE)',
-                    equate=False),
-            _Option(['-e', 'evaluation_file'],
-                    'Provide a file containing the true contacts (BetaSheet916.dat, '
-                    'BetaSheet1452.dat or same format) for evaluation',
-                    filename=True,
-                    equate=False),
-            _Argument(['matfile'],
-                      'CCMpred-like coupling matrix',
-                      filename=True,
-                      is_required=True),
-            _Argument(['diversity_score'],
-                       'sequence-dependent diversity score',
-                       is_required=True),
-            _Argument(['prefix'],
-                       'output prefix',
-                       is_required=True),
-            _Option(['-d', 'dssp_file'],
-                    'DSSP secondary structure prediction file',
-                    filename=True,
-                    equate=False),
-            _Option(['-p', 'psipred_file'],
-                    'PSIPRED secondary structure prediction file',
-                    filename=True,
-                    equate=False),
+            _Option(
+                ['-n', 'pdb_name'],
+                'Provide a PDB identifier (when also using -e, this will be the '
+                'PDB name to look for in EVALUATIONFILE)',
+                equate=False),
+            _Option(
+                ['-e', 'evaluation_file'],
+                'Provide a file containing the true contacts (BetaSheet916.dat, '
+                'BetaSheet1452.dat or same format) for evaluation',
+                filename=True,
+                equate=False),
+            _Argument(['matfile'], 'CCMpred-like coupling matrix', filename=True, is_required=True),
+            _Argument(['diversity_score'], 'sequence-dependent diversity score', is_required=True),
+            _Argument(['prefix'], 'output prefix', is_required=True),
+            _Option(['-d', 'dssp_file'], 'DSSP secondary structure prediction file', filename=True, equate=False),
+            _Option(['-p', 'psipred_file'], 'PSIPRED secondary structure prediction file', filename=True, equate=False),
         ]
         AbstractCommandline.__init__(self, cmd, **kwargs)

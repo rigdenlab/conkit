@@ -364,11 +364,9 @@ def run_apidoc(_):
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
+    'subprocess': ('https://docs.python.org/3', None),
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
-    'numbas': ('http://numba.pydata.org/numba-doc/latest/', None),
     'matplotlib': ('https://matplotlib.org/', None),
-    'biopython': ('http://biopython.org/', None),
-    'warnings': ('https://docs.python.org/3/', None),
 }
 
 

@@ -40,14 +40,14 @@ import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.core._struct import _Gap
+from conkit.core.struct import Gap
 from conkit.misc import normalize
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
 
 class ContactMapMatrixFigure(Figure):
-    """A Figure object specifically for a Contact Map Matrix
+    """A Figure object specifically for a :obj:`~conkit.core.contactmap.ContactMap`
 
     This figure will illustrate the contacts in a contact
     map matrix. This plot is a very common representation of contacts.
@@ -57,12 +57,12 @@ class ContactMapMatrixFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
        The default contact map hierarchy
-    other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    other : :obj:`~conkit.core.contactmap.ContactMap`
        The second contact map hierarchy
     altloc : bool
-       Use the res_altloc positions [default: False]
+       Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
 
     Examples
     --------
@@ -77,16 +77,16 @@ class ContactMapMatrixFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
            The default contact map hierarchy
-        other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, optional
+        other : :obj:`~conkit.core.contactmap.ContactMap`, optional
            The second contact map hierarchy
         altloc : bool, optional
-           Use the res_altloc positions [default: False]
+           Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
         lim : tuple, list, optional
            The [min, max] residue numbers to show
         **kwargs
-           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
+           General :obj:`~conkit.plot.figure.Figure` keyword arguments
 
         """
         super(ContactMapMatrixFigure, self).__init__(**kwargs)
@@ -146,22 +146,26 @@ class ContactMapMatrixFigure(Figure):
     def draw(self):
         _hierarchy = self._hierarchy.rescale()
 
-        self_data = np.array([c for c in _hierarchy.as_list() if all(ci != _Gap.IDENTIFIER for ci in c)])
+        self_data = np.array([c for c in _hierarchy.as_list() if all(ci != Gap.IDENTIFIER for ci in c)])
         self_colors = ContactMapMatrixFigure._determine_color(_hierarchy)
-        self_rawsc = np.array([c.raw_score for c in _hierarchy if all(ci != _Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+        self_rawsc = np.array(
+            [c.raw_score for c in _hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
 
         if self._other:
             _other = self._other.rescale()
-            other_data = np.array([c for c in _other.as_list() if any(ci != _Gap.IDENTIFIER for ci in c)])
+            other_data = np.array([c for c in _other.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
             other_colors = ContactMapMatrixFigure._determine_color(_other)
-            other_rawsc = np.array([c.raw_score for c in _other if all(ci != _Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+            other_rawsc = np.array(
+                [c.raw_score for c in _other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
         else:
             other_data = self_data
             other_colors = self_colors
             other_rawsc = self_rawsc
 
-        self._patch_scatter(self_data[:, 1], self_data[:, 0], symbol="s", facecolor=self_colors, radius=1.0, linewidth=0)
-        self._patch_scatter(other_data[:, 0], other_data[:, 1], symbol="s", facecolor=other_colors, radius=1.0, linewidth=0)
+        self._patch_scatter(
+            self_data[:, 1], self_data[:, 0], symbol="s", facecolor=self_colors, radius=1.0, linewidth=0)
+        self._patch_scatter(
+            other_data[:, 0], other_data[:, 1], symbol="s", facecolor=other_colors, radius=1.0, linewidth=0)
 
         if self.lim:
             min_max_data = np.arange(self.lim[0], self.lim[1] + 1)

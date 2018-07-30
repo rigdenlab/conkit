@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Parser module specific to plmDCA predictions
 """
@@ -47,6 +46,7 @@ from conkit.core.contactfile import ContactFile
 class PlmDCAParser(ContactFileParser):
     """Class to parse a plmDCA contact prediction
     """
+
     def __init__(self):
         super(PlmDCAParser, self).__init__()
 
@@ -62,7 +62,7 @@ class PlmDCAParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -92,16 +92,15 @@ class PlmDCAParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            More than one contact map in the hierarchy
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
 
         if len(contact_file) > 1:

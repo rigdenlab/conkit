@@ -38,10 +38,10 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
-from conkit.core._entity import _Entity
+from conkit.core.entity import Entity
 
 
-class ContactFile(_Entity):
+class ContactFile(Entity):
     """A contact file object representing a single prediction file
 
     The contact file class represents a data structure to hold all predictions
@@ -89,9 +89,7 @@ class ContactFile(_Entity):
         super(ContactFile, self).__init__(id)
 
     def __repr__(self):
-        return "{0}(id=\"{1}\" nmaps={2})".format(
-            self.__class__.__name__, self.id, len(self)
-        )
+        return "{0}(id=\"{1}\" nmaps={2})".format(self.__class__.__name__, self.id, len(self))
 
     @property
     def author(self):

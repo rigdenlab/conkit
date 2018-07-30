@@ -11,7 +11,7 @@ try:
 except ImportError:
     SKLEARN = False
 
-from conkit.core._struct import _Gap, _Residue
+from conkit.core.struct import Gap, Residue
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.mappings import ContactMatchState
@@ -597,9 +597,9 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual([TP, TP, FP, TP, UNK], [c.status for c in contact_map1])
-        self.assertEqual([95, 95, _Gap.IDENTIFIER, 97, _Gap.IDENTIFIER], [c.res1_seq for c in contact_map1])
+        self.assertEqual([95, 95, Gap.IDENTIFIER, 97, Gap.IDENTIFIER], [c.res1_seq for c in contact_map1])
         self.assertEqual(['A', 'A', '', 'A', ''], [c.res1_chain for c in contact_map1])
-        self.assertEqual([30, 31, _Gap.IDENTIFIER, 30, _Gap.IDENTIFIER], [c.res2_seq for c in contact_map1])
+        self.assertEqual([30, 31, Gap.IDENTIFIER, 30, Gap.IDENTIFIER], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', '', 'B', ''], [c.res2_chain for c in contact_map1])
 
     def test_match_8(self):
@@ -638,9 +638,9 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, remove_unmatched=True, renumber=True, inplace=True)
         self.assertEqual([TP, TP, FP, TP], [c.status for c in contact_map1])
-        self.assertEqual([95, 95, _Gap.IDENTIFIER, 97], [c.res1_seq for c in contact_map1])
+        self.assertEqual([95, 95, Gap.IDENTIFIER, 97], [c.res1_seq for c in contact_map1])
         self.assertEqual(['A', 'A', '', 'A'], [c.res1_chain for c in contact_map1])
-        self.assertEqual([30, 31, _Gap.IDENTIFIER, 30], [c.res2_seq for c in contact_map1])
+        self.assertEqual([30, 31, Gap.IDENTIFIER, 30], [c.res2_seq for c in contact_map1])
         self.assertEqual(['B', 'B', '', 'B'], [c.res2_chain for c in contact_map1])
 
     def test_match_9(self):
@@ -741,7 +741,7 @@ class TestContactMap(unittest.TestCase):
 
         contact_map1.match(contact_map2, renumber=True, inplace=True)
         self.assertEqual([TP, FP, TP, TP, FP], [c.status for c in contact_map1])
-        self.assertEqual([(6, 2), (6, _Gap.IDENTIFIER), (7, 4), (8, 2), (7, _Gap.IDENTIFIER)],
+        self.assertEqual([(6, 2), (6, Gap.IDENTIFIER), (7, 4), (8, 2), (7, Gap.IDENTIFIER)],
                          [(c.res1_seq, c.res2_seq) for c in contact_map1])
         self.assertEqual([('A', 'B'), ('A', ''), ('A', 'B'), ('A', 'B'), ('A', '')],
                          [(c.res1_chain, c.res2_chain) for c in contact_map1])
@@ -988,59 +988,58 @@ class TestContactMap(unittest.TestCase):
         self.assertEqual([(2, 4)], [c.id for c in found_contacts])
 
     def test__insert_states_1(self):
-        keymap = [_Residue(1, 1, 'X', ''), _Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
+        keymap = [Residue(1, 1, 'X', ''), Residue(2, 2, 'X', ''), Residue(3, 3, 'X', '')]
         sequence = [ord(x) for x in 'XXX']
         inserts_added = ContactMap._insert_states(sequence, keymap)
         self.assertEqual(3, len(inserts_added))
-        self.assertEqual([True, True, True], [isinstance(r, _Residue) for r in inserts_added])
+        self.assertEqual([True, True, True], [isinstance(r, Residue) for r in inserts_added])
 
     def test__insert_states_2(self):
-        keymap = [_Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
+        keymap = [Residue(2, 2, 'X', ''), Residue(3, 3, 'X', '')]
         sequence = [ord(x) for x in '-XX']
         inserts_added = ContactMap._insert_states(sequence, keymap)
         self.assertEqual(3, len(inserts_added))
-        self.assertEqual([False, True, True], [isinstance(r, _Residue) for r in inserts_added])
-        self.assertEqual([True, False, False], [isinstance(r, _Gap) for r in inserts_added])
+        self.assertEqual([False, True, True], [isinstance(r, Residue) for r in inserts_added])
+        self.assertEqual([True, False, False], [isinstance(r, Gap) for r in inserts_added])
 
     def test__insert_states_3(self):
-        keymap = [_Residue(2, 10, 'X', ''), _Residue(3, 11, 'X', '')]
+        keymap = [Residue(2, 10, 'X', ''), Residue(3, 11, 'X', '')]
         sequence = [ord(x) for x in '-X-X--']
         inserts_added = ContactMap._insert_states(sequence, keymap)
         self.assertEqual(6, len(inserts_added))
-        self.assertEqual([False, True, False, True, False, False], [isinstance(r, _Residue) for r in inserts_added])
-        self.assertEqual([True, False, True, False, True, True], [isinstance(r, _Gap) for r in inserts_added])
-        self.assertEqual([2, 3], [r.res_seq for r in inserts_added if isinstance(r, _Residue)])
-        self.assertEqual([10, 11], [r.res_altseq for r in inserts_added if isinstance(r, _Residue)])
+        self.assertEqual([False, True, False, True, False, False], [isinstance(r, Residue) for r in inserts_added])
+        self.assertEqual([True, False, True, False, True, True], [isinstance(r, Gap) for r in inserts_added])
+        self.assertEqual([2, 3], [r.res_seq for r in inserts_added if isinstance(r, Residue)])
+        self.assertEqual([10, 11], [r.res_altseq for r in inserts_added if isinstance(r, Residue)])
 
     def test__reindex_by_keymap_1(self):
-        keymap = [_Residue(1, 1, 'X', ''), _Residue(2, 2, 'X', ''), _Residue(3, 3, 'X', '')]
+        keymap = [Residue(1, 1, 'X', ''), Residue(2, 2, 'X', ''), Residue(3, 3, 'X', '')]
         reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
     def test__reindex_by_keymap_2(self):
-        keymap = [_Residue(1, -5, 'X', ''), _Residue(2, -4, 'X', ''), _Residue(3, -3, 'X', '')]
+        keymap = [Residue(1, -5, 'X', ''), Residue(2, -4, 'X', ''), Residue(3, -3, 'X', '')]
         reindex = ContactMap._reindex_by_keymap(keymap)
         self.assertEqual([1, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
     def test__reindex_by_keymap_3(self):
-        keymap = [_Gap(), _Residue(2, 1, 'X', ''), _Residue(3, 2, 'X', '')]
+        keymap = [Gap(), Residue(2, 1, 'X', ''), Residue(3, 2, 'X', '')]
         reindex = ContactMap._reindex_by_keymap(keymap)
-        self.assertEqual([_Gap.IDENTIFIER, 2, 3], [c.res_seq for c in reindex])
+        self.assertEqual([Gap.IDENTIFIER, 2, 3], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3], [c.res_altseq for c in reindex])
 
     def test__reindex_by_keymap_4(self):
-        keymap = [_Gap(), _Residue(200000, 10000, 'X', ''), _Gap(), _Gap()]
+        keymap = [Gap(), Residue(200000, 10000, 'X', ''), Gap(), Gap()]
         reindex = ContactMap._reindex_by_keymap(keymap)
-        self.assertEqual([_Gap.IDENTIFIER, 200000, _Gap.IDENTIFIER, _Gap.IDENTIFIER], [c.res_seq for c in reindex])
+        self.assertEqual([Gap.IDENTIFIER, 200000, Gap.IDENTIFIER, Gap.IDENTIFIER], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
     def test__reindex_by_keymap_5(self):
-        keymap = [_Gap(), _Gap(), _Gap(), _Gap()]
+        keymap = [Gap(), Gap(), Gap(), Gap()]
         reindex = ContactMap._reindex_by_keymap(keymap)
-        self.assertEqual([_Gap.IDENTIFIER, _Gap.IDENTIFIER, _Gap.IDENTIFIER, _Gap.IDENTIFIER],
-                         [c.res_seq for c in reindex])
+        self.assertEqual([Gap.IDENTIFIER, Gap.IDENTIFIER, Gap.IDENTIFIER, Gap.IDENTIFIER], [c.res_seq for c in reindex])
         self.assertEqual([1, 2, 3, 4], [c.res_altseq for c in reindex])
 
     def test_as_list_1(self):

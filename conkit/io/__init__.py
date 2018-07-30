@@ -64,8 +64,8 @@ def convert(fname_in, format_in, fname_out, format_out):
     >>> with open('example.a3m', 'r') as f_in, open('example.fas', 'w') as f_out:
     ...     io.convert(f_in, 'a3m', f_out, 'fasta')
 
-    Notes
-    -----
+    Note
+    ----
     A3M format comes by default WITHOUT insert states, these are removed. To obtain
     an alignment WITH insert states, use format ``a3m-inserts``.
 

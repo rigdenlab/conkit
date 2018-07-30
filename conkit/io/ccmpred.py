@@ -67,7 +67,7 @@ class CCMpredParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         contact_file = ContactFile(f_id)
@@ -93,12 +93,12 @@ class CCMpredParser(ContactFileParser):
 
         Parameters
         ----------
-        mat : np.ndarray
-           A np arranged matrix
+        mat : :obj:`~numpy.ndarray`
+           A :mod:`numpy` matrix
 
         Returns
         -------
-        contacts : list
+        list
            A list of contact pairs
 
         """
@@ -114,15 +114,15 @@ class CCMpredParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            More than one contact map in the hierarchy
-        TypeError
-           Python3 requires f_handle to be in 'wb' or 'ab' mode
+        :obj:`TypeError`
+           Python3 requires f_handle to be in `wb` or `ab` mode
 
         """
         # Python3 support requires bytes mode

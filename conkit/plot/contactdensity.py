@@ -57,7 +57,7 @@ class ContactDensityFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
        The default contact map hierarchy
     bw_method : str
        The method to estimate the bandwidth
@@ -75,12 +75,12 @@ class ContactDensityFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
            The default contact map hierarchy
         bw_method : str, optional
            The method to estimate the bandwidth [default: bowman]
         **kwargs
-           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
+           General :obj:`~conkit.plot.figure.Figure` keyword arguments
 
         """
         super(ContactDensityFigure, self).__init__(**kwargs)
@@ -102,7 +102,7 @@ class ContactDensityFigure(Figure):
         """The method to estimate the bandwidth
         
         For a full list of options, please refer to 
-        :func:`get_contact_density() <conkit.core.contactmap.ContactMap.get_contact_density>`
+        :meth:`~conkit.core.contactmap.ContactMap.get_contact_density`
 
         """
         return self._bw_method
@@ -114,7 +114,7 @@ class ContactDensityFigure(Figure):
 
     @property
     def hierarchy(self):
-        """A ConKit :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
+        """A :obj:`~conkit.core.contactmap.ContactMap`"""
         return self._hierarchy
 
     @hierarchy.setter
@@ -123,8 +123,8 @@ class ContactDensityFigure(Figure):
 
         Raises
         ------
-        TypeError
-           The hierarchy is not a :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        :obj:`TypeError`
+           The hierarchy is not a :obj:`~conkit.core.contactmap.ContactMap`
 
         """
         if hierarchy and _isinstance(hierarchy, "ContactMap"):

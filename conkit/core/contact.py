@@ -39,12 +39,12 @@ __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 from enum import Enum, unique
-from conkit.core._entity import _Entity
+from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState
 from conkit.misc import deprecate
 
 
-class Contact(_Entity):
+class Contact(Entity):
     """A contact pair template to store all associated information
 
     Attributes

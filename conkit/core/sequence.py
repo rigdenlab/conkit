@@ -39,11 +39,11 @@ __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 from Bio import pairwise2
-from conkit.core._entity import _Entity
+from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidMapping, AminoAcidOneToThree
 
 
-class Sequence(_Entity):
+class Sequence(Entity):
     """A sequence template to store all associated information
 
     Attributes
@@ -98,8 +98,8 @@ class Sequence(_Entity):
             seq_string = ''.join([self.seq[:5], '...', self.seq[-5:]])
         else:
             seq_string = self.seq
-        return "{0}(id=\"{1}\" seq=\"{2}\" seq_len={3})".format(
-            self.__class__.__name__, self.id, seq_string, self.seq_len)
+        return "{0}(id=\"{1}\" seq=\"{2}\" seq_len={3})".format(self.__class__.__name__, self.id, seq_string,
+                                                                self.seq_len)
 
     @property
     def remark(self):
@@ -186,9 +186,8 @@ class Sequence(_Entity):
         sequence1 = self._inplace(inplace)
         sequence2 = other._inplace(inplace)
 
-        alignment = pairwise2.align.globalms(
-            sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
-        ) 
+        alignment = pairwise2.align.globalms(sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen,
+                                             gap_ext_pen)
         sequence1.seq = alignment[-1][0]
         sequence2.seq = alignment[-1][1]
 
@@ -218,9 +217,8 @@ class Sequence(_Entity):
         sequence1 = self._inplace(inplace)
         sequence2 = other._inplace(inplace)
 
-        alignment = pairwise2.align.localms(
-            sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
-        )
+        alignment = pairwise2.align.localms(sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen,
+                                            gap_ext_pen)
 
         sequence1.seq = alignment[-1][0]
         sequence2.seq = alignment[-1][1]

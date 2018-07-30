@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Parser module specific to PSICOV predictions
 """
@@ -47,6 +46,7 @@ from conkit.core.contactfile import ContactFile
 class PsicovParser(ContactFileParser):
     """Class to parse a PSICOV contact prediction
     """
+
     def read(self, f_handle, f_id="psicov"):
         """Read a contact file
 
@@ -59,7 +59,7 @@ class PsicovParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -74,8 +74,8 @@ class PsicovParser(ContactFileParser):
                 continue
 
             elif line[0].isdigit():
-                _contact = Contact(int(line[0]), int(line[1]), float(line[4]),
-                                   distance_bound=(float(line[2]), float(line[3])))
+                _contact = Contact(
+                    int(line[0]), int(line[1]), float(line[4]), distance_bound=(float(line[2]), float(line[3])))
                 _map.add(_contact)
 
         hierarchy.method = 'Contact map predicted using PSICOV'
@@ -89,16 +89,15 @@ class PsicovParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            More than one contact map in the hierarchy
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
 
         if len(contact_file) > 1:
@@ -111,8 +110,8 @@ class PsicovParser(ContactFileParser):
                 line = "{res1_seq} {res2_seq} {lb} {ub} {raw_score:.6f}"
                 lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
                 ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
-                line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score,
-                                   lb=lb, ub=ub)
+                line = line.format(
+                    res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score, lb=lb, ub=ub)
                 content += line + os.linesep
 
         f_handle.write(content)

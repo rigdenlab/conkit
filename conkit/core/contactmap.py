@@ -46,14 +46,14 @@ import sys
 if sys.version_info.major < 3:
     from itertools import izip as zip
 
-from conkit.core._entity import _Entity
-from conkit.core._struct import _Gap, _Residue
+from conkit.core.entity import Entity
+from conkit.core.struct import Gap, Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
 from conkit.core.sequence import Sequence
 from conkit.misc import fAND, fOR, deprecate, normalize
 
 
-class ContactMap(_Entity):
+class ContactMap(Entity):
     """A contact map object representing a single prediction
 
     The :obj:`ContactMap <conkit.core.contactmap.ContactMap>` class represents a data structure to hold a single
@@ -278,8 +278,8 @@ class ContactMap(_Entity):
         determined by running the :func:`match <conkit.core.contact.Contact.match>` function 
         providing a reference structure.
 
-        Notes
-        -----
+        Note
+        ----
         To determine and **save** the false negatives, please use the `add_false_negatives` keyword when 
         running the :func:`match <conkit.core.contactmap.ContactMap.match>` function.
 
@@ -531,13 +531,13 @@ class ContactMap(_Entity):
         --------
         match, precision
 
-        Warnings
-        --------
+        Warning
+        -------
         The Jaccard distance ranges from :math:`[0, 1]`, where :math:`1` means
         the maps contain identical contacts pairs.
 
-        Notes
-        -----
+        Note
+        ----
         The Jaccard index is different from the Jaccard distance mentioned in [#]_. The
         Jaccard distance corresponds to :math:`1-Jaccard_{index}`.
 
@@ -762,7 +762,7 @@ class ContactMap(_Entity):
             _id = (contact.res1_seq, contact.res2_seq)
             _id_alt = tuple(r.res_seq for r in contact_map2_keymap for i in _id if i == r.res_altseq)
 
-            if any(i == _Gap.IDENTIFIER for i in _id_alt) and any(j not in residues_map2 for j in _id):
+            if any(i == Gap.IDENTIFIER for i in _id_alt) and any(j not in residues_map2 for j in _id):
                 contact_map1[_id].status = ContactMatchState.unknown
             elif all(i in residues_map2 for i in _id):
                 if _id_alt in contact_map2:
@@ -957,7 +957,7 @@ class ContactMap(_Entity):
     @staticmethod
     def _adjust(contact_map, keymap):
         """Adjust res_altseq entries to insertions and deletions"""
-        encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, _Residue))
+        encoder = dict((x.res_seq, x.res_altseq) for x in keymap if isinstance(x, Residue))
         for contact in contact_map:
             if contact.res1_seq in encoder:
                 contact.res1_altseq = encoder[contact.res1_seq]
@@ -982,8 +982,8 @@ class ContactMap(_Entity):
         """
         contact_map_keymap = collections.OrderedDict()
         for contact in contact_map:
-            pos1 = _Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
-            pos2 = _Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
+            pos1 = Residue(contact.res1_seq, contact.res1_altseq, contact.res1, contact.res1_chain)
+            pos2 = Residue(contact.res2_seq, contact.res2_altseq, contact.res2, contact.res2_chain)
             if altloc:
                 res1_index, res2_index = contact.res1_altseq, contact.res2_altseq
             else:
@@ -1007,7 +1007,7 @@ class ContactMap(_Entity):
         keymap_ = []
         for amino_acid in sequence:
             if amino_acid == ord('-'):
-                keymap_.append(_Gap())
+                keymap_.append(Gap())
             else:
                 keymap_.append(next(it))
         return keymap_
@@ -1023,7 +1023,7 @@ class ContactMap(_Entity):
     def _renumber(contact_map, self_keymap, other_keymap):
         """Renumber the contact map based on the mapping of self and other keymaps"""
         for self_residue, other_residue in zip(self_keymap, other_keymap):
-            if isinstance(self_residue, _Gap):
+            if isinstance(self_residue, Gap):
                 continue
             for contact in ContactMap._find_single(contact_map, self_residue.res_seq):
                 # Make sure we check with the ID, which doesn't change

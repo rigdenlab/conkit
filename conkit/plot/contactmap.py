@@ -40,14 +40,14 @@ import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.core._struct import _Gap
+from conkit.core.struct import Gap
 from conkit.misc import deprecate, normalize
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
 
 class ContactMapFigure(Figure):
-    """A Figure object specifically for a Contact Map
+    """A Figure object specifically for a :obj:`~conkit.core.contactmap.ContactMap`
 
     This figure will illustrate the contacts in a contact
     map. This plot is a very common representation of contacts.
@@ -57,14 +57,14 @@ class ContactMapFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
        The default contact map hierarchy
-    other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    other : :obj:`~conkit.core.contactmap.ContactMap`
        The second contact map hierarchy
-    reference : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+    reference : :obj:`~conkit.core.contactmap.ContactMap`
        The reference contact map hierarchy
     altloc : bool
-       Use the res_altloc positions [default: False]
+       Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
     use_conf : bool
        The marker size will correspond to the raw score [default: False]
 
@@ -81,20 +81,20 @@ class ContactMapFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
            The default contact map hierarchy
-        other : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, optional
+        other : :obj:`~conkit.core.contactmap.ContactMap`, optional
            The second contact map hierarchy
-        reference : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, optional
+        reference : :obj:`~conkit.core.contactmap.ContactMap`, optional
            The reference contact map hierarchy
         altloc : bool, optional
-           Use the res_altloc positions [default: False]
+           Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
         use_conf : bool, optional
            The marker size will correspond to the raw score [default: False]
         lim : tuple, list, optional
            The [min, max] residue numbers to show
         **kwargs
-           General :obj:`Figure <conkit.plot.figure.Figure>` keyword arguments
+           General :obj:`~conkit.plot.figure.Figure` keyword arguments
 
         """
         super(ContactMapFigure, self).__init__(**kwargs)
@@ -182,16 +182,16 @@ class ContactMapFigure(Figure):
             reference_data = np.empty((0, 2))
             reference_colors = []
 
-        self_data = np.array([c for c in self._hierarchy.as_list() if all(ci != _Gap.IDENTIFIER for ci in c)])
+        self_data = np.array([c for c in self._hierarchy.as_list() if all(ci != Gap.IDENTIFIER for ci in c)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
         self_rawsc = np.array(
-            [c.raw_score for c in self._hierarchy if all(ci != _Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+            [c.raw_score for c in self._hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
 
         if self._other:
-            other_data = np.array([c for c in self._other.as_list() if any(ci != _Gap.IDENTIFIER for ci in c)])
+            other_data = np.array([c for c in self._other.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
             other_colors = ContactMapFigure._determine_color(self._other)
             other_rawsc = np.array(
-                [c.raw_score for c in self._other if all(ci != _Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+                [c.raw_score for c in self._other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
         else:
             other_data = self_data
             other_colors = self_colors

@@ -48,6 +48,7 @@ RE_SPLIT = re.compile(r'\s+')
 class BCLContactParser(ContactFileParser):
     """Class to parse a BCL::Contact contact file
     """
+
     def __init__(self):
         super(BCLContactParser, self).__init__()
 
@@ -63,7 +64,7 @@ class BCLContactParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -90,14 +91,13 @@ class BCLContactParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        NotImplementedError
+        :obj:`NotImplementedError`
            Write function not available
 
         """
         raise NotImplementedError("Write function not available")
-

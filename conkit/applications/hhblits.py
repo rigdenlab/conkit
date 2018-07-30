@@ -68,7 +68,7 @@ class HHblitsCommandline(AbstractCommandline):
     hhblits -i test.fasta -d uniprot20_29Feb2012
 
     You would typically run the command line with :func:`hhblits_cline` or via
-    the Python subprocess module.
+    the :mod:`~subprocess` module.
 
     """
 

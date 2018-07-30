@@ -59,7 +59,7 @@ def deprecate(version, msg=None):
     
     Examples
     --------
-    Enable :obj:`DeprecationWarning <warnings.DeprecationWarning>` messages to be displayed.
+    Enable :obj:`~DeprecationWarning` messages to be displayed.
 
     >>> import warnings
     >>> warnings.simplefilter('default')

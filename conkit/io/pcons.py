@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Parser module specific to Pcons predictions
 
@@ -82,7 +81,7 @@ class PconsParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         contact_file = ContactFile(f_id)
@@ -124,10 +123,7 @@ class PconsParser(ContactFileParser):
 
             if RE_CONTACT.match(line):
                 res1_seq, res2_seq, raw_score = line.split()
-                contact = Contact(
-                    int(res1_seq), int(res2_seq),
-                    float(raw_score)
-                )
+                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact_map.add(contact)
 
             line = next(lines, done)
@@ -149,14 +145,14 @@ class PconsParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
         write_header_footer : bool
            Write a PconsC3-typical header
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            More than one contact map in the hierarchy
 
         """
@@ -179,10 +175,8 @@ class PconsParser(ContactFileParser):
 
                 if contact_map.sequence is not None:
                     content += "Sequence number: 1" + os.linesep
-                    content += "Sequence name: {0}".format(
-                        contact_map.sequence.id) + os.linesep
-                    content += "Sequence length: {0} aa.".format(
-                        contact_map.sequence.seq_len) + os.linesep
+                    content += "Sequence name: {0}".format(contact_map.sequence.id) + os.linesep
+                    content += "Sequence length: {0} aa.".format(contact_map.sequence.seq_len) + os.linesep
                     content += "Sequence:" + os.linesep
                     content += contact_map.sequence.seq + os.linesep * 3
 
@@ -193,8 +187,8 @@ class PconsParser(ContactFileParser):
                 res1_seq = contact.res1_seq
                 res2_seq = contact.res2_seq
                 raw_score = contact.raw_score
-                l = "{res1_seq:>4} {res2_seq:>4} {raw_score:>.6f}".format(res1_seq=res1_seq, res2_seq=res2_seq,
-                                                                          raw_score=raw_score)
+                l = "{res1_seq:>4} {res2_seq:>4} {raw_score:>.6f}".format(
+                    res1_seq=res1_seq, res2_seq=res2_seq, raw_score=raw_score)
                 content += l + os.linesep
 
             if write_header_footer:

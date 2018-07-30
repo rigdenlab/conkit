@@ -52,8 +52,8 @@ def setup_logging(level='info', logfile=None):
 
     Returns
     -------
-    logger
-       Instance of a :obj:`logger <logging.Logger>`
+    :obj:`~logging.Logger`
+       Instance of a :obj:`~logging.Logger`
 
     """
 
@@ -62,21 +62,17 @@ def setup_logging(level='info', logfile=None):
 
         # ANSI foreground color codes
         colors = {
-            logging.DEBUG: 34,           # blue
-            logging.WARNING: 33,         # yellow
-            logging.ERROR: 31,           # red
-            logging.CRITICAL: 31,        # red
+            logging.DEBUG: 34,  # blue
+            logging.WARNING: 33,  # yellow
+            logging.ERROR: 31,  # red
+            logging.CRITICAL: 31,  # red
         }
 
         def format(self, record):
             if record.levelno in self.colors:
-                prefix = '\033[1;{}m'.format(
-                    ColorFormatter.colors[record.levelno])
+                prefix = '\033[1;{}m'.format(ColorFormatter.colors[record.levelno])
                 postfix = '\033[0m'
-                record.msg = os.linesep.join(
-                    [prefix + l +
-                        postfix for l in str(record.msg).splitlines()]
-                )
+                record.msg = os.linesep.join([prefix + l + postfix for l in str(record.msg).splitlines()])
             return logging.Formatter.format(self, record)
 
     # Reset any Handlers or Filters already in the logger to start from scratch
@@ -85,8 +81,12 @@ def setup_logging(level='info', logfile=None):
     map(logging.getLogger().removeFilter, logging.getLogger().filters[:])
 
     logging_levels = {
-        'notset': logging.NOTSET, 'info': logging.INFO, 'debug': logging.DEBUG,
-        'warning': logging.WARNING, 'error': logging.ERROR, 'critical': logging.CRITICAL
+        'notset': logging.NOTSET,
+        'info': logging.INFO,
+        'debug': logging.DEBUG,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
+        'critical': logging.CRITICAL
     }
 
     # Create logger and default settings
@@ -102,14 +102,10 @@ def setup_logging(level='info', logfile=None):
     if logfile:
         fh = logging.FileHandler(logfile)
         fh.setLevel(logging.NOTSET)
-        fh.setFormatter(
-            logging.Formatter(
-                '%(asctime)s\t%(name)s [%(lineno)d]\t%(levelname)s\t%(message)s')
-        )
+        fh.setFormatter(logging.Formatter('%(asctime)s\t%(name)s [%(lineno)d]\t%(levelname)s\t%(message)s'))
         logging.getLogger().addHandler(fh)
 
-    logging.getLogger().debug('Console logger level: %s',
-                              logging_levels.get(level, logging.INFO))
+    logging.getLogger().debug('Console logger level: %s', logging_levels.get(level, logging.INFO))
     logging.getLogger().debug('File logger level: %s', logging.NOTSET)
 
     return logging.getLogger()

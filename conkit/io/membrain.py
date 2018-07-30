@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Parser module specific to ComsatIO predictions
 """
@@ -51,6 +50,7 @@ RE_SPLIT = re.compile(r'\s+')
 class MemBrainParser(ContactFileParser):
     """Class to parse a MemBrain contact file
     """
+
     def __init__(self):
         super(MemBrainParser, self).__init__()
 
@@ -66,7 +66,7 @@ class MemBrainParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -86,11 +86,7 @@ class MemBrainParser(ContactFileParser):
             else:
                 _, res1_seq, res1, _, res2_seq, res2, raw_score = RE_SPLIT.split(line)
 
-                contact = Contact(
-                    int(res1_seq),
-                    int(res2_seq),
-                    float(raw_score)
-                )
+                contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact.res1 = res1
                 contact.res2 = res2
                 contact_map.add(contact)
@@ -106,12 +102,12 @@ class MemBrainParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            More than one contact map in the hierarchy
 
         """
@@ -127,9 +123,12 @@ class MemBrainParser(ContactFileParser):
             content += 'Helix   Position        Residue Helix   Position        Residue Probability' + os.linesep
             for contact in contact_map:
                 line = "Hx      {res1_seq: <7} {res1: <7} Hx      {res2_seq: <7} {res2: <7} {raw_score: <.6f}"
-                line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq,
-                                   res1=contact.res1, res2=contact.res2, raw_score=contact.raw_score)
+                line = line.format(
+                    res1_seq=contact.res1_seq,
+                    res2_seq=contact.res2_seq,
+                    res1=contact.res1,
+                    res2=contact.res2,
+                    raw_score=contact.raw_score)
                 content += line + os.linesep
 
         f_handle.write(content)
-
