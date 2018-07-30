@@ -578,16 +578,18 @@ class ContactMap(Entity):
 
         Raises
         ------
-        RuntimeError
-           Cannot find SciKit package
-        ValueError
+        :obj:`ImportError`
+           Cannot find scikit-learn package
+        :obj:`ValueError`
            Undefined bandwidth method
+        :obj:`ValueError`
+           :obj:`~conkit.core.contactmap.ContactMap` is empty
 
         """
         try:
             import sklearn.neighbors
         except ImportError:
-            raise RuntimeError("Cannot find SKlearn package")
+            raise RuntimeError("Cannot find scikit-learn package")
 
         if self.empty:
             raise ValueError("ContactMap is empty")
@@ -601,11 +603,13 @@ class ContactMap(Entity):
 
     @deprecate('0.11', msg='Use set_scalar_score instead.')
     def calculate_scalar_score(self):
-        """Calculate a scaled score for the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
+        """Calculate a :attr:`~conkit.core.contact.Contact.scalar_score`for the 
+        :obj:`~conkit.core.contactmap.ContactMap`"""
         return self.set_scalar_score()
 
     def set_scalar_score(self):
-        """Calculate a scaled score for the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
+        """Calculate and set the :attr:`~conkit.core.contact.Contact.scalar_score` for the
+        :obj:`~conkit.core.contactmap.ContactMap`
 
         This score is a scaled score for all raw scores in a contact
         map. It is defined by the formula
@@ -616,8 +620,6 @@ class ContactMap(Entity):
 
         where :math:`x` corresponds to the raw score of each predicted
         contact and :math:`\\overline{d}` to the mean of all raw scores.
-
-        The score is saved in a separate :obj:`Contact <conkit.core.contact.Contact>` attribute called ``scalar_score``
 
         This score is described in more detail in [#]_.
 
