@@ -15,6 +15,7 @@ Added
 - ``SequenceFile.summary`` for quick alignment summaries
 - ``A2mParser`` to read HH-suite A2M alignment files
 - Automatic `sphinx-apidoc` generation for up-to-date index
+- ``ClustalParser`` to read CLUSTAL formatted files
 Changed
 ~~~~~~~
 - ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``Cython`` for faster computation
