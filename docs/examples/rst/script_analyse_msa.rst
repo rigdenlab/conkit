@@ -4,7 +4,7 @@ Multiple Sequence Alignment Analysis
 ------------------------------------
 
 .. warning::
-   You require the optional dependency `SciPy <http://scipy.org/>`_ package to use this script. If you are unsure if it is installed on your system, refer to the :ref:`Installation` documentation
+   You require the :mod:`scipy` package to use this script. If you are unsure if it is installed on your system, refer to the :ref:`Installation` documentation
 
 
 If you would like to analyse a Multiple Sequence Alignment (MSA) file, you can do so using ConKit's provided script, which is called ``conkit-msatool``.
