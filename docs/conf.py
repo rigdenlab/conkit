@@ -14,10 +14,15 @@
 
 import datetime
 import glob
-import importlib
+
 import os
 import subprocess
 import sys
+
+if sys.version_info.major < 3:                                                                                              
+    from importlib import import_module
+else:
+    from importlib import __import__ as import_module
 
 # Required by autosummary
 sys.path.append(os.path.abspath('.'))
@@ -48,9 +53,9 @@ extensions = [
 ]
 
 # Make sure we can import everything
-def check_module_importable(module, *args, **kwargs):
+def check_module_importable(module):
     try:
-        importlib.__import__(module, *args, **kwargs)
+        import_module(module)
     except ImportError:
         msg = "Error: %s be installed before generating this documentation" % module
         raise ImportError(msg)
