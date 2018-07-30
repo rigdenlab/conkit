@@ -1,5 +1,5 @@
-conkit\.io\.pcons module
-========================
+conkit.io.pcons module
+======================
 
 .. automodule:: conkit.io.pcons
     :members:

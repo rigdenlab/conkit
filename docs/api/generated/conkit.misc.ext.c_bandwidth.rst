@@ -1,7 +1,7 @@
-conkit.applications.hhfilter module
+conkit.misc.ext.c\_bandwidth module
 ===================================
 
-.. automodule:: conkit.applications.hhfilter
+.. automodule:: conkit.misc.ext.c_bandwidth
     :members:
     :undoc-members:
     :show-inheritance:

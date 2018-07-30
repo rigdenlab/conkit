@@ -1,5 +1,5 @@
-conkit\.io\.casp module
-=======================
+conkit.io.casp module
+=====================
 
 .. automodule:: conkit.io.casp
     :members:

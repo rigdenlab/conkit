@@ -1,5 +1,5 @@
-conkit\.core\.contact module
-============================
+conkit.core.contact module
+==========================
 
 .. automodule:: conkit.core.contact
     :members:

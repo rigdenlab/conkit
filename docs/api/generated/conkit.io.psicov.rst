@@ -1,5 +1,5 @@
-conkit\.io\.psicov module
-=========================
+conkit.io.psicov module
+=======================
 
 .. automodule:: conkit.io.psicov
     :members:

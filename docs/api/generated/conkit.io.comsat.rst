@@ -1,5 +1,5 @@
-conkit\.io\.comsat module
-=========================
+conkit.io.comsat module
+=======================
 
 .. automodule:: conkit.io.comsat
     :members:

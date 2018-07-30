@@ -33,16 +33,24 @@ needs_sphinx = '1.6.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel', 'sphinx.ext.autosummary', 'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode',
-    'sphinxext.math_symbol_table', 'numpydoc.numpydoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
+    'sphinxext.math_symbol_table',
 ]
 
-try:
-    import numpydoc
-except ImportError:
-    msg = "Error: numpydoc must be installed before generating this documentation"
-    raise ImportError(msg)
+#  try:
+#      import numpydoc
+#  except ImportError:
+#      msg = "Error: numpydoc must be installed before generating this documentation"
+#      raise ImportError(msg)
 
 try:
     import sphinx_bootstrap_theme
@@ -347,6 +355,28 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# -- Extension configuration -------------------------------------------------
+def run_apidoc(_):
+    ignore_paths = []
+    argv = ['-f', '-T', '-e', '-M', '-o', os.path.join('api', 'generated'), os.path.join('..', 'conkit')] + ignore_paths
+    try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
+
+
+# -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {

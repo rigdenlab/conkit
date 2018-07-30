@@ -1,5 +1,5 @@
-conkit\.io\.stockholm module
-============================
+conkit.io.stockholm module
+==========================
 
 .. automodule:: conkit.io.stockholm
     :members:

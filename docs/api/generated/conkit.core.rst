@@ -1,10 +1,17 @@
-conkit\.core package
-====================
+conkit.core package
+===================
 
 .. automodule:: conkit.core
     :members:
     :undoc-members:
     :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    conkit.core.ext
 
 Submodules
 ----------

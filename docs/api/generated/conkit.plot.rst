@@ -1,5 +1,5 @@
-conkit\.plot package
-====================
+conkit.plot package
+===================
 
 .. automodule:: conkit.plot
     :members:

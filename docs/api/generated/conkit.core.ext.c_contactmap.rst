@@ -1,7 +1,7 @@
-conkit.applications.jackhmmer module
+conkit.core.ext.c\_contactmap module
 ====================================
 
-.. automodule:: conkit.applications.jackhmmer
+.. automodule:: conkit.core.ext.c_contactmap
     :members:
     :undoc-members:
     :show-inheritance:

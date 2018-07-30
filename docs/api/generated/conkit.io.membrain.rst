@@ -1,5 +1,5 @@
-conkit\.io\.membrain module
-===========================
+conkit.io.membrain module
+=========================
 
 .. automodule:: conkit.io.membrain
     :members:

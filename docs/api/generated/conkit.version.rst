@@ -1,5 +1,5 @@
-conkit\.version module
-======================
+conkit.version module
+=====================
 
 .. automodule:: conkit.version
     :members:

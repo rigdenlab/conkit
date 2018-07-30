@@ -1,5 +1,5 @@
-conkit\.io\.freecontact module
-==============================
+conkit.io.freecontact module
+============================
 
 .. automodule:: conkit.io.freecontact
     :members:

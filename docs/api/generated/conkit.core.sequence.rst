@@ -1,5 +1,5 @@
-conkit\.core\.sequence module
-=============================
+conkit.core.sequence module
+===========================
 
 .. automodule:: conkit.core.sequence
     :members:

@@ -14,6 +14,7 @@ Added
 - ``ContactMap.recall`` to calculate the recall of a contact map
 - ``SequenceFile.summary`` for quick alignment summaries
 - ``A2mParser`` to read HH-suite A2M alignment files
+- Automatic `sphinx-apidoc` generation for up-to-date index
 Changed
 ~~~~~~~
 - ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``Cython`` for faster computation

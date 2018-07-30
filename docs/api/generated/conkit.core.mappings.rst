@@ -1,5 +1,5 @@
-conkit\.core\.mappings module
-=============================
+conkit.core.mappings module
+===========================
 
 .. automodule:: conkit.core.mappings
     :members:

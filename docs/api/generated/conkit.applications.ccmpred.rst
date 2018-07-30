@@ -1,5 +1,5 @@
-conkit\.applications\.ccmpred module
-====================================
+conkit.applications.ccmpred module
+==================================
 
 .. automodule:: conkit.applications.ccmpred
     :members:

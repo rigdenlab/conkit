@@ -1,5 +1,5 @@
-conkit\.core\.contactmap module
-===============================
+conkit.core.contactmap module
+=============================
 
 .. automodule:: conkit.core.contactmap
     :members:

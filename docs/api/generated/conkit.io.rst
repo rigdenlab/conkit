@@ -1,5 +1,5 @@
-conkit\.io package
-==================
+conkit.io package
+=================
 
 .. automodule:: conkit.io
     :members:
@@ -11,6 +11,7 @@ Submodules
 
 .. toctree::
 
+   conkit.io.a2m
    conkit.io.a3m
    conkit.io.bbcontacts
    conkit.io.bclcontact

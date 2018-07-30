@@ -1,5 +1,5 @@
-conkit\.io\.jones module
-========================
+conkit.io.jones module
+======================
 
 .. automodule:: conkit.io.jones
     :members:
