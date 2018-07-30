@@ -14,6 +14,7 @@
 
 import datetime
 import glob
+import importlib
 import os
 import subprocess
 import sys
@@ -46,17 +47,18 @@ extensions = [
     'sphinxext.math_symbol_table',
 ]
 
-try:
-    import sphinx_bootstrap_theme
-except ImportError:
-    msg = "Error: sphinx_bootstrap_thememust be installed before generating this documentation"
-    raise ImportError(msg)
+# Make sure we can import everything
+def check_module_importable(module, *args, **kwargs):
+    try:
+        importlib.__import__(module, *args, **kwargs)
+    except ImportError:
+        msg = "Error: %s be installed before generating this documentation" % module
+        raise ImportError(msg)
 
-try:
-    import conkit
-except ImportError:
-    msg = "Error: ConKit must be installed before generating its documentation"
-    sys.exit(msg)
+check_module_importable('sphinx_bootstrap_theme')
+check_module_importable('matplotlib')
+check_module_importable('conkit')
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -361,6 +363,9 @@ def run_apidoc(_):
 
 
 def run_figgen(_):
+    # Important to set if we run on external server, i.e. ReadTheDocs.org
+    import matplotlib
+    matplotlib.use('Agg')
     # Basic way of generating all associated figures
     # TODO: refactor this and the command in Makefile into a little extension
     subprocess.check_call(['make', 'figures'])
