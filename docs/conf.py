@@ -53,16 +53,18 @@ extensions = [
 ]
 
 # Make sure we can import everything
-def check_module_importable(module):
-    try:
-        import_module(module)
-    except ImportError:
-        msg = "Error: %s be installed before generating this documentation" % module
-        raise ImportError(msg)
+def all_modules_importable(modules):
+    def check_importable(modules):
+        try:
+            import_module(module)
+        except ImportError:
+            msg = "Error: %s be installed before generating this documentation" % module
+            raise ImportError(msg)
+    for m in modules:
+        check_importable(m)
 
-check_module_importable('sphinx_bootstrap_theme')
+check_module_importable(['sphinx_bootstrap_theme', 'conkit', 'matplotlib'])
 import sphinx_bootstrap_theme
-check_module_importable('conkit')
 import conkit
 
 
@@ -369,10 +371,6 @@ def run_apidoc(_):
 
 
 def run_figgen(_):
-    # Important to set if we run on external server, i.e. ReadTheDocs.org
-    check_module_importable('matplotlib')
-    import matplotlib
-    matplotlib.use('Agg')
     # Basic way of generating all associated figures
     # TODO: refactor this and the command in Makefile into a little extension
     subprocess.check_call(['make', 'figures'])
