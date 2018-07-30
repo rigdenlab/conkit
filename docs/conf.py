@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import datetime
+import glob
 import os
 import sys
 
@@ -36,21 +37,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.autosummary',
-    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinxext.math_symbol_table',
 ]
-
-#  try:
-#      import numpydoc
-#  except ImportError:
-#      msg = "Error: numpydoc must be installed before generating this documentation"
-#      raise ImportError(msg)
 
 try:
     import sphinx_bootstrap_theme
@@ -129,7 +122,7 @@ pygments_style = 'sphinx'
 #keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+todo_include_todos = False
 
 # If true, create autosummary automatically
 autosummary_generate = True
@@ -207,12 +200,6 @@ html_favicon = '_static/favicon.ico'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path
-
-
-def setup(app):
-    app.add_stylesheet("custom.css")
-
-
 #html_style = 'custom.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -359,7 +346,7 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 def run_apidoc(_):
-    ignore_paths = []
+    ignore_paths = [] + glob.glob(os.path.join('..', 'conkit', '*', 'ext'))
     argv = ['-f', '-T', '-e', '-M', '-o', os.path.join('api', 'generated'), os.path.join('..', 'conkit')] + ignore_paths
     try:
         # Sphinx 1.7+
@@ -370,10 +357,6 @@ def run_apidoc(_):
         from sphinx import apidoc
         argv.insert(0, apidoc.__file__)
         apidoc.main(argv)
-
-
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
 
 
 # -- Options for intersphinx extension ---------------------------------------
@@ -387,3 +370,8 @@ intersphinx_mapping = {
     'biopython': ('http://biopython.org/', None),
     'warnings': ('https://docs.python.org/3/', None),
 }
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
+    app.add_stylesheet("custom.css")
