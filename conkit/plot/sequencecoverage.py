@@ -111,7 +111,7 @@ class SequenceCoverageFigure(Figure):
 
     def draw(self):
         residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
-        aa_counts = np.asarray(self._hierarchy.get_frequency("X"))
+        aa_counts = (np.asarray(self._hierarchy.get_frequency("X")) - self._hierarchy.nseq) * (-1)
 
         self.ax.plot(
             residues,

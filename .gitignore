@@ -2,6 +2,7 @@
 bin/*
 !bin/REAME.md
 docs/api/generated/*.rst
+docs/examples/images/*.png
 
 
 # Byte-compiled / optimized / DLL files
