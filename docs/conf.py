@@ -61,8 +61,9 @@ def check_module_importable(module):
         raise ImportError(msg)
 
 check_module_importable('sphinx_bootstrap_theme')
-check_module_importable('matplotlib')
+import sphinx_bootstrap_theme
 check_module_importable('conkit')
+import conkit
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -369,6 +370,7 @@ def run_apidoc(_):
 
 def run_figgen(_):
     # Important to set if we run on external server, i.e. ReadTheDocs.org
+    check_module_importable('matplotlib')
     import matplotlib
     matplotlib.use('Agg')
     # Basic way of generating all associated figures
