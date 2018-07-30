@@ -46,19 +46,19 @@ class _Struct(object):
         return string.format(name=self.__class__.__name__, **{k: getattr(self, k) for k in self.__class__.__slots__})
 
 
-class _Gap(_Struct):
+class Gap(_Struct):
     """A basic class representing a gap residue"""
 
     IDENTIFIER = -999999
 
     def __init__(self):
-        self.res_seq = _Gap.IDENTIFIER
-        self.res_altseq = _Gap.IDENTIFIER
+        self.res_seq = Gap.IDENTIFIER
+        self.res_altseq = Gap.IDENTIFIER
         self.res_name = 'X'
         self.res_chain = ''
 
 
-class _Residue(_Struct):
+class Residue(_Struct):
     """A basic class representing a residue"""
 
     def __init__(self, res_seq, res_altseq, res_name, res_chain):

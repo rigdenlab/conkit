@@ -65,7 +65,7 @@ class GenericStructureParser(ContactFileParser):
     """
 
     def _build_sequence(self, chain):
-        """Build a peptide using Biopython to extract the sequence"""
+        """Build a peptide using :mod:`biopython` to extract the sequence"""
         return Sequence(chain.id + '_seq', ''.join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
 
     def _chain_contacts(self, chain1, chain2):
@@ -73,14 +73,14 @@ class GenericStructureParser(ContactFileParser):
 
         Parameters
         ----------
-        chain1 : :obj:`Bio.PDB.Chain`
+        chain1 : :obj:`~Bio.PDB.Chain`
            A first chain object
-        chain2 : :obj:`Bio.PDB.Chain`
+        chain2 : :obj:`~Bio.PDB.Chain`
            A second chain object
 
         Yields
         ------
-        atom_comb : list
+        list
            A list of tuples containing the contact information
 
         """
@@ -133,7 +133,7 @@ class GenericStructureParser(ContactFileParser):
         Parameters
         ----------
         structure
-           A :obj:`Structure <Bio.PDB.Structure.Structure>` instance
+           A :obj:`~Bio.PDB.Structure.Structure>` instance
         f_id : str
            Unique contact file identifier
         distance_cutoff : int
@@ -143,7 +143,7 @@ class GenericStructureParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile~`
 
         """
         hierarchies = []
@@ -242,7 +242,7 @@ class MmCifParser(GenericStructureParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         structure = MMCIFParser(QUIET=True).get_structure("mmcif", f_handle)
@@ -255,12 +255,12 @@ class MmCifParser(GenericStructureParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`ContactMap <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        NotImplementedError
+        :obj:`NotImplementedError`
            Write function not available
 
         """
@@ -292,7 +292,7 @@ class PdbParser(GenericStructureParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
@@ -305,12 +305,12 @@ class PdbParser(GenericStructureParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`ContactMap <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        NotImplementedError
+        :obj:`NotImplementedError`
            Write function not available
 
         """

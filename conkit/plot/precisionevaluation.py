@@ -54,7 +54,7 @@ class PrecisionEvaluationFigure(Figure):
 
     Attributes
     ----------
-    hierarchy : :obj:`conkit.core.ContactMap`
+    hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
        The contact map hierarchy
     cutoff_step : float
        The cutoff step
@@ -79,7 +79,7 @@ class PrecisionEvaluationFigure(Figure):
 
         Parameters
         ----------
-        hierarchy : :obj:`conkit.core.ContactMap`
+        hierarchy : :obj:`~conkit.core.contactmap.ContactMap`
            The contact map hierarchy
         min_cutoff : float, optional
            The minimum factor
@@ -88,7 +88,7 @@ class PrecisionEvaluationFigure(Figure):
         cutoff_step : float, optional
            The cutoff step
         **kwargs
-           General :obj:`Figure <conkit.plot._Figure.Figure>` keyword arguments
+           General :obj:`~conkit.plot.figure.Figure` keyword arguments
 
         """
         super(PrecisionEvaluationFigure, self).__init__(**kwargs)
@@ -118,16 +118,16 @@ class PrecisionEvaluationFigure(Figure):
 
     @property
     def hierarchy(self):
-        """A ConKit :obj:`conkit.core.ContactMap`"""
+        """A ConKit :obj:`~conkit.core.contactmap.ContactMap`"""
         return self._hierarchy
 
     @hierarchy.setter
     def hierarchy(self, hierarchy):
-        """Define the ConKit :obj:`conkit.core.ContactMap`
+        """Define the ConKit :obj:`~conkit.core.contactmap.ContactMap`
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            The hierarchy is not an alignment
 
         """
@@ -142,7 +142,7 @@ class PrecisionEvaluationFigure(Figure):
 
         Raises
         ------
-        ValueError
+        :obj:`ValueError`
            The minimum cutoff value is larger than or equal to the maximum
 
         """
@@ -164,7 +164,7 @@ class PrecisionEvaluationFigure(Figure):
 
         Raises
         ------
-        ValueError
+        :obj:`ValueError`
            The maximum cutoff value is smaller than the the minimum
 
         """

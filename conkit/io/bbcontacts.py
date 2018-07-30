@@ -64,7 +64,7 @@ class BbcontactsParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -77,16 +77,13 @@ class BbcontactsParser(ContactFileParser):
             line = line.strip()
 
             if line and not line.startswith('#'):
-                _, _, _, raw_score, _, current, res2_seq, res1_seq = line.split(
-                )
+                _, _, _, raw_score, _, current, res2_seq, res1_seq = line.split()
                 if del_one_two and previous == 'first' and current == 'last':
                     contact_map.child_list.pop()
-                elif any(value == "NA"
-                         for value in [raw_score, res2_seq, res1_seq]):
+                elif any(value == "NA" for value in [raw_score, res2_seq, res1_seq]):
                     pass
                 else:
-                    contact = Contact(
-                        int(res1_seq), int(res2_seq), float(raw_score))
+                    contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                     contact_map.add(contact)
                 previous = current
 
@@ -104,20 +101,18 @@ class BbcontactsParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
-        Notes
-        -----
-        Creating a :func:`write` function for the Bbcontacts parser
+        Note
+        ----
+        Creating a :meth:`~conkit.io.bbcontacts.BbcontactsParser.write` method
         would come with a lot of issues, such as the parallel/antiparallel
-        direction, scoring etc.
-
-        Thus, no :func:`write` method is available.
+        direction, scoring etc ... thus, this function is unvailable.
 
         Raises
         ------
-        NotImplementedError
+        :obj:`NotImplementedError`
            Write function not available
 
         """

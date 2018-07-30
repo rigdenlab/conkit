@@ -76,9 +76,9 @@ def is_str_like(content):
     bool
        True if is str like else False
 
-    Notes
-    -----
-    Function taken from Numpy, credits to the author
+    Note
+    ----
+    Function identical to :func:`numpy.is_str_like`, credits to the author
 
     """
     try:
@@ -105,16 +105,15 @@ def open_f_handle(f_handle, mode):
 
     Raises
     ------
-    TypeError
+    :obj:`TypeError`
        f_handle must be str of filehandle
-    ValueError
+    :obj:`ValueError`
        Mode needs to be one of: append, read, write
 
     """
-    # Check the mode of opening the file
     if mode not in ['append', 'read', 'write']:
         raise ValueError('Mode needs to be one of: append, read, write')
-    
+
     try:
         if is_str_like(f_handle) and sys.version_info.major >= 3:
             return io.open(f_handle, mode[0], encoding="utf-8")
@@ -126,4 +125,3 @@ def open_f_handle(f_handle, mode):
             raise TypeError("f_handle must be str or filehandle")
     except AttributeError:
         raise TypeError("f_handle must be str or filehandle")
-

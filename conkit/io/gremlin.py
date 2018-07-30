@@ -52,6 +52,7 @@ RE_SPLIT = re.compile(r'\s+')
 class GremlinParser(ContactFileParser):
     """Parser class for GREMLIN contact prediction file
     """
+
     def __init__(self):
         super(GremlinParser, self).__init__()
 
@@ -67,7 +68,7 @@ class GremlinParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         hierarchy = ContactFile(f_id)
@@ -147,8 +148,8 @@ class GremlinParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary
@@ -160,15 +161,18 @@ class GremlinParser(ContactFileParser):
             header_args = ['i', 'j', 'gene', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob', 'I_prob']
             content += '\t'.join(header_args) + os.linesep
 
-            out_kwargs = ['{res1_seq}', '{res2_seq}', '{chains}', '{res1_code}', '{res2_code}',
-                          '{raw_score}', '{scalar_score}', '1.0', 'N/A']
+            out_kwargs = [
+                '{res1_seq}', '{res2_seq}', '{chains}', '{res1_code}', '{res2_code}', '{raw_score}', '{scalar_score}',
+                '1.0', 'N/A'
+            ]
 
         else:
             header_args = ['i', 'j', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob']
             content += '\t'.join(header_args) + os.linesep
 
-            out_kwargs = ['{res1_seq}', '{res2_seq}', '{res1_code}', '{res2_code}',
-                          '{raw_score}', '{scalar_score}', '1.0']
+            out_kwargs = [
+                '{res1_seq}', '{res2_seq}', '{res1_code}', '{res2_code}', '{raw_score}', '{scalar_score}', '1.0'
+            ]
 
         for contact_map in contact_file:
             contact_map.set_scalar_score()
@@ -182,9 +186,14 @@ class GremlinParser(ContactFileParser):
                     chains = "{0}{1}".format(c.res1_chain, c.res2_chain)
 
                 out_line = '\t'.join(out_kwargs)
-                out_line = out_line.format(res1_seq=c.res1_seq, res2_seq=c.res2_seq, res1_code=res1_code,
-                                           res2_code=res2_code, chains=chains,
-                                           raw_score=c.raw_score, scalar_score=round(c.scalar_score, 1))
+                out_line = out_line.format(
+                    res1_seq=c.res1_seq,
+                    res2_seq=c.res2_seq,
+                    res1_code=res1_code,
+                    res2_code=res2_code,
+                    chains=chains,
+                    raw_score=c.raw_score,
+                    scalar_score=round(c.scalar_score, 1))
 
                 content += out_line + os.linesep
 

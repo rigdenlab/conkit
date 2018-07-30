@@ -35,6 +35,7 @@ Changed
 - ``Contact.is_match`` and ``Contact.define_match`` renamed to attribute ``Contact.true_positive``
 - ``Contact.is_mismatch`` and ``Contact.define_mismatch`` renamed to attribute ``Contact.false_positive``
 - ``Contact.is_unknown`` and ``Contact.define_unknown`` renamed to attribute ``Contact.status_unknown``
+- ``Entity``, ``Gap`` and ``Residue`` classes made public
 Fixed
 ~~~~~
 - Bug fix in ``SequenceFile.filter`` to remove ``Sequence`` entries reliably

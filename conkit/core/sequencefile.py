@@ -45,12 +45,12 @@ import sys
 if sys.version_info.major < 3:
     from itertools import izip as zip
 
-from conkit.core._entity import _Entity
+from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidMapping, SequenceAlignmentState
 from conkit.misc import deprecate
 
 
-class SequenceFile(_Entity):
+class SequenceFile(Entity):
     """A sequence file object representing a single sequence file
 
     The :obj:`~conkit.core.sequencefile.SequenceFile` class represents a data structure to hold

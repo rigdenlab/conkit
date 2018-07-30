@@ -103,15 +103,15 @@ def find_minima(data, order=1):
     list
        A list of indices for minima
 
-    Warnings
-    --------
-    For multi-dimensional problems, see :func:`scipy.signal.argrelmin`.
+    Warning
+    -------
+    For multi-dimensional problems, see :func:`~scipy.signal.argrelmin`.
 
     Raises
     ------
-    ValueError
+    :obj:`ValueError`
        Order needs to be >= 1!
-    ValueError
+    :obj:`ValueError`
        More than two elements required!
 
     """
@@ -134,18 +134,18 @@ def get_adjusted_aspect(ax, aspect_ratio):
 
     Parameters
     ----------
-    ax : :obj:`Axes <matplotlib.pyplot.Axes>`
-       A :obj:`Axes <matplotlib.pyplot.Axes>` instance
+    ax : :obj:`~matplotlib.axes.Axes`
+       A :obj:`~matplotlib.axes.Axes` instance
     aspect_ratio : float
-       The desired aspect ratio for :obj:`Axes <matplotlib.pyplot.Axes>`
+       The desired aspect ratio for :obj:`~matplotlib.axes.Axes`
 
     Returns
     -------
     float
        The required aspect ratio to achieve the desired one
 
-    Warnings
-    --------
+    Warning
+    -------
     This function only works for non-logarithmic axes.
 
     """

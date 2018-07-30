@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 ConKit is a Python interface for handling and manipulating
 contact predictions obtained from a variety of different 
@@ -37,6 +36,6 @@ sources.
 import conkit.version
 
 __author__ = "Felix Simkovic"
-__contributing_authors__ = "Jens Thomas"
+__contributing_authors__ = "Jens Thomas & Adam Simpkin"
 __credits__ = "Stefan Seemayer"
 __version__ = conkit.version.__version__

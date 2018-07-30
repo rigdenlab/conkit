@@ -66,7 +66,7 @@ class NcontParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -106,20 +106,18 @@ class NcontParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
-        Notes
-        -----
-        Creating a :func:`write` function for the Ncont parser
+        Note
+        ----
+        Creating a :meth:`~conkit.io.ncont.NcontParser.write` function 
         would come with a lot of issues, such as the parallel/antiparallel
-        direction, scoring etc.
-
-        Thus, no :func:`write` method is available.
+        direction, scoring etc ... thus, this method is unavailable.
 
         Raises
         ------
-        NotImplementedError
+        :obj:`NotImplementedError`
            Write function not available
 
         """

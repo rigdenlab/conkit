@@ -67,50 +67,46 @@ class HHfilterCommandline(AbstractCommandline):
     hhfilter -i test.a3m -o test.filtered.a3m
 
     You would typically run the command line with :func:`hhfilter_cline` or via
-    the Python subprocess module.
+    the :mod:`~subprocess` module.
 
     """
 
     def __init__(self, cmd='hhfilter', **kwargs):
         self.parameters = [
-            _Option(['-i', 'input'],
-                    'read input file in A3M/A2M or FASTA format',
-                    filename=True,
-                    is_required=True,
-                    equate=False),
-            _Option(['-o', 'output'],
-                    'write to output file in A3M format',
-                    filename=True,
-                    is_required=True,
-                    equate=False),
-            _Option(['-a', 'append_output'],
-                    'append to output file in A3M format',
-                    filename=True,
-                    equate=False),
+            _Option(
+                ['-i', 'input'],
+                'read input file in A3M/A2M or FASTA format',
+                filename=True,
+                is_required=True,
+                equate=False),
+            _Option(
+                ['-o', 'output'], 'write to output file in A3M format', filename=True, is_required=True, equate=False),
+            _Option(['-a', 'append_output'], 'append to output file in A3M format', filename=True, equate=False),
 
             # Options
-            _Option(['-v', 'verbose'],
-                    'verbose mode: 0:no screen output  1:only warings  2: verbose [default: 2]',
-                    equate=False),
-            _Option(['-id', 'pairwise_identity'],
-                    'maximum pairwise sequence identity [default: 90]',
-                    equate=False),
-            _Option(['-diff', 'diversity'],
-                    'filter MSAs by selecting most diverse set of sequences, keeping '
-                    'at least this many seqs in each MSA block of length 50 [default: 1000]',
-                    equate=False),
-            _Option(['-cov', 'coverage'],
-                    'minimum coverage with master sequence (%) [default: 0]',
-                    equate=False),
-            _Option(['-qid', 'query_identity'],
-                    'minimum sequence identity with master sequence (%) [default: 0]',
-                    equate=False),
-            _Option(['-qsc', 'per_column_score'],
-                    'minimum score per column with master sequence [default: -20.0]',
-                    equate=False),
-            _Option(['-neff', 'nr_effective_sequences'],
-                    'target diversity of multiple sequence alignment [default: off]',
-                    equate=False),
+            _Option(
+                ['-v', 'verbose'],
+                'verbose mode: 0:no screen output  1:only warings  2: verbose [default: 2]',
+                equate=False),
+            _Option(['-id', 'pairwise_identity'], 'maximum pairwise sequence identity [default: 90]', equate=False),
+            _Option(
+                ['-diff', 'diversity'],
+                'filter MSAs by selecting most diverse set of sequences, keeping '
+                'at least this many seqs in each MSA block of length 50 [default: 1000]',
+                equate=False),
+            _Option(['-cov', 'coverage'], 'minimum coverage with master sequence (%) [default: 0]', equate=False),
+            _Option(
+                ['-qid', 'query_identity'],
+                'minimum sequence identity with master sequence (%) [default: 0]',
+                equate=False),
+            _Option(
+                ['-qsc', 'per_column_score'],
+                'minimum score per column with master sequence [default: -20.0]',
+                equate=False),
+            _Option(
+                ['-neff', 'nr_effective_sequences'],
+                'target diversity of multiple sequence alignment [default: off]',
+                equate=False),
 
             # # Input alignment options
             # _Option(['-M', 'a2m'],
@@ -122,7 +118,6 @@ class HHfilterCommandline(AbstractCommandline):
             # _Option(['-M', 'match_states'],
             #         'use FASTA: columns with fewer than X% gaprs are match states',
             #         equate=False),
-
         ]
 
         AbstractCommandline.__init__(self, cmd, **kwargs)

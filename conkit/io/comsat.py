@@ -49,6 +49,7 @@ RE_SPLIT = re.compile(r'\s+')
 class ComsatParser(ContactFileParser):
     """Class to parse a COMSAT contact file
     """
+
     def __init__(self):
         super(ComsatParser, self).__init__()
 
@@ -64,7 +65,7 @@ class ComsatParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
 
@@ -80,11 +81,7 @@ class ComsatParser(ContactFileParser):
 
             else:
                 res1_seq, res1, res2_seq, res2, _ = RE_SPLIT.split(line)
-                contact = Contact(
-                    int(res1_seq),
-                    int(res2_seq),
-                    0.0
-                )
+                contact = Contact(int(res1_seq), int(res2_seq), 0.0)
                 contact.res1 = res1
                 contact.res2 = res2
 
@@ -101,12 +98,12 @@ class ComsatParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         Raises
         ------
-        RuntimeError
+        :obj:`RuntimeError`
            More than one contact map in the hierarchy
 
         """
@@ -121,8 +118,12 @@ class ComsatParser(ContactFileParser):
         for contact_map in contact_file:
             for contact in contact_map:
                 line = "{res1_seq}{sep}{res1}{sep}{res2_seq}{sep}{res2}{sep}Hx-Hx"
-                line = line.format(res1_seq=contact.res1_seq, res2_seq=contact.res2_seq,
-                                   res1=contact.res1, res2=contact.res2, sep="\t")
+                line = line.format(
+                    res1_seq=contact.res1_seq,
+                    res2_seq=contact.res2_seq,
+                    res1=contact.res1,
+                    res2=contact.res2,
+                    sep="\t")
                 content += line + os.linesep
 
         f_handle.write(content)

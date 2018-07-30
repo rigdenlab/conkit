@@ -45,6 +45,7 @@ from conkit.core.sequencefile import SequenceFile
 class FastaParser(SequenceFileParser):
     """Parser class for FASTA sequence files
     """
+
     def __init__(self):
         super(FastaParser, self).__init__()
 
@@ -60,7 +61,7 @@ class FastaParser(SequenceFileParser):
 
         Returns
         -------
-        :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
+        :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """
 
@@ -83,7 +84,7 @@ class FastaParser(SequenceFileParser):
             if not line.startswith('>'):
                 raise ValueError("Fasta record needs to start with '>'")
 
-            id = line[1:]   # Header without '>'
+            id = line[1:]  # Header without '>'
 
             chunks = []
             line = f_handle.readline().rstrip()
@@ -94,7 +95,7 @@ class FastaParser(SequenceFileParser):
                     break
                 chunks.append(line)
                 line = f_handle.readline().rstrip()
-            _seq_string = "".join(chunks)   # Sequence from chunks
+            _seq_string = "".join(chunks)  # Sequence from chunks
 
             # Create the sequence record instance
             sequence_entry = Sequence(id, _seq_string)
@@ -114,7 +115,7 @@ class FastaParser(SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`, :obj:`Sequence <conkit.core.sequence.Sequence>`
+        hierarchy : :obj:`~conkit.core.sequencefile.SequenceFile`, :obj:`~conkit.core.sequence.Sequence`
 
         """
         # Double check the type of hierarchy and reconstruct if necessary
@@ -133,8 +134,8 @@ class FastaParser(SequenceFileParser):
             content += header + os.linesep
 
             # Cut the sequence into chunks [FASTA <= 60 chars per line]
-            sequence_string = sequence_entry.seq.upper()       # UPPER CASE !!!
+            sequence_string = sequence_entry.seq.upper()  # UPPER CASE !!!
             for i in range(0, sequence_entry.seq_len, 60):
-                content += sequence_string[i:i+60] + os.linesep
+                content += sequence_string[i:i + 60] + os.linesep
 
         f_handle.write(content)

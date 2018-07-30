@@ -60,8 +60,9 @@ RE_END = re.compile(r'^END\s*$')
 
 # Intermediate storage structures
 ModelTemplate = collections.namedtuple('Model', ['id', 'contacts', 'sequence'])
-ContactTemplate = collections.namedtuple('Contact', ['res1_seq', 'res2_seq', 'lb', 'ub', 'raw_score',
-                                                     'res1_chain', 'res2_chain', 'res1_altseq', 'res2_altseq'])
+ContactTemplate = collections.namedtuple(
+    'Contact',
+    ['res1_seq', 'res2_seq', 'lb', 'ub', 'raw_score', 'res1_chain', 'res2_chain', 'res1_altseq', 'res2_altseq'])
 
 
 class CaspParser(ContactFileParser):
@@ -71,7 +72,7 @@ class CaspParser(ContactFileParser):
         super(CaspParser, self).__init__()
 
     def read(self, f_handle, f_id="casp"):
-        """Read a contact file into a :obj:`conkit.core.contactfile.ContactFile` instance
+        """Read a contact file into a :obj:`~conkit.core.contactfile.ContactFile` instance
 
         Parameters
         ----------
@@ -82,7 +83,7 @@ class CaspParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         lines = [l.strip() for l in f_handle.readlines()]
@@ -152,8 +153,8 @@ class CaspParser(ContactFileParser):
                         elif len(res2_split) == 4:
                             res2_chain, res2_seq = res2_split[1], res2_split[2]
 
-                        contact = Contact(int(res1_seq), int(res2_seq), float(raw_score),
-                                          distance_bound=(float(lb), float(ub)))
+                        contact = Contact(
+                            int(res1_seq), int(res2_seq), float(raw_score), distance_bound=(float(lb), float(ub)))
                         contact.res1_chain = res1_chain
                         contact.res2_chain = res2_chain
                         contact.res1_altseq = int(res1_seq)
@@ -182,8 +183,8 @@ class CaspParser(ContactFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`ContactFile <conkit.core.contactfile.ContactFile>`, :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-                    or :obj:`Contact <conkit.core.contact.Contact>`
+        hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
+                    or :obj:`~conkit.core.contact.Contact`
 
         """
 
@@ -208,7 +209,7 @@ class CaspParser(ContactFileParser):
             if isinstance(contact_map.sequence, Sequence):
                 sequence = contact_map.sequence
                 for i in range(0, sequence.seq_len, 50):
-                    content += sequence.seq[i:i+50] + os.linesep
+                    content += sequence.seq[i:i + 50] + os.linesep
             # Casp Roll format specifies raw scores to be in [0, 1]
             if any(c.raw_score > 1.0 or c.raw_score < 0.0 for c in contact_map):
                 contact_map.rescale(inplace=True)
@@ -221,8 +222,14 @@ class CaspParser(ContactFileParser):
                     res2_chain = contact.res2_chain
                 lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
                 ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
-                s = s.format(res1_chain=res1_chain, res1_seq=contact.res1_seq, res2_chain=res2_chain,
-                             res2_seq=contact.res2_seq, lb=lb, ub=ub, raw_score=contact.raw_score)
+                s = s.format(
+                    res1_chain=res1_chain,
+                    res1_seq=contact.res1_seq,
+                    res2_chain=res2_chain,
+                    res2_seq=contact.res2_seq,
+                    lb=lb,
+                    ub=ub,
+                    raw_score=contact.raw_score)
                 content += s + os.linesep
             content += "ENDMDL" + os.linesep
 

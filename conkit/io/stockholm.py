@@ -27,7 +27,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Parser module specific to Stockholm sequence files
 """
@@ -43,7 +42,6 @@ from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
-
 V_RECORD = re.compile(r'^#(\s+STOCKHOLM.*)$')
 GF_RECORD = re.compile(r'^#=GF\s+\S+\s+(.*)$')
 GR_RECORD = re.compile(r'^#=GR\s+(\S+)\s+(\S+)\s+(.*)$')
@@ -55,6 +53,7 @@ END_RECORD = re.compile(r'^//$')
 class StockholmParser(SequenceFileParser):
     """Parser class for Stockholm sequence files
     """
+
     def __init__(self):
         super(StockholmParser, self).__init__()
 
@@ -70,7 +69,7 @@ class StockholmParser(SequenceFileParser):
 
         Returns
         -------
-        :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>`
+        :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """
 
@@ -124,10 +123,9 @@ class StockholmParser(SequenceFileParser):
         ----------
         f_handle
            Open file handle [write permissions]
-        hierarchy : :obj:`SequenceFile <conkit.core.sequencefile.SequenceFile>` or :obj:`Sequence <conkit.core.sequence.Sequence>`
+        hierarchy : :obj:`~conkit.core.sequencefile.SequenceFile` or :obj:`~conkit.core.sequence.Sequence`
 
         """
-        # Double check the type of sequence_file and reconstruct if necessary
         sequence_file = self._reconstruct(hierarchy)
 
         content = "# STOCKHOLM 1.0" + os.linesep
