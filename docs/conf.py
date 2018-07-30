@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import datetime
+import glob
 import os
 import sys
 
@@ -359,7 +360,7 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 def run_apidoc(_):
-    ignore_paths = []
+    ignore_paths = [] + glob.glob(os.path.join('..', 'conkit', '*', 'ext'))
     argv = ['-f', '-T', '-e', '-M', '-o', os.path.join('api', 'generated'), os.path.join('..', 'conkit')] + ignore_paths
     try:
         # Sphinx 1.7+
