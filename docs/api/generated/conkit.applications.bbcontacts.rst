@@ -1,5 +1,5 @@
-conkit\.applications\.bbcontacts module
-=======================================
+conkit.applications.bbcontacts module
+=====================================
 
 .. automodule:: conkit.applications.bbcontacts
     :members:

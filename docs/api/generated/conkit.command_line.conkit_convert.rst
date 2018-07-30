@@ -1,5 +1,5 @@
-conkit\.command\_line\.conkit\_convert module
-=============================================
+conkit.command\_line.conkit\_convert module
+===========================================
 
 .. automodule:: conkit.command_line.conkit_convert
     :members:

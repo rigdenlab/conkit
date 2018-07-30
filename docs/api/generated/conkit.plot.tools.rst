@@ -1,5 +1,5 @@
-conkit\.plot\.tools module
-==========================
+conkit.plot.tools module
+========================
 
 .. automodule:: conkit.plot.tools
     :members:

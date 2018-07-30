@@ -1,5 +1,5 @@
-conkit\.core\.sequencefile module
-=================================
+conkit.core.sequencefile module
+===============================
 
 .. automodule:: conkit.core.sequencefile
     :members:

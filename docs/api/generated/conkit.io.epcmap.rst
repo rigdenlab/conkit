@@ -1,5 +1,5 @@
-conkit\.io\.epcmap module
-=========================
+conkit.io.epcmap module
+=======================
 
 .. automodule:: conkit.io.epcmap
     :members:

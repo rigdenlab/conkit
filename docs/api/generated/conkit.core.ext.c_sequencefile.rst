@@ -1,7 +1,7 @@
-conkit.plot.precisionevaluation module
+conkit.core.ext.c\_sequencefile module
 ======================================
 
-.. automodule:: conkit.plot.precisionevaluation
+.. automodule:: conkit.core.ext.c_sequencefile
     :members:
     :undoc-members:
     :show-inheritance:

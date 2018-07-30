@@ -1,5 +1,5 @@
-conkit\.applications\.cdhit module
-==================================
+conkit.applications.cdhit module
+================================
 
 .. automodule:: conkit.applications.cdhit
     :members:

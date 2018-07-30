@@ -1,6 +1,5 @@
 # Required for documentation
 sphinx ==1.6.2
-numpydoc ==0.7.0
 sphinx_bootstrap_theme ==0.5.3
 cython >=0.28.2
 matplotlib >=1.3.1

@@ -1,17 +1,16 @@
-"""Testing facility for conkit.io.JonesIO"""
+"""Testing facility for conkit.io.a2m"""
 
 __author__ = "Felix Simkovic"
-__date__ = "13 Sep 2016"
+__date__ = "30 Jul 2018"
 
 import os
 import unittest
 
-from conkit.io.jones import JonesParser
+from conkit.io.a2m import A2mParser
 from conkit.io._iotools import create_tmp_f
 
 
-class TestJonesParser(unittest.TestCase):
-
+class TestA2mParser(unittest.TestCase):
     def test_read_1(self):
         msa = """GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF
 EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
@@ -19,7 +18,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
-        parser = JonesParser()
+        parser = A2mParser()
         with open(f_name, 'r') as f_in:
             sequence_file = parser.read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
@@ -48,7 +47,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
-        parser = JonesParser()
+        parser = A2mParser()
         with open(f_name, 'r') as f_in:
             with self.assertRaises(ValueError):
                 parser.read(f_in)
@@ -65,7 +64,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
         msa = os.linesep.join(msa)
         f_name_in = create_tmp_f(content=msa)
         f_name_out = create_tmp_f()
-        parser = JonesParser()
+        parser = A2mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)

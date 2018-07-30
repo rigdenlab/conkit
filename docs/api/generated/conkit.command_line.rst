@@ -1,5 +1,5 @@
-conkit\.command\_line package
-=============================
+conkit.command\_line package
+============================
 
 .. automodule:: conkit.command_line
     :members:

@@ -1,5 +1,5 @@
-conkit\.misc\.bandwidth module
-==============================
+conkit.misc.bandwidth module
+============================
 
 .. automodule:: conkit.misc.bandwidth
     :members:

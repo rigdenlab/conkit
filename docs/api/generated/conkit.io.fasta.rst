@@ -1,5 +1,5 @@
-conkit\.io\.fasta module
-========================
+conkit.io.fasta module
+======================
 
 .. automodule:: conkit.io.fasta
     :members:

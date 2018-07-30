@@ -1,7 +1,7 @@
-conkit.io.a3m module
+conkit.io.a2m module
 ====================
 
-.. automodule:: conkit.io.a3m
+.. automodule:: conkit.io.a2m
     :members:
     :undoc-members:
     :show-inheritance:

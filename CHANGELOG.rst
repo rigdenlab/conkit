@@ -11,7 +11,10 @@ Added
 - ``conkit.misc.deprecate`` decorator for easier tagging
 - ``ContactMap.match`` provides keyword to ``add_false_negatives`` found in the reference but not in contact map
 - ``ContactMap.remove_false_negatives`` allows convenient removal of false negatives
-- ``COntactMap.recall`` to calculate the recall of a contact map
+- ``ContactMap.recall`` to calculate the recall of a contact map
+- ``SequenceFile.summary`` for quick alignment summaries
+- ``A2mParser`` to read HH-suite A2M alignment files
+- Automatic `sphinx-apidoc` generation for up-to-date index
 Changed
 ~~~~~~~
 - ``SequenceFile.calculate_freq`` backend changed from ``numpy`` to ``Cython`` for faster computation

@@ -65,8 +65,8 @@ class _CacheObj(object):
 
     def __repr__(self):
         return "{name}(id={id} module={module} object={object} group={group}".format(
-            name=self.__class__.__name__, **{k: getattr(self, k) for k in self.__class__.__slots__}
-        )
+            name=self.__class__.__name__, **{k: getattr(self, k)
+                                             for k in self.__class__.__slots__})
 
 
 class _ParserCache(object):
@@ -74,10 +74,11 @@ class _ParserCache(object):
 
     # This mask is for backward-compatibility and extensions to avoid re-writing the same algorithms
     MASKS = {
-        "a3m": ["a3m", "a3m-inserts"],
-        "casp": ["casp", "casprr"],
-        "pcons": ["flib", "pconsc", "pconsc2", "pconsc3"],
-        "psicov": ["psicov", "metapsicov", "nebcon"],
+        'a2m': ['a2m', 'jones'],
+        'a3m': ['a3m', 'a3m-inserts'],
+        'casp': ['casp', 'casprr'],
+        'pcons': ['flib', 'pconsc', 'pconsc2', 'pconsc3'],
+        'psicov': ['psicov', 'metapsicov', 'nebcon'],
     }
 
     BLINDFOLD = set(['ContactFileParser', 'GenericStructureParser', 'SequenceFileParser'])
@@ -94,20 +95,15 @@ class _ParserCache(object):
         return self.file_parsers.get(item, None)
 
     def __repr__(self):
-        return "{0}(nparsers={1})".format(
-            self.__class__.__name__,
-            len(self._cfile_parsers) + len(self._sfile_parsers)
-        )
+        return "{0}(nparsers={1})".format(self.__class__.__name__, len(self._cfile_parsers) + len(self._sfile_parsers))
 
     @property
     def contact_file_parsers(self):
-        return {c.id: c for c in self._parsers
-                if c.group in ["ContactFileParser", "GenericStructureParser"]}
+        return {c.id: c for c in self._parsers if c.group in ["ContactFileParser", "GenericStructureParser"]}
 
     @property
     def sequence_file_parsers(self):
-        return {c.id: c for c in self._parsers
-                if c.group in ["SequenceFileParser"]}
+        return {c.id: c for c in self._parsers if c.group in ["SequenceFileParser"]}
 
     @property
     def file_parsers(self):
@@ -117,10 +113,7 @@ class _ParserCache(object):
         path = os.path.abspath(os.path.dirname(__file__))
         for m in glob.glob(os.path.join(path, "[!_]*.py")):
             with open(m, "r") as f_in:
-                lines = [
-                    RE_CLASS_DECLARATION.match(l.strip()) for l in f_in
-                    if RE_CLASS_DECLARATION.match(l.strip())
-                ]
+                lines = [RE_CLASS_DECLARATION.match(l.strip()) for l in f_in if RE_CLASS_DECLARATION.match(l.strip())]
             for match in lines:
                 decl = _CacheObj(None, None, match.group(1), None)
                 ggroup = match.group(2)

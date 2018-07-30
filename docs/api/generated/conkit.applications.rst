@@ -1,5 +1,5 @@
-conkit\.applications package
-============================
+conkit.applications package
+===========================
 
 .. automodule:: conkit.applications
     :members:

@@ -1,5 +1,5 @@
-conkit\.io\.ncont module
-========================
+conkit.io.ncont module
+======================
 
 .. automodule:: conkit.io.ncont
     :members:
