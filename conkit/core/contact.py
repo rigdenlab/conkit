@@ -47,6 +47,13 @@ from conkit.misc import deprecate
 class Contact(Entity):
     """A contact pair template to store all associated information
 
+    Examples
+    --------
+    >>> from conkit.core import Contact
+    >>> contact = Contact(1, 25, 1.0)
+    >>> print(contact)
+    Contact(id="(1, 25)" res1="A" res1_seq=1 res2="A" res2_seq=25 raw_score=1.0)
+
     Attributes
     ----------
     distance_bound : tuple
@@ -84,25 +91,18 @@ class Contact(Entity):
     res2_altseq : int
        The alternative residue sequence number of residue 2
     scalar_score : float
-       The raw_score scaled according to the average ``raw_score``
+       The :attr:`~conkit.core.contact.Contact.raw_score` scaled according to its average
     status : int
-       An indication of the residue status, i.e true positive, false positive, or unknown
+       An indication of the residue status
     upper_bound : int
        The upper distance boundary value
     weight : float
        A separate internal weight factor for the contact pair
 
-    Examples
-    --------
-    >>> from conkit.core import Contact
-    >>> contact = Contact(1, 25, 1.0)
-    >>> print(contact)
-    Contact(id="(1, 25)" res1="A" res1_seq=1 res2="A" res2_seq=25 raw_score=1.0)
-
     """
     __slots__ = [
-        '_distance_bound', '_raw_score', '_res1', '_res2', '_res1_chain', '_res2_chain', '_res1_seq', '_res2_seq',
-        '_res1_altseq', '_res2_altseq', '_scalar_score', '_status', '_weight'
+        '_distance_bound', 'raw_score', '_res1', '_res2', 'res1_chain', 'res2_chain', '_res1_seq', '_res2_seq',
+        '_res1_altseq', '_res2_altseq', 'scalar_score', '_status', 'weight'
     ]
 
     def __init__(self, res1_seq, res2_seq, raw_score, distance_bound=(0, 8)):
@@ -121,30 +121,30 @@ class Contact(Entity):
            The residue sequence number of residue 2
 
         """
+        self.raw_score = raw_score
+        self.res1_chain = ''
+        self.res2_chain = ''
+        self.scalar_score = 0.0
+        self.weight = 1.0
+
         self._distance_bound = [0.0, 8.0]
-        self._raw_score = 1.0
         self._res1 = 'X'
         self._res2 = 'X'
-        self._res1_chain = ''
-        self._res2_chain = ''
         self._res1_seq = 0
         self._res2_seq = 0
         self._res1_altseq = 0
         self._res2_altseq = 0
-        self._scalar_score = 0.0
         self._status = ContactMatchState.unknown
-        self._weight = 1.0
 
         self.distance_bound = distance_bound
-        self.raw_score = raw_score
         self.res1_seq = res1_seq
         self.res2_seq = res2_seq
 
         super(Contact, self).__init__((res1_seq, res2_seq))
 
     def __repr__(self):
-        text = "{name}(id={id} res1={_res1} res1_chain={_res1_chain} res1_seq={_res1_seq} " \
-               "res2={_res2} res2_chain={_res2_chain} res2_seq={_res2_seq} raw_score={_raw_score})"
+        text = "{name}(id={id} res1={_res1} res1_chain={res1_chain} res1_seq={_res1_seq} " \
+               "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score})"
         return text.format(
             name=self.__class__.__name__, id=self._id, **{k: getattr(self, k)
                                                           for k in self.__class__.__slots__})
@@ -199,10 +199,11 @@ class Contact(Entity):
 
         Raises
         ------
-        ValueError
-           Lower bound must be positive
-        ValueError
-           Lower bound must be smaller than upper bound
+        :obj:`ValueError`
+           :attr:`~conkit.core.contact.Contact.lower_bound` must be positive
+        :obj:`ValueError`
+           :attr:`~conkit.core.contact.Contact.lower_bound` must be smaller than
+           :attr:`~conkit.core.contact.Contact.upper_bound`
 
         """
         if 0 < value < self.upper_bound:
@@ -225,32 +226,17 @@ class Contact(Entity):
 
         Raises
         ------
-        ValueError
-           Upper bound must be positive
-        ValueError
-           Upper bound must be larger than lower bound
+        :obj:`ValueError`
+           :attr:`~conkit.core.contact.Contact.upper_bound` must be positive
+        :obj:`ValueError`
+           :attr:`~conkit.core.contact.Contact.upper_bound` must be larger than
+           :attr:`~conkit.core.contact.Contact.lower_bound`
 
         """
         if 0 < value > self.lower_bound:
             self._distance_bound[1] = float(value)
         else:
             raise ValueError('Upper bound must be positive and larger than lower bound')
-
-    @property
-    def raw_score(self):
-        """The prediction score for the contact pair"""
-        return self._raw_score
-
-    @raw_score.setter
-    def raw_score(self, score):
-        """Define the raw score
-
-        Parameters
-        ----------
-        score : int, float
-
-        """
-        self._raw_score = float(score)
 
     @property
     def res1(self):
@@ -325,38 +311,6 @@ class Contact(Entity):
             raise TypeError('Data type int required for res_seq')
 
     @property
-    def res1_chain(self):
-        """The chain for residue 1"""
-        return self._res1_chain
-
-    @res1_chain.setter
-    def res1_chain(self, chain):
-        """Define the chain for residue 1
-
-        Parameters
-        ----------
-        chain : str
-
-        """
-        self._res1_chain = chain
-
-    @property
-    def res2_chain(self):
-        """The chain for residue 2"""
-        return self._res2_chain
-
-    @res2_chain.setter
-    def res2_chain(self, chain):
-        """Define the chain for residue 2
-
-        Parameters
-        ----------
-        chain : str
-
-        """
-        self._res2_chain = chain
-
-    @property
     def res1_seq(self):
         """The residue sequence number of residue 1"""
         return self._res1_seq
@@ -368,6 +322,11 @@ class Contact(Entity):
         Parameters
         ----------
         index : int
+
+        Raises
+        ------
+        :obj:`TypeError`
+           Data type :obj:`int` required for :attr:`~conkit.core.contact.Contact.res1_seq`
 
         """
         if isinstance(index, int):
@@ -388,6 +347,11 @@ class Contact(Entity):
         ----------
         index : int
 
+        Raises
+        ------
+        :obj:`TypeError`
+           Data type :obj:`int` required for :attr:`~conkit.core.contact.Contact.res2_seq`
+
         """
         if isinstance(index, int):
             self._res2_seq = index
@@ -395,24 +359,8 @@ class Contact(Entity):
             raise TypeError('Data type int required for res_seq')
 
     @property
-    def scalar_score(self):
-        """The raw_score scaled according to the average :obj:`raw_score`"""
-        return self._scalar_score
-
-    @scalar_score.setter
-    def scalar_score(self, score):
-        """Set the scalar score
-
-        Parameters
-        ----------
-        score : float
-
-        """
-        self._scalar_score = float(score)
-
-    @property
     def status(self):
-        """An indication of the residue status, i.e true positive, true_negative, false positive, false_negative or unknown"""
+        """An indication of the residue status"""
         return self._status.value
 
     @status.setter
@@ -421,36 +369,20 @@ class Contact(Entity):
 
         Parameters
         ----------
-        status : int, :obj:`ContactMatchState <conkit.core.mappings.ContactMatchState>`
-           [0] for `unknown`,
-           [1] for `true positive`
-           [2] for `true negative`
-           [3] for `false positive`
-           [4] for `false negative`
+        status : int, :obj:`~conkit.core.mappings.ContactMatchState`
+           [0] for :attr:`~conkit.core.mappings.ContactMatchState.unknown`,
+           [1] for :attr:`~conkit.core.mappings.ContactMatchState.true_positive`,
+           [2] for :attr:`~conkit.core.mappings.ContactMatchState.true_negative`,
+           [3] for :attr:`~conkit.core.mappings.ContactMatchState.false_positive`,
+           [4] for :attr:`~conkit.core.mappings.ContactMatchState.false_negative`,
 
         Raises
         ------
-        ValueError
-           Not a valid :obj:`ContactMatchState <conkit.core.mappings.ContactMatchState>`
+        :obj:`ValueError`
+           Not a valid :obj:`~conkit.core.mappings.ContactMatchState`
 
         """
         self._status = ContactMatchState(status)
-
-    @property
-    def weight(self):
-        """A separate internal weight factor for the contact pair"""
-        return self._weight
-
-    @weight.setter
-    def weight(self, weight):
-        """Define a separate internal weight factor for the contact pair
-
-        Parameters
-        ----------
-        weight : float, int
-
-        """
-        self._weight = float(weight)
 
     @property
     def true_positive(self):
@@ -525,8 +457,14 @@ class Contact(Entity):
     def _to_dict(self):
         """Convert the object into a dictionary"""
         keys = ['id', 'true_positive', 'false_positive', 'status_unknown', 'lower_bound', 'upper_bound'] \
-                + [k[1:] for k in self.__slots__]
-        return {k: getattr(self, k) for k in keys}
+                + [k for k in self.__slots__]
+
+        dict_ = {}
+        for k in keys:
+            if k[0] == '_':
+                k = k[1:]
+            dict_[k] = getattr(self, k)
+        return dict_
 
     @staticmethod
     def _set_residue(amino_acid):
