@@ -2,8 +2,8 @@
 Changelog
 =========
 
-[Unreleased]
-------------
+[0.10]
+------
 Added
 ~~~~~
 - Support for Python 3.7

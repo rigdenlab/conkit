@@ -123,7 +123,7 @@ class ContactDensityFigure(Figure):
 
         Raises
         ------
-        :obj:`TypeError`
+        :exc:`TypeError`
            The hierarchy is not a :obj:`~conkit.core.contactmap.ContactMap`
 
         """

@@ -201,11 +201,13 @@ class SequenceFile(Entity):
         Parameters
         ----------
         status : int
-           [0] for `unknown`, [-1] for `no alignment`, or [1] for `alignment`
+           [0] for `unknown`, 
+           [-1] for `no alignment`, or 
+           [1] for `alignment`
 
         Raises
         ------
-        ValueError
+        :exc:`ValueError`
            Cannot determine if your sequence file is an alignment or not
 
         """
@@ -277,9 +279,9 @@ class SequenceFile(Entity):
 
         Raises
         ------
-        ValueError
+        :exc:`ValueError`
            :obj:`~conkit.core.sequencefile.SequenceFile` is not an alignment
-        ValueError
+        :exc:`ValueError`
            Sequence Identity needs to be between 0 and 1
 
         """
@@ -305,7 +307,7 @@ class SequenceFile(Entity):
 
         Raises
         ------
-        RuntimeError
+        :exc:`RuntimeError`
            :obj:`~conkit.core.sequencefile.SequenceFile` is not an alignment
 
         """
@@ -339,11 +341,11 @@ class SequenceFile(Entity):
 
         Raises
         ------
-        ValueError
+        :exc:`ValueError`
            :obj:`~conkit.core.sequencefile.SequenceFile` is not an alignment
-        ValueError
+        :exc:`ValueError`
            Minimum sequence identity needs to be between 0 and 1
-        ValueError
+        :exc:`ValueError`
            Maximum sequence identity needs to be between 0 and 1
 
         """
@@ -384,11 +386,11 @@ class SequenceFile(Entity):
 
         Raises
         ------
-        ValueError
+        :exc:`ValueError`
            :obj:`~conkit.core.sequencefile.SequenceFile` is not an alignment
-        ValueError
+        :exc:`ValueError`
            Minimum gap proportion needs to be between 0 and 1
-        ValueError
+        :exc:`ValueError`
            Maximum gap proportion needs to be between 0 and 1
 
         """
@@ -432,7 +434,7 @@ class SequenceFile(Entity):
 
         Raises
         ------
-        ValueError
+        :exc:`ValueError`
            ``kword`` not in :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """

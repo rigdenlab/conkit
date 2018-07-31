@@ -66,7 +66,7 @@ class ClustalParser(SequenceFileParser):
 
         Raises
         ------
-        :obj:`TypeError` 
+        :exc:`TypeError` 
            Incorrect file format
 
         """

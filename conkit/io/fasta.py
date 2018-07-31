@@ -65,7 +65,7 @@ class FastaParser(SequenceFileParser):
 
         Raises
         ------
-        :obj:`ValueError`
+        :exc:`ValueError`
            FASTA record needs to start with >
 
         """

@@ -48,19 +48,6 @@ class ContactFile(Entity):
     with a single contact map file. It contains functions to store,
     manipulate and organise contact maps.
 
-    Attributes
-    ----------
-    author : str
-       The author of the :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
-    method : list, str
-       The :obj:`ContactFile <conkit.core.contactfile.ContactFile>`-specific method
-    remark : list, str
-       The :obj:`ContactFile <conkit.core.contactfile.ContactFile>`-specific remarks
-    target : str
-       The target name
-    top_map : :obj:`ContactMap <conkit.core.contactmap.ContactMap>`
-       The first :obj:`ContactMap <conkit.core.contactmap.ContactMap>` entry in :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
-
     Examples
     --------
     >>> from conkit.core import ContactMap, ContactFile
@@ -70,8 +57,21 @@ class ContactFile(Entity):
     >>> print(contact_file)
     ContactFile(id="example" nseq=2)
 
+    Attributes
+    ----------
+    author : str
+       The author of the :obj:`~conkit.core.contactfile.ContactFile`
+    method : list, str
+       The :obj:`~conkit.core.contactfile.ContactFile`-specific method
+    remark : list, str
+       The :obj:`~conkit.core.contactfile.ContactFile`-specific remarks
+    target : str
+       The target name
+    top_map : :obj:`~conkit.core.contactmap.ContactMap`
+       The first :obj:`~conkit.core.contactmap.ContactMap` entry in :obj:`~conkit.core.contactfile.ContactFile`
+
     """
-    __slots__ = ['_author', '_method', '_remark', '_target']
+    __slots__ = ['author', 'target', '_method', '_remark']
 
     def __init__(self, id):
         """Initialise a new contact map
@@ -79,42 +79,26 @@ class ContactFile(Entity):
         Parameters
         ----------
         id : str
-           A unique identifier for the contact file
+           A unique identifier for this :obj:`~conkit.core.contactfile.ContactFile`
 
         """
-        self._author = None
+        self.author = None
+        self.target = None
         self._method = []
         self._remark = []
-        self._target = None
         super(ContactFile, self).__init__(id)
 
     def __repr__(self):
-        return "{0}(id=\"{1}\" nmaps={2})".format(self.__class__.__name__, self.id, len(self))
-
-    @property
-    def author(self):
-        """The author of the :obj:`ContactFile <conkit.core.contactfile.ContactFile>`"""
-        return self._author
-
-    @author.setter
-    def author(self, author):
-        """Define the author of the :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
-
-        Parameters
-        ----------
-        author : str
-
-        """
-        self._author = author
+        return '{}(id="{}" nmaps={})'.format(self.__class__.__name__, self.id, len(self))
 
     @property
     def method(self):
-        """The :obj:`ContactFile <conkit.core.contactfile.ContactFile>`-specific method"""
+        """The :obj:`~conkit.core.contactfile.ContactFile`-specific method"""
         return self._method
 
     @method.setter
     def method(self, method):
-        """Set the :obj:`ContactFile <conkit.core.contactfile.ContactFile>` method
+        """Set the :obj:`~conkit.core.contactfile.ContactFile` method
 
         Parameters
         ----------
@@ -122,21 +106,16 @@ class ContactFile(Entity):
            The method will be added to the list of methods
 
         """
-        if isinstance(method, list):
-            self._method += method
-        elif isinstance(method, tuple):
-            self._method += list(method)
-        else:
-            self._method += [method]
+        self._method += Entity.listify(method)
 
     @property
     def remark(self):
-        """The :obj:`ContactFile <conkit.core.contactfile.ContactFile>`-specific remarks"""
+        """The :obj:`~conkit.core.contactfile.ContactFile`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`ContactFile <conkit.core.contactfile.ContactFile>` remark
+        """Set the :obj:`~conkit.core.contactfile.ContactFile` remark
 
         Parameters
         ----------
@@ -144,36 +123,15 @@ class ContactFile(Entity):
            The remark will be added to the list of remarks
 
         """
-        if isinstance(remark, list):
-            self._remark += remark
-        elif isinstance(remark, tuple):
-            self._remark += list(remark)
-        else:
-            self._remark += [remark]
-
-    @property
-    def target(self):
-        """The target name"""
-        return self._target
-
-    @target.setter
-    def target(self, target):
-        """Define the target name
-
-        Parameters
-        ----------
-        target : str
-
-        """
-        self._target = target
+        self._remark += Entity.listify(remark)
 
     @property
     def top_map(self):
-        """The first :obj:`ContactMap <conkit.core.contactmap.ContactMap>` entry in :obj:`ContactFile <conkit.core.contactfile.ContactFile>`"""
+        """The first :obj:`~conkit.core.contactmap.ContactMap` entry"""
         return self.top
 
     def sort(self, kword, reverse=False, inplace=False):
-        """Sort the :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        """Sort the :obj:`~conkit.core.contactfile.ContactFile`
 
         Parameters
         ----------
@@ -186,13 +144,13 @@ class ContactFile(Entity):
 
         Returns
         -------
-        obj
-           The reference to the :obj:`ContactMap <conkit.core.contactmap.ContactMap>`, regardless of inplace
+        :obj:`~conkit.core.contactmap.ContactMap` 
+           The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of `inplace`
 
         Raises
         ------
-        ValueError
-           ``kword`` not in :obj:`ContactFile <conkit.core.contactfile.ContactFile>`
+        :exc:`ValueError`
+           `kword` not in :obj:`~conkit.core.contactfile.ContactFile`
 
         """
         contact_file = self._inplace(inplace)

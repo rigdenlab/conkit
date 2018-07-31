@@ -316,6 +316,21 @@ class TestEntity(unittest.TestCase):
         with self.assertRaises(KeyError):
             entity.remove('foo')
 
+    def test_listify_1(self):
+        self.assertListEqual([1], Entity.listify(1))
+
+    def test_listify_2(self):
+        self.assertListEqual([1.1], Entity.listify(1.1))
+
+    def test_listify_3(self):
+        self.assertListEqual(['foo'], Entity.listify('foo'))
+
+    def test_listify_4(self):
+        self.assertListEqual(['foo'], Entity.listify(['foo']))
+
+    def test_listify_5(self):
+        self.assertListEqual(['foo'], Entity.listify(('foo')))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -105,9 +105,9 @@ def open_f_handle(f_handle, mode):
 
     Raises
     ------
-    :obj:`TypeError`
+    :exc:`TypeError`
        f_handle must be str of filehandle
-    :obj:`ValueError`
+    :exc:`ValueError`
        Mode needs to be one of: append, read, write
 
     """

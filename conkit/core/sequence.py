@@ -46,23 +46,23 @@ from conkit.core.mappings import AminoAcidMapping, AminoAcidOneToThree
 class Sequence(Entity):
     """A sequence template to store all associated information
 
-    Attributes
-    ----------
-    id : str
-       A unique identifier
-    remark : list
-       The :obj:`Sequence <conkit.core.sequence.Sequence>`-specific remarks
-    seq : str
-       The protein sequence as :obj:`str`
-    seq_len : int
-       The protein sequence length
-
     Examples
     --------
     >>> from conkit.core import Sequence
     >>> sequence_entry = Sequence("example", "ABCDEF")
     >>> print(sequence_entry)
     Sequence(id="example" seq="ABCDEF" seqlen=6)
+
+    Attributes
+    ----------
+    id : str
+       A unique identifier
+    remark : list
+       The :obj:`~conkit.core.sequence.Sequence`-specific remarks
+    seq : str
+       The protein sequence as :obj:`str`
+    seq_len : int
+       The protein sequence length
 
     """
     __slots__ = ['_remark', '_seq']
@@ -98,17 +98,16 @@ class Sequence(Entity):
             seq_string = ''.join([self.seq[:5], '...', self.seq[-5:]])
         else:
             seq_string = self.seq
-        return "{0}(id=\"{1}\" seq=\"{2}\" seq_len={3})".format(self.__class__.__name__, self.id, seq_string,
-                                                                self.seq_len)
+        return '{}(id="{}" seq="{}" seq_len={})'.format(self.__class__.__name__, self.id, seq_string, self.seq_len)
 
     @property
     def remark(self):
-        """The :obj:`Sequence <conkit.core.sequence.Sequence>`-specific remarks"""
+        """The :obj:`~conkit.core.sequence.Sequence`-specific remarks"""
         return self._remark
 
     @remark.setter
     def remark(self, remark):
-        """Set the :obj:`Sequence <conkit.core.sequence.Sequence>` remark
+        """Set the :obj:`~conkit.core.sequence.Sequence` remark
 
         Parameters
         ----------
@@ -116,12 +115,7 @@ class Sequence(Entity):
            The remark will be added to the list of remarks
 
         """
-        if isinstance(remark, list):
-            self._remark += remark
-        elif isinstance(remark, tuple):
-            self._remark += list(remark)
-        else:
-            self._remark += [remark]
+        self._remark += Entity.listify(remark)
 
     @property
     def seq(self):
@@ -138,7 +132,7 @@ class Sequence(Entity):
 
         Raises
         ------
-        ValueError
+        :exc:`ValueError`
            One or more amino acids in the sequence are not recognised
 
         """
@@ -163,11 +157,11 @@ class Sequence(Entity):
         return len(self)
 
     def align_global(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
-        """Generate a global alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
+        """Generate a global alignment between two :obj:`~conkit.core.sequence.Sequence` instances
 
         Parameters
         ----------
-        other : :obj:`Sequence <conkit.core.sequence.Sequence>`
+        other : :obj:`~conkit.core.sequence.Sequence`
         id_chars : int, optional
         nonid_chars : int, optional
         gap_open_pen : float, optional
@@ -177,10 +171,8 @@ class Sequence(Entity):
 
         Returns
         -------
-        obj
-           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
-        obj
-           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
+        tuple
+           Tuple containing two :obj:`~conkit.core.sequence.Sequence` instances, regardless of inplace
 
         """
         sequence1 = self._inplace(inplace)
@@ -194,11 +186,11 @@ class Sequence(Entity):
         return sequence1, sequence2
 
     def align_local(self, other, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False):
-        """Generate a local alignment between two :obj:`Sequence <conkit.core.sequence.Sequence>` instances
+        """Generate a local alignment between two :obj:`~conkit.core.sequence.Sequence` instances
 
         Parameters
         ----------
-        other : :obj:`Sequence <conkit.core.sequence.Sequence>`
+        other : :obj:`~conkit.core.sequence.Sequence`
         id_chars : int, optional
         nonid_chars : int, optional
         gap_open_pen : float, optional
@@ -208,10 +200,8 @@ class Sequence(Entity):
 
         Returns
         -------
-        obj
-           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
-        obj
-           The reference to the :obj:`Sequence <conkit.core.sequence.Sequence>`, regardless of inplace
+        tuple
+           Tuple containing two :obj:`~conkit.core.sequence.Sequence` instances, regardless of inplace
 
         """
         sequence1 = self._inplace(inplace)
