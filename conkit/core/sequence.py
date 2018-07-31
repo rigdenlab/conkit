@@ -132,7 +132,7 @@ class Sequence(Entity):
 
         Raises
         ------
-        :obj:`ValueError`
+        :exc:`ValueError`
            One or more amino acids in the sequence are not recognised
 
         """

@@ -149,7 +149,7 @@ class ContactFile(Entity):
 
         Raises
         ------
-        :obj:`ValueError`
+        :exc:`ValueError`
            `kword` not in :obj:`~conkit.core.contactfile.ContactFile`
 
         """

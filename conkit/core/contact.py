@@ -199,9 +199,9 @@ class Contact(Entity):
 
         Raises
         ------
-        :obj:`ValueError`
+        :exc:`ValueError`
            :attr:`~conkit.core.contact.Contact.lower_bound` must be positive
-        :obj:`ValueError`
+        :exc:`ValueError`
            :attr:`~conkit.core.contact.Contact.lower_bound` must be smaller than
            :attr:`~conkit.core.contact.Contact.upper_bound`
 
@@ -226,9 +226,9 @@ class Contact(Entity):
 
         Raises
         ------
-        :obj:`ValueError`
+        :exc:`ValueError`
            :attr:`~conkit.core.contact.Contact.upper_bound` must be positive
-        :obj:`ValueError`
+        :exc:`ValueError`
            :attr:`~conkit.core.contact.Contact.upper_bound` must be larger than
            :attr:`~conkit.core.contact.Contact.lower_bound`
 
@@ -325,7 +325,7 @@ class Contact(Entity):
 
         Raises
         ------
-        :obj:`TypeError`
+        :exc:`TypeError`
            Data type :obj:`int` required for :attr:`~conkit.core.contact.Contact.res1_seq`
 
         """
@@ -349,7 +349,7 @@ class Contact(Entity):
 
         Raises
         ------
-        :obj:`TypeError`
+        :exc:`TypeError`
            Data type :obj:`int` required for :attr:`~conkit.core.contact.Contact.res2_seq`
 
         """
@@ -378,7 +378,7 @@ class Contact(Entity):
 
         Raises
         ------
-        :obj:`ValueError`
+        :exc:`ValueError`
            Not a valid :obj:`~conkit.core.mappings.ContactMatchState`
 
         """
