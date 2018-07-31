@@ -301,3 +301,24 @@ class Entity(object):
 
         """
         del self[id]
+
+    @staticmethod
+    def listify(s):
+        """Convert unknown input to a list
+
+        Parameters
+        ----------
+        s : str, int, float, list, tuple
+        
+        Returns
+        -------
+        list
+           The input as list
+
+        """
+        if isinstance(s, list):
+            return s
+        elif isinstance(s, tuple):
+            return list(s)
+        else:
+            return [s]
