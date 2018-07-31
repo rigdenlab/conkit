@@ -47,11 +47,7 @@ def dependencies():
 
 
 def extensions():
-    exts = [
-        "conkit/core/ext/c_contactmap.pyx",
-        "conkit/core/ext/c_sequencefile.pyx",
-        "conkit/misc/ext/c_bandwidth.pyx"
-    ]
+    exts = ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx"]
     extensions = []
     for ext in exts:
         extensions.append(
@@ -61,8 +57,7 @@ def extensions():
                 extra_compile_args=EXTRA_COMPILE_ARGS,
                 extra_link_args=EXTRA_LINK_ARGS,
                 include_dirs=[numpy.get_include()],
-            )
-        )
+            ))
     return extensions
 
 
@@ -161,7 +156,6 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
