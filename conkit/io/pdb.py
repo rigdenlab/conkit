@@ -210,7 +210,7 @@ class GenericStructureParser(ContactFileParser):
 
         Raises
         ------
-        NotImplementedError
+        :exc:`NotImplementedError`
            Write function not available
 
         """
@@ -260,7 +260,7 @@ class MmCifParser(GenericStructureParser):
 
         Raises
         ------
-        :obj:`NotImplementedError`
+        :exc:`NotImplementedError`
            Write function not available
 
         """
@@ -310,7 +310,7 @@ class PdbParser(GenericStructureParser):
 
         Raises
         ------
-        :obj:`NotImplementedError`
+        :exc:`NotImplementedError`
            Write function not available
 
         """

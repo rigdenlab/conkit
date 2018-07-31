@@ -119,9 +119,9 @@ class CCMpredParser(ContactFileParser):
 
         Raises
         ------
-        :obj:`RuntimeError`
+        :exc:`RuntimeError`
            More than one contact map in the hierarchy
-        :obj:`TypeError`
+        :exc:`TypeError`
            Python3 requires f_handle to be in `wb` or `ab` mode
 
         """

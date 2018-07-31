@@ -96,7 +96,7 @@ class BCLContactParser(ContactFileParser):
 
         Raises
         ------
-        :obj:`NotImplementedError`
+        :exc:`NotImplementedError`
            Write function not available
 
         """

@@ -103,7 +103,7 @@ class FreeContactParser(ContactFileParser):
 
         Raises
         ------
-        :obj:`RuntimeError`
+        :exc:`RuntimeError`
            More than one contact map in the hierarchy
 
         """
