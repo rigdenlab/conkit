@@ -69,7 +69,7 @@ class Entity(object):
        A dictionary storing the child entities
 
     """
-    __slots__ = ['_id', '_parent', '_child_list', '_child_dict']
+    __slots__ = ['parent', '_id', 'child_list', 'child_dict']
 
     def __init__(self, id):
         """Initialise a generic :obj:`~conkit.core.entity.Entity`
@@ -81,9 +81,9 @@ class Entity(object):
 
         """
         self._id = None
-        self._parent = None
-        self._child_list = []
-        self._child_dict = {}
+        self.parent = None
+        self.child_list = []
+        self.child_dict = {}
         self.id = id
 
     def __contains__(self, id):
@@ -126,38 +126,6 @@ class Entity(object):
             yield child
 
     @property
-    def child_dict(self):
-        """A dictionary storing the child entities"""
-        return self._child_dict
-
-    @child_dict.setter
-    def child_dict(self, child_dict):
-        """Define a dictionary storing the child entities
-
-        Parameters
-        ----------
-        child_dict : dict
-
-        """
-        self._child_dict = child_dict
-
-    @property
-    def child_list(self):
-        """A list storing the child entities"""
-        return self._child_list
-
-    @child_list.setter
-    def child_list(self, child_list):
-        """Define a list storing the child entities
-
-        Parameters
-        ----------
-        child_list : dict
-
-        """
-        self._child_list = child_list
-
-    @property
     def full_id(self):
         """A traceback id including all parent classes
 
@@ -198,6 +166,11 @@ class Entity(object):
         -------
         You cannot provide an :obj:`int` or :obj:`float` as ID.
 
+        Raises
+        ------
+        :obj:`TypeError`
+           Please provide data type of str, list, or tuple
+
         """
         if isinstance(id, int) or isinstance(id, float):
             raise TypeError('Please provide data type of str, list, or tuple')
@@ -206,26 +179,10 @@ class Entity(object):
         self._id = id
 
     @property
-    def parent(self):
-        """An attribute to store the reference to the parent :obj:`~conkit.core.entity.Entity`"""
-        return self._parent
-
-    @parent.setter
-    def parent(self, parent):
-        """Define the reference to the parent :obj:`~conkit.core.entity.Entity`
-
-        Parameters
-        ----------
-        parent : :obj:`~conkit.core.entity.Entity`
-
-        """
-        self._parent = parent
-
-    @property
     def top(self):
         """The first child in the :obj:`~conkit.core.entity.Entity`"""
         if len(self) > 0:
-            return self._child_list[0]
+            return self.child_list[0]
         else:
             return None
 
@@ -244,7 +201,7 @@ class Entity(object):
 
     def _sort(self, kword, reverse):
         """Sort the :obj:`~conkit.core.entity.Entity`"""
-        if any(not hasattr(e, kword) for e in self._child_list):
+        if any(not hasattr(e, kword) for e in self.child_list):
             raise ValueError('Attribute not defined')
         self.child_list.sort(key=operator.attrgetter(kword), reverse=reverse)
 
