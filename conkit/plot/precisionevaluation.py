@@ -127,7 +127,7 @@ class PrecisionEvaluationFigure(Figure):
 
         Raises
         ------
-        :obj:`RuntimeError`
+        :exc:`RuntimeError`
            The hierarchy is not an alignment
 
         """

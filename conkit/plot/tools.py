@@ -109,9 +109,9 @@ def find_minima(data, order=1):
 
     Raises
     ------
-    :obj:`ValueError`
+    :exc:`ValueError`
        Order needs to be >= 1!
-    :obj:`ValueError`
+    :exc:`ValueError`
        More than two elements required!
 
     """
