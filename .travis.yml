@@ -23,8 +23,8 @@ install:
 # Take these dependencies since their installation order can cause problems at times :/
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
+  - pip install codecov coverage
   - pip install -r requirements.txt
-  - pip install coveralls
   - python setup.py install
 
 script:
