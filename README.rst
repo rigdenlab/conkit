@@ -22,8 +22,8 @@ Contact Prediction ToolKit
    :target: https://travis-ci.org/rigdenlab/conkit
    :alt: Travis Build
 
-.. image:: https://codecov.io/gh/codecov/conkit/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/codecov/conkit
+.. image:: https://codecov.io/gh/rigdenlab/conkit/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/rigdenlab/conkit
    :alt: Codecov Status
  
 .. image:: https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtx148-blue.svg
