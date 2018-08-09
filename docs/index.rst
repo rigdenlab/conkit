@@ -7,4 +7,4 @@ Changelog
 +++++++++
 
 .. include:: ../CHANGELOG.rst
-   :number-lines: 20
+   :number-lines: 10
