@@ -43,6 +43,7 @@
 - Bug fix in ``ContactMapMatrixFigure`` when ``gap`` variable was less than 1
 
 *Removed*
+
 - Python 3.4 support
 
 **[0.9]**
@@ -143,6 +144,7 @@ Added*
 - Revoked catching of ``SystemExit(0)`` exception in scripts when invoked with ``--help`` flag 
 
 *Fixed*
+
 - Bug fix relating to Python3 automatic opening of file handles - Thanks to Miguel Correa for reporting this bug
 
 **[0.8]**
