@@ -6,8 +6,6 @@ Contact Prediction ToolKit
 
 **A Python Interface to Contact Predictions**
 
-This project is a result of the continuous struggle using residue-residue contact prediction pipelines, visualisation tools and related software. The aim was to reduce this complexity and provide one unified interface as a basic platform. The resulting interface is the Contact Prediction ToolKit, or ConKit.
-
 .. image:: https://img.shields.io/pypi/v/conkit.svg
    :target: https://pypi.python.org/pypi/conkit
    :alt: PyPi Package
@@ -24,28 +22,26 @@ This project is a result of the continuous struggle using residue-residue contac
    :target: https://travis-ci.org/rigdenlab/conkit
    :alt: Travis Build
 
-.. image:: https://coveralls.io/repos/github/rigdenlab/conkit/badge.svg?branch=master
-   :target: https://coveralls.io/github/rigdenlab/conkit?branch=master
-   :alt: Coveralls Status
-
-.. image:: https://landscape.io/github/rigdenlab/conkit/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/rigdenlab/conkit/master
-   :alt: Code Health
-
+.. image:: https://codecov.io/gh/codecov/conkit/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/codecov/conkit
+   :alt: Codecov Status
+ 
 .. image:: https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtx148-blue.svg
    :target: https://doi.org/10.1093/bioinformatics/btx148
    :alt: DOI Status
 
-
-Key Features
-++++++++++++
+ConKit is a Python library to provide a data object hierarchy and associated routine operations to
+work and manipulate residue-residue contact prediction data. Main features shipped with this library
+include:
 
 - Parsers for Multiple Sequence Alignment and contact prediction files
 - Analysis functions for Multiple Sequence Alignment and contact prediction data
 - Visualisation of Multiple Sequence Alignment and contact prediction data
-- Easy-to-use Python wrappers for the contact prediction related software
+- Python wrappers for the contact-prediction-related software
 
-For a quick overview of ConKit, watch `this video <https://youtu.be/YhHkfa7ggAE>`_.
+For an overview of ConKit, watch `this video <https://youtu.be/YhHkfa7ggAE>`_.
+
+.. CHECKPOINT FOR READTHEDOCS 
 
 Installation & Usage
 ++++++++++++++++++++
