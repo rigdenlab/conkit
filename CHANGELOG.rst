@@ -2,6 +2,9 @@
 Changelog
 =========
 
+[Unreleased]
+------------
+
 [0.10]
 ------
 Added

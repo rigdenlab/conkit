@@ -27,11 +27,9 @@ install:
   - pip install coveralls
   - python setup.py install
 
-# Run test
 script:
   - coverage run --source=conkit setup.py test
   - python setup.py test
 
-# Calculate coverage
 after_success:
-  - coveralls
+  - codecov 

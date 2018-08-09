@@ -1,0 +1,13 @@
+[run]
+branch = True
+source = conkit 
+
+[report]
+exclude_lines =
+    if self.debug:
+    raise NotImplementedError
+    if __name__ == .__main__.:
+ignore_errors = True
+omit =
+    conkit/tests/*
+    conkit/*/tests/*
