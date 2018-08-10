@@ -3,14 +3,39 @@
 from distutils.command.build import build
 from distutils.util import convert_path
 from setuptools import setup, Extension
-from Cython.Distutils import build_ext
 
-import numpy
 import os
+import subprocess
 import sys
 
-EXTRA_COMPILE_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe']
-EXTRA_LINK_ARGS = ['-O2', '-fopenmp', '-march=native', '-pipe']
+SETUPREQUIRES = ['numpy >=1.8.2', 'cython >=0.28.2']
+
+# Credits to https://github.com/pytest-dev/pytest-xdist/issues/136#issuecomment-293029492
+try:
+    from pip._internal import main as pip_main
+    pip_main(['install'] + SETUPREQUIRES)
+    SETUPREQUIRES = []
+except Exception:
+    raise RuntimeError('Please install numpy and cython before running this script')
+
+from Cython.Distutils import build_ext
+import numpy
+
+USE_OPENMP = True
+# Disable OpenMP support on OS X --- compiler problems require separate GCC installation via Homebrew
+if sys.platform.startswith('darwin'):
+    USE_OPENMP = False
+
+if sys.platform.startswith('win'):
+    EXTRA_COMPILE_ARGS = ['/O2', '/openmp']
+    EXTRA_LINK_ARGS = []
+else:
+    EXTRA_COMPILE_ARGS = ['-O3', '-ffast-math', '-march=native', '-pipe']
+    EXTRA_LINK_ARGS = EXTRA_COMPILE_ARGS
+
+    if USE_OPENMP:
+        EXTRA_COMPILE_ARGS.append('-fopenmp')
+        EXTRA_LINK_ARGS.append('-fopenmp')
 
 # ==============================================================
 # Setup.py command extensions
@@ -99,7 +124,7 @@ def version():
     main_ns = {}
     ver_path = convert_path('conkit/version.py')
     with open(ver_path) as f_in:
-        exec(f_in.read(), main_ns)
+        exec (f_in.read(), main_ns)
     return main_ns['__version__']
 
 
@@ -175,7 +200,7 @@ setup(
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
     ext_modules=EXT_MODULES,
-    setup_requires=['numpy', 'cython'],
+    setup_requires=SETUPREQUIRES,
     install_requires=DEPENDENCIES,
     scripts=SCRIPTS,
     platforms=PLATFORMS,
