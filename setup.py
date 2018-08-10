@@ -16,7 +16,7 @@ try:
     pip_main(['install'] + SETUPREQUIRES)
     SETUPREQUIRES = []
 except Exception:
-    raise RuntimeError('Please install numpy and cython before running this script')
+    pass
 
 from Cython.Distutils import build_ext
 import numpy
