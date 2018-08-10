@@ -4,7 +4,7 @@ cimport cython
 import numpy as np
 cimport numpy as np
 
-from libc.math cimport fabs
+from libc.stdlib cimport abs
 
 np.import_array()
 
@@ -15,6 +15,6 @@ def c_singletons(np.ndarray[np.int64_t, ndim=2] X, double threshold, np.ndarray[
         for j in xrange(i + 1, X.shape[0]):
             if throwables[j]:
                 continue
-            if fabs(X[j, 0] - X[i, 0]) <= threshold and fabs(X[j, 1] - X[i, 1]) <= threshold:
+            if abs(int(X[j, 0] - X[i, 0])) <= threshold and abs(int(X[j, 1] - X[i, 1])) <= threshold:
                 throwables[i] = True 
                 throwables[j] = True 
