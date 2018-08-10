@@ -1,4 +1,5 @@
-**[Unreleased]**
+**[0.10.1]**
+- Critical bug fix in installation procedure and Cython-code compilation
 
 **[0.10]**
 
