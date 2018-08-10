@@ -31,7 +31,7 @@ if sys.platform.startswith('win'):
     EXTRA_LINK_ARGS = []
 else:
     EXTRA_COMPILE_ARGS = ['-O3', '-ffast-math', '-march=native', '-pipe']
-    EXTRA_LINK_ARGS = EXTRA_COMPILE_ARGS
+    EXTRA_LINK_ARGS = EXTRA_COMPILE_ARGS[:]
 
     if USE_OPENMP:
         EXTRA_COMPILE_ARGS.append('-fopenmp')
