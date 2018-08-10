@@ -175,7 +175,7 @@ setup(
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
     ext_modules=EXT_MODULES,
-    setup_requires=DEPENDENCIES,
+    setup_requires=['numpy', 'cython'],
     install_requires=DEPENDENCIES,
     scripts=SCRIPTS,
     platforms=PLATFORMS,
