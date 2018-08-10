@@ -1,4 +1,9 @@
+**[0.10.2]**
+
+- `MANIFEST.ini` file required by PyPi
+
 **[0.10.1]**
+
 - Critical bug fix in installation procedure and Cython-code compilation
 
 **[0.10]**
