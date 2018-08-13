@@ -34,7 +34,7 @@ Description
 This module is an import caching facility used for the I/O package in ConKit.
 
 To allow fast access to individual modules required for :func:`read <conkit.io.read>`, :func:`write <conkit.io.write>`
-and :func:`convert <conkit.io.convert>` functions, we don't want to import everything every time. 
+and :func:`convert <conkit.io.convert>` functions, we don't want to import everything every time.
 Thus, we only cache the results to ultimately import the bits we really require.
 
 """
@@ -52,7 +52,7 @@ import re
 RE_CLASS_DECLARATION = re.compile("^class\s+([A-Za-z0-9]+)\s*(.*):$")
 
 
-class _CacheObj(object):
+class CacheObj(object):
     """Container for individual module"""
 
     __slots__ = ["id", "module", "object", "group"]
@@ -69,7 +69,7 @@ class _CacheObj(object):
                                              for k in self.__class__.__slots__})
 
 
-class _ParserCache(object):
+class ParserCache(object):
     """Cache to hold handlers to each file parser"""
 
     # This mask is for backward-compatibility and extensions to avoid re-writing the same algorithms
@@ -77,7 +77,7 @@ class _ParserCache(object):
         'a2m': ['a2m', 'jones'],
         'a3m': ['a3m', 'a3m-inserts'],
         'casp': ['casp', 'casprr'],
-        'pcons': ['flib', 'pconsc', 'pconsc2', 'pconsc3'],
+        'pcons': ['flib', 'pconsc', 'pconsc2', 'pconsc3', 'saint2'],
         'psicov': ['psicov', 'metapsicov', 'nebcon'],
     }
 
@@ -95,7 +95,8 @@ class _ParserCache(object):
         return self.file_parsers.get(item, None)
 
     def __repr__(self):
-        return "{0}(nparsers={1})".format(self.__class__.__name__, len(self._cfile_parsers) + len(self._sfile_parsers))
+        nparsers = len(self.contact_file_parsers) + len(self.sequence_file_parsers)
+        return '{}(nparsers={})'.format(self.__class__.__name__, nparsers)
 
     @property
     def contact_file_parsers(self):
@@ -115,7 +116,7 @@ class _ParserCache(object):
             with open(m, "r") as f_in:
                 lines = [RE_CLASS_DECLARATION.match(l.strip()) for l in f_in if RE_CLASS_DECLARATION.match(l.strip())]
             for match in lines:
-                decl = _CacheObj(None, None, match.group(1), None)
+                decl = CacheObj(None, None, match.group(1), None)
                 ggroup = match.group(2)
                 if ggroup and ggroup.startswith("(") and ggroup.endswith(")"):
                     decl.group = ggroup.replace("(", "").replace(")", "")
@@ -124,10 +125,10 @@ class _ParserCache(object):
                 name = os.path.basename(m).replace(".py", "")
                 decl.module = "conkit.io." + name
                 objname = decl.object.lower().replace("parser", "")
-                if decl.object in _ParserCache.BLINDFOLD:
+                if decl.object in ParserCache.BLINDFOLD:
                     continue
-                elif objname in _ParserCache.MASKS:
-                    for extra in _ParserCache.MASKS[objname]:
+                elif objname in ParserCache.MASKS:
+                    for extra in ParserCache.MASKS[objname]:
                         decl_ = copy.copy(decl)
                         decl_.id = extra
                         self._parsers += [decl_]
@@ -143,4 +144,4 @@ class _ParserCache(object):
 
 
 # Only allow this to be seen from outside
-PARSER_CACHE = _ParserCache()
+PARSER_CACHE = ParserCache()
