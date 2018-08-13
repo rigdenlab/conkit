@@ -30,8 +30,8 @@
 """I/O interface for file reading, writing and conversions"""
 
 __author__ = 'Felix Simkovic'
-__date__ = '13 Sep 2016'
-__version__ = "0.1"
+__date__ = '13 Aug 2018'
+__version__ = '0.2'
 
 import importlib
 import os
@@ -44,15 +44,17 @@ CONTACT_FILE_PARSERS = PARSER_CACHE.contact_file_parsers
 SEQUENCE_FILE_PARSERS = PARSER_CACHE.sequence_file_parsers
 
 
-def convert(fname_in, format_in, fname_out, format_out):
+def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_out=None):
     """Convert a file in format x to file in format y
 
     Parameters
     ----------
     fname_in : filehandle, filename
+       A file path or open file handle
     format_in : str
        File format of f_in
     fname_out : filehandle, filename
+       A file path or open file handle
     format_out : str
        File format of f_out
 
@@ -77,20 +79,21 @@ def convert(fname_in, format_in, fname_out, format_out):
 
     """
     if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
-        raise ValueError("Cannot convert contact file to sequence file")
+        raise ValueError('Cannot convert contact file to sequence file')
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
-        raise ValueError("Cannot convert sequence file to contact file")
+        raise ValueError('Cannot convert sequence file to contact file')
     else:
         hierarchy = read(fname_in, format_in)
         write(fname_out, format_out, hierarchy)
 
 
-def read(fname, format, f_id='conkit'):
+def read(fname, format, f_id='conkit', **kwargs):
     """Parse a file handle to read into structure
 
     Parameters
     ----------
     fname : filehandle, filename
+       A file path or open file handle
     format : str
        File format of handle
     f_id : str
@@ -119,24 +122,25 @@ def read(fname, format, f_id='conkit'):
     if format in PARSER_CACHE:
         parser_in = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError("Unrecognised format: '{}'".format(format))
+        raise ValueError('Unrecognised format: {}'.format(format))
 
-    kwargs = {"f_id": f_id}
-    if format == "a3m-inserts":
+    kwargs.update({'f_id': f_id})
+    if format == 'a3m-inserts':
         kwargs["remove_inserts"] = False
 
-    with open_f_handle(fname, "read") as f_in:
+    with open_f_handle(fname, 'read') as f_in:
         hierarchy = parser_in.read(f_in, **kwargs)
 
     return hierarchy
 
 
-def write(fname, format, hierarchy):
+def write(fname, format, hierarchy, **kwargs):
     """Parse a file handle to read into structure
 
     Parameters
     ----------
     fname : filehandle, filename
+       A file path or open file handle
     format : str
        File format of handle
     hierarchy
@@ -162,10 +166,9 @@ def write(fname, format, hierarchy):
     if format in PARSER_CACHE:
         parser_out = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError("Unrecognised format: '{}'".format(format))
+        raise ValueError('Unrecognised format: {}'.format(format))
 
-    kwargs = {}
-    if format in ["flib", "pconsc", "pconsc2"]:
+    if format in ['flib', 'pconsc', 'pconsc2', 'saint2']:
         kwargs["write_header_footer"] = False
 
     with open_f_handle(fname, 'write') as f_out:
