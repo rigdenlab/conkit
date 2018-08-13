@@ -60,6 +60,10 @@ The following table contains the various different file formats currently implem
 |                    | plmDCA                 | ``plmdca``                                                | :obj:`~conkit.io.plmdca.PlmDCAParser`           |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
 |                    | [Meta]PSICOV           | ``psicov``, ``metapsicov``                                | :obj:`~conkit.io.psicov.PsicovParser`           |
++                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
+|                    | Rosetta                | ``rosetta``:sup:`+`                                       | :obj:`~conkit.io.rosetta.RosettaParser`         |
++                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
+|                    | SAINT2                 | ``saint2``                                                | :obj:`~conkit.io.pcons.PconsParser`             |
 +--------------------+------------------------+-----------------------------------------------------------+-------------------------------------------------+
 | Sequence Alignment | A2M                    | ``a2m``                                                   | :obj:`~conkit.io.a2m.A2mParser`                 |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
@@ -74,6 +78,8 @@ The following table contains the various different file formats currently implem
 |                    | Stockholm              | ``stockholm``                                             | :obj:`~conkit.io.stockholm.StockholmParser`     |
 +--------------------+------------------------+-----------------------------------------------------------+-------------------------------------------------+
 | :sup:`*` These formats do not have a :func:`~conkit.io.write` function.                                                                                   |
+|                                                                                                                                                           |
+| :sup:`+` These formats do not have a :func:`~conkit.io.read` function.                                                                                    |
 |                                                                                                                                                           |
 | :sup:`a` The ``a3m-inserts`` keyword stores the alignment including insert states.                                                                        |
 |                                                                                                                                                           |
