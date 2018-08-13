@@ -2,12 +2,13 @@
 
 *Added*
 
-- `conkit.io` routines now accept keyword arguments
-- SAINT2 and ROSETTA distance restraints can now be written, `format` keywords are `saint2` and `rosetta`
+- ``conkit.io`` routines now accept keyword arguments
+- SAINT2 and ROSETTA distance restraints can now be written, ``format`` keywords are ``saint2`` and ``rosetta``
+- ``StructureSelector`` added to score protein structures by contact satisfaction
 
 **[0.10.2]**
 
-- `MANIFEST.ini` file required by PyPi
+- ``MANIFEST.ini`` file required by PyPi
 
 **[0.10.1]**
 
@@ -25,7 +26,7 @@
 - ``ContactMap.recall`` to calculate the recall of a contact map
 - ``SequenceFile.summary`` for quick alignment summaries
 - ``A2mParser`` to read HH-suite A2M alignment files
-- Automatic `sphinx-apidoc` generation for up-to-date index
+- Automatic ``sphinx-apidoc`` generation for up-to-date index
 - ``ClustalParser`` to read CLUSTAL formatted files
 
 *Changed*
