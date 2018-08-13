@@ -42,11 +42,8 @@ class SubselectionAlgorithm(object):
 
     @staticmethod
     def _numpify(data):
-        """Convert a Python array to a Numpy array"""
-        if type(data).__module__ == np.__name__:
-            return data
-        else:
-            return np.asarray(data)
+        """Convert a Python array to a :obj:`~numpy.ndarray`"""
+        return np.asarray(data)
 
     @staticmethod
     def cutoff(data, cutoff=0.287):

@@ -36,15 +36,15 @@ __version__ = '1.0'
 from multiprocessing import Pool
 
 from conkit.io import read
-from conkitext.decsel.selectalg import SUBSELECTION_ALGORITHMS
-from conkitext.decsel.selectalg import SubselectionAlgorithm
+from conkit.misc.selectalg import SUBSELECTION_ALGORITHMS
+from conkit.misc.selectalg import SubselectionAlgorithm
 
 
 class StructureSelector(object):
     """Structure selection class for assessment by short-, medium- and long-range contact satisfaction"""
 
     def __init__(self, contactmap, nprocesses=1):
-        """Instantiate a new :obj:`~conkitext.decsel.selector.StructureSelector` object
+        """Instantiate a new :obj:`~conkit.misc.selector.StructureSelector` object
 
         Parameters
         ----------
@@ -67,16 +67,12 @@ class StructureSelector(object):
         decoy_format : str
            The file format of `decoys`
         mode : str, optional
-           The :obj:`~conkitext.decsel.selectalg.SubselectionAlgorithm` mode to use
+           The :obj:`~conkit.misc.selectalg.SubselectionAlgorithm` mode to use
 
         Returns
         -------
         list
            A :obj:`bool` list to categorize decoy as keeper
-
-        Warning
-        -------
-        If no decoys are considered for keeping
 
         Raises
         ------
