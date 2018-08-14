@@ -16,8 +16,10 @@ install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
+  - conda config --set always_yes true 
+  - conda update --all
+  - conda config --set show_channel_urls yes
+  - conda config --prepend channels conda-forge
   - conda info -a
 
   # Take these dependencies since their installation order can cause problems at times :/

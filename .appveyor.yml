@@ -1,13 +1,39 @@
 environment:
-  matrix:
-    - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python35"
-    - PYTHON: "C:\\Python36"
-    - PYTHON: "C:\\Python27-x64"
-    - PYTHON: "C:\\Python35-x64"
-    - PYTHON: "C:\\Python36-x64"
 
-build: off
+  global:
+    PYTHONIOENCODING: UTF-8
+
+  matrix:
+    - PYTHON_VERSION: "2.7"
+      CONDA_INSTALL_LOCN: "C:\\Miniconda-x64"
+    - PYTHON_VERSION: "3.5"
+      CONDA_INSTALL_LOCN: "C:\\Miniconda35-x64"
+    - PYTHON_VERSION: "3.6"
+      CONDA_INSTALL_LOCN: "C:\\Miniconda36-x64"
+
+platform:
+    - x64
+
+build: false 
+
+install:
+    - set PATH=%CONDA_INSTALL_LOCN%;%CONDA_INSTALL_LOCN%\scripts;%PATH%;
+    - set PYTHONUNBUFFERED=1
+    - conda config --set always_yes true
+    - conda update --all
+    - conda config --set show_channel_urls yes
+    - conda config --prepend channels conda-forge
+    - conda info -a
+
+    - conda create -q -n test-environment python=%PYTHON_VERSION%
+      msinttypes freetype=2.6 "libpng>=1.6.21,<1.7" zlib=1.2 tk=8.5
+    - source activate test-environment
+    - pip install codecov coverage
+    - python setup.py install
 
 test_script:
-  - "%PYTHON%\\python.exe setup.py test"
+    - codecov run --source=conkit setup.py test
+    - python setup.py test
+
+on_finish:
+    - codecov
