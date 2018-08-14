@@ -101,12 +101,8 @@ class A2mParser(SequenceFileParser):
         hierarchy : :obj:`~conkit.core.sequencefile.SequenceFile` or :obj:`~conkit.core.sequence.Sequence`
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         sequence_file = self._reconstruct(hierarchy)
-
         content = ""
-
         for sequence_entry in sequence_file:
             content += sequence_entry.seq + os.linesep
-
         f_handle.write(content)

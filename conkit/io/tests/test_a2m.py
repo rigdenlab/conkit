@@ -61,8 +61,8 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             "EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF",
             "",
         ]
-        msa = os.linesep.join(msa)
-        f_name_in = create_tmp_f(content=msa)
+        joinedmsa = os.linesep.join(msa)
+        f_name_in = create_tmp_f(content=joinedmsa)
         f_name_out = create_tmp_f()
         parser = A2mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
@@ -70,7 +70,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
-        self.assertEqual(msa, output)
+        self.assertEqual(msa, output.split(os.linesep))
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 
