@@ -49,10 +49,8 @@ class SubselectionAlgorithm(object):
     def cutoff(data, cutoff=0.287):
         """A cutoff-defined subselection algorithm
 
-        Description
-        -----------
-        This algorithm removes a decoy, if its score is l
-        ess than the cutoff.
+        This algorithm removes a decoy, if its score is less 
+        than the cutoff.
 
         Parameters
         ----------
@@ -78,9 +76,8 @@ class SubselectionAlgorithm(object):
     def linear(data, cutoff=0.5):
         """A linearly-defined subselection algorithm
 
-        Description
-        -----------
-        This algorithm removes the worst 500 decoys.
+        This algorithm removes the worst ``x``% decoys, where ``x``
+        is defined by ``cutoff``.
 
         Parameters
         ----------
@@ -98,17 +95,15 @@ class SubselectionAlgorithm(object):
 
         """
         sorted_indices = SubselectionAlgorithm._numpify(data).argsort()[::-1]
-        point = np.ceil(sorted_indices.shape[0] * cutoff).astype(np.int)
-        keep = sorted_indices[:point]
-        throw = sorted_indices[point:]
+        pivot = np.ceil(sorted_indices.shape[0] * cutoff).astype(np.int)
+        keep = sorted_indices[:pivot]
+        throw = sorted_indices[pivot:]
         return keep.tolist(), throw.tolist()
 
     @staticmethod
     def scaled(data, cutoff=0.5):
         """A scaling-defined subselection algorithm
 
-        Description
-        -----------
         This algorithm removes a decoy, if its scaled score
         is less than 0.5. The scaled score is calculated by
         dividing the precision score by the average of the
@@ -131,16 +126,12 @@ class SubselectionAlgorithm(object):
         """
         data = SubselectionAlgorithm._numpify(data)
         data_scaled = data / np.mean(data)
-        keep = np.where(data_scaled >= cutoff)[0]
-        throw = np.where(data_scaled < cutoff)[0]
-        return keep.tolist(), throw.tolist()
+        return SubselectionAlgorithm.cutoff(data_scaled, cutoff=cutoff)
 
     @staticmethod
     def ignore(data):
         """"A subselection algorithm to keep all
 
-        Description
-        -----------
         This algorithm doesn't do anything except mimic others.
 
         It will not discard any decoys and keep all!!
@@ -159,9 +150,7 @@ class SubselectionAlgorithm(object):
 
         """
         data = SubselectionAlgorithm._numpify(data)
-        keep = np.where(data >= 0)[0]
-        throw = np.where(data < 0)[0]
-        return keep.tolist(), throw.tolist()
+        return SubselectionAlgorithm.cutoff(data, cutoff=0)
 
 
 SUBSELECTION_ALGORITHMS = [
