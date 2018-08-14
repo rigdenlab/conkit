@@ -47,6 +47,7 @@ __date__ = "01 Oct 2016"
 __version__ = "0.1"
 
 import argparse
+import os
 
 import conkit.command_line
 import conkit.io
@@ -65,14 +66,18 @@ def main():
     global logger
     logger = conkit.command_line.setup_logging(level='info')
 
-    msg = 'Convertin file{nline}{tab}{infile} of format {informat}{nline}to file{nline}{tab}{outfile}{outformat}'
+    if args.outformat == 'rosetta':
+        raise NotImplementedError('This conversion is not yet supported')
+
+    msg = 'Convertin file{nline}{tab}{infile} of format {informat}{nline}'
+    msg += 'to file{nline}{tab}{outfile} of format {outformat}'
     msg = msg.format(
-        nline=os.linesep,
-        tab='\t',
         infile=args.infile,
         informat=args.informat,
         outfile=args.outfile,
-        outformat=args.outformat)
+        outformat=args.outformat,
+        nline=os.linesep,
+        tab='\t')
     logger.info(msg)
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
 
