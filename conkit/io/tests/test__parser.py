@@ -1,5 +1,3 @@
-"""Testing facility for conkit.io._ParserIO"""
-
 __author__ = "Felix Simkovic"
 __date__ = "18 Oct 2016"
 

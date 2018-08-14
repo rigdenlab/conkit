@@ -5,7 +5,6 @@ from distutils.util import convert_path
 from setuptools import setup, Extension
 
 import os
-import subprocess
 import sys
 
 SETUPREQUIRES = ['numpy >=1.8.2', 'cython >=0.28.2']
