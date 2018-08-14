@@ -1,8 +1,22 @@
 language: python
-python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
+
+dist: xenial
+sudo: false
+
+matrix:
+  include:
+    - python: 2.7
+    - python: 3.5
+    - python: 3.6
+    - os: osx
+      language: generic
+      only: master 
+
+before_install:
+  if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+    ci/silence brew update
+    brew install wget
+  fi
 
 install:
   - sudo apt-get update
