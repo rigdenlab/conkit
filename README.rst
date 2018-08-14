@@ -22,6 +22,10 @@ Contact Prediction ToolKit
    :target: https://travis-ci.org/rigdenlab/conkit
    :alt: Travis Build
 
+.. image:: https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true 
+   :target: https://ci.appveyor.com/project/rigdenlab/conkit 
+   :alt: AppVeyor Build
+
 .. image:: https://codecov.io/gh/rigdenlab/conkit/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/rigdenlab/conkit
    :alt: Codecov Status
