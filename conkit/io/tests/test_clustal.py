@@ -98,8 +98,8 @@ seq_2           CCCCCCCCC
             "seq_1\tBBBBBBBBBBBBBBBBBBBBBB",
             "",
         ]
-        seq = os.linesep.join(seq)
-        f_name_in = create_tmp_f(content=seq)
+        joinedseq = os.linesep.join(seq)
+        f_name_in = create_tmp_f(content=joinedseq)
         f_name_out = create_tmp_f()
         parser = ClustalParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
@@ -107,7 +107,7 @@ seq_2           CCCCCCCCC
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
             output = "".join(f_in.readlines())
-        self.assertEqual(seq, output)
+        self.assertEqual(seq, output.split(os.linesep))
         os.unlink(f_name_in)
         os.unlink(f_name_out)
 
