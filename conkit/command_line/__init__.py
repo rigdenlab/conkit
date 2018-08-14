@@ -34,7 +34,6 @@ __date__ = "14 Apr 2017"
 __version__ = "0.1"
 
 import logging
-import os
 import sys
 
 
@@ -72,7 +71,7 @@ def setup_logging(level='info', logfile=None):
             if record.levelno in self.colors:
                 prefix = '\033[1;{}m'.format(ColorFormatter.colors[record.levelno])
                 postfix = '\033[0m'
-                record.msg = os.linesep.join([prefix + l + postfix for l in str(record.msg).splitlines()])
+                record.msg = '\n'.join([prefix + l + postfix for l in str(record.msg).splitlines()])
             return logging.Formatter.format(self, record)
 
     # Reset any Handlers or Filters already in the logger to start from scratch

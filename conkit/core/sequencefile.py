@@ -32,14 +32,12 @@
 """SequenceFile container used throughout ConKit"""
 
 from __future__ import division
-from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 import numpy as np
-import os
 import sys
 
 if sys.version_info.major < 3:
@@ -133,11 +131,11 @@ class SequenceFile(Entity):
 
     @property
     def diversity(self):
-        """The diversity of an alignment defined by :math:`\\sqrt{N}/L`. 
-        
+        """The diversity of an alignment defined by :math:`\\sqrt{N}/L`.
+
         ``N`` equals the number of sequences in
         the alignment and ``L`` the sequence length
-        
+
         """
         if self.empty:
             return 0.0
@@ -201,8 +199,8 @@ class SequenceFile(Entity):
         Parameters
         ----------
         status : int
-           [0] for `unknown`, 
-           [-1] for `no alignment`, or 
+           [0] for `unknown`,
+           [-1] for `no alignment`, or
            [1] for `alignment`
 
         Raises
@@ -219,7 +217,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        :obj:`~conkit.core.sequence.Sequence` 
+        :obj:`~conkit.core.sequence.Sequence`
            The first :obj:`~conkit.core.sequence.Sequence` entry in :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """
@@ -247,7 +245,7 @@ class SequenceFile(Entity):
 
     def get_meff_with_id(self, identity):
         """Calculate the number of effective sequences with specified sequence identity
-        
+
         See Also
         --------
         meff, get_weights
@@ -275,7 +273,7 @@ class SequenceFile(Entity):
         Returns
         -------
         list
-           A list of the sequence weights in the alignment 
+           A list of the sequence weights in the alignment
 
         Raises
         ------
@@ -336,7 +334,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        :obj:`~conkit.core.sequencefile.SequenceFile` 
+        :obj:`~conkit.core.sequencefile.SequenceFile`
            The reference to the :obj:`~conkit.core.sequencefile.SequenceFile`, regardless of inplace
 
         Raises
@@ -369,7 +367,7 @@ class SequenceFile(Entity):
 
     def filter_gapped(self, min_prop=0.0, max_prop=0.9, inplace=True):
         """Filter all sequences a gap proportion greater than the limit
-        
+
         Parameters
         ----------
         min_prop : float, optional
@@ -429,7 +427,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        :obj:`~conkit.core.sequencefile.SequenceFile` 
+        :obj:`~conkit.core.sequencefile.SequenceFile`
            The reference to the :obj:`~conkit.core.sequencefile.SequenceFile`, regardless of inplace
 
         Raises
@@ -445,7 +443,7 @@ class SequenceFile(Entity):
     def to_string(self):
         """Return the :obj:`~conkit.core.sequencefile.SequenceFile` as :obj:`str`"""
         content = [s.seq for s in self]
-        return os.linesep.join(content)
+        return '\n'.join(content)
 
     def trim(self, start, end, inplace=False):
         """Trim the :obj:`~conkit.core.sequencefile.SequenceFile`
@@ -461,7 +459,7 @@ class SequenceFile(Entity):
 
         Returns
         -------
-        :obj:`~conkit.core.sequencefile.SequenceFile` 
+        :obj:`~conkit.core.sequencefile.SequenceFile`
            The reference to the :obj:`~conkit.core.sequencefile.SequenceFile`, regardless of inplace
 
         """
@@ -477,11 +475,11 @@ class SequenceFile(Entity):
 
     def summary(self):
         """Generate a summary for the :obj:`~conkit.core.sequencefile.SequenceFile`
-        
+
         Returns
         -------
         str
-        
+
         """
         sstream = 'Summary for {id}{nline}'
         sstream += '-------------------------------{nline}'
@@ -489,4 +487,4 @@ class SequenceFile(Entity):
         sstream += 'Number of sequences:{tab}{nseq}{nline}' % self.nseq
         sstream += 'Alignment depth (0.8):{tab}{meff}{nline}' % self.meff
         return sstream.format(
-            id=self.id, is_alignment=self.is_alignment, tab='\t', nline=os.linesep, nseq=self.nseq, meff=self.meff)
+            id=self.id, is_alignment=self.is_alignment, tab='\t', nline='\n', nseq=self.nseq, meff=self.meff)
