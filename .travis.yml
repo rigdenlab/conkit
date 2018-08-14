@@ -12,8 +12,8 @@ matrix:
       language: generic
       only: master 
 
-before_install: |
-  if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+before_install:
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
     ci/silence brew update
     brew install wget
   fi
