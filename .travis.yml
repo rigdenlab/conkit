@@ -14,7 +14,7 @@ matrix:
 
 before_install:
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-    ci/silence brew update
+    brew update
     brew install wget
   fi
 
