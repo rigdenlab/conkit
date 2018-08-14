@@ -55,24 +55,21 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 
     def test_write_1(self):
         msa = [
-            "GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF",
-            "EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA",
-            "EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF",
-            "EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF",
-            "",
+            'GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF',
+            'EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA',
+            'EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF',
+            'EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF',
         ]
-        msa = os.linesep.join(msa)
-        f_name_in = create_tmp_f(content=msa)
+        f_name_in = create_tmp_f(content='\n'.join(msa))
         f_name_out = create_tmp_f()
         parser = A2mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
+            output = f_in.read().splitlines()
         self.assertEqual(msa, output)
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
+        map(os.unlink, [f_name_in, f_name_out])
 
 
 if __name__ == "__main__":

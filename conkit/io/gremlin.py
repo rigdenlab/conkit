@@ -35,7 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "04 Oct 2016"
 __version__ = "0.1"
 
-import os
 import re
 
 from conkit.io._parser import ContactFileParser
@@ -152,39 +151,30 @@ class GremlinParser(ContactFileParser):
                     or :obj:`~conkit.core.contact.Contact`
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
-
         content = ""
-
         if contact_file.top_map.top_contact.res1_chain and contact_file.top_map.top_contact.res2_chain:
             header_args = ['i', 'j', 'gene', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob', 'I_prob']
-            content += '\t'.join(header_args) + os.linesep
-
+            content += '\t'.join(header_args) + '\n'
             out_kwargs = [
                 '{res1_seq}', '{res2_seq}', '{chains}', '{res1_code}', '{res2_code}', '{raw_score}', '{scalar_score}',
                 '1.0', 'N/A'
             ]
-
         else:
             header_args = ['i', 'j', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob']
-            content += '\t'.join(header_args) + os.linesep
-
+            content += '\t'.join(header_args) + '\n'
             out_kwargs = [
                 '{res1_seq}', '{res2_seq}', '{res1_code}', '{res2_code}', '{raw_score}', '{scalar_score}', '1.0'
             ]
-
         for contact_map in contact_file:
             contact_map.set_scalar_score()
             for c in contact_map:
                 res1_code = str(c.res1_seq) + '_' + c.res1
                 res2_code = str(c.res2_seq) + '_' + c.res2
-
                 if c.res1_chain == c.res2_chain:
                     chains = c.res1_chain
                 else:
-                    chains = "{0}{1}".format(c.res1_chain, c.res2_chain)
-
+                    chains = "{}{}".format(c.res1_chain, c.res2_chain)
                 out_line = '\t'.join(out_kwargs)
                 out_line = out_line.format(
                     res1_seq=c.res1_seq,
@@ -194,7 +184,5 @@ class GremlinParser(ContactFileParser):
                     chains=chains,
                     raw_score=c.raw_score,
                     scalar_score=round(c.scalar_score, 1))
-
-                content += out_line + os.linesep
-
+                content += out_line + '\n'
         f_handle.write(content)

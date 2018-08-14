@@ -483,9 +483,10 @@ class SequenceFile(Entity):
         str
         
         """
-        sstream = 'Summary for %s\n' % self.id
-        sstream += '-------------------------------\n'
-        sstream += 'Alignment:\t\t%s\n' % self.is_alignment
-        sstream += 'Number of sequences:\t%d\n' % self.nseq
-        sstream += 'Alignment depth (0.8):\t%d\n' % self.meff
-        return sstream
+        sstream = 'Summary for {id}{nline}'
+        sstream += '-------------------------------{nline}'
+        sstream += 'Alignment:{tab}{tab}{is_alignment}'
+        sstream += 'Number of sequences:{tab}{nseq}{nline}' % self.nseq
+        sstream += 'Alignment depth (0.8):{tab}{meff}{nline}' % self.meff
+        return sstream.format(
+            id=self.id, is_alignment=self.is_alignment, tab='\t', nline=os.linesep, nseq=self.nseq, meff=self.meff)

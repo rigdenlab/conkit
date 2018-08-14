@@ -11,7 +11,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestFastaParser(unittest.TestCase):
-
     def test_read_1(self):
         seq = """>00FAF_A <unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
@@ -80,40 +79,34 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK",
             "EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA",
             "SSEHP",
-            "",
         ]
-        seq = os.linesep.join(seq)
-        f_name_in = create_tmp_f(content=seq)
+        f_name_in = create_tmp_f(content='\n'.join(seq))
         f_name_out = create_tmp_f()
         parser = FastaParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
+            output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
+        map(os.unlink, [f_name_in, f_name_out])
 
     def test_write_2(self):
         seq = [
             "# Hello World",
             ">00FAF_A|<unknown description>",
             "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK",
-            "",
         ]
-        seq = os.linesep.join(seq)
-        f_name_in = create_tmp_f(content=seq)
+        f_name_in = create_tmp_f(content='\n'.join(seq))
         f_name_out = create_tmp_f()
         parser = FastaParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
+            output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
+        map(os.unlink, [f_name_in, f_name_out])
 
     def test_write_3(self):
         msa = [
@@ -125,20 +118,16 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             "EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA",
             ">seq3",
             "EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF",
-            "",
         ]
-        msa = os.linesep.join(msa)
-        f_name_in = create_tmp_f(content=msa)
+        f_name_in = create_tmp_f(content='\n'.join(msa))
         f_name_out = create_tmp_f()
         parser = FastaParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
+            output = f_in.read().splitlines()
         self.assertEqual(msa, output)
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
 
 
 if __name__ == "__main__":

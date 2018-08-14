@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestComsatParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """19   A   41   A   H1-H2
 19   A   42   C   H1-H2
@@ -52,10 +51,10 @@ class TestComsatParser(unittest.TestCase):
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(28, len(contact_map1))
-        self.assertEqual(
-            [19, 19, 11, 11, 12, 12, 40, 41, 33, 33, 46, 47, 69, 69, 96, 96, 82, 82, 82, 83, 128, 129, 118, 119, 20, 21, 8, 9],
-            [c.res1_seq for c in contact_map1]
-        )
+        self.assertEqual([
+            19, 19, 11, 11, 12, 12, 40, 41, 33, 33, 46, 47, 69, 69, 96, 96, 82, 82, 82, 83, 128, 129, 118, 119, 20, 21,
+            8, 9
+        ], [c.res1_seq for c in contact_map1])
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -79,12 +78,10 @@ class TestComsatParser(unittest.TestCase):
             "1	H	10	L	Hx-Hx",
             "2	L	8	I	Hx-Hx",
             "3	E	12	K	Hx-Hx",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

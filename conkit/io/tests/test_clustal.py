@@ -60,7 +60,7 @@ seq_2           CCCCCCCCC
         os.unlink(f_name)
 
     def test_read_3(self):
-        msa = """CLUSTAL FORMAT for 
+        msa = """CLUSTAL FORMAT for
 
 seq_0           AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 seq_1           BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
@@ -96,20 +96,18 @@ seq_2           CCCCCCCCC
             ""
             "seq_0\tAAAAAAAAAAAAAAAAAAAAAA",
             "seq_1\tBBBBBBBBBBBBBBBBBBBBBB",
-            "",
         ]
-        seq = os.linesep.join(seq)
-        f_name_in = create_tmp_f(content=seq)
+        joinedseq = '\n'.join(seq)
+        f_name_in = create_tmp_f(content=joinedseq)
         f_name_out = create_tmp_f()
         parser = ClustalParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
+            output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
+        map(os.unlink, [f_name_in, f_name_out])
 
 
 if __name__ == "__main__":

@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestCaspParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """PFRMAT RR
 TARGET R9999
@@ -277,12 +276,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_2(self):
@@ -306,12 +303,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_3(self):
@@ -333,12 +328,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_4(self):
@@ -363,12 +356,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_5(self):
@@ -393,21 +384,17 @@ END
             "3    12   0   8   0.388889",
             "ENDMDL",
             "END",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_6(self):
         contact_file = ContactFile('RR')
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
-        for c in [('A', 1, 'B', 9, 0, 8, 0.7),
-                  ('A', 1, 'B', 10, 0, 8, 0.7),
-                  ('A', 2, 'B', 8, 0, 8, 0.9),
+        for c in [('A', 1, 'B', 9, 0, 8, 0.7), ('A', 1, 'B', 10, 0, 8, 0.7), ('A', 2, 'B', 8, 0, 8, 0.9),
                   ('A', 3, 'B', 12, 0, 8, 0.4)]:
             contact = Contact(c[1], c[3], c[6], distance_bound=(c[4], c[5]))
             contact.res1_chain = c[0]
@@ -428,15 +415,12 @@ END
             "A3    B12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-

@@ -585,7 +585,7 @@ class ContactMap(Entity):
         if self.empty:
             raise ValueError("ContactMap is empty")
 
-        x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)])[:, np.newaxis]
+        x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)], dtype=np.int64)[:, np.newaxis]
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
         from conkit.misc.bandwidth import bandwidth_factory
         bandwidth = bandwidth_factory(bw_method)(x).bw

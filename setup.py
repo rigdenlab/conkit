@@ -7,7 +7,7 @@ from setuptools import setup, Extension
 import os
 import sys
 
-SETUPREQUIRES = ['numpy >=1.8.2', 'cython >=0.28.2']
+SETUPREQUIRES = ['cython >=0.28.2', 'scipy >=0.13.3', 'numpy >=1.8.2']
 
 # Credits to https://github.com/pytest-dev/pytest-xdist/issues/136#issuecomment-293029492
 try:
@@ -123,7 +123,7 @@ def version():
     main_ns = {}
     ver_path = convert_path('conkit/version.py')
     with open(ver_path) as f_in:
-        exec (f_in.read(), main_ns)
+        exec(f_in.read(), main_ns)
     return main_ns['__version__']
 
 

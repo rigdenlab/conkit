@@ -36,7 +36,6 @@ __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
 import collections
-import os
 import re
 
 from conkit.io._parser import ContactFileParser
@@ -87,59 +86,41 @@ class CaspParser(ContactFileParser):
 
         """
         lines = [l.strip() for l in f_handle.readlines()]
-
         contact_file = ContactFile(f_id)
-
         it = iter(lines)
         while True:
-
             try:
                 line = next(it)
             except StopIteration:
                 break
-
             if RE_PRFMAT.match(line):
                 continue
-
             elif RE_TARGET.match(line):
                 contact_file.remark = RE_TARGET.match(line).group(1)
-
             elif RE_AUTHOR.match(line):
                 contact_file.author = RE_AUTHOR.match(line).group(1)
-
             elif RE_REMARK.match(line):
                 contact_file.remark = RE_REMARK.match(line).group(1)
-
             elif RE_METHOD.match(line):
                 contact_file.method = RE_METHOD.match(line).group(1)
-
             elif RE_MODEL.match(line):
                 contact_map = ContactMap(RE_MODEL.match(line).group(1))
-
                 seq_chunks = []
-
                 while True:
-
                     try:
                         line = next(it)
                     except StopIteration:
                         break
-
                     if not line:
                         break
-
                     if RE_ENDMDL.match(line):
                         break
-
                     elif RE_END.match(line):
                         break
-
                     elif RE_SEQ.match(line):
                         seq_chunks.append(line)
-
                     else:
                         res1_entry, res2_entry, lb, ub, raw_score = RE_SPLIT.split(line)
-
                         # Split in case we have chain in inter-molecular scenarios
                         res1_split = RE_RES.split(res1_entry)
                         if len(res1_split) == 1:
@@ -147,12 +128,10 @@ class CaspParser(ContactFileParser):
                         elif len(res1_split) == 4:
                             res1_chain, res1_seq = res1_split[1], res1_split[2]
                         res2_split = RE_RES.split(res2_entry)
-
                         if len(res2_split) == 1:
                             res2_chain, res2_seq = '', res2_split[0]
                         elif len(res2_split) == 4:
                             res2_chain, res2_seq = res2_split[1], res2_split[2]
-
                         contact = Contact(
                             int(res1_seq), int(res2_seq), float(raw_score), distance_bound=(float(lb), float(ub)))
                         contact.res1_chain = res1_chain
@@ -160,20 +139,16 @@ class CaspParser(ContactFileParser):
                         contact.res1_altseq = int(res1_seq)
                         contact.res2_altseq = int(res2_seq)
                         contact_map.add(contact)
-
                 if seq_chunks:
-                    seq = "".join(seq_chunks)
-                    sequence = Sequence('seq_{0}'.format(contact_map.id), seq)
+                    seq = ''.join(seq_chunks)
+                    sequence = Sequence('seq_{}'.format(contact_map.id), seq)
                     contact_map.sequence = sequence
                     contact_map.set_sequence_register()
                 contact_file.add(contact_map)
-
             elif RE_END.match(line):
                 break
-
             else:
                 raise ValueError('Unrecognized line type. Please report this issue')
-
         return contact_file
 
     def write(self, f_handle, hierarchy):
@@ -187,36 +162,31 @@ class CaspParser(ContactFileParser):
                     or :obj:`~conkit.core.contact.Contact`
 
         """
-
-        # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
-
-        content = "PFRMAT RR" + os.linesep
+        content = 'PFRMAT RR\n'
         if contact_file.target:
-            content += "TARGET {0}".format(contact_file.target) + os.linesep
+            content += 'TARGET {}\n'.format(contact_file.target)
         if contact_file.author:
-            content += "AUTHOR {0}".format(contact_file.author) + os.linesep
+            content += 'AUTHOR {}\n'.format(contact_file.author)
         if contact_file.remark:
             for remark in contact_file.remark:
-                content += "REMARK {0}".format(remark) + os.linesep
+                content += 'REMARK {}\n'.format(remark)
         if contact_file.method:
             for method in contact_file.method:
-                content += "METHOD {0}".format(method) + os.linesep
-
+                content += 'METHOD {}\n'.format(method)
         for contact_map in contact_file:
-
-            content += "MODEL  {0}".format(contact_map.id) + os.linesep
+            content += 'MODEL  {}\n'.format(contact_map.id)
             if isinstance(contact_map.sequence, Sequence):
                 sequence = contact_map.sequence
                 for i in range(0, sequence.seq_len, 50):
-                    content += sequence.seq[i:i + 50] + os.linesep
+                    content += sequence.seq[i:i + 50] + '\n'
             # Casp Roll format specifies raw scores to be in [0, 1]
             if any(c.raw_score > 1.0 or c.raw_score < 0.0 for c in contact_map):
                 contact_map.rescale(inplace=True)
             for contact in contact_map:
-                s = '{res1_chain: <}{res1_seq: <4} {res2_chain: <}{res2_seq:<4} {lb: <3} {ub: <3} {raw_score: <.6f}'
+                s = '{res1_chain: <}{res1_seq: <4} {res2_chain: <}{res2_seq:<4} {lb: <3} {ub: <3} {raw_score: <.6f}\n'
                 if contact.res1_chain == contact.res2_chain:
-                    res1_chain = res2_chain = ""
+                    res1_chain = res2_chain = ''
                 else:
                     res1_chain = contact.res1_chain
                     res2_chain = contact.res2_chain
@@ -230,9 +200,7 @@ class CaspParser(ContactFileParser):
                     lb=lb,
                     ub=ub,
                     raw_score=contact.raw_score)
-                content += s + os.linesep
-            content += "ENDMDL" + os.linesep
-
-        content += "END" + os.linesep
-
+                content += s
+            content += 'ENDMDL\n'
+        content += 'END\n'
         f_handle.write(content)
