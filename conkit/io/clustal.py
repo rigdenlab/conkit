@@ -118,9 +118,9 @@ class ClustalParser(SequenceFileParser):
                 this += [sequence.seq[i:i + 60]]
             chunker += [this]
 
-        content = 'CLUSTAL FORMAT written with ConKit\n'
-        content += '\n'
-        linetemplate = '%-{}s\t%s\n'.format(longest)
+        content = 'CLUSTAL FORMAT written with ConKit' + os.linesep
+        content += os.linesep
+        linetemplate = '%-{}s\t%s'.format(longest) + os.linesep
         while len(chunker) > 0:
             entry = chunker.pop(0)
             content += linetemplate % (entry[0], entry[1])
