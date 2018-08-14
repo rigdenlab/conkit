@@ -65,8 +65,15 @@ def main():
     global logger
     logger = conkit.command_line.setup_logging(level='info')
 
-    logger.info("Converting file\n\t%s of format %s\nto file\n\t%s of format %s", args.infile, args.informat,
-                args.outfile, args.outformat)
+    msg = 'Convertin file{nline}{tab}{infile} of format {informat}{nline}to file{nline}{tab}{outfile}{outformat}'
+    msg = msg.format(
+        nline=os.linesep,
+        tab='\t',
+        infile=args.infile,
+        informat=args.informat,
+        outfile=args.outfile,
+        outformat=args.outformat)
+    logger.info(msg)
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
 
     return
