@@ -12,85 +12,85 @@ from conkit.misc.ext import c_bandwidth
 
 class TestAmiseBW(unittest.TestCase):
     def test_bandwidth_1(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4)])
+        xy = np.array([(1, 5), (3, 3), (2, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.AmiseBW(x).bandwidth, 7), 1.1455243)
 
     def test_bandwidth_2(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)])
+        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.AmiseBW(x).bandwidth, 7), 1.5310027)
 
     def test_bandwidth_3(self):
-        xy = np.array([(3, 5), (2, 4), (3, 4)])
+        xy = np.array([(3, 5), (2, 4), (3, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.AmiseBW(x).bandwidth, 7), 0.3758801)
 
 
 class TestBowmanBW(unittest.TestCase):
     def test_bandwidth_1(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4)])
+        xy = np.array([(1, 5), (3, 3), (2, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.BowmanBW(x).bandwidth, 7), 0.7881495)
 
     def test_bandwidth_2(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)])
+        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.BowmanBW(x).bandwidth, 7), 1.4223373)
 
     def test_bandwidth_3(self):
-        xy = np.array([(3, 5), (2, 4), (3, 4)])
+        xy = np.array([(3, 5), (2, 4), (3, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.BowmanBW(x).bandwidth, 7), 0.6052020)
 
 
 class TestLinearBW(unittest.TestCase):
     def test_bandwidth_1(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4)])
+        xy = np.array([(1, 5), (3, 3), (2, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(bandwidth.LinearBW(x, threshold=8).bandwidth, 0.625)
 
     def test_bandwidth_2(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)])
+        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(bandwidth.LinearBW(x, threshold=10).bandwidth, 1.0)
 
     def test_bandwidth_3(self):
-        xy = np.array([(3, 5), (2, 4), (3, 4)])
+        xy = np.array([(3, 5), (2, 4), (3, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.LinearBW(x, threshold=15).bandwidth, 7), 0.3333333)
 
 
 class TestScottBW(unittest.TestCase):
     def test_bandwidth_1(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4)])
+        xy = np.array([(1, 5), (3, 3), (2, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.ScottBW(x).bandwidth, 7), 0.8357821)
 
     def test_bandwidth_2(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)])
+        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.ScottBW(x).bandwidth, 7), 1.4513602)
 
     def test_bandwidth_3(self):
-        xy = np.array([(3, 5), (2, 4), (3, 4)])
+        xy = np.array([(3, 5), (2, 4), (3, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.ScottBW(x).bandwidth, 7), 0.5179240)
 
 
 class TestSilvermanBW(unittest.TestCase):
     def test_bandwidth_1(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4)])
+        xy = np.array([(1, 5), (3, 3), (2, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.SilvermanBW(x).bandwidth, 7), 0.7523629)
 
     def test_bandwidth_2(self):
-        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)])
+        xy = np.array([(1, 5), (3, 3), (2, 4), (1, 10), (4, 9)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.SilvermanBW(x).bandwidth, 7), 1.3065002)
 
     def test_bandwidth_3(self):
-        xy = np.array([(3, 5), (2, 4), (3, 4)])
+        xy = np.array([(3, 5), (2, 4), (3, 4)], dtype=np.int64)
         x = np.asarray([i for (x, y) in xy for i in np.arange(x, y + 1)])[:, np.newaxis]
         self.assertEqual(round(bandwidth.SilvermanBW(x).bandwidth, 7), 0.4662301)
 
@@ -135,8 +135,7 @@ class Test(unittest.TestCase):
 
 class TestExt(unittest.TestCase):
     def test_gauss_curvature_1(self):
-        A = np.array(
-            [[1], [2], [3], [4], [5], [3], [2], [3], [4]], dtype=np.int64)
+        A = np.array([[1], [2], [3], [4], [5], [3], [2], [3], [4]], dtype=np.int64)
         curvature = c_bandwidth.c_get_gauss_curvature(A, -1.5, 0.5)
         self.assertAlmostEqual(3.171746247735917e-05, curvature)
 
