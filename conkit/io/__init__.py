@@ -34,7 +34,6 @@ __date__ = '13 Aug 2018'
 __version__ = '0.2'
 
 import importlib
-import os
 
 from conkit.io._cache import PARSER_CACHE
 from conkit.io._iotools import open_f_handle

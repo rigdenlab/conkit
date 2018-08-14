@@ -42,7 +42,6 @@ __date__ = "11 Sep 2016"
 __version__ = "0.1"
 
 import numpy as np
-import os
 import re
 
 from conkit.io._parser import SequenceFileParser
@@ -75,21 +74,15 @@ class A3mParser(SequenceFileParser):
         :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """
-
-        # Create a new sequence file instance
         sequence_file = SequenceFile(f_id)
-
-        # Read any possible comments and store in file remarks
         while True:
             line = f_handle.readline().rstrip()
-
             if not line:
                 continue
             elif line.startswith('#'):
                 sequence_file.remark = line[1:]
             elif line.startswith('>'):
                 break
-
         while True:
             if not line.startswith('>'):
                 raise ValueError("Fasta record needs to start with '>'")
@@ -120,10 +113,8 @@ class A3mParser(SequenceFileParser):
                 sequence_file.add(sequence_entry)
             if not line:
                 break
-
         if not remove_inserts:
             self._adjust_insert(sequence_file)
-
         return sequence_file
 
     def _adjust_insert(self, hierarchy):
@@ -135,7 +126,6 @@ class A3mParser(SequenceFileParser):
         repository - https://github.com/sseemayer/BioPython-A3MIO
 
         """
-
         # Determine the insert states by splitting the sequences into chunks based
         # on the case of the letter.
         INSERT_STATE = re.compile(r'([A-Z0-9~-])')
@@ -151,7 +141,6 @@ class A3mParser(SequenceFileParser):
         # Manipulate each sequence to match insert states
         for sequence_entry, seq in zip(hierarchy, inserts):
             sequence_entry.seq = "".join(pad(insert, insert_len) for insert, insert_len in zip(seq, insert_max_lengths))
-        return
 
     def _remove_inserts(self, seq):
         """Remove insert states"""
@@ -167,20 +156,14 @@ class A3mParser(SequenceFileParser):
         hierarchy : :obj:`~conkit.core.sequencefile.SequenceFile`, :obj:`~conkit.core.sequence.Sequence`
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         sequence_file = self._reconstruct(hierarchy)
-
-        content = ""
-
-        # Write remarks
+        content = ''
         for remark in sequence_file.remark:
-            content += '#{remark}'.format(remark=remark) + os.linesep
-
+            content += '#{remark}\n'.format(remark=remark)
         for sequence_entry in sequence_file:
             header = '>{id}'.format(id=sequence_entry.id)
             if len(sequence_entry.remark) > 0:
                 header = '|'.join([header] + sequence_entry.remark)
-            content += header + os.linesep
-            content += sequence_entry.seq + os.linesep
-
+            content += header + '\n'
+            content += sequence_entry.seq + '\n'
         f_handle.write(content)

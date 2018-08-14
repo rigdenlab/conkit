@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestPconsParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """1 2 0.93514
 1 3 0.67324
@@ -41,10 +40,8 @@ class TestPconsParser(unittest.TestCase):
         self.assertEqual(1, len(contact_file))
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(list(range(2, 18)), [
-                         c.res2_seq for c in contact_map1])
-        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [
-                         c.raw_score for c in contact_map1][:5])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
+        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -74,10 +71,8 @@ Hello WOrld
         self.assertEqual(1, len(contact_file))
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(list(range(2, 18)), [
-                         c.res2_seq for c in contact_map1])
-        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [
-                         c.raw_score for c in contact_map1][:5])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
+        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -122,13 +117,10 @@ Res1 Res2 Score
         self.assertEqual(['Generated from test_remark'], contact_file.remark)
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(list(range(2, 18)), [
-                         c.res2_seq for c in contact_map1])
-        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [
-                         c.raw_score for c in contact_map1][:5])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
+        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         self.assertEqual('shorter_test', contact_map1.sequence.id)
-        self.assertEqual('HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD',
-                         contact_map1.sequence.seq)
+        self.assertEqual('HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD', contact_map1.sequence.seq)
         os.unlink(f_name)
 
     def test_read_4(self):
@@ -174,10 +166,8 @@ Res1 Res2 Score
         self.assertEqual(['Generated from test_remark'], contact_file.remark)
         self.assertEqual(16, len(contact_map1))
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
-        self.assertEqual(list(range(2, 18)), [
-                         c.res2_seq for c in contact_map1])
-        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [
-                         c.raw_score for c in contact_map1][:5])
+        self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
+        self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         self.assertEqual('longer_test', contact_map1.sequence.id)
         self.assertEqual('HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD'
                          'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD',
@@ -189,15 +179,13 @@ Res1 Res2 Score
         contact_file.target = 'R9999'
         contact_file.author = '1234-5678-9000'
         contact_file.remark = ['Predictor remarks']
-        contact_file.method = [
-            'Description of methods used', 'Description of methods used']
+        contact_file.method = ['Description of methods used', 'Description of methods used']
         contact_map = ContactMap('1')
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence(
-            'sequence_1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence('sequence_1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
         with open(f_name, 'w') as f_out:
@@ -222,12 +210,10 @@ Res1 Res2 Score
             "   3   12 0.400000",
             "",
             "##############################################################################",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

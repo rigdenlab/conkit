@@ -276,11 +276,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data.split(os.linesep))
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_2(self):
@@ -304,11 +303,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data.split(os.linesep))
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_3(self):
@@ -330,11 +328,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data.split(os.linesep))
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_4(self):
@@ -359,11 +356,10 @@ END
             "3    12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data.split(os.linesep))
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_5(self):
@@ -388,11 +384,10 @@ END
             "3    12   0   8   0.388889",
             "ENDMDL",
             "END",
-            "",
         ]
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data.split(os.linesep))
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_6(self):
@@ -420,11 +415,10 @@ END
             "A3    B12   0   8   0.400000",
             "ENDMDL",
             "END",
-            "",
         ]
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data.split(os.linesep))
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

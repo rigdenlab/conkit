@@ -35,8 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "0.1"
 
-import os
-
 from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -99,19 +97,13 @@ class PsicovParser(ContactFileParser):
 
         """
         contact_file = self._reconstruct(hierarchy)
-
         if len(contact_file) > 1:
             raise RuntimeError('More than one contact map provided')
-
-        content = ""
-
+        content = ''
         for contact_map in contact_file:
             for contact in contact_map:
-                line = "{res1_seq} {res2_seq} {lb} {ub} {raw_score:.6f}"
+                line = '{} {} {} {} {:.6f}\n'
                 lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
                 ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
-                line = line.format(
-                    res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score, lb=lb, ub=ub)
-                content += line + os.linesep
-
+                content += line.format(contact.res1_seq, contact.res2_seq, lb, ub, contact.raw_score)
         f_handle.write(content)

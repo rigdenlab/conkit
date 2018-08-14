@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestPsicovParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """46 78 0 8 9.301869
 80 105 0 8 8.856009
@@ -37,10 +36,8 @@ class TestPsicovParser(unittest.TestCase):
         self.assertEqual([46, 80, 111, 75, 19, 111, 23, 171, 53, 100], [c.res1_seq for c in contact_map1])
         self.assertEqual([78, 105, 129, 205, 44, 130, 41, 205, 126, 140], [c.res2_seq for c in contact_map1])
         self.assertEqual(
-            [9.301869, 8.856009, 7.252451, 6.800462, 6.588349, 6.184269, 6.163786,
-             5.519271, 5.440612, 5.382865],
-            [c.raw_score for c in contact_map1]
-        )
+            [9.301869, 8.856009, 7.252451, 6.800462, 6.588349, 6.184269, 6.163786, 5.519271, 5.440612, 5.382865],
+            [c.raw_score for c in contact_map1])
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -64,12 +61,10 @@ class TestPsicovParser(unittest.TestCase):
             "1 10 0 8 0.700000",
             "2 8 0 8 0.900000",
             "3 12 0 8 0.400000",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

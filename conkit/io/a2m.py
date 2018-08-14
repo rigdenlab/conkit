@@ -36,8 +36,6 @@ __author__ = "Felix Simkovic"
 __date__ = "30 Jul 2018"
 __version__ = "1.0"
 
-import os
-
 from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
@@ -66,29 +64,20 @@ class A2mParser(SequenceFileParser):
         :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """
-
         hierarchy = SequenceFile(f_id)
-
         for i, line in enumerate(f_handle):
-
-            line = line.rstrip()
-            if not line:
-                continue
-
-            for a, c in enumerate(line):
-                if c.isalpha() or c == '-':
-                    continue
-                else:
+            line = line.strip()
+            if line:
+                for j, char in enumerate(line):
+                    if char.isalpha() or char == '-':
+                        continue
                     indicator = ['-'] * len(line)
-                    indicator[a] = '^'
-                    msg = "Unknown character in line {0}:{1}{1}{2}{1}{3}"
-                    msg = msg.format(i + 1, os.linesep, line, ''.join(indicator))
+                    indicator[j] = '^'
+                    msg = 'Unknown character in line {0}:{1}{1}{2}{1}{3}'
+                    msg = msg.format(i + 1, '\n', line, ''.join(indicator))
                     raise ValueError(msg)
-            sequence = line
-            sequence_entry = Sequence('seq_{i}'.format(i=i), sequence)
-
-            hierarchy.add(sequence_entry)
-
+                sequence = Sequence('seq_{}'.format(i), line)
+                hierarchy.add(sequence)
         return hierarchy
 
     def write(self, f_handle, hierarchy):
@@ -102,7 +91,7 @@ class A2mParser(SequenceFileParser):
 
         """
         sequence_file = self._reconstruct(hierarchy)
-        content = ""
+        content = ''
         for sequence_entry in sequence_file:
-            content += sequence_entry.seq + os.linesep
+            content += sequence_entry.seq + '\n'
         f_handle.write(content)

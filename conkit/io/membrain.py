@@ -35,7 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "12 Oct 2016"
 __version__ = "0.1"
 
-import os
 import re
 
 from conkit.io._parser import ContactFileParser
@@ -111,24 +110,19 @@ class MemBrainParser(ContactFileParser):
            More than one contact map in the hierarchy
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
-
         if len(contact_file) > 1:
             raise RuntimeError('More than one contact map provided')
-
-        content = ""
-
+        content = ''
         for contact_map in contact_file:
-            content += 'Helix   Position        Residue Helix   Position        Residue Probability' + os.linesep
+            content += 'Helix   Position        Residue Helix   Position        Residue Probability\n'
             for contact in contact_map:
-                line = "Hx      {res1_seq: <7} {res1: <7} Hx      {res2_seq: <7} {res2: <7} {raw_score: <.6f}"
+                line = 'Hx      {res1_seq: <7} {res1: <7} Hx      {res2_seq: <7} {res2: <7} {raw_score: <.6f}\n'
                 line = line.format(
                     res1_seq=contact.res1_seq,
                     res2_seq=contact.res2_seq,
                     res1=contact.res1,
                     res2=contact.res2,
                     raw_score=contact.raw_score)
-                content += line + os.linesep
-
+                content += line
         f_handle.write(content)

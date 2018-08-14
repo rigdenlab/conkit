@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestPlmDCAParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """1,2,0.12212
 1,3,0.14004
@@ -38,8 +37,7 @@ class TestPlmDCAParser(unittest.TestCase):
         self.assertEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [c.res2_seq for c in contact_map1])
         self.assertEqual(
             [0.12212, 0.14004, 0.12926, 0.089211, 0.079976, 0.078954, 0.052275, 0.026012, 0.049844, 0.045109],
-            [c.raw_score for c in contact_map1]
-        )
+            [c.raw_score for c in contact_map1])
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -63,12 +61,10 @@ class TestPlmDCAParser(unittest.TestCase):
             "1,10,0.700000",
             "2,8,0.900000",
             "3,12,0.400000",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

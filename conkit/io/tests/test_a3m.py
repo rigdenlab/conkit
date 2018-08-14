@@ -229,8 +229,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
-
-        f_name_in = create_tmp_f(content=os.linesep.join(msa))
+        f_name_in = create_tmp_f(content='\n'.join(msa))
         f_name_out = create_tmp_f()
         parser = A3mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
@@ -257,13 +256,11 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             "PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPVHLWQMTTLFQEPSPDSLKTFNFL",
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLETCSHSPVHLWQMTRYPQEPAPYNPMNYNFL",
-            "",
         ]
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
-        self.assertEqual(ref, output.split(os.linesep))
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
+            output = f_in.read().splitlines()
+        self.assertEqual(ref, output)
+        map(os.unlink, [f_name_in, f_name_out])
 
     def test_write_2(self):
         msa = [
@@ -289,7 +286,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
 
-        f_name_in = create_tmp_f(content=os.linesep.join(msa))
+        f_name_in = create_tmp_f(content='\n'.join(msa))
         f_name_out = create_tmp_f()
         parser = A3mParser()
         with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
@@ -316,13 +313,11 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             "PPCFLVCTRDDIYEDEHGRQWVAAKVE--T--S--SH---------SPycskietcvtVHLWQMTTLFQ-------EPSPDSLKTFN-----FL",
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLE--T--C--SH---------SPycnkietcvtVHLWQMTRYPQ-------EPAPYNPMNYN-----FL",
-            "",
         ]
         with open(f_name_out, 'r') as f_in:
-            output = "".join(f_in.readlines())
-        self.assertEqual(ref, output.split(os.linesep))
-        os.unlink(f_name_in)
-        os.unlink(f_name_out)
+            output = f_in.read().splitlines()
+        self.assertEqual(ref, output)
+        map(os.unlink, [f_name_in, f_name_out])
 
 
 if __name__ == "__main__":
