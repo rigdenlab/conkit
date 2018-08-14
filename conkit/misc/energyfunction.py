@@ -37,8 +37,6 @@ __version__ = '1.0'
 class RosettaFunctionConstructs(object):
     """Storage for string formats of different Rosetta energy function constructs
 
-    Description
-    -----------
     For more information on the different energy functions, please refer to the
     corresponding references or the official `RosettaCommons documentation
     <https://www.rosettacommons.org/docs/latest/rosetta_basics/file_types/constraint-file>`_
@@ -57,11 +55,11 @@ class RosettaFunctionConstructs(object):
 
     @property
     def BOUNDED_gremlin(self):
-        """Energy function according to [2]_
+        """Energy function according to [#]_
 
         References
         ----------
-        .. [2] Ovchinnekov et al. (2015). Large-scale determination of previously unsolved
+        .. [#] Ovchinnekov et al. (2015). Large-scale determination of previously unsolved
            protein structures using evolutionary information. Elife 3(4), e09248.
 
         """
@@ -72,14 +70,14 @@ class RosettaFunctionConstructs(object):
 
     @property
     def FADE(self):
-        """Energy function according to [3]_ and [4]_
+        """Energy function according to [#]_ and [#]_
 
         References
         ----------
-        .. [3] Simkovic et al. (2016). Residue contacts predicted by evolutionary covariance
+        .. [#] Simkovic et al. (2016). Residue contacts predicted by evolutionary covariance
            extend the application of ab initio molecular replacement to larger and more
            challenging protein folds. IUCrJ 3(Pt 4), 259-270.
-        .. [4] Michel et al. (2014). PconsFold: improved contact predictions improve protein
+        .. [#] Michel et al. (2014). PconsFold: improved contact predictions improve protein
            models. Bioinformatics 30(17), i482-i488
 
         """
@@ -89,11 +87,11 @@ class RosettaFunctionConstructs(object):
 
     @property
     def FADE_default(self):
-        """Energy function according to [4]_
+        """Energy function according to [#]_
 
         References
         ----------
-        .. [4] Michel et al. (2014). PconsFold: improved contact predictions improve protein
+        .. [#] Michel et al. (2014). PconsFold: improved contact predictions improve protein
            models. Bioinformatics 30(17), i482-i488
 
         """
@@ -110,11 +108,11 @@ class RosettaFunctionConstructs(object):
 
     @property
     def SIGMOID_gremlin(self):
-        """Energy function according to [2]_
+        """Energy function according to [#]_
 
         References
         ----------
-        .. [2] Ovchinnekov et al. (2015). Large-scale determination of previously unsolved
+        .. [#] Ovchinnekov et al. (2015). Large-scale determination of previously unsolved
            protein structures using evolutionary information. Elife 4, e09248.
 
         """
