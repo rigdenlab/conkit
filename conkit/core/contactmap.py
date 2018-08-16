@@ -32,7 +32,6 @@
 """ContactMap container used throughout ConKit"""
 
 from __future__ import division
-from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
@@ -40,7 +39,6 @@ __version__ = "1.0"
 
 import collections
 import numpy as np
-import os
 import sys
 
 if sys.version_info.major < 3:
@@ -57,7 +55,7 @@ class ContactMap(Entity):
     """A contact map object representing a single prediction
 
     The :obj:`~conkit.core.contactmap.ContactMap` class represents a data structure to hold a single
-    contact map prediction in one place. It contains functions to store, manipulate and organise 
+    contact map prediction in one place. It contains functions to store, manipulate and organise
     :obj:`~conkit.core.contact.Contact` instances.
 
     Examples
@@ -86,7 +84,7 @@ class ContactMap(Entity):
     sequence : :obj:`~conkit.core.sequence.Sequence`
        The :obj:`~conkit.core.sequence.Sequence` associated with the :obj:`~conkit.core.contactmap.ContactMap`
     top_contact : :obj:`~conkit.core.contact.Contact`
-       The first :obj:`~conkit.core.contact.Contact` entry 
+       The first :obj:`~conkit.core.contact.Contact` entry
 
     """
     __slots__ = ['_sequence']
@@ -104,7 +102,7 @@ class ContactMap(Entity):
         """The sequence coverage score
 
         The coverage score is calculated by dividing the number of residues
-        covered by the predicted contact pairs :math:`x_{cov}` by the number 
+        covered by the predicted contact pairs :math:`x_{cov}` by the number
         of residues in the sequence :math:`L`.
 
         .. math::
@@ -132,7 +130,7 @@ class ContactMap(Entity):
 
     @property
     def ncontacts(self):
-        """The number of :obj:`~conkit.core.contact.Contact` instances 
+        """The number of :obj:`~conkit.core.contact.Contact` instances
 
         Returns
         -------
@@ -270,12 +268,12 @@ class ContactMap(Entity):
            Recall=\\frac{TruePositives}{TruePositives + FalseNegatives}
 
         The status of each contact, i.e true positive and false negative status, can be
-        determined by running the :meth:`~conkit.core.contactmap.ContactMap.match` function 
+        determined by running the :meth:`~conkit.core.contactmap.ContactMap.match` function
         providing a reference structure.
 
         Note
         ----
-        To determine and **save** the false negatives, please use the `add_false_negatives` keyword when 
+        To determine and **save** the false negatives, please use the `add_false_negatives` keyword when
         running the :meth:`~conkit.core.contactmap.ContactMap.match` function.
 
         You may wish to run :meth:`~conkit.core.contactmap.ContactMap.remove_false_negatives`
@@ -313,7 +311,7 @@ class ContactMap(Entity):
 
     @property
     def repr_sequence(self):
-        """The representative :obj:`~conkit.core.sequence.Sequence` associated 
+        """The representative :obj:`~conkit.core.sequence.Sequence` associated
         with the :obj:`~conkit.core.contactmap.ContactMap`
 
         The peptide sequence constructed from the available
@@ -341,7 +339,7 @@ class ContactMap(Entity):
 
     @property
     def repr_sequence_altloc(self):
-        """The representative altloc :obj:`~conkit.core.sequence.Sequence` associated 
+        """The representative altloc :obj:`~conkit.core.sequence.Sequence` associated
         with the :obj:`~conkit.core.contactmap.ContactMap`
 
         The peptide sequence constructed from the available
@@ -370,7 +368,7 @@ class ContactMap(Entity):
     @property
     def singletons(self):
         """Singleton contact pairs in the current :obj:`~conkit.core.contactmap.ContactMap`
-        
+
         Contacts are identified by a distance-based grouping analysis. A :obj:`~conkit.core.contact.Contact` is
         classified as singleton if not other contacts are found within 2 residues.
 
@@ -426,7 +424,7 @@ class ContactMap(Entity):
 
     @property
     def top_contact(self):
-        """The first :obj:`~conkit.core.contact.Contact` entry 
+        """The first :obj:`~conkit.core.contact.Contact` entry
 
         Returns
         -------
@@ -594,7 +592,7 @@ class ContactMap(Entity):
 
     @deprecate('0.11', msg='Use set_scalar_score instead.')
     def calculate_scalar_score(self):
-        """Calculate a :attr:`~conkit.core.contact.Contact.scalar_score` for the 
+        """Calculate a :attr:`~conkit.core.contact.Contact.scalar_score` for the
         :obj:`~conkit.core.contactmap.ContactMap`"""
         return self.set_scalar_score()
 
@@ -673,7 +671,7 @@ class ContactMap(Entity):
         add_false_negatives : bool
            Add false negatives to the `self`, which are contacts in `other` but not in `self`
 
-           Required for :meth:`~conkit.core.contactmap.ContactMap.recall` and can be undone 
+           Required for :meth:`~conkit.core.contactmap.ContactMap.recall` and can be undone
            with :meth:`~conkit.core.contactmap.ContactMap.remove_false_negatives`
         other : :obj:`~conkit.core.contactmap.ContactMap`
            A ConKit :obj:`~conkit.core.contactmap.ContactMap`
@@ -684,8 +682,8 @@ class ContactMap(Entity):
         renumber : bool, optional
            Renumber the :attr:`~conkit.core.contact.Contact.res_seq` entries [default: False]
 
-           If ``True``, :attr:`~conkit.core.contact.Contact.res1_seq` and 
-           :attr:`~conkit.core.contact.Contact.res2_seq` changes 
+           If ``True``, :attr:`~conkit.core.contact.Contact.res1_seq` and
+           :attr:`~conkit.core.contact.Contact.res2_seq` changes
            but :attr:`~conkit.core.contact.Contact.id` remains the same
         inplace : bool, optional
            Replace the saved order of contacts [default: False]
@@ -946,7 +944,7 @@ class ContactMap(Entity):
     def to_string(self):
         """Return the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` as :obj:`str`"""
         content = ["%d\t%d\t%.5f" % (c.res1_seq, c.res2_seq, c.raw_score) for c in self]
-        return os.linesep.join(content)
+        return '\n'.join(content)
 
     @staticmethod
     def _adjust(contact_map, keymap):

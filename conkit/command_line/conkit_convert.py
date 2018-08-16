@@ -47,7 +47,6 @@ __date__ = "01 Oct 2016"
 __version__ = "0.1"
 
 import argparse
-import os
 
 import conkit.command_line
 import conkit.io
@@ -76,7 +75,7 @@ def main():
         informat=args.informat,
         outfile=args.outfile,
         outformat=args.outformat,
-        nline=os.linesep,
+        nline='\n',
         tab='\t')
     logger.info(msg)
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
