@@ -35,7 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "0.1"
 
-import os
 import re
 
 from conkit.io._parser import ContactFileParser
@@ -107,23 +106,18 @@ class ComsatParser(ContactFileParser):
            More than one contact map in the hierarchy
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
-
         if len(contact_file) > 1:
             raise RuntimeError('More than one contact map provided')
-
-        content = ""
-
+        content = ''
         for contact_map in contact_file:
             for contact in contact_map:
-                line = "{res1_seq}{sep}{res1}{sep}{res2_seq}{sep}{res2}{sep}Hx-Hx"
+                line = '{res1_seq}{sep}{res1}{sep}{res2_seq}{sep}{res2}{sep}Hx-Hx\n'
                 line = line.format(
                     res1_seq=contact.res1_seq,
                     res2_seq=contact.res2_seq,
                     res1=contact.res1,
                     res2=contact.res2,
                     sep="\t")
-                content += line + os.linesep
-
+                content += line
         f_handle.write(content)

@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestEVfoldParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """1 M 2 V 0 0.0338619
 1 M 3 G 0 0.0307956
@@ -36,11 +35,9 @@ class TestEVfoldParser(unittest.TestCase):
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [c.res1_seq for c in contact_map1])
         self.assertEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [c.res2_seq for c in contact_map1])
-        self.assertEqual(
-            [0.0338619, 0.0307956, 0.0268079, 0.0219783, 0.0222061, 0.0213079, 0.0119054,
-             0.0275182, 0.0134577, 0.0234555],
-            [c.raw_score for c in contact_map1]
-        )
+        self.assertEqual([
+            0.0338619, 0.0307956, 0.0268079, 0.0219783, 0.0222061, 0.0213079, 0.0119054, 0.0275182, 0.0134577, 0.0234555
+        ], [c.raw_score for c in contact_map1])
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -64,12 +61,10 @@ class TestEVfoldParser(unittest.TestCase):
             "1 H 10 L 0 0.7",
             "2 L 8 I 0 0.9",
             "3 E 12 K 0 0.4",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

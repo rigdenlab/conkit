@@ -35,7 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "12 Oct 2016"
 __version__ = "0.1"
 
-import os
 import re
 
 from conkit.io._parser import ContactFileParser
@@ -68,27 +67,18 @@ class FreeContactParser(ContactFileParser):
         :obj:`~conkit.core.contactfile.ContactFile`
 
         """
-
         hierarchy = ContactFile(f_id)
         contact_map = ContactMap("map_1")
         hierarchy.add(contact_map)
-
         for line in f_handle:
-            line = line.rstrip()
-
-            if not line:
-                continue
-
-            else:
+            line = line.strip()
+            if line:
                 res1_seq, res1, res2_seq, res2, raw_score, _ = RE_SPLIT.split(line)
-
                 contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact.res1 = res1
                 contact.res2 = res2
                 contact_map.add(contact)
-
         hierarchy.method = 'Contact map predicted using FreeContact'
-
         return hierarchy
 
     def write(self, f_handle, hierarchy):
@@ -108,21 +98,17 @@ class FreeContactParser(ContactFileParser):
 
         """
         contact_file = self._reconstruct(hierarchy)
-
         if len(contact_file) > 1:
             raise RuntimeError('More than one contact map provided')
-
-        content = ""
-
+        content = ''
         for contact_map in contact_file:
             for contact in contact_map:
-                line = "{res1_seq} {res1} {res2_seq} {res2} {raw_score} 0"
+                line = '{res1_seq} {res1} {res2_seq} {res2} {raw_score} 0\n'
                 line = line.format(
                     res1_seq=contact.res1_seq,
                     res2_seq=contact.res2_seq,
                     res1=contact.res1,
                     res2=contact.res2,
                     raw_score=contact.raw_score)
-                content += line + os.linesep
-
+                content += line
         f_handle.write(content)

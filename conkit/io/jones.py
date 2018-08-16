@@ -35,8 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "13 Sep 2016"
 __version__ = "0.1"
 
-import os
-
 from conkit.io.a2m import A2mParser
 from conkit.misc import deprecate
 

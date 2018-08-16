@@ -24,8 +24,6 @@ __author__ = 'Felix Simkovic'
 __date__ = '13 Aug 2018'
 __version__ = '1.0'
 
-import os
-
 from conkit.io._parser import ContactFileParser
 from conkit.misc.distances import DynamicDistances
 from conkit.misc.energyfunction import RosettaFunctionConstructs
@@ -80,4 +78,4 @@ class RosettaParser(ContactFileParser):
             contact_dict['scalar_score'] = contact.scalar_score * contact.weight
             contact_dict['sigmoid_cutoff'] = DynamicDistances.cutoff(contact.res1, contact.res2)
             contact_dict['sigmoid_slope'] = 1.0 / DynamicDistances.percentile(contact.res1, contact.res2)
-            f_handle.write(construct.format(**contact_dict) + os.linesep)
+            f_handle.write(construct.format(**contact_dict) + '\n')

@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestMemBrainParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """Helix   Position        Residue Helix   Position        Residue Probability
 H1      30      F       H2      55      F       1.000000
@@ -39,11 +38,10 @@ H1      19      L       H2      55      F       0.782741
         self.assertEqual(12, len(contact_map1))
         self.assertEqual([30, 33, 18, 30, 26, 18, 33, 12, 29, 24, 19, 19], [c.res1_seq for c in contact_map1])
         self.assertEqual([55, 51, 65, 54, 57, 58, 63, 68, 55, 51, 62, 55], [c.res2_seq for c in contact_map1])
-        self.assertEqual(
-            [1.000000, 0.944091, 0.942259, 0.919241, 0.817638, 0.797449, 0.795520,
-             0.795462, 0.791829, 0.790044, 0.784613, 0.782741],
-            [c.raw_score for c in contact_map1]
-        )
+        self.assertEqual([
+            1.000000, 0.944091, 0.942259, 0.919241, 0.817638, 0.797449, 0.795520, 0.795462, 0.791829, 0.790044,
+            0.784613, 0.782741
+        ], [c.raw_score for c in contact_map1])
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -68,12 +66,10 @@ H1      19      L       H2      55      F       0.782741
             "Hx      1       H       Hx      10      L       0.700000",
             "Hx      2       L       Hx      8       I       0.900000",
             "Hx      3       E       Hx      12      K       0.400000",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

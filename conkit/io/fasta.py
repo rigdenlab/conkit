@@ -35,8 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
 __version__ = "0.1"
 
-import os
-
 from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
@@ -117,24 +115,16 @@ class FastaParser(SequenceFileParser):
         hierarchy : :obj:`~conkit.core.sequencefile.SequenceFile`, :obj:`~conkit.core.sequence.Sequence`
 
         """
-        # Double check the type of hierarchy and reconstruct if necessary
         hierarchy = self._reconstruct(hierarchy)
-
-        content = ""
-
-        # Write remarks
+        content = ''
         for remark in hierarchy.remark:
-            content += '#{remark}'.format(remark=remark) + os.linesep
-
+            content += '#{}\n'.format(remark)
         for sequence_entry in hierarchy:
-            header = '>{id}'.format(id=sequence_entry.id)
+            header = '>{}'.format(sequence_entry.id)
             if len(sequence_entry.remark) > 0:
                 header = '|'.join([header] + sequence_entry.remark)
-            content += header + os.linesep
-
-            # Cut the sequence into chunks [FASTA <= 60 chars per line]
+            content += header + '\n'
             sequence_string = sequence_entry.seq.upper()  # UPPER CASE !!!
             for i in range(0, sequence_entry.seq_len, 60):
-                content += sequence_string[i:i + 60] + os.linesep
-
+                content += sequence_string[i:i + 60] + '\n'
         f_handle.write(content)

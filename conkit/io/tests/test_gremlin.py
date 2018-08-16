@@ -15,7 +15,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestGremlinParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """i	j	i_id	j_id	r_sco	s_sco	prob
 179	246	179_C	246_L	0.2019	4.740	1.000
@@ -35,14 +34,9 @@ class TestGremlinParser(unittest.TestCase):
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
-        self.assertEqual(
-            [179, 262, 428, 214, 457, 220, 143, 79, 215, 262],
-            [c.res1_seq for c in contact_map1]
-        )
-        self.assertEqual(
-            [0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
-            [c.raw_score for c in contact_map1]
-        )
+        self.assertEqual([179, 262, 428, 214, 457, 220, 143, 79, 215, 262], [c.res1_seq for c in contact_map1])
+        self.assertEqual([0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
+                         [c.raw_score for c in contact_map1])
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -66,14 +60,9 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
-        self.assertEqual(
-            [179, 262, 428, 214, 457, 220, 143, 79, 215, 262],
-            [c.res1_seq for c in contact_map1]
-        )
-        self.assertEqual(
-            [0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
-            [c.raw_score for c in contact_map1]
-        )
+        self.assertEqual([179, 262, 428, 214, 457, 220, 143, 79, 215, 262], [c.res1_seq for c in contact_map1])
+        self.assertEqual([0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
+                         [c.raw_score for c in contact_map1])
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -102,8 +91,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         chain_b_rawscore = [0.104, 0.059, 0.059, 0.054]
         chain_ab_res1seq = [23, 20, 19, 24]
         chain_ab_rawscore = [0.082, 0.059, 0.059, 0.054]
-        for count, res1_seqs, raw_scores, cmap in zip([5, 4, 4],
-                                                      [chain_a_res1seq, chain_ab_res1seq, chain_b_res1seq],
+        for count, res1_seqs, raw_scores, cmap in zip([5, 4, 4], [chain_a_res1seq, chain_ab_res1seq, chain_b_res1seq],
                                                       [chain_a_rawscore, chain_ab_rawscore, chain_b_rawscore],
                                                       contact_file):
             self.assertEqual(count, len(cmap))
@@ -129,12 +117,10 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             "1	10	1_H	10_L	0.7	1.0	1.0",
             "2	8	2_L	8_I	0.9	1.3	1.0",
             "3	12	3_E	12_K	0.4	0.6	1.0",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_2(self):
@@ -153,20 +139,20 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             "1	10	1_X	10_X	0.7	1.0	1.0",
             "2	8	2_X	8_X	0.9	1.3	1.0",
             "3	12	3_X	12_X	0.4	0.6	1.0",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_3(self):
         contact_file = ContactFile('TEST')
         contact_maps = [ContactMap('A'), ContactMap('AB'), ContactMap('B')]
-        contacts = [(Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)),
-                    (Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)),
-                    (Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4))]
+        contacts = [(Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)), (Contact(
+            1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)), (Contact(1, 9, 0.7),
+                                                                                        Contact(1, 10, 0.7),
+                                                                                        Contact(2, 8, 0.9),
+                                                                                        Contact(3, 12, 0.4))]
         chains = [('A', 'A'), ('A', 'B'), ('B', 'B')]
         for contact_map, contacts, chain in zip(contact_maps, contacts, chains):
             contact_file.add(contact_map)
@@ -193,12 +179,10 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             "1	10	B	1_H	10_L	0.7	1.0	1.0	N/A",
             "2	8	B	2_L	8_I	0.9	1.3	1.0	N/A",
             "3	12	B	3_E	12_K	0.4	0.6	1.0	N/A",
-            "",
         ]
-        content = os.linesep.join(content)
         with open(f_name, 'r') as f_in:
-            data = "".join(f_in.readlines())
-        self.assertEqual(content, data)
+            output = f_in.read().splitlines()
+        self.assertEqual(content, output)
         os.unlink(f_name)
 
 

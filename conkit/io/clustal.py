@@ -36,7 +36,6 @@ __date__ = '30 Jul 2018'
 __version__ = '0.1'
 
 import collections
-import os
 
 from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
@@ -66,15 +65,13 @@ class ClustalParser(SequenceFileParser):
 
         Raises
         ------
-        :exc:`TypeError` 
+        :exc:`TypeError`
            Incorrect file format
 
         """
-
         header = f_handle.readline().rstrip()
         if header[:7].upper() != 'CLUSTAL':
             raise TypeError('Incorrect file format')
-
         cache = collections.OrderedDict()
         for line in f_handle:
             line = line.strip()
@@ -117,15 +114,12 @@ class ClustalParser(SequenceFileParser):
             for i in range(0, sequence.seq_len, 60):
                 this += [sequence.seq[i:i + 60]]
             chunker += [this]
-
-        content = 'CLUSTAL FORMAT written with ConKit' + os.linesep
-        content += os.linesep
-        linetemplate = '%-{}s\t%s'.format(longest) + os.linesep
+        content = 'CLUSTAL FORMAT written with ConKit\n\n'
+        linetemplate = '%-{}s\t%s\n'.format(longest)
         while len(chunker) > 0:
             entry = chunker.pop(0)
             content += linetemplate % (entry[0], entry[1])
             entry.pop(1)
             if len(entry) > 1:
                 chunker.append(entry)
-
         f_handle.write(content)

@@ -35,7 +35,6 @@ __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
 __version__ = "0.1"
 
-import os
 import re
 
 from conkit.io._parser import SequenceFileParser
@@ -72,14 +71,9 @@ class StockholmParser(SequenceFileParser):
         :obj:`~conkit.core.sequencefile.SequenceFile`
 
         """
-
-        # Create a new sequence file instance
         sequence_file = SequenceFile(f_id)
-
-        # Read any possible comments and store in file remarks
         while True:
             line = f_handle.readline().rstrip()
-
             if not line:
                 continue
             elif V_RECORD.match(line):
@@ -87,33 +81,24 @@ class StockholmParser(SequenceFileParser):
                 # sequence_file.add_remark(version)
             elif GF_RECORD.match(line) or GS_RECORD.match(line):
                 break
-
-        # Read the sequence record(s)
         while True:
             if GF_RECORD.match(line):
                 ident = GF_RECORD.match(line).group(1)[:-3]
                 sequence_entry = Sequence(ident, "")
                 sequence_file.add(sequence_entry)
-
             elif GS_RECORD.match(line):
                 ident, _, desc = GS_RECORD.match(line).groups()
                 sequence_entry = Sequence(ident, "")
                 sequence_entry.remark = desc
                 sequence_file.add(sequence_entry)
-
             elif GR_RECORD.match(line):
                 pass
-
             elif len(line.split()) == 2 and line.split()[0] in sequence_file:
                 ident, seq = line.replace('.', '-').split()
                 sequence_file[ident].seq = sequence_file[ident].seq + seq
-
             line = f_handle.readline().rstrip()
-
-            # // char in alignment reached
             if END_RECORD.match(line):
                 break
-
         return sequence_file
 
     def write(self, f_handle, hierarchy):
@@ -127,30 +112,21 @@ class StockholmParser(SequenceFileParser):
 
         """
         sequence_file = self._reconstruct(hierarchy)
-
-        content = "# STOCKHOLM 1.0" + os.linesep
-        content += "#=GF ID {}".format(sequence_file.top_sequence.id) + os.linesep * 2
-
+        content = '# STOCKHOLM 1.0\n'
+        content += '#=GF ID {}\n\n'.format(sequence_file.top_sequence.id)
         chunks = []
         for i, sequence_entry in enumerate(sequence_file):
-
             if i != 0:
-                content += '#=GS {:33} DE {}'.format(sequence_entry.id, " ".join(sequence_entry.remark)) + os.linesep
-
-            # Cut the sequence into chunks [ <= 200 seq chars per line]
+                content += '#=GS {:33} DE {}\n'.format(sequence_entry.id, " ".join(sequence_entry.remark))
             chunk = []
             sequence_string = sequence_entry.seq
             sequence_string = sequence_string.upper()  # UPPER CASE !!!
             for j in range(0, sequence_entry.seq_len, 200):
                 chunk.append(sequence_string[j:j + 200])
             chunks.append(tuple([sequence_entry.id, chunk]))
-
-        # Write the sequence out in chunks
         for j in range(len(chunks[0][1])):
-            content += os.linesep
+            content += '\n'
             for i in range(len(chunks)):
-                content += "{:41} {}".format(chunks[i][0], chunks[i][1][j]) + os.linesep
-
-        content += "//" + os.linesep
-
+                content += '{:41} {}\n'.format(chunks[i][0], chunks[i][1][j])
+        content += '//\n'
         f_handle.write(content)
