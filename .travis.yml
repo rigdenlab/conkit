@@ -13,12 +13,12 @@ matrix:
       only: master 
 
 before_install:
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-      brew update
-      brew install wget
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew update;
+      brew install wget;
     else
-      sudo apt-get update
-  fi
+      sudo apt-get update;
+    fi
 
 install:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
