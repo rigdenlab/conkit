@@ -1,7 +1,6 @@
 language: python
 
 dist: xenial
-sudo: false
 
 matrix:
   include:
@@ -18,7 +17,7 @@ before_install:
       brew install wget
     else
       sudo apt-get update
-  fi
+    fi
 
 install:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
