@@ -44,16 +44,16 @@ class Figure(object):
 
     def __init__(self, ax=None, legend=True, **kwargs):
         """Initialise a new :obj:`conkit.plot.Figure` object
-            
+
         Parameters
         ----------
         ax : :obj:`~matplotlib.axes.Axes`
-           A pre-defined :obj:`~matplotlib.axes.Axes` 
+           A pre-defined :obj:`~matplotlib.axes.Axes`
 
            If ``None`` is provided, a new plot will be created
         legend : bool, optional
            Draw a legend on the plot [default: True]
-        
+
         """
         if ax is None:
             import matplotlib.pyplot as plt

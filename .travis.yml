@@ -42,10 +42,8 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - pip install codecov coverage
-  - python setup.py install
 
 script:
-  - coverage run --source=conkit setup.py test
   - python setup.py test
 
 after_success:

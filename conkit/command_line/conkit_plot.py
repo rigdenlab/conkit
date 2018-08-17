@@ -55,8 +55,7 @@ logger = None
 def _add_default_args(parser):
     parser.add_argument('-dpi', dest='dpi', default=300, type=int, help="the resolution in DPI")
     parser.add_argument('-o', dest='output', default=None, type=str, help="output file")
-    parser.add_argument(
-        "--overwrite", dest="overwrite", default=False, action="store_true", help="overwrite output file if exists")
+    parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true", help="overwrite output file if exists")
 
 
 def _add_contact_default_args(parser):
@@ -111,8 +110,7 @@ reference structure, they will not be plotted.
     subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation')
     subparser.add_argument('-e', dest='otherfile', default=None, help='a second contact map to plot for comparison')
     subparser.add_argument('-ef', dest='otherformat', default=None, help='the format of the second contact map')
-    subparser.add_argument(
-        '-f', dest='dfactor', default=1.0, type=float, help='number of contacts to include relative to sequence length')
+    subparser.add_argument('-f', dest='dfactor', default=1.0, type=float, help='number of contacts to include relative to sequence length')
     subparser.add_argument('-p', dest='reffile', default=None, type=str, help="A reference file")
     subparser.add_argument('-pf', dest='refformat', default=None, type=str, help="A reference file")
     subparser.add_argument('--confidence', action="store_true", default=False, help='Plot the confidence scores')
@@ -135,8 +133,7 @@ style with residues being connected by their contacts
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation')
-    subparser.add_argument(
-        '-f', dest='dfactor', default=1.0, type=float, help='number of contacts to include relative to sequence length')
+    subparser.add_argument('-f', dest='dfactor', default=1.0, type=float, help='number of contacts to include relative to sequence length')
     subparser.add_argument('--confidence', action="store_true", default=False, help='Plot the confidence scores')
     _add_default_args(subparser)
     _add_sequence_default_args(subparser)
@@ -176,8 +173,7 @@ boundaries better.
         formatter_class=argparse.RawDescriptionHelpFormatter)
     subparser.add_argument('-b', dest='bw_method', default='amise', help='The bandwidth estimation method')
     subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation')
-    subparser.add_argument(
-        '-f', dest='dfactor', default=5.0, type=float, help='number of contacts to include relative to sequence length')
+    subparser.add_argument('-f', dest='dfactor', default=5.0, type=float, help='number of contacts to include relative to sequence length')
     _add_default_args(subparser)
     _add_sequence_default_args(subparser)
     _add_contact_default_args(subparser)
@@ -200,16 +196,12 @@ cutoff thresholds.
         '-c',
         dest='pdbchain',
         default=None,
-        help=
-        'PDB chain to use [default: first in file]. Inter-molecular predictions use two letter convention, i.e AD for contacts between A and D.'
+        help='PDB chain to use [default: first in file]. Inter-molecular predictions use two letter convention, i.e AD for contacts between A and D.'
     )
     subparser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation')
-    subparser.add_argument(
-        '-j', dest='cutoff_step', default=0.2, type=float, help='The cutoff step for contact selection')
-    subparser.add_argument(
-        '-min', dest='min_cutoff', default=0.0, type=float, help='The minimum factor for contact selection')
-    subparser.add_argument(
-        '-max', dest='max_cutoff', default=100.0, type=float, help='The maximum factor for contact selection')
+    subparser.add_argument('-j', dest='cutoff_step', default=0.2, type=float, help='The cutoff step for contact selection')
+    subparser.add_argument('-min', dest='min_cutoff', default=0.0, type=float, help='The minimum factor for contact selection')
+    subparser.add_argument('-max', dest='max_cutoff', default=100.0, type=float, help='The maximum factor for contact selection')
     subparser.add_argument('--interchain', action="store_true", default=False, help='Plot inter-chain contacts')
     _add_default_args(subparser)
     _add_structure_default_args(subparser)

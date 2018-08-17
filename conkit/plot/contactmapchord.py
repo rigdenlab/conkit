@@ -55,12 +55,12 @@ class ContactMapChordFigure(Figure):
     in the target sequence. This plot is a very common representation
     of contacts. With this figure, you can illustrate intra-molecular.
 
-    Color scheme: 
-    
+    Color scheme:
+
     ==========  ===========   ==========  ===========  ==========  ===========  ==========  ===========  ==========  ===========
     Amino acid  Hex code      Amino acid  Hex code     Amino acid  Hex code     Amino acid  Hex code     Amino acid  Hex code
     ==========  ===========   ==========  ===========  ==========  ===========  ==========  ===========  ==========  ===========
-    Ala         ``#882D17``   Arg         ``#B3446C``  Asn         ``#F99379``  Asp         ``#875692``  Cys         ``#F3C300`` 
+    Ala         ``#882D17``   Arg         ``#B3446C``  Asn         ``#F99379``  Asp         ``#875692``  Cys         ``#F3C300``
     Gln         ``#F6A600``   Glu         ``#F38400``  Gly         ``#BE0032``  His         ``#C2B280``  Ile         ``#848482``
     Leu         ``#E68FAC``   Lys         ``#008856``  Met         ``#0067A5``  Phe         ``#A1CAF1``  Pro         ``#604E97``
     Ser         ``#DCD300``   Thr         ``#8DB600``  Trp         ``#E25822``  Tyr         ``#2B3D26``  Val         ``#654522``

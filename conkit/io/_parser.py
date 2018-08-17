@@ -37,7 +37,7 @@ __version__ = "0.1"
 
 import abc
 
-ABC = abc.ABCMeta('ABC', (object,), {})
+ABC = abc.ABCMeta('ABC', (object, ), {})
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -50,6 +50,7 @@ class Parser(ABC):
     """Abstract class for all parsers
 
     """
+
     @abc.abstractmethod
     def read(self):
         pass
@@ -76,13 +77,13 @@ class Parser(ABC):
         elif isinstance(hierarchy, Sequence):
             h = SequenceFile('conkit')
             h.add(hierarchy)
-        return h 
-    
+        return h
+
 
 class ContactFileParser(Parser):
     """General purpose class for all contact file parsers"""
     pass
-    
+
 
 class SequenceFileParser(Parser):
     """General purpose class for all sequence file parsers"""

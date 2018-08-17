@@ -11,15 +11,14 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestNcontParser(unittest.TestCase):
-
     def test_read_1(self):
-        content = """ 
+        content = """
  ###############################################################
  ###############################################################
  ###############################################################
  ### CCP4 7.0.045: NCONT            version 7.0.045 :         ##
  ###############################################################
- User: unknown  Run date: 16/11/2017 Run time: 09:51:16 
+ User: unknown  Run date: 16/11/2017 Run time: 09:51:16
 
 
  Please reference: Collaborative Computational Project, Number 4. 2011.
@@ -70,7 +69,7 @@ class TestNcontParser(unittest.TestCase):
 --------------------------------------------------------------------------
 
  NCONT:  Normal termination
-Times: User:       0.1s System:    0.0s Elapsed:     0:00  
+Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
         with open(f_name, 'r') as f_in:
@@ -84,13 +83,13 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
         self.assertEqual(set([c.res2_chain for c in cmap]), set(["B"]))
 
     def test_read_2(self):
-        content = """ 
+        content = """
  ###############################################################
  ###############################################################
  ###############################################################
  ### CCP4 7.0.045: NCONT            version 7.0.045 :         ##
  ###############################################################
- User: unknown  Run date: 16/11/2017 Run time: 10:04:06 
+ User: unknown  Run date: 16/11/2017 Run time: 10:04:06
 
 
  Please reference: Collaborative Computational Project, Number 4. 2011.
@@ -127,7 +126,7 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
 --------------------------------------------------------------------------
 
  NCONT:  Normal termination
-Times: User:       0.1s System:    0.0s Elapsed:     0:00  
+Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
         with open(f_name, 'r') as f_in:
@@ -137,13 +136,13 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
         self.assertEqual(cmap.ncontacts, 0)
 
     def test_read_3(self):
-        content = """ 
+        content = """
  ###############################################################
  ###############################################################
  ###############################################################
  ### CCP4 7.0.045: NCONT            version 7.0.045 :         ##
  ###############################################################
- User: unknown  Run date: 16/11/2017 Run time: 10:07:41 
+ User: unknown  Run date: 16/11/2017 Run time: 10:07:41
 
 
  Please reference: Collaborative Computational Project, Number 4. 2011.
@@ -191,7 +190,7 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
 --------------------------------------------------------------------------
 
  NCONT:  Normal termination
-Times: User:       0.1s System:    0.0s Elapsed:     0:00  
+Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
         with open(f_name, 'r') as f_in:

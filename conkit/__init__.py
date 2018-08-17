@@ -29,7 +29,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 ConKit is a Python interface for handling and manipulating
-contact predictions obtained from a variety of different 
+contact predictions obtained from a variety of different
 sources.
 """
 

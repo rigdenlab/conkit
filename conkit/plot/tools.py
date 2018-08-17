@@ -188,7 +188,7 @@ def get_points_on_circle(radius, h=0, k=0):
 
 def get_radius_around_circle(p1, p2):
     """Obtain the radius around a given circle
-    
+
     Parameters
     ----------
     p1 : list, tuple

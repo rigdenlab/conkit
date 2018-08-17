@@ -195,7 +195,7 @@ class Contact(Entity):
 
         Parameters
         ----------
-        value : int, float 
+        value : int, float
 
         Raises
         ------
@@ -456,9 +456,8 @@ class Contact(Entity):
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
-        keys = ['id', 'true_positive', 'false_positive', 'status_unknown', 'lower_bound', 'upper_bound'] \
-                + [k for k in self.__slots__]
-
+        keys = ['id', 'true_positive', 'false_positive', 'status_unknown', 'lower_bound', 'upper_bound']
+        keys += [k for k in self.__slots__]
         dict_ = {}
         for k in keys:
             if k[0] == '_':

@@ -100,8 +100,8 @@ class ContactDensityFigure(Figure):
     @property
     def bw_method(self):
         """The method to estimate the bandwidth
-        
-        For a full list of options, please refer to 
+
+        For a full list of options, please refer to
         :meth:`~conkit.core.contactmap.ContactMap.get_contact_density`
 
         """

@@ -144,7 +144,7 @@ class ContactFile(Entity):
 
         Returns
         -------
-        :obj:`~conkit.core.contactmap.ContactMap` 
+        :obj:`~conkit.core.contactmap.ContactMap`
            The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of `inplace`
 
         Raises

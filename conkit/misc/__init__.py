@@ -48,7 +48,7 @@ def fOR(a, b):
 
 def deprecate(version, msg=None):
     """Decorator to deprecate Python classes and functions
-    
+
     Parameters
     ----------
     version : str
@@ -56,16 +56,16 @@ def deprecate(version, msg=None):
     msg : str, optional
        An additional message that will be displayed alongside the default message
 
-    
+
     Examples
     --------
     Enable :obj:`~DeprecationWarning` messages to be displayed.
 
     >>> import warnings
     >>> warnings.simplefilter('default')
-    
+
     Decorate a simple Python function without additional message
-    
+
     >>> @deprecate('0.0.0')
     ... def sum(a, b):
     ...     return a + b
@@ -108,13 +108,12 @@ def deprecate(version, msg=None):
     6
 
     Decorate a Python class staticmethod
-    
+
     >>> class Obj(object):
     ...     @staticmethod
     ...     @deprecate('0.0.4')
     ...     def sub(a, b):
     ...         return a - b
-    ... 
     >>> Obj.sub(2, 1)
     deprecated.py:34: DeprecationWarning: sub has been deprecated and will be removed in version 0.0.4!
       warnings.warn(message, DeprecationWarning)
@@ -128,7 +127,6 @@ def deprecate(version, msg=None):
     ...     @deprecate('0.0.5')
     ...     def sub(cls, a):
     ...         return a - cls.CONST
-    ... 
     >>> Obj().sub(5)
     deprecated.py:34: DeprecationWarning: sub has been deprecated and will be removed in version 0.0.5!
       warnings.warn(message, DeprecationWarning)

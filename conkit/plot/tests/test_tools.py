@@ -10,7 +10,6 @@ import unittest
 
 
 class Test(unittest.TestCase):
-
     def test_find_minima_1(self):
         with self.assertRaises(ValueError):
             tools.find_minima([])
@@ -81,15 +80,15 @@ class Test(unittest.TestCase):
 
     def test_get_radius_around_circle_1(self):
         p1, p2 = [0., 0.], [0., 0]
-        self.assertEqual(0.0, tools.get_radius_around_circle(p1, p2)) 
+        self.assertEqual(0.0, tools.get_radius_around_circle(p1, p2))
 
     def test_get_radius_around_circle_2(self):
         p1, p2 = [2., 0.], [-2., 0]
-        self.assertEqual(1.6, tools.get_radius_around_circle(p1, p2)) 
+        self.assertEqual(1.6, tools.get_radius_around_circle(p1, p2))
 
     def test_get_radius_around_circle_3(self):
         p1, p2 = [2., 1.], [-2., 4]
-        self.assertAlmostEqual(2.0, tools.get_radius_around_circle(p1, p2)) 
+        self.assertAlmostEqual(2.0, tools.get_radius_around_circle(p1, p2))
 
     def test__isinstance_1(self):
         h = Contact(1, 2, 2)

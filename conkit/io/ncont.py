@@ -111,7 +111,7 @@ class NcontParser(ContactFileParser):
 
         Note
         ----
-        Creating a :meth:`~conkit.io.ncont.NcontParser.write` function 
+        Creating a :meth:`~conkit.io.ncont.NcontParser.write` function
         would come with a lot of issues, such as the parallel/antiparallel
         direction, scoring etc ... thus, this method is unavailable.
 

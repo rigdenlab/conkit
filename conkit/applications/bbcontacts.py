@@ -53,7 +53,7 @@ class BbcontactsCommandline(AbstractCommandline):
     contacts between beta-strands by detecting patterns in matrices of
     predicted couplings. bbcontacts can make use of a secondary structure
     assignment or a secondary structure prediction.
-    
+
     .. [#] Andreani J., Söding J. (2015). bbcontacts: prediction of beta-strand
        pairing from direct coupling patterns. Bioinformatics 31(11), 1729-1737.
 
@@ -75,7 +75,7 @@ class BbcontactsCommandline(AbstractCommandline):
 
     Note
     ----
-    Installation instructions are available via the `GitHub repository 
+    Installation instructions are available via the `GitHub repository
     <https://github.com/soedinglab/bbcontacts>`_.
 
     """

@@ -50,7 +50,7 @@ class Entity(object):
     provides a hierarchical structure to remember parent and child
     entities.
 
-    Warning 
+    Warning
     -------
     It is strongly advised against the use of the :obj:`~conkit.core.entity.Entity` class directly.
     Instead, use one or more of the the remaining data models.
@@ -253,7 +253,7 @@ class Entity(object):
         Warning
         -------
         If `id` is of type :obj:`int`, then the :obj:`~conkit.core.entity.Entity`
-        in the :attr:`~conkit.core.entity.Entity.child_list`` at index `id` will 
+        in the :attr:`~conkit.core.entity.Entity.child_list`` at index `id` will
         be deleted
 
         """
@@ -266,7 +266,7 @@ class Entity(object):
         Parameters
         ----------
         s : str, int, float, list, tuple
-        
+
         Returns
         -------
         list

@@ -103,8 +103,7 @@ class CCMpredParser(ContactFileParser):
 
         """
         contacts = mat.argsort(axis=None)[::-1]
-        contacts = (contacts % mat.shape[0]).astype(np.uint16), \
-                    np.floor(contacts / mat.shape[0]).astype(np.uint16)
+        contacts = (contacts % mat.shape[0]).astype(np.uint16), np.floor(contacts / mat.shape[0]).astype(np.uint16)
         return contacts
 
     def write(self, f_handle, hierarchy):

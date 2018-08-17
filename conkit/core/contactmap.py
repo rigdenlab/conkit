@@ -577,8 +577,8 @@ class ContactMap(Entity):
         """
         try:
             import sklearn.neighbors
-        except ImportError:
-            raise RuntimeError("Cannot find scikit-learn package")
+        except ImportError as e:
+            raise ImportError(e)
 
         if self.empty:
             raise ValueError("ContactMap is empty")

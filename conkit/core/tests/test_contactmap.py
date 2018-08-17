@@ -706,7 +706,7 @@ class TestContactMap(unittest.TestCase):
         contact_map1.sequence = Sequence('foo', 'AICDEFGH')
         contact_map1.set_sequence_register()
 
-        ## Encryption matrix
+        # # Encryption matrix
         # seq: A B C D E F G H
         # res: 6 7 8 1 2 3 4 5
         # alt: 1 2 3 4 5 6 7 8

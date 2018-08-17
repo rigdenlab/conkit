@@ -1,5 +1,5 @@
 """
-Contact Density Plotting 
+Contact Density Plotting
 ========================
 
 This script contains a simple example of how you can evaluate

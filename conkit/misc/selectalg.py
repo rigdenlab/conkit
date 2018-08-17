@@ -49,7 +49,7 @@ class SubselectionAlgorithm(object):
     def cutoff(data, cutoff=0.287):
         """A cutoff-defined subselection algorithm
 
-        This algorithm removes a decoy, if its score is less 
+        This algorithm removes a decoy, if its score is less
         than the cutoff.
 
         Parameters

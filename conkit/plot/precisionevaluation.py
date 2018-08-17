@@ -30,7 +30,6 @@
 """A module to produce a precision evaluation plot"""
 
 from __future__ import division
-from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "07 Feb 2017"
@@ -50,7 +49,7 @@ class PrecisionEvaluationFigure(Figure):
     This figure will illustrate the precision scores of a contact
     map at different precision scores. These can be determined at
     various start and end points with different stepwise increases
-    in between. 
+    in between.
 
     Attributes
     ----------

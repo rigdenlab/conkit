@@ -1,4 +1,4 @@
-"""Testing facility for conkit.core.Sequence""" 
+"""Testing facility for conkit.core.Sequence"""
 __author__ = "Felix Simkovic"
 __date__ = "12 Aug 2016"
 
@@ -52,8 +52,7 @@ class TestSequence(unittest.TestCase):
         sequence = Sequence('foo', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         self.assertEqual(
             [1, 21, 2, 3, 4, 5, 6, 7, 8, 21, 9, 10, 11, 12, 21, 13, 14, 15, 16, 17, 21, 18, 19, 21, 20, 21],
-            list(sequence.seq_encoded)
-        )
+            list(sequence.seq_encoded))
 
     def test_seq_len_1(self):
         sequence = Sequence('foo', 'GSMFTPK')
@@ -72,20 +71,12 @@ class TestSequence(unittest.TestCase):
         self.assertEqual(10, sequence.seq_len)
 
     def test_align_local_1(self):
-        sequence1 = Sequence('foo',
-                             'GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTI'
+        sequence1 = Sequence('foo', 'GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTI'
                              'GYFKSELEKEPLRVIPLKEVHKVQECKQSDIMMRDNLFEIVT'
                              'TSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSASSEHP')
-        sequence2 = Sequence('bar',
-                             'Q-------YF-------P------------------------'
+        sequence2 = Sequence('bar', 'Q-------YF-------P------------------------'
                              '--F----------VQADSPEEMHSWIKAVSGAIVAQR')
-        sequence1.align_local(
-            sequence2,
-            id_chars=2,
-            nonid_chars=1,
-            gap_open_pen=-0.5,
-            gap_ext_pen=-0.2,
-            inplace=True)
+        sequence1.align_local(sequence2, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True)
         aligned1 = "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLKEVHKVQECKQSDIMM" \
                    "RDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSASSEHP"
         aligned2 = "-----------------------------------Q-------YF-------P----------------------" \
@@ -94,27 +85,19 @@ class TestSequence(unittest.TestCase):
         self.assertEqual(aligned2, sequence2.seq)
 
     def test_align_local_2(self):
-        sequence1 = Sequence('foo',
-                             'DDLTISSLAKGETTKAAFNQMVQGHKLPAWVMKGGTYTPAQTV'
+        sequence1 = Sequence('foo', 'DDLTISSLAKGETTKAAFNQMVQGHKLPAWVMKGGTYTPAQTV'
                              'TLGDETYQVMSACKPHDCGSQRIAVMWSEKSNQMTGLFSTIDE'
                              'KTSQEKLTWLNVNDALSIDGKTVLFAALTGSLENHPDGFNFKV'
                              'FGRCELAAAMKRHGLDNYRGYSLGNWVCAAKFESNFNTQATNR'
                              'NTDGSTDYGILQINSRWWCNDGRTPGSRNLCNIPCSALLSSDI'
                              'TASVNCAKKIVSDGNGMNAWVAWRNRCKGTDVQAWIRGCR')
-        sequence2 = Sequence('bar',
-                             '-------------------------------------------'
+        sequence2 = Sequence('bar', '-------------------------------------------'
                              '-------------------------------------------'
                              '--------W------------TV--------------------'
                              'F--C----AM---GLD-----------C--KFE-NF-------'
                              'N-D-----G---------C-D----G--NLC-IP--------I'
                              '--------------NG--------------D----IRGC-')
-        sequence1.align_local(
-            sequence2,
-            id_chars=2,
-            nonid_chars=1,
-            gap_open_pen=-0.5,
-            gap_ext_pen=-0.2,
-            inplace=True)
+        sequence1.align_local(sequence2, id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.2, inplace=True)
         aligned1 = "DDLTISSLAKGETTKAAFNQMVQGHKLPAWVMKGGTYTPAQTVTLGDETYQVMSACKPHDCGSQRIAVMWSEKSN" \
                    "QMTGLFSTIDEKTSQEKLTWLNVNDALSIDGKTVLFAALTGSLENHPDGFNFKVFGRCELAAAMKRHGLDNYRGY" \
                    "SLGNWVCAAKFESNFNTQATNRNTDGSTDYGILQINSRWWCNDGRTPGSRNLCNIPCSALLSSDITASVNCAKKI" \
@@ -127,29 +110,21 @@ class TestSequence(unittest.TestCase):
         self.assertEqual(aligned2, sequence2.seq)
 
     def test_align_local_3(self):
-        sequence1 = Sequence('foo',
-                             '------------------------------------------'
+        sequence1 = Sequence('foo', '------------------------------------------'
                              '------------------------------------------'
                              '----------W------------TV-----------------'
                              '---F--C----AM---GLD-----------C--KFE-NF---'
                              '----N-D-----G---------C-D----G--NLC-IP----'
                              '----I--------------NG--------------D----IR'
                              'GC-')
-        sequence2 = Sequence('bar',
-                             '-D-------------------------------GGTYTP---'
+        sequence2 = Sequence('bar', '-D-------------------------------GGTYTP---'
                              '-------------C-PHDCGS-R-------------------'
                              '------------------------------TG--EN------'
                              '-KV------------------------------KFESN-N-Q'
                              'ATNR------D----Q--------------------------'
                              '------------------------WVA--NR-----------'
                              '---')
-        sequence1.align_local(
-            sequence2,
-            id_chars=2,
-            nonid_chars=1,
-            gap_open_pen=-1.0,
-            gap_ext_pen=-0.5,
-            inplace=True)
+        sequence1.align_local(sequence2, id_chars=2, nonid_chars=1, gap_open_pen=-1.0, gap_ext_pen=-0.5, inplace=True)
         aligned1 = "---------------------------------------------------------------------------" \
                    "-------------------W------------TV--------------------F--C----AM---GLD-----" \
                    "------C--KFE-NF-------N-D-----G---------C-D----G--NLC-IP--------I----------" \
