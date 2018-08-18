@@ -14,8 +14,6 @@ environment:
 platform:
   - x64
 
-build: false 
-
 install:
   - set PATH=%CONDA_INSTALL_LOCN%;%CONDA_INSTALL_LOCN%\scripts;%PATH%;
   - set PYTHONUNBUFFERED=1

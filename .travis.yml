@@ -38,7 +38,6 @@ install:
   - conda config --prepend channels conda-forge
   - conda info -a
 
-  # Take these dependencies since their installation order can cause problems at times :/
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
 
