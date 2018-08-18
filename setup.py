@@ -123,7 +123,7 @@ def version():
     main_ns = {}
     ver_path = convert_path('conkit/version.py')
     with open(ver_path) as f_in:
-        exec(f_in.read(), main_ns)
+        exec (f_in.read(), main_ns)
     return main_ns['__version__']
 
 
