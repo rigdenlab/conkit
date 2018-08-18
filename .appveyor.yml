@@ -28,7 +28,6 @@ install:
   - conda create -q -n test-environment python=%PYTHON_VERSION%
     msinttypes freetype=2.6 "libpng>=1.6.21,<1.7" zlib=1.2 tk=8.5
   - activate test-environment
-  - pip install coverage codecov pytest pytest-cov pytest-pep8 pytest-helpers-namespace
 
 test_script:
   - python setup.py test
