@@ -39,7 +39,6 @@ def c_filter(np.ndarray[np.int64_t, ndim=2] X, double min_id, double max_id, np.
                 for k in xrange(X.shape[1]):
                     dist += X[i, k] != X[j, k]
                 ident = 1.0 - dist / X.shape[1]
-                print(ident)
                 throwables[j] = (ident < min_id) or (ident > max_id)
 
 

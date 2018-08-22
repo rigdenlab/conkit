@@ -1,3 +1,10 @@
+
+**[Unreleased]**
+
+*Changed*
+
+- ``conkit/core/ext/c_sequencefile.pyx`` removed ``print`` statement
+
 **[0.11]**
 
 *Added*
