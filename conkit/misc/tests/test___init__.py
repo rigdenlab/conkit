@@ -36,6 +36,12 @@ class Test1(unittest.TestCase):
     def test_normalize_9(self):
         self.assertListEqual([0.2, 0.5, 0.8], normalize([1, 2, 3], vmin=0.2, vmax=0.8))
 
+    def test_normalize_10(self):
+        self.assertListEqual([1.0, 1.0, 1.0], normalize([2, 2, 2]))
+
+    def test_normalize_11(self):
+        self.assertListEqual([0.8, 0.8, 0.8], normalize([2, 2, 2], vmin=0.2, vmax=0.8))
+
 
 class Test2(unittest.TestCase):
     def test_deprecated_1(self):

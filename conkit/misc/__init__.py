@@ -173,4 +173,8 @@ def normalize(data, vmin=0, vmax=1):
 
     """
     data = np.array(data, dtype=np.float64)
-    return (vmin + (data - data.min()) * (vmax - vmin) / (data.max() - data.min())).tolist()
+    if np.unique(data).size == 1:
+        data.fill(vmax)
+    else:
+        data = vmin + (data - data.min()) * (vmax - vmin) / (data.max() - data.min())
+    return data.tolist()
