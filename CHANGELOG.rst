@@ -1,3 +1,8 @@
+**[Unreleased]**
+
+*Fixed*
+
+- Bug fix to avoid rare ``ZeroDivision``
 
 **[0.11.1]**
 
