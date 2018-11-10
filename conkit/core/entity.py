@@ -172,7 +172,7 @@ class Entity(object):
            Please provide data type of str, list, or tuple
 
         """
-        if isinstance(id, int) or isinstance(id, float):
+        if isinstance(id, (float, int)):
             raise TypeError('Please provide data type of str, list, or tuple')
         elif isinstance(id, list):
             id = tuple(id)

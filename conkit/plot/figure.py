@@ -68,17 +68,20 @@ class Figure(object):
         if "dpi" in kwargs:
             warnings.warn(
                 "dpi has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
-                DeprecationWarning)
+                DeprecationWarning
+            )
             self._dpi = kwargs.pop("dpi")
         if "file_name" in kwargs:
             warnings.warn(
                 "file_name has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
-                DeprecationWarning)
+                DeprecationWarning
+            )
             self._file_name = kwargs.pop("file_name")
         elif "format" in kwargs and "prefix" in kwargs:
             warnings.warn(
                 "format and prefix has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
-                DeprecationWarning)
+                DeprecationWarning
+            )
             self._file_name = kwargs.pop("prefix") + "." + kwargs.pop("format")
 
     def __repr__(self):
@@ -103,14 +106,14 @@ class Figure(object):
                 raise ValueError("Unequal x/y data and edgecolors provided")
             ec = edgecolor
 
-        if isinstance(linewidth, float) or isinstance(linewidth, int):
+        if isinstance(linewidth, (float, int)):
             lw = [linewidth] * len(x)
         else:
             if len(linewidth) != len(x):
                 raise ValueError("Unequal x/y data and linewidths provided")
             lw = linewidth
 
-        if isinstance(radius, float) or isinstance(radius, int):
+        if isinstance(radius, (float, int)):
             r = [radius] * len(x)
         else:
             if len(radius) != len(x):

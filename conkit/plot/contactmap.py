@@ -159,9 +159,9 @@ class ContactMapFigure(Figure):
 
     @lim.setter
     def lim(self, lim):
-        if (isinstance(lim, list) or isinstance(lim, tuple)) and len(lim) == 2:
+        if isinstance(lim, (list, tuple)) and len(lim) == 2:
             self._lim = lim
-        elif (isinstance(lim, list) or isinstance(lim, tuple)):
+        elif isinstance(lim, (list, tuple)):
             raise ValueError("A list with 2 entries is required!")
         else:
             raise TypeError("A list with [min, max] limits is required!")

@@ -164,7 +164,7 @@ class Contact(Entity):
            A 2-element list/tuple with a lower and upper distance boundary value
 
         """
-        if isinstance(distance_bound, tuple) or isinstance(distance_bound, list):
+        if isinstance(distance_bound, (list, tuple)):
             self._distance_bound = list(map(float, distance_bound))
         else:
             raise TypeError("Data of type list or tuple required")
