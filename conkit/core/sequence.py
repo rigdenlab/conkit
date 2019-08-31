@@ -86,9 +86,7 @@ class Sequence(Entity):
 
     def __add__(self, other):
         """Concatenate two sequence instances to a new"""
-        id = self.id + "_" + other.id
-        seq = self.seq + other.seq
-        return Sequence(id, seq)
+        return Sequence("_".join([self.id, other.id]), self.seq + other.seq)
 
     def __len__(self):
         """The sequence length"""
