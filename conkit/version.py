@@ -29,4 +29,4 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """The version number of ConKit is recorded here"""
 __version_info__ = (0, 11, 2)
-__version__ = '.'.join(map(str, __version_info__))
+__version__ = ".".join(map(str, __version_info__))

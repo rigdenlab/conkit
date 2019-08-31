@@ -29,14 +29,16 @@ class TestGremlinParser(unittest.TestCase):
 262	266	262_G	266_K	0.1040	2.442	0.997
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = GremlinParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([179, 262, 428, 214, 457, 220, 143, 79, 215, 262], [c.res1_seq for c in contact_map1])
-        self.assertEqual([0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
-                         [c.raw_score for c in contact_map1])
+        self.assertEqual(
+            [0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
+            [c.raw_score for c in contact_map1],
+        )
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -55,14 +57,16 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 262	266	262_G	266_K	0.1040	2.442	0.997
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = GremlinParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([179, 262, 428, 214, 457, 220, 143, 79, 215, 262], [c.res1_seq for c in contact_map1])
-        self.assertEqual([0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
-                         [c.raw_score for c in contact_map1])
+        self.assertEqual(
+            [0.2019, 0.1742, 0.1638, 0.1342, 0.1254, 0.1187, 0.1139, 0.1114, 0.1109, 0.1040],
+            [c.raw_score for c in contact_map1],
+        )
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -82,7 +86,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 24	434	AB	24_A	244_L	0.054	1.064	0.531	0.123
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = GremlinParser().read(f_in)
         self.assertEqual(3, len(contact_file))
         chain_a_res1seq = [127, 83, 108, 63, 30]
@@ -91,25 +95,28 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         chain_b_rawscore = [0.104, 0.059, 0.059, 0.054]
         chain_ab_res1seq = [23, 20, 19, 24]
         chain_ab_rawscore = [0.082, 0.059, 0.059, 0.054]
-        for count, res1_seqs, raw_scores, cmap in zip([5, 4, 4], [chain_a_res1seq, chain_ab_res1seq, chain_b_res1seq],
-                                                      [chain_a_rawscore, chain_ab_rawscore, chain_b_rawscore],
-                                                      contact_file):
+        for count, res1_seqs, raw_scores, cmap in zip(
+            [5, 4, 4],
+            [chain_a_res1seq, chain_ab_res1seq, chain_b_res1seq],
+            [chain_a_rawscore, chain_ab_rawscore, chain_b_rawscore],
+            contact_file,
+        ):
             self.assertEqual(count, len(cmap))
             self.assertEqual(res1_seqs, [c.res1_seq for c in cmap])
             self.assertEqual(raw_scores, [c.raw_score for c in cmap])
         os.unlink(f_name)
 
     def test_write_1(self):
-        contact_file = ContactFile('test')
-        contact_map = ContactMap('A')
+        contact_file = ContactFile("test")
+        contact_map = ContactMap("A")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             GremlinParser().write(f_out, contact_file)
         content = [
             "i	j	i_id	j_id	r_sco	s_sco	prob",
@@ -118,20 +125,20 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             "2	8	2_L	8_I	0.9	1.3	1.0",
             "3	12	3_E	12_K	0.4	0.6	1.0",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_2(self):
-        contact_file = ContactFile('TEST')
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("TEST")
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             GremlinParser().write(f_out, contact_file)
         content = [
             "i	j	i_id	j_id	r_sco	s_sco	prob",
@@ -140,30 +147,30 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             "2	8	2_X	8_X	0.9	1.3	1.0",
             "3	12	3_X	12_X	0.4	0.6	1.0",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_3(self):
-        contact_file = ContactFile('TEST')
-        contact_maps = [ContactMap('A'), ContactMap('AB'), ContactMap('B')]
-        contacts = [(Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)), (Contact(
-            1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)), (Contact(1, 9, 0.7),
-                                                                                        Contact(1, 10, 0.7),
-                                                                                        Contact(2, 8, 0.9),
-                                                                                        Contact(3, 12, 0.4))]
-        chains = [('A', 'A'), ('A', 'B'), ('B', 'B')]
+        contact_file = ContactFile("TEST")
+        contact_maps = [ContactMap("A"), ContactMap("AB"), ContactMap("B")]
+        contacts = [
+            (Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)),
+            (Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)),
+            (Contact(1, 9, 0.7), Contact(1, 10, 0.7), Contact(2, 8, 0.9), Contact(3, 12, 0.4)),
+        ]
+        chains = [("A", "A"), ("A", "B"), ("B", "B")]
         for contact_map, contacts, chain in zip(contact_maps, contacts, chains):
             contact_file.add(contact_map)
             for c in contacts:
                 c.res1_chain = chain[0]
                 c.res2_chain = chain[1]
                 contact_map.add(c)
-            contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+            contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
             contact_map.set_sequence_register()
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             GremlinParser().write(f_out, contact_file)
         content = [
             "i	j	gene	i_id	j_id	r_sco	s_sco	prob	I_prob",
@@ -180,7 +187,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             "2	8	B	2_L	8_I	0.9	1.3	1.0	N/A",
             "3	12	B	3_E	12_K	0.4	0.6	1.0	N/A",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)

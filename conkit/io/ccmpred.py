@@ -71,7 +71,7 @@ class CCMpredParser(ContactFileParser):
 
         """
         contact_file = ContactFile(f_id)
-        contact_file.method = 'Contact map predicted using CCMpred'
+        contact_file.method = "Contact map predicted using CCMpred"
         contact_map = ContactMap("map_1")
         contact_file.add(contact_map)
 
@@ -125,14 +125,14 @@ class CCMpredParser(ContactFileParser):
 
         """
         # Python3 support requires bytes mode
-        if sys.version_info.major == 3 and not (f_handle.mode == 'wb' or f_handle.mode == 'ab'):
+        if sys.version_info.major == 3 and not (f_handle.mode == "wb" or f_handle.mode == "ab"):
             raise TypeError("Python3 requires f_handle to be in 'wb' or 'ab' mode")
 
         # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)
 
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
+            raise RuntimeError("More than one contact map provided")
 
         for contact_map in contact_file:
             len_mat = max([c.res1_seq for c in contact_map] + [c.res2_seq for c in contact_map])

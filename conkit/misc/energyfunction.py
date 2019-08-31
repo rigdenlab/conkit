@@ -29,9 +29,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Energy function templates for restraint generation"""
 
-__author__ = 'Felix Simkovic'
-__date__ = '13 Aug 2018'
-__version__ = '1.0'
+__author__ = "Felix Simkovic"
+__date__ = "13 Aug 2018"
+__version__ = "1.0"
 
 
 class RosettaFunctionConstructs(object):
@@ -43,14 +43,14 @@ class RosettaFunctionConstructs(object):
 
     """
 
-    _ATOMPAIR = 'AtomPair {atom1: >2} {res1_seq: >4} {atom2: >2} {res2_seq: >4} '
-    _SCALARWEIGHTED = 'SCALARWEIGHTEDFUNC {scalar_score: .3f} '
+    _ATOMPAIR = "AtomPair {atom1: >2} {res1_seq: >4} {atom2: >2} {res2_seq: >4} "
+    _SCALARWEIGHTED = "SCALARWEIGHTEDFUNC {scalar_score: .3f} "
 
     @property
     def BOUNDED_default(self):
         """Simple bounded energy function"""
         sstream = RosettaFunctionConstructs._ATOMPAIR
-        sstream += 'BOUNDED {lower_bound: >.3f} {upper_bound: >.3f} 1 0.5 #'
+        sstream += "BOUNDED {lower_bound: >.3f} {upper_bound: >.3f} 1 0.5 #"
         return sstream
 
     @property
@@ -65,7 +65,7 @@ class RosettaFunctionConstructs(object):
         """
         sstream = RosettaFunctionConstructs._ATOMPAIR
         sstream += RosettaFunctionConstructs._SCALARWEIGHTED
-        sstream += 'BOUNDED 0 {lower_bound: >.3f} 1 0.5'
+        sstream += "BOUNDED 0 {lower_bound: >.3f} 1 0.5"
         return sstream
 
     @property
@@ -82,7 +82,7 @@ class RosettaFunctionConstructs(object):
 
         """
         sstream = RosettaFunctionConstructs._ATOMPAIR
-        sstream += 'FADE -10 19 10 {energy_bonus: >5.2f} 0'
+        sstream += "FADE -10 19 10 {energy_bonus: >5.2f} 0"
         return sstream
 
     @property
@@ -96,14 +96,14 @@ class RosettaFunctionConstructs(object):
 
         """
         sstream = RosettaFunctionConstructs._ATOMPAIR
-        sstream += 'FADE -10 19 10 -15.00 0'
+        sstream += "FADE -10 19 10 -15.00 0"
         return sstream
 
     @property
     def SIGMOID_default(self):
         """Simple sigmoidal energy function"""
         sstream = RosettaFunctionConstructs._ATOMPAIR
-        sstream += 'SIGMOID 8.00 1.00 #ContactMap: {raw_score: >4.3f}'
+        sstream += "SIGMOID 8.00 1.00 #ContactMap: {raw_score: >4.3f}"
         return sstream
 
     @property
@@ -118,5 +118,5 @@ class RosettaFunctionConstructs(object):
         """
         sstream = RosettaFunctionConstructs._ATOMPAIR
         sstream += RosettaFunctionConstructs._SCALARWEIGHTED
-        sstream += 'SUMFUNC 2 SIGMOID {sigmoid_cutoff: >6.3f} {sigmoid_slope: >6.3f} CONSTANTFUNC -0.5'
+        sstream += "SUMFUNC 2 SIGMOID {sigmoid_cutoff: >6.3f} {sigmoid_slope: >6.3f} CONSTANTFUNC -0.5"
         return sstream

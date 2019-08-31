@@ -57,6 +57,7 @@ class Figure(object):
         """
         if ax is None:
             import matplotlib.pyplot as plt
+
             self._fig, self._ax = plt.subplots()
         else:
             self._fig = ax.get_figure()
@@ -68,19 +69,19 @@ class Figure(object):
         if "dpi" in kwargs:
             warnings.warn(
                 "dpi has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
-                DeprecationWarning
+                DeprecationWarning,
             )
             self._dpi = kwargs.pop("dpi")
         if "file_name" in kwargs:
             warnings.warn(
                 "file_name has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
-                DeprecationWarning
+                DeprecationWarning,
             )
             self._file_name = kwargs.pop("file_name")
         elif "format" in kwargs and "prefix" in kwargs:
             warnings.warn(
                 "format and prefix has been deprecated and will be removed in version 0.11! - Use function .savefig() instead",
-                DeprecationWarning
+                DeprecationWarning,
             )
             self._file_name = kwargs.pop("prefix") + "." + kwargs.pop("format")
 
@@ -121,7 +122,7 @@ class Figure(object):
             r = radius
 
         if symbol not in ["o", "s"]:
-            raise ValueError("Symbol needs to be circle (\"o\") or square (\"s\")")
+            raise ValueError('Symbol needs to be circle ("o") or square ("s")')
 
         # Credits to https://stackoverflow.com/a/48174228/3046533
         if symbol == "o":

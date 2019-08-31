@@ -42,7 +42,7 @@ from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
-RE_SPLIT = re.compile(r'\s+')
+RE_SPLIT = re.compile(r"\s+")
 
 
 class ComsatParser(ContactFileParser):
@@ -86,7 +86,7 @@ class ComsatParser(ContactFileParser):
 
                 contact_map.add(contact)
 
-        contact_file.method = 'Contact map predicted using COMSAT'
+        contact_file.method = "Contact map predicted using COMSAT"
 
         return contact_file
 
@@ -108,16 +108,13 @@ class ComsatParser(ContactFileParser):
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
-        content = ''
+            raise RuntimeError("More than one contact map provided")
+        content = ""
         for contact_map in contact_file:
             for contact in contact_map:
-                line = '{res1_seq}{sep}{res1}{sep}{res2_seq}{sep}{res2}{sep}Hx-Hx\n'
+                line = "{res1_seq}{sep}{res1}{sep}{res2_seq}{sep}{res2}{sep}Hx-Hx\n"
                 line = line.format(
-                    res1_seq=contact.res1_seq,
-                    res2_seq=contact.res2_seq,
-                    res1=contact.res1,
-                    res2=contact.res2,
-                    sep="\t")
+                    res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, res1=contact.res1, res2=contact.res2, sep="\t"
+                )
                 content += line
         f_handle.write(content)

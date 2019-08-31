@@ -166,7 +166,7 @@ class ContactMapFigure(Figure):
         else:
             raise TypeError("A list with [min, max] limits is required!")
 
-    @deprecate('0.11', msg='Use draw instead')
+    @deprecate("0.11", msg="Use draw instead")
     def redraw(self):
         self.draw()
 
@@ -185,13 +185,15 @@ class ContactMapFigure(Figure):
         self_data = np.array([c for c in self._hierarchy.as_list() if all(ci != Gap.IDENTIFIER for ci in c)])
         self_colors = ContactMapFigure._determine_color(self._hierarchy)
         self_rawsc = np.array(
-            [c.raw_score for c in self._hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+            [c.raw_score for c in self._hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
+        )
 
         if self._other:
             other_data = np.array([c for c in self._other.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
             other_colors = ContactMapFigure._determine_color(self._other)
             other_rawsc = np.array(
-                [c.raw_score for c in self._other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+                [c.raw_score for c in self._other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
+            )
         else:
             other_data = self_data
             other_colors = self_colors
@@ -204,13 +206,17 @@ class ContactMapFigure(Figure):
             self_radius = other_radius = 0.48
 
         self._patch_scatter(
-            reference_data[:, 0], reference_data[:, 1], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0)
+            reference_data[:, 0], reference_data[:, 1], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0
+        )
         self._patch_scatter(
-            reference_data[:, 1], reference_data[:, 0], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0)
+            reference_data[:, 1], reference_data[:, 0], symbol="o", facecolor=reference_colors, radius=0.5, linewidth=0
+        )
         self._patch_scatter(
-            self_data[:, 1], self_data[:, 0], symbol="o", facecolor=self_colors, radius=self_radius, linewidth=0)
+            self_data[:, 1], self_data[:, 0], symbol="o", facecolor=self_colors, radius=self_radius, linewidth=0
+        )
         self._patch_scatter(
-            other_data[:, 0], other_data[:, 1], symbol="o", facecolor=other_colors, radius=other_radius, linewidth=0)
+            other_data[:, 0], other_data[:, 1], symbol="o", facecolor=other_colors, radius=other_radius, linewidth=0
+        )
 
         if self.lim:
             min_max_data = np.arange(self.lim[0], self.lim[1] + 1)
@@ -233,18 +239,18 @@ class ContactMapFigure(Figure):
         self.ax.set_xticks(tick_range)
         self.ax.set_yticks(tick_range)
 
-        self.ax.set_xlabel('Residue number')
-        self.ax.set_ylabel('Residue number')
+        self.ax.set_xlabel("Residue number")
+        self.ax.set_ylabel("Residue number")
 
         line2d_kws = dict(marker="o", linestyle="")
         pseudo_data = [[0, 1], [0, 0]]
         if self._reference:
-            tp_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.MATCH, label='Match', **line2d_kws)
-            fp_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.MISMATCH, label='Mismatch', **line2d_kws)
-            rf_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.STRUCTURAL, label='Structural', **line2d_kws)
+            tp_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.MATCH, label="Match", **line2d_kws)
+            fp_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.MISMATCH, label="Mismatch", **line2d_kws)
+            rf_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.STRUCTURAL, label="Structural", **line2d_kws)
             artists = [tp_artist, fp_artist, rf_artist]
         else:
-            nt_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.GENERAL, label='Contact', **line2d_kws)
+            nt_artist = plt.Line2D(*pseudo_data, color=ColorDefinitions.GENERAL, label="Contact", **line2d_kws)
             artists = [nt_artist]
 
         if self.legend:
@@ -252,11 +258,12 @@ class ContactMapFigure(Figure):
                 handles=artists,
                 numpoints=1,
                 fontsize=10,
-                bbox_to_anchor=(0., 1.02, 1., .102),
+                bbox_to_anchor=(0.0, 1.02, 1.0, 0.102),
                 loc=3,
                 ncol=3,
                 mode="expand",
-                borderaxespad=0.)
+                borderaxespad=0.0,
+            )
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

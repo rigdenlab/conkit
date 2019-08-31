@@ -21,7 +21,7 @@ seq_0           -RIIKNVQV
 """
         f_name = create_tmp_f(content=seq)
         parser = ClustalParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
         sequence_entry = sequence_file.top_sequence
         ref_id = "seq_0"
@@ -45,18 +45,18 @@ seq_2           CCCCCCCCC
 """
         f_name = create_tmp_f(content=msa)
         parser = ClustalParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
-                self.assertEqual('seq_0', sequence_entry.id)
-                self.assertEqual('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', sequence_entry.seq)
+                self.assertEqual("seq_0", sequence_entry.id)
+                self.assertEqual("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", sequence_entry.seq)
             elif i == 1:
-                self.assertEqual('seq_1', sequence_entry.id)
-                self.assertEqual('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', sequence_entry.seq)
+                self.assertEqual("seq_1", sequence_entry.id)
+                self.assertEqual("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", sequence_entry.seq)
             elif i == 2:
-                self.assertEqual('seq_2', sequence_entry.id)
-                self.assertEqual('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', sequence_entry.seq)
+                self.assertEqual("seq_2", sequence_entry.id)
+                self.assertEqual("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", sequence_entry.seq)
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -73,18 +73,18 @@ seq_2           CCCCCCCCC
 """
         f_name = create_tmp_f(content=msa)
         parser = ClustalParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
-                self.assertEqual('seq_0', sequence_entry.id)
-                self.assertEqual('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', sequence_entry.seq)
+                self.assertEqual("seq_0", sequence_entry.id)
+                self.assertEqual("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", sequence_entry.seq)
             elif i == 1:
-                self.assertEqual('seq_1', sequence_entry.id)
-                self.assertEqual('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', sequence_entry.seq)
+                self.assertEqual("seq_1", sequence_entry.id)
+                self.assertEqual("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", sequence_entry.seq)
             elif i == 2:
-                self.assertEqual('seq_2', sequence_entry.id)
-                self.assertEqual('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', sequence_entry.seq)
+                self.assertEqual("seq_2", sequence_entry.id)
+                self.assertEqual("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", sequence_entry.seq)
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -93,18 +93,17 @@ seq_2           CCCCCCCCC
             "",
             "seq_0\tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "seq_1\tBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            ""
-            "seq_0\tAAAAAAAAAAAAAAAAAAAAAA",
+            "" "seq_0\tAAAAAAAAAAAAAAAAAAAAAA",
             "seq_1\tBBBBBBBBBBBBBBBBBBBBBB",
         ]
-        joinedseq = '\n'.join(seq)
+        joinedseq = "\n".join(seq)
         f_name_in = create_tmp_f(content=joinedseq)
         f_name_out = create_tmp_f()
         parser = ClustalParser()
-        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+        with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
             parser.write(f_out, sequence_file)
-        with open(f_name_out, 'r') as f_in:
+        with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(seq, output)
         map(os.unlink, [f_name_in, f_name_out])

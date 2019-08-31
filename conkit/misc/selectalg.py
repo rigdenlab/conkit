@@ -29,9 +29,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Energy function templates for restraint generation"""
 
-__author__ = 'Felix Simkovic'
-__date__ = '13 Aug 2018'
-__version__ = '1.0'
+__author__ = "Felix Simkovic"
+__date__ = "13 Aug 2018"
+__version__ = "1.0"
 
 import inspect
 import numpy as np
@@ -154,5 +154,5 @@ class SubselectionAlgorithm(object):
 
 
 SUBSELECTION_ALGORITHMS = [
-    func_name for func_name, _ in inspect.getmembers(SubselectionAlgorithm) if not func_name.startswith('_')
+    func_name for func_name, _ in inspect.getmembers(SubselectionAlgorithm) if not func_name.startswith("_")
 ]

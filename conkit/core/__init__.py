@@ -40,28 +40,33 @@ __version__ = "1.0"
 def Contact(*args, **kwargs):
     """:obj:`Contact <conkit.core.Contact.Contact>` instance"""
     from conkit.core.contact import Contact
+
     return Contact(*args, **kwargs)
 
 
 def ContactMap(*args, **kwargs):
     """:obj:`ContactMap <conkit.core.ContactMap.ContactMap>` instance"""
     from conkit.core.contactmap import ContactMap
+
     return ContactMap(*args, **kwargs)
 
 
 def ContactFile(*args, **kwargs):
     """:obj:`ContactFile <conkit.core.ContactFile.ContactFile>` instance"""
     from conkit.core.contactfile import ContactFile
+
     return ContactFile(*args, **kwargs)
 
 
 def Sequence(*args, **kwargs):
     """:obj:`Sequence <conkit.core.Sequence.Sequence>` instance"""
     from conkit.core.sequence import Sequence
+
     return Sequence(*args, **kwargs)
 
 
 def SequenceFile(*args, **kwargs):
     """:obj:`SequenceFile <conkit.core.SequenceFile.SequenceFile>` instance"""
     from conkit.core.sequencefile import SequenceFile
+
     return SequenceFile(*args, **kwargs)

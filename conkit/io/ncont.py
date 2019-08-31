@@ -83,8 +83,10 @@ class NcontParser(ContactFileParser):
                 lb = ub = float(matches.group(7))
 
                 if (res1_seq, res2_seq) in contact_map:
-                    msg = "This parser cannot handle multiple atoms of the same residue. " \
-                          "If your contact map contains such entries, only the first will be stored!"
+                    msg = (
+                        "This parser cannot handle multiple atoms of the same residue. "
+                        "If your contact map contains such entries, only the first will be stored!"
+                    )
                     warnings.warn(msg, Warning)
                     continue
 
@@ -95,7 +97,7 @@ class NcontParser(ContactFileParser):
                 contact.res2 = matches.group(6)
                 contact_map.add(contact)
 
-        contact_file.method = 'Contact map generated using Ncont'
+        contact_file.method = "Contact map generated using Ncont"
         return contact_file
 
     def write(self, f_handle, hierarchy):

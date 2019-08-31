@@ -11,7 +11,6 @@ from conkit.io._iotools import create_tmp_f
 
 
 class TestBCLContactParser(unittest.TestCase):
-
     def test_read_1(self):
         content = """5 I    9 Q 0.000 0.286 0.185 0.836 0.875 0.749
 5 I   10 R 0.000 0.000 0.105 0.875 0.482 0.634
@@ -26,7 +25,7 @@ class TestBCLContactParser(unittest.TestCase):
 6 T   94 Q 0.000 0.068 0.041 0.534 0.489 0.679
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = BCLContactParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -35,7 +34,7 @@ class TestBCLContactParser(unittest.TestCase):
         self.assertEqual([9, 10, 11, 21, 58, 62, 63, 78, 79, 80, 94], [c.res2_seq for c in contact_map1])
         self.assertEqual(
             [0.749, 0.634, 0.727, 0.557, 0.535, 0.585, 0.529, 0.581, 0.679, 0.578, 0.679],
-            [c.raw_score for c in contact_map1]
+            [c.raw_score for c in contact_map1],
         )
         os.unlink(f_name)
 

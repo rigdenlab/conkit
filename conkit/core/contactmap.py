@@ -87,7 +87,8 @@ class ContactMap(Entity):
        The first :obj:`~conkit.core.contact.Contact` entry
 
     """
-    __slots__ = ['_sequence']
+
+    __slots__ = ["_sequence"]
 
     def __init__(self, id):
         """Initialise a new contact map"""
@@ -141,7 +142,7 @@ class ContactMap(Entity):
         return len(self)
 
     @property
-    @deprecate('0.11', msg='Use short_range instead.')
+    @deprecate("0.11", msg="Use short_range instead.")
     def short_range_contacts(self):
         """The short range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
         return self.short_range
@@ -165,7 +166,7 @@ class ContactMap(Entity):
         return self.remove_neighbors(min_distance=6, max_distance=11)
 
     @property
-    @deprecate('0.11', msg='Use medium_range instead.')
+    @deprecate("0.11", msg="Use medium_range instead.")
     def medium_range_contacts(self):
         """The medium range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
         return self.medium_range
@@ -189,7 +190,7 @@ class ContactMap(Entity):
         return self.remove_neighbors(min_distance=12, max_distance=23)
 
     @property
-    @deprecate('0.11', msg='Use long_range instead.')
+    @deprecate("0.11", msg="Use long_range instead.")
     def long_range_contacts(self):
         """The long range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
         return self.long_range
@@ -251,8 +252,10 @@ class ContactMap(Entity):
             warnings.warn("No true positive or false positive found in your contact map. Match two ContactMaps first.")
             return 0.0
         elif unk > 0:
-            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
-                          "The precision value might be inaccurate.")
+            warnings.warn(
+                "Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
+                "The precision value might be inaccurate."
+            )
 
         return tp / float(tp + fp)
 
@@ -300,12 +303,15 @@ class ContactMap(Entity):
         unk = (statuses == ContactMatchState.unknown.value).sum()
 
         if tp + fn == 0:
-            warnings.warn("No true positive or false negative contacts found in your contact map. "
-                          "Match two ContactMaps first.")
+            warnings.warn(
+                "No true positive or false negative contacts found in your contact map. " "Match two ContactMaps first."
+            )
             return 0.0
         elif unk > 0:
-            warnings.warn("Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
-                          "The recall value might be inaccurate.")
+            warnings.warn(
+                "Some contacts between the ContactMaps are unmatched due to non-identical sequences. "
+                "The recall value might be inaccurate."
+            )
 
         return tp / float(tp + fn)
 
@@ -335,7 +341,7 @@ class ContactMap(Entity):
             res_seqs = np.unique(np.array(self.as_list()).flatten()).tolist()
             return self._construct_repr_sequence(res_seqs)
         else:
-            raise TypeError('Define the sequence as Sequence() instance')
+            raise TypeError("Define the sequence as Sequence() instance")
 
     @property
     def repr_sequence_altloc(self):
@@ -363,7 +369,7 @@ class ContactMap(Entity):
             res_seqs = np.unique(np.array(self.as_list(altloc=True)).flatten()).tolist()
             return self._construct_repr_sequence(res_seqs)
         else:
-            raise TypeError('Define the sequence as Sequence() instance')
+            raise TypeError("Define the sequence as Sequence() instance")
 
     @property
     def singletons(self):
@@ -378,6 +384,7 @@ class ContactMap(Entity):
 
         """
         from conkit.core.ext.c_contactmap import c_singletons
+
         X = np.array(self.as_list(), dtype=np.int64)
         throwables = np.full(X.shape[0], False, dtype=np.bool)
         c_singletons(X, 2, throwables)
@@ -436,13 +443,13 @@ class ContactMap(Entity):
 
     def _construct_repr_sequence(self, res_seqs):
         """Construct the representative sequence"""
-        representative_sequence = ''
+        representative_sequence = ""
         for i in np.arange(1, self.sequence.seq_len + 1):
             if i in res_seqs:
                 representative_sequence += self.sequence.seq[i - 1]
             else:
-                representative_sequence += '-'
-        return Sequence(self.sequence.id + '_repr', representative_sequence)
+                representative_sequence += "-"
+        return Sequence(self.sequence.id + "_repr", representative_sequence)
 
     def as_list(self, altloc=False):
         """The :obj:`~conkit.core.contactmap.ContactMap` as a 2D-list containing contact-pair residue indexes
@@ -458,7 +465,7 @@ class ContactMap(Entity):
         else:
             return [[c.res1_seq, c.res2_seq] for c in self]
 
-    @deprecate('0.11', msg='Use set_sequence_register instead.')
+    @deprecate("0.11", msg="Use set_sequence_register instead.")
     def assign_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`Sequence <conkit.core.sequence.Sequence>` to all :obj:`Contact <conkit.core.contact.Contact>` instances
         """
@@ -483,7 +490,7 @@ class ContactMap(Entity):
             c.res1 = self.sequence.seq[res1_index - 1]
             c.res2 = self.sequence.seq[res2_index - 1]
 
-    @deprecate('0.11', msg='Use get_jaccard_index instead.')
+    @deprecate("0.11", msg="Use get_jaccard_index instead.")
     def calculate_jaccard_index(self, other):
         """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instances"""
         return self.get_jaccard_index(other)
@@ -541,7 +548,7 @@ class ContactMap(Entity):
         intersection = np.sum([1 for contact in self if contact.id in other])
         return float(intersection) / union
 
-    @deprecate('0.11', msg='Use get_contact_density instead.')
+    @deprecate("0.11", msg="Use get_contact_density instead.")
     def calculate_kernel_density(self, *args, **kwargs):
         """Calculate the contact density in the contact map using Gaussian kernels"""
         return self.get_contact_density(*args, **kwargs)
@@ -586,11 +593,12 @@ class ContactMap(Entity):
         x = np.array([i for c in self for i in np.arange(c.res1_seq, c.res2_seq + 1)], dtype=np.int64)[:, np.newaxis]
         x_fit = np.arange(x.min(), x.max() + 1)[:, np.newaxis]
         from conkit.misc.bandwidth import bandwidth_factory
+
         bandwidth = bandwidth_factory(bw_method)(x).bw
         kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(x)
         return np.exp(kde.score_samples(x_fit)).tolist()
 
-    @deprecate('0.11', msg='Use set_scalar_score instead.')
+    @deprecate("0.11", msg="Use set_scalar_score instead.")
     def calculate_scalar_score(self):
         """Calculate a :attr:`~conkit.core.contact.Contact.scalar_score` for the
         :obj:`~conkit.core.contactmap.ContactMap`"""
@@ -652,13 +660,9 @@ class ContactMap(Entity):
                 contact_map.remove(tuple(contactid))
         return contact_map
 
-    def match(self,
-              other,
-              add_false_negatives=False,
-              match_other=False,
-              remove_unmatched=False,
-              renumber=False,
-              inplace=False):
+    def match(
+        self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False, inplace=False
+    ):
         """Modify both hierarchies so residue numbers match one another.
 
         This function is key when plotting contact maps or visualising
@@ -712,18 +716,21 @@ class ContactMap(Entity):
         config = dict(id_chars=2, nonid_chars=1, gap_open_pen=-0.5, gap_ext_pen=-0.1, inplace=False)
 
         contact_map1_full_sequence, contact_map2_full_sequence = contact_map1.sequence.align_local(
-            contact_map2.sequence, **config)
+            contact_map2.sequence, **config
+        )
 
-        config['inplace'] = True
-        config['gap_ext_pen'] = -0.2
+        config["inplace"] = True
+        config["gap_ext_pen"] = -0.2
         _, contact_map1_repr_sequence = contact_map1_full_sequence.align_local(contact_map1.repr_sequence, **config)
-        _, contact_map2_repr_sequence = contact_map2_full_sequence.align_local(contact_map2.repr_sequence_altloc,
-                                                                               **config)
+        _, contact_map2_repr_sequence = contact_map2_full_sequence.align_local(
+            contact_map2.repr_sequence_altloc, **config
+        )
 
-        config['gap_open_pen'] = -1.0
-        config['gap_ext_pen'] = -0.5
+        config["gap_open_pen"] = -1.0
+        config["gap_ext_pen"] = -0.5
         contact_map1_repr_sequence, contact_map2_repr_sequence = contact_map1_repr_sequence.align_local(
-            contact_map2_repr_sequence, **config)
+            contact_map2_repr_sequence, **config
+        )
 
         # ================================================================
         # 2. Identify TPs in other, map them, and match them to self
@@ -735,9 +742,9 @@ class ContactMap(Entity):
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
         msg = "Error creating reliable keymap matching the sequence in ContactMap: "
-        if len(contact_map1_keymap) != (encoded_repr[0] != ord('-')).sum():
+        if len(contact_map1_keymap) != (encoded_repr[0] != ord("-")).sum():
             raise ValueError(msg + contact_map1.id)
-        elif len(contact_map2_keymap) != (encoded_repr[1] != ord('-')).sum():
+        elif len(contact_map2_keymap) != (encoded_repr[1] != ord("-")).sum():
             raise ValueError(msg + contact_map2.id)
 
         contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
@@ -748,7 +755,7 @@ class ContactMap(Entity):
 
         contact_map2 = ContactMap._adjust(contact_map2, contact_map2_keymap)
 
-        residues_map2 = np.flatnonzero(np.asarray(contact_map2_full_sequence.seq_ascii) != ord('-')) + 1
+        residues_map2 = np.flatnonzero(np.asarray(contact_map2_full_sequence.seq_ascii) != ord("-")) + 1
 
         for contact in contact_map1:
             _id = (contact.res1_seq, contact.res2_seq)
@@ -944,7 +951,7 @@ class ContactMap(Entity):
     def to_string(self):
         """Return the :obj:`ContactMap <conkit.core.contactmap.ContactMap>` as :obj:`str`"""
         content = ["%d\t%d\t%.5f" % (c.res1_seq, c.res2_seq, c.raw_score) for c in self]
-        return '\n'.join(content)
+        return "\n".join(content)
 
     @staticmethod
     def _adjust(contact_map, keymap):
@@ -998,7 +1005,7 @@ class ContactMap(Entity):
         it = iter(keymap)
         keymap_ = []
         for amino_acid in sequence:
-            if amino_acid == ord('-'):
+            if amino_acid == ord("-"):
                 keymap_.append(Gap())
             else:
                 keymap_.append(next(it))
@@ -1024,6 +1031,6 @@ class ContactMap(Entity):
                     contact.res2_seq = other_residue.res_seq
                     contact.res2_chain = other_residue.res_chain
                 else:
-                    raise ValueError('Should never get here')
+                    raise ValueError("Should never get here")
 
         return contact_map

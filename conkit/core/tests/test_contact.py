@@ -26,11 +26,11 @@ class TestContact(unittest.TestCase):
         try:
             contact.distance_bound = (1, 100)
         except TypeError:
-            self.fail('contact.distance_bound raised TypeError unexpectedly')
+            self.fail("contact.distance_bound raised TypeError unexpectedly")
         with self.assertRaises(TypeError):
             contact.distance_bound = 8
         with self.assertRaises(TypeError):
-            contact.distance_bound = 'test'
+            contact.distance_bound = "test"
 
     def test_true_positive_1(self):
         contact = Contact(1, 2, 1.0)
@@ -138,49 +138,49 @@ class TestContact(unittest.TestCase):
 
     def test_res1_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.res1 = 'ALA'
-        self.assertEqual('A', contact.res1)
+        contact.res1 = "ALA"
+        self.assertEqual("A", contact.res1)
 
     def test_res1_2(self):
         contact = Contact(1, 2, 1.0)
-        contact.res1 = 'T'
-        self.assertEqual('T', contact.res1)
+        contact.res1 = "T"
+        self.assertEqual("T", contact.res1)
 
     def test_res1_3(self):
         contact = Contact(1, 2, 1.0)
         with self.assertRaises(ValueError):
-            contact.res1 = '8'
+            contact.res1 = "8"
 
     def test_res2_1(self):
         contact = Contact(1, 2, 1.0)
-        contact.res2 = 'MET'
-        self.assertEqual('M', contact.res2)
+        contact.res2 = "MET"
+        self.assertEqual("M", contact.res2)
 
     def test_res2_2(self):
         contact = Contact(1, 2, 1.0)
-        contact.res2 = 'P'
-        self.assertEqual('P', contact.res2)
+        contact.res2 = "P"
+        self.assertEqual("P", contact.res2)
 
     def test_res2_3(self):
         contact = Contact(1, 2, 1.0)
         with self.assertRaises(ValueError):
-            contact.res2 = '?'
+            contact.res2 = "?"
 
     def test_res1_chain_1(self):
         contact = Contact(1, 2, 1.0)
-        self.assertEqual('', contact.res1_chain)
-        contact.res1_chain = 'A'
-        self.assertEqual('A', contact.res1_chain)
-        contact.res1_chain = 'd'
-        self.assertEqual('d', contact.res1_chain)
+        self.assertEqual("", contact.res1_chain)
+        contact.res1_chain = "A"
+        self.assertEqual("A", contact.res1_chain)
+        contact.res1_chain = "d"
+        self.assertEqual("d", contact.res1_chain)
 
     def test_res2_chain_1(self):
         contact = Contact(1, 2, 1.0)
-        self.assertEqual('', contact.res2_chain)
-        contact.res2_chain = 'b'
-        self.assertEqual('b', contact.res2_chain)
-        contact.res2_chain = 'X'
-        self.assertEqual('X', contact.res2_chain)
+        self.assertEqual("", contact.res2_chain)
+        contact.res2_chain = "b"
+        self.assertEqual("b", contact.res2_chain)
+        contact.res2_chain = "X"
+        self.assertEqual("X", contact.res2_chain)
 
     def test_res1_seq_1(self):
         contact = Contact(1, 2, 1.0)
@@ -263,25 +263,25 @@ class TestContact(unittest.TestCase):
     def test__to_dict_1(self):
         contact = Contact(1, 2, 1.0)
         answer_dict = {
-            'id': (1, 2),
-            'true_positive': False,
-            'false_positive': False,
-            'status_unknown': True,
-            'distance_bound': (0.0, 8.0),
-            'lower_bound': 0.0,
-            'upper_bound': 8.0,
-            'raw_score': 1.0,
-            'res1': 'X',
-            'res2': 'X',
-            'res1_chain': '',
-            'res2_chain': '',
-            'res1_seq': 1,
-            'res2_seq': 2,
-            'res1_altseq': 0,
-            'res2_altseq': 0,
-            'scalar_score': 0.0,
-            'status': 0,
-            'weight': 1.0,
+            "id": (1, 2),
+            "true_positive": False,
+            "false_positive": False,
+            "status_unknown": True,
+            "distance_bound": (0.0, 8.0),
+            "lower_bound": 0.0,
+            "upper_bound": 8.0,
+            "raw_score": 1.0,
+            "res1": "X",
+            "res2": "X",
+            "res1_chain": "",
+            "res2_chain": "",
+            "res1_seq": 1,
+            "res2_seq": 2,
+            "res1_altseq": 0,
+            "res2_altseq": 0,
+            "scalar_score": 0.0,
+            "status": 0,
+            "weight": 1.0,
         }
         contact_dict = contact._to_dict()
         for k in answer_dict.keys():
@@ -292,25 +292,25 @@ class TestContact(unittest.TestCase):
         contact.true_positive = True
         contact.lower_bound = 4
         answer_dict = {
-            'id': (1, 2),
-            'true_positive': True,
-            'false_positive': False,
-            'status_unknown': False,
-            'distance_bound': (4.0, 8.0),
-            'lower_bound': 4.0,
-            'upper_bound': 8.0,
-            'raw_score': 1.0,
-            'res1': 'X',
-            'res2': 'X',
-            'res1_chain': '',
-            'res2_chain': '',
-            'res1_seq': 1,
-            'res2_seq': 2,
-            'res1_altseq': 0,
-            'res2_altseq': 0,
-            'scalar_score': 0.0,
-            'status': 1,
-            'weight': 1.0,
+            "id": (1, 2),
+            "true_positive": True,
+            "false_positive": False,
+            "status_unknown": False,
+            "distance_bound": (4.0, 8.0),
+            "lower_bound": 4.0,
+            "upper_bound": 8.0,
+            "raw_score": 1.0,
+            "res1": "X",
+            "res2": "X",
+            "res1_chain": "",
+            "res2_chain": "",
+            "res1_seq": 1,
+            "res2_seq": 2,
+            "res1_altseq": 0,
+            "res2_altseq": 0,
+            "scalar_score": 0.0,
+            "status": 1,
+            "weight": 1.0,
         }
         contact_dict = contact._to_dict()
         for k in answer_dict.keys():
@@ -332,10 +332,10 @@ class TestContact(unittest.TestCase):
         self.assertEqual("A", Contact._set_residue("a"))
 
     def test__set_residue_6(self):
-        self.assertRaises(ValueError, Contact._set_residue, 'AL')
+        self.assertRaises(ValueError, Contact._set_residue, "AL")
 
     def test__set_residue_7(self):
-        self.assertRaises(ValueError, Contact._set_residue, '-')
+        self.assertRaises(ValueError, Contact._set_residue, "-")
 
     def test__set_residue_8(self):
         self.assertRaises(AttributeError, Contact._set_residue, 1)

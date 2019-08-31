@@ -76,30 +76,31 @@ class CCMpredCommandline(AbstractCommandline):
 
     def __init__(self, cmd="ccmpred", **kwargs):
         self.parameters = [
-            _Option(['-n', "numiter"], 'Compute a maximum of NUMITER operations [default: 50]', equate=False),
+            _Option(["-n", "numiter"], "Compute a maximum of NUMITER operations [default: 50]", equate=False),
             _Option(
-                ['-e', 'epsilon'],
-                "Set convergence criterion for minimum decrease in the "
-                "last K iterations to EPSILON [default: 0.01]",
-                equate=False),
-            _Option(['-k', 'lastk'], "Set K parameter for convergence criterion to LASTK [default: 5]", equate=False),
-            _Option(['-i', 'inifile'], "Read initial weights from INIFILE", filename=True, equate=False),
-            _Option(['-r', 'rawfile'], "Store raw prediction matrix in RAWFILE", filename=True, equate=False),
+                ["-e", "epsilon"],
+                "Set convergence criterion for minimum decrease in the " "last K iterations to EPSILON [default: 0.01]",
+                equate=False,
+            ),
+            _Option(["-k", "lastk"], "Set K parameter for convergence criterion to LASTK [default: 5]", equate=False),
+            _Option(["-i", "inifile"], "Read initial weights from INIFILE", filename=True, equate=False),
+            _Option(["-r", "rawfile"], "Store raw prediction matrix in RAWFILE", filename=True, equate=False),
             _Option(
-                ['-t', 'threads'],
-                'Calculate using THREADS threads on the CPU (automatically disables CUDA if available) [default: 1]',
-                equate=False),
+                ["-t", "threads"],
+                "Calculate using THREADS threads on the CPU (automatically disables CUDA if available) [default: 1]",
+                equate=False,
+            ),
             _Option(
-                ['-w', 'idthres'],
-                "Set sequence reweighting identity threshold to IDTHRES [default: 0.8]",
-                equate=False),
+                ["-w", "idthres"], "Set sequence reweighting identity threshold to IDTHRES [default: 0.8]", equate=False
+            ),
             _Option(
-                ['-l', 'lfactor'],
+                ["-l", "lfactor"],
                 "Set pairwise regularization coefficients to LFACTOR * (L-1) [default: 0.2]",
-                equate=False),
-            _Switch(['-A', 'apc'], "Disable average product correction (APC)"),
-            _Switch(['-R', 'renormalize'], "Re-normalize output matrix to [0,1]"),
-            _Argument(['alnfile'], "Input alignment file [JONES format]", filename=True, is_required=True),
-            _Argument(['matfile'], "Output matrix file", filename=True, is_required=True),
+                equate=False,
+            ),
+            _Switch(["-A", "apc"], "Disable average product correction (APC)"),
+            _Switch(["-R", "renormalize"], "Re-normalize output matrix to [0,1]"),
+            _Argument(["alnfile"], "Input alignment file [JONES format]", filename=True, is_required=True),
+            _Argument(["matfile"], "Output matrix file", filename=True, is_required=True),
         ]
         AbstractCommandline.__init__(self, cmd, **kwargs)

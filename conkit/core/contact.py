@@ -100,9 +100,21 @@ class Contact(Entity):
        A separate internal weight factor for the contact pair
 
     """
+
     __slots__ = [
-        '_distance_bound', 'raw_score', '_res1', '_res2', 'res1_chain', 'res2_chain', '_res1_seq', '_res2_seq',
-        '_res1_altseq', '_res2_altseq', 'scalar_score', '_status', 'weight'
+        "_distance_bound",
+        "raw_score",
+        "_res1",
+        "_res2",
+        "res1_chain",
+        "res2_chain",
+        "_res1_seq",
+        "_res2_seq",
+        "_res1_altseq",
+        "_res2_altseq",
+        "scalar_score",
+        "_status",
+        "weight",
     ]
 
     def __init__(self, res1_seq, res2_seq, raw_score, distance_bound=(0, 8)):
@@ -122,14 +134,14 @@ class Contact(Entity):
 
         """
         self.raw_score = raw_score
-        self.res1_chain = ''
-        self.res2_chain = ''
+        self.res1_chain = ""
+        self.res2_chain = ""
         self.scalar_score = 0.0
         self.weight = 1.0
 
         self._distance_bound = [0.0, 8.0]
-        self._res1 = 'X'
-        self._res2 = 'X'
+        self._res1 = "X"
+        self._res2 = "X"
         self._res1_seq = 0
         self._res2_seq = 0
         self._res1_altseq = 0
@@ -143,11 +155,11 @@ class Contact(Entity):
         super(Contact, self).__init__((res1_seq, res2_seq))
 
     def __repr__(self):
-        text = "{name}(id={id} res1={_res1} res1_chain={res1_chain} res1_seq={_res1_seq} " \
-               "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score})"
-        return text.format(
-            name=self.__class__.__name__, id=self._id, **{k: getattr(self, k) for k in self.__slots__}
+        text = (
+            "{name}(id={id} res1={_res1} res1_chain={res1_chain} res1_seq={_res1_seq} "
+            "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score})"
         )
+        return text.format(name=self.__class__.__name__, id=self._id, **{k: getattr(self, k) for k in self.__slots__})
 
     @property
     def distance_bound(self):
@@ -170,17 +182,17 @@ class Contact(Entity):
             raise TypeError("Data of type list or tuple required")
 
     @property
-    @deprecate('0.11', msg='Use true_positive instead')
+    @deprecate("0.11", msg="Use true_positive instead")
     def is_match(self):
         return self._status == ContactMatchState.true_positive
 
     @property
-    @deprecate('0.11', msg='Use false_positive instead')
+    @deprecate("0.11", msg="Use false_positive instead")
     def is_mismatch(self):
         return self._status == ContactMatchState.false_positive
 
     @property
-    @deprecate('0.11', msg='Use status_unknown instead')
+    @deprecate("0.11", msg="Use status_unknown instead")
     def is_unknown(self):
         return self._status == ContactMatchState.unknown
 
@@ -209,7 +221,7 @@ class Contact(Entity):
         if 0 < value < self.upper_bound:
             self._distance_bound[0] = float(value)
         else:
-            raise ValueError('Lower bound must be positive and smaller than upper bound')
+            raise ValueError("Lower bound must be positive and smaller than upper bound")
 
     @property
     def upper_bound(self):
@@ -236,7 +248,7 @@ class Contact(Entity):
         if 0 < value > self.lower_bound:
             self._distance_bound[1] = float(value)
         else:
-            raise ValueError('Upper bound must be positive and larger than lower bound')
+            raise ValueError("Upper bound must be positive and larger than lower bound")
 
     @property
     def res1(self):
@@ -289,7 +301,7 @@ class Contact(Entity):
         if isinstance(index, int):
             self._res1_altseq = index
         else:
-            raise TypeError('Data type int required for res_seq')
+            raise TypeError("Data type int required for res_seq")
 
     @property
     def res2_altseq(self):
@@ -308,7 +320,7 @@ class Contact(Entity):
         if isinstance(index, int):
             self._res2_altseq = index
         else:
-            raise TypeError('Data type int required for res_seq')
+            raise TypeError("Data type int required for res_seq")
 
     @property
     def res1_seq(self):
@@ -332,7 +344,7 @@ class Contact(Entity):
         if isinstance(index, int):
             self._res1_seq = index
         else:
-            raise TypeError('Data type int required for res_seq')
+            raise TypeError("Data type int required for res_seq")
 
     @property
     def res2_seq(self):
@@ -356,7 +368,7 @@ class Contact(Entity):
         if isinstance(index, int):
             self._res2_seq = index
         else:
-            raise TypeError('Data type int required for res_seq')
+            raise TypeError("Data type int required for res_seq")
 
     @property
     def status(self):
@@ -439,25 +451,25 @@ class Contact(Entity):
         else:
             raise ValueError("Choose one of true_positive, false_positive, true_negative, false_negative instead!")
 
-    @deprecate('0.11', msg='Use true_positive instead')
+    @deprecate("0.11", msg="Use true_positive instead")
     def define_match(self):
         """Define a contact as matching contact"""
         self._status = ContactMatchState.true_positive
 
-    @deprecate('0.11', msg='Use false_positive instead')
+    @deprecate("0.11", msg="Use false_positive instead")
     def define_mismatch(self):
         """Define a contact as mismatching contact"""
         self._status = ContactMatchState.false_positive
 
-    @deprecate('0.11', msg='Use status_unknown instead')
+    @deprecate("0.11", msg="Use status_unknown instead")
     def define_unknown(self):
         """Define a contact with unknown status"""
         self._status = ContactMatchState.unknown
 
     def _to_dict(self):
         """Convert the object into a dictionary"""
-        keys = ['id', 'true_positive', 'false_positive', 'status_unknown', 'lower_bound', 'upper_bound']
-        keys += [k.lstrip('_') for k in self.__slots__]
+        keys = ["id", "true_positive", "false_positive", "status_unknown", "lower_bound", "upper_bound"]
+        keys += [k.lstrip("_") for k in self.__slots__]
         return {k: getattr(self, k) for k in set(keys)}
 
     @staticmethod

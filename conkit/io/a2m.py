@@ -49,7 +49,7 @@ class A2mParser(SequenceFileParser):
     def __init__(self):
         super(A2mParser, self).__init__()
 
-    def read(self, f_handle, f_id='a2m'):
+    def read(self, f_handle, f_id="a2m"):
         """Read a sequence file
 
         Parameters
@@ -69,14 +69,14 @@ class A2mParser(SequenceFileParser):
             line = line.strip()
             if line:
                 for j, char in enumerate(line):
-                    if char.isalpha() or char == '-':
+                    if char.isalpha() or char == "-":
                         continue
-                    indicator = ['-'] * len(line)
-                    indicator[j] = '^'
-                    msg = 'Unknown character in line {0}:{1}{1}{2}{1}{3}'
-                    msg = msg.format(i + 1, '\n', line, ''.join(indicator))
+                    indicator = ["-"] * len(line)
+                    indicator[j] = "^"
+                    msg = "Unknown character in line {0}:{1}{1}{2}{1}{3}"
+                    msg = msg.format(i + 1, "\n", line, "".join(indicator))
                     raise ValueError(msg)
-                sequence = Sequence('seq_{}'.format(i), line)
+                sequence = Sequence("seq_{}".format(i), line)
                 hierarchy.add(sequence)
         return hierarchy
 
@@ -91,7 +91,7 @@ class A2mParser(SequenceFileParser):
 
         """
         sequence_file = self._reconstruct(hierarchy)
-        content = ''
+        content = ""
         for sequence_entry in sequence_file:
-            content += sequence_entry.seq + '\n'
+            content += sequence_entry.seq + "\n"
         f_handle.write(content)

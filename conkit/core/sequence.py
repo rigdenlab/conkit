@@ -65,7 +65,8 @@ class Sequence(Entity):
        The protein sequence length
 
     """
-    __slots__ = ['_remark', '_seq']
+
+    __slots__ = ["_remark", "_seq"]
 
     def __init__(self, id, seq):
         """Initialise a generic sequence
@@ -85,7 +86,7 @@ class Sequence(Entity):
 
     def __add__(self, other):
         """Concatenate two sequence instances to a new"""
-        id = self.id + '_' + other.id
+        id = self.id + "_" + other.id
         seq = self.seq + other.seq
         return Sequence(id, seq)
 
@@ -95,7 +96,7 @@ class Sequence(Entity):
 
     def __repr__(self):
         if self.seq_len > 12:
-            seq_string = ''.join([self.seq[:5], '...', self.seq[-5:]])
+            seq_string = "".join([self.seq[:5], "...", self.seq[-5:]])
         else:
             seq_string = self.seq
         return '{}(id="{}" seq="{}" seq_len={})'.format(self.__class__.__name__, self.id, seq_string, self.seq_len)
@@ -136,10 +137,10 @@ class Sequence(Entity):
            One or more amino acids in the sequence are not recognised
 
         """
-        if all(AminoAcidOneToThree[c].value for c in seq.upper() if c != '-'):
+        if all(AminoAcidOneToThree[c].value for c in seq.upper() if c != "-"):
             self._seq = seq
         else:
-            raise ValueError('Unrecognized amino acids in sequence')
+            raise ValueError("Unrecognized amino acids in sequence")
 
     @property
     def seq_ascii(self):
@@ -178,8 +179,9 @@ class Sequence(Entity):
         sequence1 = self._inplace(inplace)
         sequence2 = other._inplace(inplace)
 
-        alignment = pairwise2.align.globalms(sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen,
-                                             gap_ext_pen)
+        alignment = pairwise2.align.globalms(
+            sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
+        )
         sequence1.seq = alignment[-1][0]
         sequence2.seq = alignment[-1][1]
 
@@ -207,8 +209,9 @@ class Sequence(Entity):
         sequence1 = self._inplace(inplace)
         sequence2 = other._inplace(inplace)
 
-        alignment = pairwise2.align.localms(sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen,
-                                            gap_ext_pen)
+        alignment = pairwise2.align.localms(
+            sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
+        )
 
         sequence1.seq = alignment[-1][0]
         sequence2.seq = alignment[-1][1]

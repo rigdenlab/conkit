@@ -57,7 +57,7 @@ class A3mParser(SequenceFileParser):
     def __init__(self):
         super(A3mParser, self).__init__()
 
-    def read(self, f_handle, f_id='a3m', remove_inserts=True):
+    def read(self, f_handle, f_id="a3m", remove_inserts=True):
         """Read a sequence file
 
         Parameters
@@ -79,12 +79,12 @@ class A3mParser(SequenceFileParser):
             line = f_handle.readline().rstrip()
             if not line:
                 continue
-            elif line.startswith('#'):
+            elif line.startswith("#"):
                 sequence_file.remark = line[1:]
-            elif line.startswith('>'):
+            elif line.startswith(">"):
                 break
         while True:
-            if not line.startswith('>'):
+            if not line.startswith(">"):
                 raise ValueError("Fasta record needs to start with '>'")
             id = line[1:]
             chunks = []
@@ -92,7 +92,7 @@ class A3mParser(SequenceFileParser):
             while True:
                 if not line:
                     break
-                elif line.startswith('>'):
+                elif line.startswith(">"):
                     break
                 chunks.append(line)
                 line = f_handle.readline().rstrip()
@@ -128,14 +128,14 @@ class A3mParser(SequenceFileParser):
         """
         # Determine the insert states by splitting the sequences into chunks based
         # on the case of the letter.
-        INSERT_STATE = re.compile(r'([A-Z0-9~-])')
+        INSERT_STATE = re.compile(r"([A-Z0-9~-])")
         inserts = [INSERT_STATE.split(sequence_entry.seq) for sequence_entry in hierarchy]
 
         # Determine maximum insert length at each position
         insert_max_lengths = [max(len(inserts[i][j]) for i in range(len(inserts))) for j in range(len(inserts[0]))]
 
         # Add gaps where gaps are needed
-        def pad(chunk, length, pad_char='-'):
+        def pad(chunk, length, pad_char="-"):
             return chunk + pad_char * (length - len(chunk))
 
         # Manipulate each sequence to match insert states
@@ -157,13 +157,13 @@ class A3mParser(SequenceFileParser):
 
         """
         sequence_file = self._reconstruct(hierarchy)
-        content = ''
+        content = ""
         for remark in sequence_file.remark:
-            content += '#{remark}\n'.format(remark=remark)
+            content += "#{remark}\n".format(remark=remark)
         for sequence_entry in sequence_file:
-            header = '>{id}'.format(id=sequence_entry.id)
+            header = ">{id}".format(id=sequence_entry.id)
             if len(sequence_entry.remark) > 0:
-                header = '|'.join([header] + sequence_entry.remark)
-            content += header + '\n'
-            content += sequence_entry.seq + '\n'
+                header = "|".join([header] + sequence_entry.remark)
+            content += header + "\n"
+            content += sequence_entry.seq + "\n"
         f_handle.write(content)

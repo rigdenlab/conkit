@@ -71,27 +71,29 @@ class PsicovCommandline(AbstractCommandline):
 
     """
 
-    def __init__(self, cmd='psicov', **kwargs):
+    def __init__(self, cmd="psicov", **kwargs):
         self.parameters = [
-            _Switch(['-a', 'lasso'], "use approximate Lasso algorithm"),
-            _Switch(['-n', 'noshrink'], "don't pre-shrink the sample covariance matrix"),
-            _Switch(['-f', 'filter'], "filer low-scoring contacts"),
-            _Switch(['-p', 'ppv_output'], "output PPV estimates rather than raw scores"),
-            _Switch(['-l', 'noapc'], "don't apply APC to Lasso output"),
-            _Option(['-r', 'rho'], "set initial rho paramter", equate=False),
+            _Switch(["-a", "lasso"], "use approximate Lasso algorithm"),
+            _Switch(["-n", "noshrink"], "don't pre-shrink the sample covariance matrix"),
+            _Switch(["-f", "filter"], "filer low-scoring contacts"),
+            _Switch(["-p", "ppv_output"], "output PPV estimates rather than raw scores"),
+            _Switch(["-l", "noapc"], "don't apply APC to Lasso output"),
+            _Option(["-r", "rho"], "set initial rho paramter", equate=False),
             _Option(
-                ['-d', 'sparsity'], "set target precision matrix sparsity [default: 0; not specified]", equate=False),
-            _Option(['-t', 'convergence_threshold'], "set Lasso convergence threshold [default: 1e-4]", equate=False),
+                ["-d", "sparsity"], "set target precision matrix sparsity [default: 0; not specified]", equate=False
+            ),
+            _Option(["-t", "convergence_threshold"], "set Lasso convergence threshold [default: 1e-4]", equate=False),
             _Option(
-                ['-i', 'blosum_weighting'],
+                ["-i", "blosum_weighting"],
                 "select BLOSUM-like weighting with given identity threshold "
                 "[default selects threshold automatically]",
-                equate=False),
-            _Option(['-c', 'pseudocount'], "set pseudocount value [default: 1]", equate=False),
-            _Option(['-j', 'sequence_separation'], "set minimum sequence sparation [default: 5]", equate=False),
-            _Option(['-g', 'gap_fraction'], "set maximum fraction of gaps [default: 0.9]", equate=False),
-            _Option(['-z', 'nr_threads'], "set maximum number of threads", equate=False),
-            _Option(['-b', 'rho_parameter_file'], "read rho parameter file", filename=True, equate=False),
-            _Argument(['alnfile'], "Input alignment file [JONES format]", filename=True, is_required=True),
+                equate=False,
+            ),
+            _Option(["-c", "pseudocount"], "set pseudocount value [default: 1]", equate=False),
+            _Option(["-j", "sequence_separation"], "set minimum sequence sparation [default: 5]", equate=False),
+            _Option(["-g", "gap_fraction"], "set maximum fraction of gaps [default: 0.9]", equate=False),
+            _Option(["-z", "nr_threads"], "set maximum number of threads", equate=False),
+            _Option(["-b", "rho_parameter_file"], "read rho parameter file", filename=True, equate=False),
+            _Argument(["alnfile"], "Input alignment file [JONES format]", filename=True, is_required=True),
         ]
         AbstractCommandline.__init__(self, cmd, **kwargs)

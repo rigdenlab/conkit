@@ -39,7 +39,7 @@ from conkit.io.a2m import A2mParser
 from conkit.misc import deprecate
 
 
-@deprecate('0.11', msg='Use A2mParser instead')
+@deprecate("0.11", msg="Use A2mParser instead")
 class JonesParser(A2mParser):
     """Parser class for Jones sequence files
 
@@ -52,4 +52,5 @@ class JonesParser(A2mParser):
     is represented in a single line!
 
     """
+
     pass

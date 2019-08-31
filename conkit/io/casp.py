@@ -45,23 +45,24 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 
 # Credits to Stefan Seemayer - bits taken from PyMOL-RR
-RE_PRFMAT = re.compile(r'PFRMAT\s+(RR)\s*$')
-RE_TARGET = re.compile(r'^TARGET\s+(.*?)\s*$')
-RE_AUTHOR = re.compile(r'^AUTHOR\s+(.*?)\s*$')
-RE_REMARK = re.compile(r'^REMARK\s+(.*?)\s*$')
-RE_METHOD = re.compile(r'^METHOD\s+(.*?)\s*$')
-RE_MODEL = re.compile(r'^MODEL\s+(\w+)\s*$')
-RE_SEQ = re.compile(r'^([A-Za-z\-]+)$')
-RE_SPLIT = re.compile(r'\s+')
-RE_RES = re.compile(r'([A-Za-z]+)([0-9]+)')
-RE_ENDMDL = re.compile(r'^ENDMDL\s*$')
-RE_END = re.compile(r'^END\s*$')
+RE_PRFMAT = re.compile(r"PFRMAT\s+(RR)\s*$")
+RE_TARGET = re.compile(r"^TARGET\s+(.*?)\s*$")
+RE_AUTHOR = re.compile(r"^AUTHOR\s+(.*?)\s*$")
+RE_REMARK = re.compile(r"^REMARK\s+(.*?)\s*$")
+RE_METHOD = re.compile(r"^METHOD\s+(.*?)\s*$")
+RE_MODEL = re.compile(r"^MODEL\s+(\w+)\s*$")
+RE_SEQ = re.compile(r"^([A-Za-z\-]+)$")
+RE_SPLIT = re.compile(r"\s+")
+RE_RES = re.compile(r"([A-Za-z]+)([0-9]+)")
+RE_ENDMDL = re.compile(r"^ENDMDL\s*$")
+RE_END = re.compile(r"^END\s*$")
 
 # Intermediate storage structures
-ModelTemplate = collections.namedtuple('Model', ['id', 'contacts', 'sequence'])
+ModelTemplate = collections.namedtuple("Model", ["id", "contacts", "sequence"])
 ContactTemplate = collections.namedtuple(
-    'Contact',
-    ['res1_seq', 'res2_seq', 'lb', 'ub', 'raw_score', 'res1_chain', 'res2_chain', 'res1_altseq', 'res2_altseq'])
+    "Contact",
+    ["res1_seq", "res2_seq", "lb", "ub", "raw_score", "res1_chain", "res2_chain", "res1_altseq", "res2_altseq"],
+)
 
 
 class CaspParser(ContactFileParser):
@@ -124,31 +125,32 @@ class CaspParser(ContactFileParser):
                         # Split in case we have chain in inter-molecular scenarios
                         res1_split = RE_RES.split(res1_entry)
                         if len(res1_split) == 1:
-                            res1_chain, res1_seq = '', res1_split[0]
+                            res1_chain, res1_seq = "", res1_split[0]
                         elif len(res1_split) == 4:
                             res1_chain, res1_seq = res1_split[1], res1_split[2]
                         res2_split = RE_RES.split(res2_entry)
                         if len(res2_split) == 1:
-                            res2_chain, res2_seq = '', res2_split[0]
+                            res2_chain, res2_seq = "", res2_split[0]
                         elif len(res2_split) == 4:
                             res2_chain, res2_seq = res2_split[1], res2_split[2]
                         contact = Contact(
-                            int(res1_seq), int(res2_seq), float(raw_score), distance_bound=(float(lb), float(ub)))
+                            int(res1_seq), int(res2_seq), float(raw_score), distance_bound=(float(lb), float(ub))
+                        )
                         contact.res1_chain = res1_chain
                         contact.res2_chain = res2_chain
                         contact.res1_altseq = int(res1_seq)
                         contact.res2_altseq = int(res2_seq)
                         contact_map.add(contact)
                 if seq_chunks:
-                    seq = ''.join(seq_chunks)
-                    sequence = Sequence('seq_{}'.format(contact_map.id), seq)
+                    seq = "".join(seq_chunks)
+                    sequence = Sequence("seq_{}".format(contact_map.id), seq)
                     contact_map.sequence = sequence
                     contact_map.set_sequence_register()
                 contact_file.add(contact_map)
             elif RE_END.match(line):
                 break
             else:
-                raise ValueError('Unrecognized line type. Please report this issue')
+                raise ValueError("Unrecognized line type. Please report this issue")
         return contact_file
 
     def write(self, f_handle, hierarchy):
@@ -163,30 +165,30 @@ class CaspParser(ContactFileParser):
 
         """
         contact_file = self._reconstruct(hierarchy)
-        content = 'PFRMAT RR\n'
+        content = "PFRMAT RR\n"
         if contact_file.target:
-            content += 'TARGET {}\n'.format(contact_file.target)
+            content += "TARGET {}\n".format(contact_file.target)
         if contact_file.author:
-            content += 'AUTHOR {}\n'.format(contact_file.author)
+            content += "AUTHOR {}\n".format(contact_file.author)
         if contact_file.remark:
             for remark in contact_file.remark:
-                content += 'REMARK {}\n'.format(remark)
+                content += "REMARK {}\n".format(remark)
         if contact_file.method:
             for method in contact_file.method:
-                content += 'METHOD {}\n'.format(method)
+                content += "METHOD {}\n".format(method)
         for contact_map in contact_file:
-            content += 'MODEL  {}\n'.format(contact_map.id)
+            content += "MODEL  {}\n".format(contact_map.id)
             if isinstance(contact_map.sequence, Sequence):
                 sequence = contact_map.sequence
                 for i in range(0, sequence.seq_len, 50):
-                    content += sequence.seq[i:i + 50] + '\n'
+                    content += sequence.seq[i : i + 50] + "\n"
             # Casp Roll format specifies raw scores to be in [0, 1]
             if any(c.raw_score > 1.0 or c.raw_score < 0.0 for c in contact_map):
                 contact_map.rescale(inplace=True)
             for contact in contact_map:
-                s = '{res1_chain: <}{res1_seq: <4} {res2_chain: <}{res2_seq:<4} {lb: <3} {ub: <3} {raw_score: <.6f}\n'
+                s = "{res1_chain: <}{res1_seq: <4} {res2_chain: <}{res2_seq:<4} {lb: <3} {ub: <3} {raw_score: <.6f}\n"
                 if contact.res1_chain == contact.res2_chain:
-                    res1_chain = res2_chain = ''
+                    res1_chain = res2_chain = ""
                 else:
                     res1_chain = contact.res1_chain
                     res2_chain = contact.res2_chain
@@ -199,8 +201,9 @@ class CaspParser(ContactFileParser):
                     res2_seq=contact.res2_seq,
                     lb=lb,
                     ub=ub,
-                    raw_score=contact.raw_score)
+                    raw_score=contact.raw_score,
+                )
                 content += s
-            content += 'ENDMDL\n'
-        content += 'END\n'
+            content += "ENDMDL\n"
+        content += "END\n"
         f_handle.write(content)

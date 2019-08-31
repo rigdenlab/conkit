@@ -69,7 +69,8 @@ class Entity(object):
        A dictionary storing the child entities
 
     """
-    __slots__ = ['parent', '_id', 'child_list', 'child_dict']
+
+    __slots__ = ["parent", "_id", "child_list", "child_dict"]
 
     def __init__(self, id):
         """Initialise a generic :obj:`~conkit.core.entity.Entity`
@@ -173,7 +174,7 @@ class Entity(object):
 
         """
         if isinstance(id, (float, int)):
-            raise TypeError('Please provide data type of str, list, or tuple')
+            raise TypeError("Please provide data type of str, list, or tuple")
         elif isinstance(id, list):
             id = tuple(id)
         self._id = id
@@ -202,7 +203,7 @@ class Entity(object):
     def _sort(self, kword, reverse):
         """Sort the :obj:`~conkit.core.entity.Entity`"""
         if any(not hasattr(e, kword) for e in self.child_list):
-            raise ValueError('Attribute not defined')
+            raise ValueError("Attribute not defined")
         self.child_list.sort(key=operator.attrgetter(kword), reverse=reverse)
 
     def add(self, entity):

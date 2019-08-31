@@ -39,8 +39,8 @@ Thus, we only cache the results to ultimately import the bits we really require.
 
 """
 
-__author__ = 'Felix Simkovic'
-__date__ = '19 Jun 2017'
+__author__ = "Felix Simkovic"
+__date__ = "19 Jun 2017"
 __version__ = "1.0"
 
 import collections
@@ -52,7 +52,7 @@ import re
 
 RE_CLASS_DECLARATION = re.compile(r"^class\s+([A-Za-z0-9]+)\s*(.*):$")
 
-CacheObj = collections.namedtuple('CacheObj', ["id", "module", "object", "group"])
+CacheObj = collections.namedtuple("CacheObj", ["id", "module", "object", "group"])
 
 
 class ParserCache(object):
@@ -60,14 +60,14 @@ class ParserCache(object):
 
     # This mask is for backward-compatibility and extensions to avoid re-writing the same algorithms
     MASKS = {
-        'a2m': ['a2m', 'jones'],
-        'a3m': ['a3m', 'a3m-inserts'],
-        'casp': ['casp', 'casprr'],
-        'pcons': ['flib', 'pconsc', 'pconsc2', 'pconsc3', 'saint2'],
-        'psicov': ['psicov', 'metapsicov', 'nebcon'],
+        "a2m": ["a2m", "jones"],
+        "a3m": ["a3m", "a3m-inserts"],
+        "casp": ["casp", "casprr"],
+        "pcons": ["flib", "pconsc", "pconsc2", "pconsc3", "saint2"],
+        "psicov": ["psicov", "metapsicov", "nebcon"],
     }
 
-    BLINDFOLD = set(['ContactFileParser', 'GenericStructureParser', 'SequenceFileParser'])
+    BLINDFOLD = set(["ContactFileParser", "GenericStructureParser", "SequenceFileParser"])
 
     def __init__(self):
         self._parsers = []
@@ -82,7 +82,7 @@ class ParserCache(object):
 
     def __repr__(self):
         nparsers = len(self.contact_file_parsers) + len(self.sequence_file_parsers)
-        return '{}(nparsers={})'.format(self.__class__.__name__, nparsers)
+        return "{}(nparsers={})".format(self.__class__.__name__, nparsers)
 
     @property
     def contact_file_parsers(self):
@@ -116,7 +116,9 @@ class ParserCache(object):
                 if object_ in ParserCache.BLINDFOLD:
                     continue
                 elif objname in ParserCache.MASKS:
-                    self._parsers.extend([CacheObj(extra, module, object_, group) for extra in ParserCache.MASKS[objname]])
+                    self._parsers.extend(
+                        [CacheObj(extra, module, object_, group) for extra in ParserCache.MASKS[objname]]
+                    )
                 else:
                     self._parsers.append(CacheObj(objname, module, object_, group))
 

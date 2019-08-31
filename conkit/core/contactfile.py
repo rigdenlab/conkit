@@ -71,7 +71,8 @@ class ContactFile(Entity):
        The first :obj:`~conkit.core.contactmap.ContactMap` entry in :obj:`~conkit.core.contactfile.ContactFile`
 
     """
-    __slots__ = ['author', 'target', '_method', '_remark']
+
+    __slots__ = ["author", "target", "_method", "_remark"]
 
     def __init__(self, id):
         """Initialise a new contact map

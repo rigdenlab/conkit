@@ -21,7 +21,7 @@ class TestBbcontactsParser(unittest.TestCase):
 1EAZ      0.65      Parallel    -6.855870        29         last    89    56
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = BbcontactsParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -30,7 +30,8 @@ class TestBbcontactsParser(unittest.TestCase):
         self.assertEqual([29, 30, 31, 87, 88, 89], [c.res2_seq for c in contact_map1])
         self.assertEqual(
             sorted([9.860725, 9.860725, 9.860725, -6.855870, -6.855870, -6.855870]),
-            sorted([c.raw_score for c in contact_map1]))
+            sorted([c.raw_score for c in contact_map1]),
+        )
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -40,7 +41,7 @@ class TestBbcontactsParser(unittest.TestCase):
 1EAZ      0.65      Parallel    -6.855870        29        first    87    54
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = BbcontactsParser().read(f_in, del_one_two=True)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -60,7 +61,7 @@ class TestBbcontactsParser(unittest.TestCase):
 1EAZ      0.65      Parallel     0.000000        29        first   100    15
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = BbcontactsParser().read(f_in, del_one_two=False)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -69,7 +70,8 @@ class TestBbcontactsParser(unittest.TestCase):
         self.assertEqual([29, 30, 31, 87, 88, 89, 100, 101, 100], [c.res2_seq for c in contact_map1])
         self.assertEqual(
             sorted([9.860725, 9.860725, 9.860725, -6.855870, -6.855870, -6.855870, 0.0, 0.0, 0.0]),
-            sorted([c.raw_score for c in contact_map1]))
+            sorted([c.raw_score for c in contact_map1]),
+        )
         os.unlink(f_name)
 
 

@@ -31,34 +31,47 @@ H1      19      L       H2      62      G       0.784613
 H1      19      L       H2      55      F       0.782741
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = MemBrainParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(12, len(contact_map1))
         self.assertEqual([30, 33, 18, 30, 26, 18, 33, 12, 29, 24, 19, 19], [c.res1_seq for c in contact_map1])
         self.assertEqual([55, 51, 65, 54, 57, 58, 63, 68, 55, 51, 62, 55], [c.res2_seq for c in contact_map1])
-        self.assertEqual([
-            1.000000, 0.944091, 0.942259, 0.919241, 0.817638, 0.797449, 0.795520, 0.795462, 0.791829, 0.790044,
-            0.784613, 0.782741
-        ], [c.raw_score for c in contact_map1])
+        self.assertEqual(
+            [
+                1.000000,
+                0.944091,
+                0.942259,
+                0.919241,
+                0.817638,
+                0.797449,
+                0.795520,
+                0.795462,
+                0.791829,
+                0.790044,
+                0.784613,
+                0.782741,
+            ],
+            [c.raw_score for c in contact_map1],
+        )
         os.unlink(f_name)
 
     def test_write_1(self):
-        contact_file = ContactFile('RR')
-        contact_file.target = 'R9999'
-        contact_file.author = '1234-5678-9000'
-        contact_file.remark = ['Predictor remarks']
-        contact_file.method = ['Description of methods used', 'Description of methods used']
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_file.target = "R9999"
+        contact_file.author = "1234-5678-9000"
+        contact_file.remark = ["Predictor remarks"]
+        contact_file.method = ["Description of methods used", "Description of methods used"]
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             MemBrainParser().write(f_out, contact_file)
         content = [
             "Helix   Position        Residue Helix   Position        Residue Probability",
@@ -67,7 +80,7 @@ H1      19      L       H2      55      F       0.782741
             "Hx      2       L       Hx      8       I       0.900000",
             "Hx      3       E       Hx      12      K       0.400000",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)

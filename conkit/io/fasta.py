@@ -47,7 +47,7 @@ class FastaParser(SequenceFileParser):
     def __init__(self):
         super(FastaParser, self).__init__()
 
-    def read(self, f_handle, f_id='fasta'):
+    def read(self, f_handle, f_id="fasta"):
         """Read a sequence file
 
         Parameters
@@ -74,13 +74,13 @@ class FastaParser(SequenceFileParser):
 
             if not line:
                 continue
-            elif line.startswith('#'):
+            elif line.startswith("#"):
                 hierarchy.remark = line[1:]
-            elif line.startswith('>'):
+            elif line.startswith(">"):
                 break
 
         while True:
-            if not line.startswith('>'):
+            if not line.startswith(">"):
                 raise ValueError("Fasta record needs to start with '>'")
 
             id = line[1:]  # Header without '>'
@@ -90,7 +90,7 @@ class FastaParser(SequenceFileParser):
             while True:
                 if not line:
                     break
-                elif line.startswith('>'):
+                elif line.startswith(">"):
                     break
                 chunks.append(line)
                 line = f_handle.readline().rstrip()
@@ -116,15 +116,15 @@ class FastaParser(SequenceFileParser):
 
         """
         hierarchy = self._reconstruct(hierarchy)
-        content = ''
+        content = ""
         for remark in hierarchy.remark:
-            content += '#{}\n'.format(remark)
+            content += "#{}\n".format(remark)
         for sequence_entry in hierarchy:
-            header = '>{}'.format(sequence_entry.id)
+            header = ">{}".format(sequence_entry.id)
             if len(sequence_entry.remark) > 0:
-                header = '|'.join([header] + sequence_entry.remark)
-            content += header + '\n'
+                header = "|".join([header] + sequence_entry.remark)
+            content += header + "\n"
             sequence_string = sequence_entry.seq.upper()  # UPPER CASE !!!
             for i in range(0, sequence_entry.seq_len, 60):
-                content += sequence_string[i:i + 60] + '\n'
+                content += sequence_string[i : i + 60] + "\n"
         f_handle.write(content)

@@ -35,50 +35,64 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 """
         f_name = create_tmp_f(content=msa)
         parser = A3mParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in, remove_inserts=True)  # <------------
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
-                self.assertEqual('d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}', sequence_entry.id)
-                self.assertEqual('PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL', sequence_entry.seq)
+                self.assertEqual("d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}", sequence_entry.id)
+                self.assertEqual("PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL", sequence_entry.seq)
             elif i == 1:
-                self.assertEqual('gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]',
-                                 sequence_entry.id)
-                self.assertEqual('HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]", sequence_entry.id
+                )
+                self.assertEqual("HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL", sequence_entry.seq)
             elif i == 2:
-                self.assertEqual('gi|7305557|ref|NP_038800.1|:(8-103) T-cell leukemia/lymphoma 1B, 3 [Mus musculus]',
-                                 sequence_entry.id)
-                self.assertEqual('PPRFLVCTRDDIYEDENGRQWVVAKVETSRSITVHLQHMTTIPQEPTPQQPINNNSL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|7305557|ref|NP_038800.1|:(8-103) T-cell leukemia/lymphoma 1B, 3 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual("PPRFLVCTRDDIYEDENGRQWVVAKVETSRSITVHLQHMTTIPQEPTPQQPINNNSL", sequence_entry.seq)
             elif i == 3:
                 self.assertEqual(
-                    'gi|11415028|ref|NP_068801.1|:(2-106) T-cell lymphoma-1; T-cell lymphoma-1A [Homo sapiens]',
-                    sequence_entry.id)
-                self.assertEqual('HPDRLWAWEKFVYLDEKQHAWLPLTIEDRLQLRVLLRREDVVLGRPMTPTQIGPSLL', sequence_entry.seq)
+                    "gi|11415028|ref|NP_068801.1|:(2-106) T-cell lymphoma-1; T-cell lymphoma-1A [Homo sapiens]",
+                    sequence_entry.id,
+                )
+                self.assertEqual("HPDRLWAWEKFVYLDEKQHAWLPLTIEDRLQLRVLLRREDVVLGRPMTPTQIGPSLL", sequence_entry.seq)
             elif i == 4:
-                self.assertEqual('gi|7305561|ref|NP_038804.1|:(7-103) T-cell leukemia/lymphoma 1B, 5 [Mus musculus]',
-                                 sequence_entry.id)
-                self.assertEqual('----------GIYEDEHHRVWIAVNVETSHSSHVHLQHMTTLPQEPTPQQPINNNSL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|7305561|ref|NP_038804.1|:(7-103) T-cell leukemia/lymphoma 1B, 5 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual("----------GIYEDEHHRVWIAVNVETSHSSHVHLQHMTTLPQEPTPQQPINNNSL", sequence_entry.seq)
             elif i == 5:
-                self.assertEqual('gi|7305553|ref|NP_038801.1|:(5-103) T-cell leukemia/lymphoma 1B, 1 [Mus musculus]',
-                                 sequence_entry.id)
-                self.assertEqual('LPVYLVSVRLGIYEDEHHRVWIVANVETSSHGNRRRTHVTVHLWKLIPQQVIPFNFL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|7305553|ref|NP_038801.1|:(5-103) T-cell leukemia/lymphoma 1B, 1 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual("LPVYLVSVRLGIYEDEHHRVWIVANVETSSHGNRRRTHVTVHLWKLIPQQVIPFNFL", sequence_entry.seq)
             elif i == 6:
                 self.assertEqual(
-                    'gi|27668591|ref|XP_234504.1|:(7-103) similar to Chain A, Crystal Structure Of Murine Tcl1',
-                    sequence_entry.id)
-                self.assertEqual('-PDRLWLWEKHVYLDEFRRSWLPIVIKSNGKFQVIMRQKDVILGDSMTPSQLVPYEL', sequence_entry.seq)
+                    "gi|27668591|ref|XP_234504.1|:(7-103) similar to Chain A, Crystal Structure Of Murine Tcl1",
+                    sequence_entry.id,
+                )
+                self.assertEqual("-PDRLWLWEKHVYLDEFRRSWLPIVIKSNGKFQVIMRQKDVILGDSMTPSQLVPYEL", sequence_entry.seq)
             elif i == 7:
-                self.assertEqual('gi|27668589|ref|XP_234503.1|:(9-91) similar to T-cell leukemia/lymphoma 1B, 5;',
-                                 sequence_entry.id)
-                self.assertEqual('-PHILTLRTHGIYEDEHHRLWVVLDLQASSFSNRLLIYLTVYLQESTPPSPMNLNGL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|27668589|ref|XP_234503.1|:(9-91) similar to T-cell leukemia/lymphoma 1B, 5;", sequence_entry.id
+                )
+                self.assertEqual("-PHILTLRTHGIYEDEHHRLWVVLDLQASSFSNRLLIYLTVYLQESTPPSPMNLNGL", sequence_entry.seq)
             elif i == 8:
-                self.assertEqual('gi|7305559|ref|NP_038802.1|:(8-102) T-cell leukemia/lymphoma 1B, 4 [Mus musculus]',
-                                 sequence_entry.id)
-                self.assertEqual('PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPVHLWQMTTLFQEPSPDSLKTFNFL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|7305559|ref|NP_038802.1|:(8-102) T-cell leukemia/lymphoma 1B, 4 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual("PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPVHLWQMTTLFQEPSPDSLKTFNFL", sequence_entry.seq)
             elif i == 9:
-                self.assertEqual('gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]',
-                                 sequence_entry.id)
-                self.assertEqual('---------PGFYEDEHHRLWMVAKLETCSHSPVHLWQMTRYPQEPAPYNPMNYNFL', sequence_entry.seq)
+                self.assertEqual(
+                    "gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual("---------PGFYEDEHHRLWMVAKLETCSHSPVHLWQMTRYPQEPAPYNPMNYNFL", sequence_entry.seq)
         os.unlink(f_name)
 
     def test_read_2(self):
@@ -105,70 +119,94 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 """
         f_name = create_tmp_f(content=msa)
         parser = A3mParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in, remove_inserts=False)  # <------------
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
-                self.assertEqual('d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}', sequence_entry.id)
+                self.assertEqual("d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}", sequence_entry.id)
                 self.assertEqual(
-                    'PPDHLWVHQEGIYRDEYQRTWVAVVEE--E--T--SF---------LR----------ARVQQIQVPLG-------DAARPSHLLTS-----QL',
-                    sequence_entry.seq)
+                    "PPDHLWVHQEGIYRDEYQRTWVAVVEE--E--T--SF---------LR----------ARVQQIQVPLG-------DAARPSHLLTS-----QL",
+                    sequence_entry.seq,
+                )
             elif i == 1:
-                self.assertEqual('gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    'HPNRLWIWEKHVYLDEFRRSWLPVVIK--S--N--EK---------FQ----------VILRQEDVTLG-------EAMSPSQLVPY-----EL',
-                    sequence_entry.seq)
+                    "gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]", sequence_entry.id
+                )
+                self.assertEqual(
+                    "HPNRLWIWEKHVYLDEFRRSWLPVVIK--S--N--EK---------FQ----------VILRQEDVTLG-------EAMSPSQLVPY-----EL",
+                    sequence_entry.seq,
+                )
             elif i == 2:
-                self.assertEqual('gi|7305557|ref|NP_038800.1|:(8-103) T-cell leukemia/lymphoma 1B, 3 [Mus musculus]',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    'PPRFLVCTRDDIYEDENGRQWVVAKVE--T--S--RSpygsrietcIT----------VHLQHMTTIPQ-------EPTPQQPINNN-----SL',
-                    sequence_entry.seq)
+                    "gi|7305557|ref|NP_038800.1|:(8-103) T-cell leukemia/lymphoma 1B, 3 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual(
+                    "PPRFLVCTRDDIYEDENGRQWVVAKVE--T--S--RSpygsrietcIT----------VHLQHMTTIPQ-------EPTPQQPINNN-----SL",
+                    sequence_entry.seq,
+                )
             elif i == 3:
                 self.assertEqual(
-                    'gi|11415028|ref|NP_068801.1|:(2-106) T-cell lymphoma-1; T-cell lymphoma-1A [Homo sapiens]',
-                    sequence_entry.id)
+                    "gi|11415028|ref|NP_068801.1|:(2-106) T-cell lymphoma-1; T-cell lymphoma-1A [Homo sapiens]",
+                    sequence_entry.id,
+                )
                 self.assertEqual(
-                    'HPDRLWAWEKFVYLDEKQHAWLPLTIEikD--R--LQ---------LR----------VLLRREDVVLG-------RPMTPTQIGPS-----LL',
-                    sequence_entry.seq)
+                    "HPDRLWAWEKFVYLDEKQHAWLPLTIEikD--R--LQ---------LR----------VLLRREDVVLG-------RPMTPTQIGPS-----LL",
+                    sequence_entry.seq,
+                )
             elif i == 4:
-                self.assertEqual('gi|7305561|ref|NP_038804.1|:(7-103) T-cell leukemia/lymphoma 1B, 5 [Mus musculus]',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    '----------GIYEDEHHRVWIAVNVE--T--S--HS---------SHgnrietcvt-VHLQHMTTLPQ-------EPTPQQPINNN-----SL',
-                    sequence_entry.seq)
+                    "gi|7305561|ref|NP_038804.1|:(7-103) T-cell leukemia/lymphoma 1B, 5 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual(
+                    "----------GIYEDEHHRVWIAVNVE--T--S--HS---------SHgnrietcvt-VHLQHMTTLPQ-------EPTPQQPINNN-----SL",
+                    sequence_entry.seq,
+                )
             elif i == 5:
-                self.assertEqual('gi|7305553|ref|NP_038801.1|:(5-103) T-cell leukemia/lymphoma 1B, 1 [Mus musculus]',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    'LPVYLVSVRLGIYEDEHHRVWIVANVE--TshS--SH---------GN----------RRRTHVTVHLW-------KLIPQQVIPFNplnydFL',
-                    sequence_entry.seq)
+                    "gi|7305553|ref|NP_038801.1|:(5-103) T-cell leukemia/lymphoma 1B, 1 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual(
+                    "LPVYLVSVRLGIYEDEHHRVWIVANVE--TshS--SH---------GN----------RRRTHVTVHLW-------KLIPQQVIPFNplnydFL",
+                    sequence_entry.seq,
+                )
             elif i == 6:
                 self.assertEqual(
-                    'gi|27668591|ref|XP_234504.1|:(7-103) similar to Chain A, Crystal Structure Of Murine Tcl1',
-                    sequence_entry.id)
+                    "gi|27668591|ref|XP_234504.1|:(7-103) similar to Chain A, Crystal Structure Of Murine Tcl1",
+                    sequence_entry.id,
+                )
                 self.assertEqual(
-                    '-PDRLWLWEKHVYLDEFRRSWLPIVIK--S--N--GK---------FQ----------VIMRQKDVILG-------DSMTPSQLVPY-----EL',
-                    sequence_entry.seq)
+                    "-PDRLWLWEKHVYLDEFRRSWLPIVIK--S--N--GK---------FQ----------VIMRQKDVILG-------DSMTPSQLVPY-----EL",
+                    sequence_entry.seq,
+                )
             elif i == 7:
-                self.assertEqual('gi|27668589|ref|XP_234503.1|:(9-91) similar to T-cell leukemia/lymphoma 1B, 5;',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    '-PHILTLRTHGIYEDEHHRLWVVLDLQ--A--ShlSF---------SN----------RLLIYLTVYLQqgvafplESTPPSPMNLN-----GL',
-                    sequence_entry.seq)
+                    "gi|27668589|ref|XP_234503.1|:(9-91) similar to T-cell leukemia/lymphoma 1B, 5;", sequence_entry.id
+                )
+                self.assertEqual(
+                    "-PHILTLRTHGIYEDEHHRLWVVLDLQ--A--ShlSF---------SN----------RLLIYLTVYLQqgvafplESTPPSPMNLN-----GL",
+                    sequence_entry.seq,
+                )
             elif i == 8:
-                self.assertEqual('gi|7305559|ref|NP_038802.1|:(8-102) T-cell leukemia/lymphoma 1B, 4 [Mus musculus]',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    'PPCFLVCTRDDIYEDEHGRQWVAAKVE--T--S--SH---------SPycskietcvtVHLWQMTTLFQ-------EPSPDSLKTFN-----FL',
-                    sequence_entry.seq)
+                    "gi|7305559|ref|NP_038802.1|:(8-102) T-cell leukemia/lymphoma 1B, 4 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual(
+                    "PPCFLVCTRDDIYEDEHGRQWVAAKVE--T--S--SH---------SPycskietcvtVHLWQMTTLFQ-------EPSPDSLKTFN-----FL",
+                    sequence_entry.seq,
+                )
             elif i == 9:
-                self.assertEqual('gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]',
-                                 sequence_entry.id)
                 self.assertEqual(
-                    '---------PGFYEDEHHRLWMVAKLE--T--C--SH---------SPycnkietcvtVHLWQMTRYPQ-------EPAPYNPMNYN-----FL',
-                    sequence_entry.seq)
+                    "gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
+                    sequence_entry.id,
+                )
+                self.assertEqual(
+                    "---------PGFYEDEHHRLWMVAKLE--T--C--SH---------SPycnkietcvtVHLWQMTRYPQ-------EPAPYNPMNYN-----FL",
+                    sequence_entry.seq,
+                )
         os.unlink(f_name)
 
     def test_read_3(self):
@@ -183,27 +221,33 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 """
         f_name = create_tmp_f(content=msa)
         parser = A3mParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in, remove_inserts=False)  # <------------
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
-                self.assertEqual('d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}', sequence_entry.id)
-                self.assertEqual('PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL', sequence_entry.seq)
+                self.assertEqual("d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}", sequence_entry.id)
+                self.assertEqual("PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL", sequence_entry.seq)
             elif i == 1:
-                self.assertEqual('gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]',
-                                 sequence_entry.id[:80])
+                self.assertEqual(
+                    "gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]",
+                    sequence_entry.id[:80],
+                )
                 self.assertEqual(79, len(sequence_entry.id))
-                self.assertEqual('HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL', sequence_entry.seq)
+                self.assertEqual("HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL", sequence_entry.seq)
             elif i == 1:
-                self.assertEqual('gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]',
-                                 sequence_entry.id[:80])
+                self.assertEqual(
+                    "gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]",
+                    sequence_entry.id[:80],
+                )
                 self.assertGreater(79, len(sequence_entry.id))
-                self.assertEqual('HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL', sequence_entry.seq)
+                self.assertEqual("HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL", sequence_entry.seq)
             elif i == 1:
-                self.assertEqual('gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]',
-                                 sequence_entry.id[:80])
+                self.assertEqual(
+                    "gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]",
+                    sequence_entry.id[:80],
+                )
                 self.assertGreater(79, len(sequence_entry.id))
-                self.assertEqual('HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL', sequence_entry.seq)
+                self.assertEqual("HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL", sequence_entry.seq)
         os.unlink(f_name)
 
     def test_write_1(self):
@@ -229,10 +273,10 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
-        f_name_in = create_tmp_f(content='\n'.join(msa))
+        f_name_in = create_tmp_f(content="\n".join(msa))
         f_name_out = create_tmp_f()
         parser = A3mParser()
-        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+        with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in, remove_inserts=True)
             parser.write(f_out, sequence_file)
         ref = [
@@ -257,7 +301,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLETCSHSPVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
-        with open(f_name_out, 'r') as f_in:
+        with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(ref, output)
         map(os.unlink, [f_name_in, f_name_out])
@@ -286,10 +330,10 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
 
-        f_name_in = create_tmp_f(content='\n'.join(msa))
+        f_name_in = create_tmp_f(content="\n".join(msa))
         f_name_out = create_tmp_f()
         parser = A3mParser()
-        with open(f_name_in, 'r') as f_in, open(f_name_out, 'w') as f_out:
+        with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in, remove_inserts=False)
             parser.write(f_out, sequence_file)
         ref = [
@@ -314,7 +358,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLE--T--C--SH---------SPycnkietcvtVHLWQMTRYPQ-------EPAPYNPMNYN-----FL",
         ]
-        with open(f_name_out, 'r') as f_in:
+        with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(ref, output)
         map(os.unlink, [f_name_in, f_name_out])

@@ -42,8 +42,8 @@ from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
-RE_HEADER = re.compile(r'^Helix\s+Position\s+Residue\s+Helix\s+Position\s+Residue\s+Probability$')
-RE_SPLIT = re.compile(r'\s+')
+RE_HEADER = re.compile(r"^Helix\s+Position\s+Residue\s+Helix\s+Position\s+Residue\s+Probability$")
+RE_SPLIT = re.compile(r"\s+")
 
 
 class MemBrainParser(ContactFileParser):
@@ -90,7 +90,7 @@ class MemBrainParser(ContactFileParser):
                 contact.res2 = res2
                 contact_map.add(contact)
 
-        hierarchy.method = 'Contact map predicted using MemBrain'
+        hierarchy.method = "Contact map predicted using MemBrain"
 
         return hierarchy
 
@@ -112,17 +112,18 @@ class MemBrainParser(ContactFileParser):
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
-        content = ''
+            raise RuntimeError("More than one contact map provided")
+        content = ""
         for contact_map in contact_file:
-            content += 'Helix   Position        Residue Helix   Position        Residue Probability\n'
+            content += "Helix   Position        Residue Helix   Position        Residue Probability\n"
             for contact in contact_map:
-                line = 'Hx      {res1_seq: <7} {res1: <7} Hx      {res2_seq: <7} {res2: <7} {raw_score: <.6f}\n'
+                line = "Hx      {res1_seq: <7} {res1: <7} Hx      {res2_seq: <7} {res2: <7} {raw_score: <.6f}\n"
                 line = line.format(
                     res1_seq=contact.res1_seq,
                     res2_seq=contact.res2_seq,
                     res1=contact.res1,
                     res2=contact.res2,
-                    raw_score=contact.raw_score)
+                    raw_score=contact.raw_score,
+                )
                 content += line
         f_handle.write(content)

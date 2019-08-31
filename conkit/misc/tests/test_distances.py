@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = 'Felix Simkovic'
+__author__ = "Felix Simkovic"
 
 import itertools
 import unittest
@@ -39,18 +39,56 @@ from conkit.misc.distances import DynamicDistances
 class TestDynamicDistances(unittest.TestCase):
     def test_1(self):
         amino_acids = [
-            "A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y"
+            "A",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "K",
+            "L",
+            "M",
+            "N",
+            "P",
+            "Q",
+            "R",
+            "S",
+            "T",
+            "V",
+            "W",
+            "Y",
         ]
         for (a1, a2) in itertools.combinations(amino_acids, 2):
             self.assertEqual(DynamicDistances._CB_CB_CUTOFF[a1][a2], DynamicDistances.cutoff(a1, a2))
 
     def test_2(self):
         amino_acids = [
-            "A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y"
+            "A",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "K",
+            "L",
+            "M",
+            "N",
+            "P",
+            "Q",
+            "R",
+            "S",
+            "T",
+            "V",
+            "W",
+            "Y",
         ]
         for (a1, a2) in itertools.combinations(amino_acids, 2):
             self.assertEqual(DynamicDistances._CB_CB_PERCENT[a1][a2], DynamicDistances.percentile(a1, a2))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

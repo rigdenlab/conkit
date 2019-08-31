@@ -38,9 +38,11 @@ __version__ = "1.0"
 
 from collections import namedtuple
 
-Residue = namedtuple('Residue', ['res_seq', 'res_altseq', 'res_name', 'res_chain'])
+Residue = namedtuple("Residue", ["res_seq", "res_altseq", "res_name", "res_chain"])
 
 
-class Gap(namedtuple('Gap', Residue._fields)):
+class Gap(namedtuple("Gap", Residue._fields)):
     IDENTIFIER = -999999
-Gap.__new__.__defaults__ = (Gap.IDENTIFIER, Gap.IDENTIFIER, 'X', '')
+
+
+Gap.__new__.__defaults__ = (Gap.IDENTIFIER, Gap.IDENTIFIER, "X", "")
