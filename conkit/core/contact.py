@@ -146,8 +146,8 @@ class Contact(Entity):
         text = "{name}(id={id} res1={_res1} res1_chain={res1_chain} res1_seq={_res1_seq} " \
                "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score})"
         return text.format(
-            name=self.__class__.__name__, id=self._id, **{k: getattr(self, k)
-                                                          for k in self.__class__.__slots__})
+            name=self.__class__.__name__, id=self._id, **{k: getattr(self, k) for k in self.__slots__}
+        )
 
     @property
     def distance_bound(self):
@@ -457,13 +457,8 @@ class Contact(Entity):
     def _to_dict(self):
         """Convert the object into a dictionary"""
         keys = ['id', 'true_positive', 'false_positive', 'status_unknown', 'lower_bound', 'upper_bound']
-        keys += [k for k in self.__slots__]
-        dict_ = {}
-        for k in keys:
-            if k[0] == '_':
-                k = k[1:]
-            dict_[k] = getattr(self, k)
-        return dict_
+        keys += [k.lstrip('_') for k in self.__slots__]
+        return {k: getattr(self, k) for k in set(keys)}
 
     @staticmethod
     def _set_residue(amino_acid):
@@ -473,5 +468,4 @@ class Contact(Entity):
             return a_a
         elif a_a in AminoAcidThreeToOne.__members__:
             return AminoAcidThreeToOne[a_a].value
-        else:
-            raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))
+        raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))

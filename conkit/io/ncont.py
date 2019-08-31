@@ -44,12 +44,11 @@ from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
 _re_hit_part = "\/\d+\/([A-Za-z])\/\s*(\d+)\(([A-Z]{3})\)\.\s+\/\s*[A-Z]+\s+\[\s*[A-Z]\]:\s+"
-RE_CONTACT = re.compile(_re_hit_part + _re_hit_part + "(\d+\.\d+)\s*")
+RE_CONTACT = re.compile(r"{}(\d+\.\d+)\s*".format(_re_hit_part * 2))
 
 
 class NcontParser(ContactFileParser):
-    """Class to parse a Ncont contact file
-    """
+    """Class to parse a Ncont contact file."""
 
     def __init__(self):
         super(NcontParser, self).__init__()

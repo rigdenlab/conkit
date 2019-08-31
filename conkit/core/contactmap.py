@@ -1007,9 +1007,7 @@ class ContactMap(Entity):
     @staticmethod
     def _reindex_by_keymap(keymap):
         """Reindex a key map"""
-        for i, residue in enumerate(keymap):
-            residue.res_altseq = i + 1
-        return keymap
+        return [residue._replace(res_altseq=i + 1) for i, residue in enumerate(keymap)]
 
     @staticmethod
     def _renumber(contact_map, self_keymap, other_keymap):

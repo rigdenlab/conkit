@@ -36,33 +36,11 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
+from collections import namedtuple
 
-class _Struct(object):
-    """A basic class representing a struct residue"""
-    __slots__ = ('res_seq', 'res_altseq', 'res_name', 'res_chain')
-
-    def __repr__(self):
-        string = "{name}(res_seq='{res_seq}' res_altseq='{res_altseq}' res_name='{res_name}' res_chain='{res_chain}')"
-        return string.format(name=self.__class__.__name__, **{k: getattr(self, k) for k in self.__class__.__slots__})
+Residue = namedtuple('Residue', ['res_seq', 'res_altseq', 'res_name', 'res_chain'])
 
 
-class Gap(_Struct):
-    """A basic class representing a gap residue"""
-
+class Gap(namedtuple('Gap', Residue._fields)):
     IDENTIFIER = -999999
-
-    def __init__(self):
-        self.res_seq = Gap.IDENTIFIER
-        self.res_altseq = Gap.IDENTIFIER
-        self.res_name = 'X'
-        self.res_chain = ''
-
-
-class Residue(_Struct):
-    """A basic class representing a residue"""
-
-    def __init__(self, res_seq, res_altseq, res_name, res_chain):
-        self.res_seq = res_seq
-        self.res_altseq = res_altseq
-        self.res_name = res_name
-        self.res_chain = res_chain
+Gap.__new__.__defaults__ = (Gap.IDENTIFIER, Gap.IDENTIFIER, 'X', '')
