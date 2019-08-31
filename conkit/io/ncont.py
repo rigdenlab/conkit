@@ -43,7 +43,9 @@ from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
-_re_hit_part = "\/\d+\/([A-Za-z])\/\s*(\d+)\(([A-Z]{3})\)\.\s+\/\s*[A-Z]+\s+\[\s*[A-Z]\]:\s+"
+# re module doesn't support capture of 2+ capturing groups in repeated pattern
+# see: https://stackoverflow.com/a/9765390/3046533
+_re_hit_part = "\/\d+\/([A-Za-z])+\/\s*(\d+)\(([A-Z]{3})\)\.\s+\/\s*[A-Z]+\s+\[\s*[A-Z]\]:\s+"
 RE_CONTACT = re.compile(r"{}(\d+\.\d+)\s*".format(_re_hit_part * 2))
 
 
