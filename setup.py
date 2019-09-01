@@ -205,7 +205,7 @@ setup(
     classifiers=CLASSIFIERS,
     setup_requires=SETUPREQUIRES,
     install_requires=DEPENDENCIES,
-    tests_require=['codecov', 'coverage', 'pytest', 'pytest-cov', 'pytest-pep8', 'pytest-helpers-namespace'],
+    tests_require=['codecov', 'coverage', 'pytest <5.0', 'pytest-cov', 'pytest-pep8', 'pytest-helpers-namespace'],
     include_package_data=True,
     zip_safe=False,
 )
