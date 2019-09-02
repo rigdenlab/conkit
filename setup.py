@@ -186,6 +186,7 @@ CLASSIFIERS = [
 
 TEST_REQUIREMENTS = [
     'codecov ==2.0.15',
+    'configparser>=3.5;python_version<"3"',
     'coverage ==4.5.4',
     'importlib-metadata ==0.20',
     'pluggy ==0.12',
