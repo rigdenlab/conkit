@@ -55,7 +55,7 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.mappings import AminoAcidThreeToOne
 
-ATOM = collections.namedtuple('Atom', 'resname resseq resseq_alt reschain')
+ATOM = collections.namedtuple("Atom", "resname resseq resseq_alt reschain")
 
 
 class GenericStructureParser(ContactFileParser):
@@ -66,7 +66,7 @@ class GenericStructureParser(ContactFileParser):
 
     def _build_sequence(self, chain):
         """Build a peptide using :mod:`biopython` to extract the sequence"""
-        return Sequence(chain.id + '_seq', ''.join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
+        return Sequence(chain.id + "_seq", "".join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
 
     def _chain_contacts(self, chain1, chain2):
         """Determine the contact pairs intra- or inter-molecular
@@ -97,16 +97,10 @@ class GenericStructureParser(ContactFileParser):
                 if chain1 == chain2 and int(residue1.id[1]) >= int(residue2.id[1]):
                     continue
                 construct1 = ATOM(
-                    resname=residue1.resname,
-                    resseq=int(residue1.id[1]),
-                    resseq_alt=resseq1_alt,
-                    reschain=chain1.id,
+                    resname=residue1.resname, resseq=int(residue1.id[1]), resseq_alt=resseq1_alt, reschain=chain1.id
                 )
                 construct2 = ATOM(
-                    resname=residue2.resname,
-                    resseq=int(residue2.id[1]),
-                    resseq_alt=resseq2_alt,
-                    reschain=chain2.id,
+                    resname=residue2.resname, resseq=int(residue2.id[1]), resseq_alt=resseq2_alt, reschain=chain2.id
                 )
                 yield (construct1, construct2, atom1 - atom2)
 
@@ -116,7 +110,7 @@ class GenericStructureParser(ContactFileParser):
             for atom in residue.copy():
                 if atom.is_disordered():
                     chain[residue.id].detach_child(atom.id)
-                elif residue.resname == 'GLY' and type == 'CB' and atom.id == 'CA':
+                elif residue.resname == "GLY" and type == "CB" and atom.id == "CA":
                     continue
                 elif atom.id != type:
                     chain[residue.id].detach_child(atom.id)
@@ -148,7 +142,7 @@ class GenericStructureParser(ContactFileParser):
         """
         hierarchies = []
         for model in structure:
-            hierarchy = ContactFile(f_id + '_' + str(model.id))
+            hierarchy = ContactFile(f_id + "_" + str(model.id))
             chains = list(chain for chain in model)
 
             for chain in chains:
@@ -166,7 +160,8 @@ class GenericStructureParser(ContactFileParser):
                         atom1.resseq,
                         atom2.resseq,
                         round(1.0 - (distance / 100), 6),
-                        distance_bound=(0., float(distance_cutoff)))
+                        distance_bound=(0.0, float(distance_cutoff)),
+                    )
 
                     contact.res1_altseq = atom1.resseq_alt
                     contact.res2_altseq = atom2.resseq_alt
@@ -186,22 +181,19 @@ class GenericStructureParser(ContactFileParser):
                         contact_map.sequence = self._build_sequence(chain1)
                         assert len(contact_map.sequence.seq) == len(chain1)
                     else:
-                        contact_map.sequence = self._build_sequence(chain1) \
-                            + self._build_sequence(chain2)
-                        assert len(contact_map.sequence.seq) \
-                            == len(chain1) + len(chain2)
+                        contact_map.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
+                        assert len(contact_map.sequence.seq) == len(chain1) + len(chain2)
                     hierarchy.add(contact_map)
 
-            hierarchy.method = 'Contact map extracted from PDB ' + str(model.id)
+            hierarchy.method = "Contact map extracted from PDB " + str(model.id)
             hierarchy.remark = [
-                'The model id is the chain identifier, i.e XY equates to chain X and chain Y.',
-                'Residue numbers in column 1 are chain X, and numbers in column 2 are chain Y.'
+                "The model id is the chain identifier, i.e XY equates to chain X and chain Y.",
+                "Residue numbers in column 1 are chain X, and numbers in column 2 are chain Y.",
             ]
             hierarchies.append(hierarchy)
 
         if len(hierarchies) > 1:
-            msg = "Super-level to contact file not yet implemented. " \
-                  "Parser returns hierarchy for top model only!"
+            msg = "Super-level to contact file not yet implemented. " "Parser returns hierarchy for top model only!"
             warnings.warn(msg, FutureWarning)
         return hierarchies[0]
 
@@ -226,7 +218,7 @@ class MmCifParser(GenericStructureParser):
     def __init__(self):
         super(MmCifParser, self).__init__()
 
-    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type='CB'):
+    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type="CB"):
         """Read a contact file
 
         Parameters
@@ -276,7 +268,7 @@ class PdbParser(GenericStructureParser):
     def __init__(self):
         super(PdbParser, self).__init__()
 
-    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type='CB'):
+    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type="CB"):
         """Read a contact file
 
         Parameters

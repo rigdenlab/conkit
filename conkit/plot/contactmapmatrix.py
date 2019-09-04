@@ -149,23 +149,27 @@ class ContactMapMatrixFigure(Figure):
         self_data = np.array([c for c in _hierarchy.as_list() if all(ci != Gap.IDENTIFIER for ci in c)])
         self_colors = ContactMapMatrixFigure._determine_color(_hierarchy)
         self_rawsc = np.array(
-            [c.raw_score for c in _hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+            [c.raw_score for c in _hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
+        )
 
         if self._other:
             _other = self._other.rescale()
             other_data = np.array([c for c in _other.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
             other_colors = ContactMapMatrixFigure._determine_color(_other)
             other_rawsc = np.array(
-                [c.raw_score for c in _other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])])
+                [c.raw_score for c in _other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
+            )
         else:
             other_data = self_data
             other_colors = self_colors
             other_rawsc = self_rawsc
 
         self._patch_scatter(
-            self_data[:, 1], self_data[:, 0], symbol="s", facecolor=self_colors, radius=1.0, linewidth=0)
+            self_data[:, 1], self_data[:, 0], symbol="s", facecolor=self_colors, radius=1.0, linewidth=0
+        )
         self._patch_scatter(
-            other_data[:, 0], other_data[:, 1], symbol="s", facecolor=other_colors, radius=1.0, linewidth=0)
+            other_data[:, 0], other_data[:, 1], symbol="s", facecolor=other_colors, radius=1.0, linewidth=0
+        )
 
         if self.lim:
             min_max_data = np.arange(self.lim[0], self.lim[1] + 1)
@@ -176,8 +180,8 @@ class ContactMapMatrixFigure(Figure):
             min_max_data = np.append(min_max_data, other_data[:, 0])
             min_max_data = np.append(min_max_data, other_data[:, 1])
 
-        self.ax.set_xlim(min_max_data.min(), min_max_data.max() + 1.)
-        self.ax.set_ylim(min_max_data.min(), min_max_data.max() + 1.)
+        self.ax.set_xlim(min_max_data.min(), min_max_data.max() + 1.0)
+        self.ax.set_ylim(min_max_data.min(), min_max_data.max() + 1.0)
         gap = 10 * (min_max_data.max() - min_max_data.min()) // 100
         if gap < 1:
             gap = 1
@@ -188,8 +192,8 @@ class ContactMapMatrixFigure(Figure):
         self.ax.set_yticks(tick_range + 0.5)
         self.ax.set_yticklabels(tick_range)
 
-        self.ax.set_xlabel('Residue number')
-        self.ax.set_ylabel('Residue number')
+        self.ax.set_xlabel("Residue number")
+        self.ax.set_ylabel("Residue number")
 
         # TODO: deprecate this in 0.10
         if self._file_name:

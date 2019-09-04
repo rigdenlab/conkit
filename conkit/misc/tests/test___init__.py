@@ -45,28 +45,28 @@ class Test1(unittest.TestCase):
 
 class Test2(unittest.TestCase):
     def test_deprecated_1(self):
-        @deprecate('0.0.0')
+        @deprecate("0.0.0")
         def f():
             return True
 
         self.assertTrue(f())
 
     def test_deprecated_2(self):
-        @deprecate('0.0.0', msg="hello world")
+        @deprecate("0.0.0", msg="hello world")
         def f():
             return True
 
         self.assertTrue(f())
 
     def test_deprecated_3(self):
-        @deprecate('0.0.0')
+        @deprecate("0.0.0")
         def f(a, b):
             return a + b
 
         self.assertEqual(2, f(1, 1))
 
     def test_deprecated_4(self):
-        @deprecate('0.0.0')
+        @deprecate("0.0.0")
         class Obj(object):
             pass
 
@@ -74,7 +74,7 @@ class Test2(unittest.TestCase):
 
     def test_deprecated_5(self):
         class Obj(object):
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             def f(self, a, b):
                 return a + b
 
@@ -83,7 +83,7 @@ class Test2(unittest.TestCase):
     def test_deprecated_6(self):
         class Obj(object):
             @staticmethod
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             def f(a, b):
                 return a + b
 
@@ -92,7 +92,7 @@ class Test2(unittest.TestCase):
     def test_deprecated_7(self):
         class Obj(object):
             @classmethod
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             def f(cls, a, b):
                 return a + b
 
@@ -101,7 +101,7 @@ class Test2(unittest.TestCase):
     def test_deprecated_8(self):
         class Obj(object):
             @property
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             def x(self):
                 return 1
 
@@ -114,7 +114,7 @@ class Test2(unittest.TestCase):
                 return self._x
 
             @x.setter
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             def x(self, x):
                 self._x = x
 
@@ -124,7 +124,7 @@ class Test2(unittest.TestCase):
 
     def test_deprecated_10(self):
         class Obj(object):
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             @staticmethod
             def f(a, b):
                 return a + b
@@ -134,7 +134,7 @@ class Test2(unittest.TestCase):
 
     def test_deprecated_11(self):
         class Obj(object):
-            @deprecate('0.0.0')
+            @deprecate("0.0.0")
             @classmethod
             def f(cls, a, b):
                 return a + b

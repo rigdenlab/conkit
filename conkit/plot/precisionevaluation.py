@@ -179,7 +179,7 @@ class PrecisionEvaluationFigure(Figure):
             raise ValueError("Maximum factor cannot be greater than 100")
         self._cutoff_boundaries[1] = max_cutoff
 
-    @deprecate('0.11', msg='Use draw instead')
+    @deprecate("0.11", msg="Use draw instead")
     def redraw(self):
         self.draw()
 
@@ -196,30 +196,31 @@ class PrecisionEvaluationFigure(Figure):
             precisions,
             color=ColorDefinitions.GENERAL,
             marker=None,
-            linestyle='-',
-            label='Precision score',
-            zorder=1)
+            linestyle="-",
+            label="Precision score",
+            zorder=1,
+        )
 
-        self.ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle='-', label='50% Precision', zorder=0)
+        self.ax.axhline(0.5, color=ColorDefinitions.PRECISION50, linestyle="-", label="50% Precision", zorder=0)
         if self.min_cutoff <= 1.0:
-            self.ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle='-', label='Factor L', zorder=0)
+            self.ax.axvline(1.0, color=ColorDefinitions.FACTOR1, linestyle="-", label="Factor L", zorder=0)
         if self.min_cutoff <= 0.5:
-            self.ax.axvline(0.5, color=ColorDefinitions.FACTOR1, linestyle='--', label='Factor L/2', zorder=0)
+            self.ax.axvline(0.5, color=ColorDefinitions.FACTOR1, linestyle="--", label="Factor L/2", zorder=0)
         if self.min_cutoff <= 0.2:
-            self.ax.axvline(0.2, color=ColorDefinitions.FACTOR1, linestyle='-.', label='Factor L/5', zorder=0)
+            self.ax.axvline(0.2, color=ColorDefinitions.FACTOR1, linestyle="-.", label="Factor L/5", zorder=0)
         if self.min_cutoff <= 0.1:
-            self.ax.axvline(0.1, color=ColorDefinitions.FACTOR1, linestyle=':', label='Factor L/10', zorder=0)
+            self.ax.axvline(0.1, color=ColorDefinitions.FACTOR1, linestyle=":", label="Factor L/10", zorder=0)
 
         self.ax.set_xlim(self.min_cutoff, self.max_cutoff)
         xticks = (self.ax.get_xticks() * self._hierarchy.sequence.seq_len).astype(np.int64)
         self.ax.set_xticklabels(xticks)
         self.ax.set_ylim(0.0, 1.0)
 
-        self.ax.set_xlabel('Number of Contacts')
-        self.ax.set_ylabel('Precision')
+        self.ax.set_xlabel("Number of Contacts")
+        self.ax.set_ylabel("Precision")
 
         if self.legend:
-            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+            self.ax.legend(bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3, ncol=3, mode="expand", borderaxespad=0.0)
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

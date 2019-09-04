@@ -70,7 +70,7 @@ class ContactDensityFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, bw_method='bowman', **kwargs):
+    def __init__(self, hierarchy, bw_method="bowman", **kwargs):
         """A new contact density plot
 
         Parameters
@@ -132,7 +132,7 @@ class ContactDensityFigure(Figure):
         else:
             raise TypeError("The hierarchy is not an contact map")
 
-    @deprecate('0.11', msg='Use draw instead')
+    @deprecate("0.11", msg="Use draw instead")
     def redraw(self):
         self.draw()
 
@@ -146,12 +146,13 @@ class ContactDensityFigure(Figure):
             self.ax.axvline(x[minimum], **line_kwargs)
         self.ax.axvline(0, ymin=0, ymax=0, label="Domain Boundary", **line_kwargs)
         self.ax.set_xlim(x.min(), x.max())
-        self.ax.set_ylim(0., y.max())
-        self.ax.set_xlabel('Residue number')
-        self.ax.set_ylabel('Density Estimate')
+        self.ax.set_ylim(0.0, y.max())
+        self.ax.set_xlabel("Residue number")
+        self.ax.set_ylabel("Density Estimate")
         if self.legend:
             self.ax.legend(
-                bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0., scatterpoints=1)
+                bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3, ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1
+            )
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

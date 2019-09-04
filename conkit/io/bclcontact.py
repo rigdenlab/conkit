@@ -42,7 +42,7 @@ from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
-RE_SPLIT = re.compile(r'\s+')
+RE_SPLIT = re.compile(r"\s+")
 
 
 class BCLContactParser(ContactFileParser):
@@ -81,7 +81,7 @@ class BCLContactParser(ContactFileParser):
                 contact.res2 = res2
                 contact_map.add(contact)
 
-        hierarchy.method = 'Contact map predicted using BCL::Contact'
+        hierarchy.method = "Contact map predicted using BCL::Contact"
         return hierarchy
 
     def write(self, f_handle, hierarchy):

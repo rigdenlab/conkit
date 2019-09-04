@@ -72,13 +72,13 @@ class BbcontactsParser(ContactFileParser):
         contact_map = ContactMap("map_1")
         contact_file.add(contact_map)
 
-        previous = 'first'
+        previous = "first"
         for line in f_handle:
             line = line.strip()
 
-            if line and not line.startswith('#'):
+            if line and not line.startswith("#"):
                 _, _, _, raw_score, _, current, res2_seq, res1_seq = line.split()
-                if del_one_two and previous == 'first' and current == 'last':
+                if del_one_two and previous == "first" and current == "last":
                     contact_map.child_list.pop()
                 elif any(value == "NA" for value in [raw_score, res2_seq, res1_seq]):
                     pass
@@ -87,10 +87,10 @@ class BbcontactsParser(ContactFileParser):
                     contact_map.add(contact)
                 previous = current
 
-        if del_one_two and previous == 'first' and len(contact_map) > 0:
+        if del_one_two and previous == "first" and len(contact_map) > 0:
             contact_map.child_list.pop()
 
-        contact_file.method = 'Contact map predicted using Bbcontacts'
+        contact_file.method = "Contact map predicted using Bbcontacts"
 
         return contact_file
 

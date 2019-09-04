@@ -37,7 +37,7 @@ HDFGRTYIWQMSD
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -65,7 +65,7 @@ MODEL  1
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -90,7 +90,7 @@ MODEL  1
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -135,14 +135,14 @@ ENDMDL
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         self.assertEqual(2, len(contact_file))
         contact_map1 = contact_file[0]
         self.assertEqual(9, len(contact_map1))
         self.assertEqual("HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD", contact_map1.sequence.seq)
         self.assertEqual("HLEG-IGILL-K-E-------------------", contact_map1.repr_sequence.seq)
-        contact_map2 = contact_file['2']
+        contact_map2 = contact_file["2"]
         self.assertEqual(8, len(contact_map2))
         self.assertEqual("HLEGSIGILLKKHEIVFDGCHDFGRTYIWQM", contact_map2.sequence.seq)
         self.assertEqual("HLEG-IGILL-K-E-----------------", contact_map2.repr_sequence.seq)
@@ -177,7 +177,7 @@ HDFGRTYIWQMSD
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         self.assertEqual(2, len(contact_file))
         contact_map1 = contact_file["1"]
@@ -202,7 +202,7 @@ END
 """
         f_name = create_tmp_f(content=content)
         parser = CaspParser()
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             with self.assertRaises(ValueError):
                 CaspParser().read(f_in)
         os.unlink(f_name)
@@ -236,7 +236,7 @@ A9 B14  0  8  0.50
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
@@ -246,20 +246,20 @@ END
         os.unlink(f_name)
 
     def test_write_1(self):
-        contact_file = ContactFile('RR')
-        contact_file.target = 'R9999'
-        contact_file.author = '1234-5678-9000'
-        contact_file.remark = ['Predictor remarks']
-        contact_file.method = ['Description of methods used', 'Description of methods used']
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_file.target = "R9999"
+        contact_file.author = "1234-5678-9000"
+        contact_file.remark = ["Predictor remarks"]
+        contact_file.method = ["Description of methods used", "Description of methods used"]
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
             "PFRMAT RR",
@@ -277,21 +277,21 @@ END
             "ENDMDL",
             "END",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_2(self):
-        contact_file = ContactFile('RR')
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
             "PFRMAT RR",
@@ -304,20 +304,20 @@ END
             "ENDMDL",
             "END",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_3(self):
-        contact_file = ContactFile('RR')
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
             "PFRMAT RR",
@@ -329,21 +329,21 @@ END
             "ENDMDL",
             "END",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_4(self):
-        contact_file = ContactFile('RR')
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
             "PFRMAT RR",
@@ -357,21 +357,21 @@ END
             "ENDMDL",
             "END",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_5(self):
-        contact_file = ContactFile('RR')
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
         for c in [(1, 9, 0, 8, 1.5), (1, 10, 0, 8, -0.3), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
             "PFRMAT RR",
@@ -385,24 +385,28 @@ END
             "ENDMDL",
             "END",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)
 
     def test_write_6(self):
-        contact_file = ContactFile('RR')
-        contact_map = ContactMap('1')
+        contact_file = ContactFile("RR")
+        contact_map = ContactMap("1")
         contact_file.add(contact_map)
-        for c in [('A', 1, 'B', 9, 0, 8, 0.7), ('A', 1, 'B', 10, 0, 8, 0.7), ('A', 2, 'B', 8, 0, 8, 0.9),
-                  ('A', 3, 'B', 12, 0, 8, 0.4)]:
+        for c in [
+            ("A", 1, "B", 9, 0, 8, 0.7),
+            ("A", 1, "B", 10, 0, 8, 0.7),
+            ("A", 2, "B", 8, 0, 8, 0.9),
+            ("A", 3, "B", 12, 0, 8, 0.4),
+        ]:
             contact = Contact(c[1], c[3], c[6], distance_bound=(c[4], c[5]))
             contact.res1_chain = c[0]
             contact.res2_chain = c[2]
             contact_map.add(contact)
-        contact_map.sequence = Sequence('1', 'HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD')
+        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
-        with open(f_name, 'w') as f_out:
+        with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
             "PFRMAT RR",
@@ -416,7 +420,7 @@ END
             "ENDMDL",
             "END",
         ]
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
         os.unlink(f_name)

@@ -73,10 +73,11 @@ class EPCMapParser(ContactFileParser):
 
             elif line[0].isdigit():
                 _contact = Contact(
-                    int(line[0]), int(line[1]), float(line[4]), distance_bound=(float(line[2]), float(line[3])))
+                    int(line[0]), int(line[1]), float(line[4]), distance_bound=(float(line[2]), float(line[3]))
+                )
                 _map.add(_contact)
 
-        hierarchy.method = 'Contact map predicted using EPC-Map'
+        hierarchy.method = "Contact map predicted using EPC-Map"
 
         return hierarchy
 
@@ -98,15 +99,16 @@ class EPCMapParser(ContactFileParser):
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
-        content = ''
+            raise RuntimeError("More than one contact map provided")
+        content = ""
         for contact_map in contact_file:
             for contact in contact_map:
-                line = '{res1_seq} {res2_seq} {lb} {ub} {raw_score:.6f}\n'
+                line = "{res1_seq} {res2_seq} {lb} {ub} {raw_score:.6f}\n"
                 lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
                 ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
                 line = line.format(
-                    res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score, lb=lb, ub=ub)
+                    res1_seq=contact.res1_seq, res2_seq=contact.res2_seq, raw_score=contact.raw_score, lb=lb, ub=ub
+                )
                 content += line
 
         f_handle.write(content)

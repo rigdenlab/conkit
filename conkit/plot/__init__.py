@@ -34,40 +34,47 @@ __date__ = "07 Feb 2017"
 __version__ = "0.1"
 
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 
 
 def ContactMapFigure(*args, **kwargs):
     """:obj:`~conkit.plot.contactmap.ContactMapFigure` instance"""
     from conkit.plot.contactmap import ContactMapFigure
+
     return ContactMapFigure(*args, **kwargs)
 
 
 def ContactMapChordFigure(*args, **kwargs):
     """:obj:`~conkit.plot.contactmapchord.ContactMapChordFigure` instance"""
     from conkit.plot.contactmapchord import ContactMapChordFigure
+
     return ContactMapChordFigure(*args, **kwargs)
 
 
 def ContactMapMatrixFigure(*args, **kwargs):
     """:obj:`~conkit.plot.contactmatrix.ContactMapMatrixFigure` instance"""
     from conkit.plot.contactmapmatrix import ContactMapMatrixFigure
+
     return ContactMapMatrixFigure(*args, **kwargs)
 
 
 def ContactDensityFigure(*args, **kwargs):
     """:obj:`~conkit.plot.contactdensity.ContactDensityFigure` instance"""
     from conkit.plot.contactdensity import ContactDensityFigure
+
     return ContactDensityFigure(*args, **kwargs)
 
 
 def PrecisionEvaluationFigure(*args, **kwargs):
     """:obj:`~conkit.plot.precisionevaluation.PrecisionEvaluationFigure` instance"""
     from conkit.plot.precisionevaluation import PrecisionEvaluationFigure
+
     return PrecisionEvaluationFigure(*args, **kwargs)
 
 
 def SequenceCoverageFigure(*args, **kwargs):
     """:obj:`~conkit.plot.sequencecoverage.SequenceCoverageFigure` instance"""
     from conkit.plot.sequencecoverage import SequenceCoverageFigure
+
     return SequenceCoverageFigure(*args, **kwargs)

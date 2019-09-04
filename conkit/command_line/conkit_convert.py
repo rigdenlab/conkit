@@ -56,27 +56,23 @@ logger = None
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('infile')
-    parser.add_argument('informat')
-    parser.add_argument('outfile')
-    parser.add_argument('outformat')
+    parser.add_argument("infile")
+    parser.add_argument("informat")
+    parser.add_argument("outfile")
+    parser.add_argument("outformat")
     args = parser.parse_args()
 
     global logger
-    logger = conkit.command_line.setup_logging(level='info')
+    logger = conkit.command_line.setup_logging(level="info")
 
-    if args.outformat == 'rosetta':
-        raise NotImplementedError('This conversion is not yet supported')
+    if args.outformat == "rosetta":
+        raise NotImplementedError("This conversion is not yet supported")
 
-    msg = 'Convertin file{nline}{tab}{infile} of format {informat}{nline}'
-    msg += 'to file{nline}{tab}{outfile} of format {outformat}'
+    msg = "Convertin file{nline}{tab}{infile} of format {informat}{nline}"
+    msg += "to file{nline}{tab}{outfile} of format {outformat}"
     msg = msg.format(
-        infile=args.infile,
-        informat=args.informat,
-        outfile=args.outfile,
-        outformat=args.outformat,
-        nline='\n',
-        tab='\t')
+        infile=args.infile, informat=args.informat, outfile=args.outfile, outformat=args.outformat, nline="\n", tab="\t"
+    )
     logger.info(msg)
     conkit.io.convert(args.infile, args.informat, args.outfile, args.outformat)
 
@@ -86,6 +82,7 @@ def main():
 if __name__ == "__main__":
     import sys
     import traceback
+
     try:
         main()
         sys.exit(0)

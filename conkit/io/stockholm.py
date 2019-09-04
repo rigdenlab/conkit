@@ -41,12 +41,12 @@ from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 
-V_RECORD = re.compile(r'^#(\s+STOCKHOLM.*)$')
-GF_RECORD = re.compile(r'^#=GF\s+\S+\s+(.*)$')
-GR_RECORD = re.compile(r'^#=GR\s+(\S+)\s+(\S+)\s+(.*)$')
-GS_RECORD = re.compile(r'^#=GS\s+(\S+)\s+(\S+)\s+(.*)$')
-SEQ_RECORD = re.compile(r'^(\S+)\s+([A-Z0-9~-]+)$')
-END_RECORD = re.compile(r'^//$')
+V_RECORD = re.compile(r"^#(\s+STOCKHOLM.*)$")
+GF_RECORD = re.compile(r"^#=GF\s+\S+\s+(.*)$")
+GR_RECORD = re.compile(r"^#=GR\s+(\S+)\s+(\S+)\s+(.*)$")
+GS_RECORD = re.compile(r"^#=GS\s+(\S+)\s+(\S+)\s+(.*)$")
+SEQ_RECORD = re.compile(r"^(\S+)\s+([A-Z0-9~-]+)$")
+END_RECORD = re.compile(r"^//$")
 
 
 class StockholmParser(SequenceFileParser):
@@ -56,7 +56,7 @@ class StockholmParser(SequenceFileParser):
     def __init__(self):
         super(StockholmParser, self).__init__()
 
-    def read(self, f_handle, f_id='stockholm'):
+    def read(self, f_handle, f_id="stockholm"):
         """Read a sequence file
 
         Parameters
@@ -94,7 +94,7 @@ class StockholmParser(SequenceFileParser):
             elif GR_RECORD.match(line):
                 pass
             elif len(line.split()) == 2 and line.split()[0] in sequence_file:
-                ident, seq = line.replace('.', '-').split()
+                ident, seq = line.replace(".", "-").split()
                 sequence_file[ident].seq = sequence_file[ident].seq + seq
             line = f_handle.readline().rstrip()
             if END_RECORD.match(line):
@@ -112,21 +112,21 @@ class StockholmParser(SequenceFileParser):
 
         """
         sequence_file = self._reconstruct(hierarchy)
-        content = '# STOCKHOLM 1.0\n'
-        content += '#=GF ID {}\n\n'.format(sequence_file.top_sequence.id)
+        content = "# STOCKHOLM 1.0\n"
+        content += "#=GF ID {}\n\n".format(sequence_file.top_sequence.id)
         chunks = []
         for i, sequence_entry in enumerate(sequence_file):
             if i != 0:
-                content += '#=GS {:33} DE {}\n'.format(sequence_entry.id, " ".join(sequence_entry.remark))
+                content += "#=GS {:33} DE {}\n".format(sequence_entry.id, " ".join(sequence_entry.remark))
             chunk = []
             sequence_string = sequence_entry.seq
             sequence_string = sequence_string.upper()  # UPPER CASE !!!
             for j in range(0, sequence_entry.seq_len, 200):
-                chunk.append(sequence_string[j:j + 200])
+                chunk.append(sequence_string[j : j + 200])
             chunks.append(tuple([sequence_entry.id, chunk]))
         for j in range(len(chunks[0][1])):
-            content += '\n'
+            content += "\n"
             for i in range(len(chunks)):
-                content += '{:41} {}\n'.format(chunks[i][0], chunks[i][1][j])
-        content += '//\n'
+                content += "{:41} {}\n".format(chunks[i][0], chunks[i][1][j])
+        content += "//\n"
         f_handle.write(content)

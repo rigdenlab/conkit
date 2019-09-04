@@ -31,8 +31,8 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
-            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CB')
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CB")
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(2, len(contact_map1))
@@ -61,8 +61,8 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
-            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CA')
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CA")
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(1, len(contact_map1))
@@ -91,8 +91,8 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
-            contact_file = PdbParser().read(f_in, distance_cutoff=7, atom_type='CB')
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=7, atom_type="CB")
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(1, len(contact_map1))
@@ -122,21 +122,21 @@ ATOM     16  CB  PHE B 208      31.726  43.102  -3.518  0.50 19.90           C
 END
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
-            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type='CB')
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CB")
         # Two maps because no contacts in B
-        contact_map1 = contact_file['A']  # chain A
-        contact_map2 = contact_file['AB']  # chain AB
-        contact_map3 = contact_file['BA']  # chain BA
+        contact_map1 = contact_file["A"]  # chain A
+        contact_map2 = contact_file["AB"]  # chain AB
+        contact_map3 = contact_file["BA"]  # chain BA
         self.assertEqual(3, len(contact_file))
         self.assertEqual(1, len(contact_map1))
-        self.assertEqual(['A', 'A'], [contact_map1.top_contact.res1_chain, contact_map1.top_contact.res2_chain])
+        self.assertEqual(["A", "A"], [contact_map1.top_contact.res1_chain, contact_map1.top_contact.res2_chain])
         self.assertEqual([36, 86], [contact_map1.top_contact.res1_seq, contact_map1.top_contact.res2_seq])
         self.assertEqual(1, len(contact_map2))
-        self.assertEqual(['A', 'B'], [contact_map2.top_contact.res1_chain, contact_map2.top_contact.res2_chain])
+        self.assertEqual(["A", "B"], [contact_map2.top_contact.res1_chain, contact_map2.top_contact.res2_chain])
         self.assertEqual([86, 208], [contact_map2.top_contact.res1_seq, contact_map2.top_contact.res2_seq])
         self.assertEqual(1, len(contact_map3))
-        self.assertEqual(['B', 'A'], [contact_map3.top_contact.res1_chain, contact_map3.top_contact.res2_chain])
+        self.assertEqual(["B", "A"], [contact_map3.top_contact.res1_chain, contact_map3.top_contact.res2_chain])
         self.assertEqual([208, 86], [contact_map3.top_contact.res1_seq, contact_map3.top_contact.res2_seq])
         os.unlink(f_name)
 
@@ -160,8 +160,8 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
-            contact_file = PdbParser().read(f_in, distance_cutoff=0, atom_type='CB')
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=0, atom_type="CB")
         contact_map1 = contact_file.top_map
         self.assertEqual(1, len(contact_file))
         self.assertEqual(6, len(contact_map1))

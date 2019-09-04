@@ -29,9 +29,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """I/O interface for file reading, writing and conversions"""
 
-__author__ = 'Felix Simkovic'
-__date__ = '13 Aug 2018'
-__version__ = '0.2'
+__author__ = "Felix Simkovic"
+__date__ = "13 Aug 2018"
+__version__ = "0.2"
 
 import importlib
 
@@ -78,15 +78,15 @@ def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_o
 
     """
     if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
-        raise ValueError('Cannot convert contact file to sequence file')
+        raise ValueError("Cannot convert contact file to sequence file")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
-        raise ValueError('Cannot convert sequence file to contact file')
+        raise ValueError("Cannot convert sequence file to contact file")
     else:
         hierarchy = read(fname_in, format_in)
         write(fname_out, format_out, hierarchy)
 
 
-def read(fname, format, f_id='conkit', **kwargs):
+def read(fname, format, f_id="conkit", **kwargs):
     """Parse a file handle to read into structure
 
     Parameters
@@ -121,13 +121,13 @@ def read(fname, format, f_id='conkit', **kwargs):
     if format in PARSER_CACHE:
         parser_in = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError('Unrecognised format: {}'.format(format))
+        raise ValueError("Unrecognised format: {}".format(format))
 
-    kwargs.update({'f_id': f_id})
-    if format == 'a3m-inserts':
+    kwargs.update({"f_id": f_id})
+    if format == "a3m-inserts":
         kwargs["remove_inserts"] = False
 
-    with open_f_handle(fname, 'read') as f_in:
+    with open_f_handle(fname, "read") as f_in:
         hierarchy = parser_in.read(f_in, **kwargs)
 
     return hierarchy
@@ -165,10 +165,10 @@ def write(fname, format, hierarchy, **kwargs):
     if format in PARSER_CACHE:
         parser_out = PARSER_CACHE.import_class(format)()
     else:
-        raise ValueError('Unrecognised format: {}'.format(format))
+        raise ValueError("Unrecognised format: {}".format(format))
 
-    if format in ['flib', 'pconsc', 'pconsc2', 'saint2']:
+    if format in ["flib", "pconsc", "pconsc2", "saint2"]:
         kwargs["write_header_footer"] = False
 
-    with open_f_handle(fname, 'write') as f_out:
+    with open_f_handle(fname, "write") as f_out:
         parser_out.write(f_out, hierarchy, **kwargs)

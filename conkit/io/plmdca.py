@@ -75,11 +75,11 @@ class PlmDCAParser(ContactFileParser):
                 continue
 
             elif line[0].isdigit():
-                res1_seq, res2_seq, raw_score = line.split(',')
+                res1_seq, res2_seq, raw_score = line.split(",")
                 contact = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 contact_map.add(contact)
 
-        contact_file.method = 'Contact map predicted using plmDCA'
+        contact_file.method = "Contact map predicted using plmDCA"
 
         return contact_file
 
@@ -101,9 +101,9 @@ class PlmDCAParser(ContactFileParser):
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
-        content = ''
+            raise RuntimeError("More than one contact map provided")
+        content = ""
         for contact_map in contact_file:
             for contact in contact_map:
-                content += '{},{},{:.6f}\n'.format(contact.res1_seq, contact.res2_seq, contact.raw_score)
+                content += "{},{},{:.6f}\n".format(contact.res1_seq, contact.res2_seq, contact.raw_score)
         f_handle.write(content)

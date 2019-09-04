@@ -83,7 +83,8 @@ class SequenceFile(Entity):
     SequenceFile(id="example" nseq=2)
 
     """
-    __slots__ = ['_remark', '_status']
+
+    __slots__ = ["_remark", "_status"]
 
     def __init__(self, id):
         """Initialise a new :obj:`~conkit.core.sequencefile.SequenceFile`
@@ -142,7 +143,7 @@ class SequenceFile(Entity):
         elif self.is_alignment:
             return (np.sqrt(len(self)) / float(self.top.seq_len)).round(decimals=3).item()
         else:
-            raise ValueError('This is not an alignment')
+            raise ValueError("This is not an alignment")
 
     @property
     def empty(self):
@@ -150,7 +151,7 @@ class SequenceFile(Entity):
         return len(self) < 1
 
     @property
-    @deprecate('0.11', msg='Use meff instead.')
+    @deprecate("0.11", msg="Use meff instead.")
     def neff(self):
         """The number of effective sequences"""
         return self.meff
@@ -223,22 +224,22 @@ class SequenceFile(Entity):
         """
         return self.top
 
-    @deprecate('0.11', msg='Use calculate_meff_with_identity instead.')
+    @deprecate("0.11", msg="Use calculate_meff_with_identity instead.")
     def calculate_meff(self, identity=0.8):
         """Calculate the number of effective sequences"""
         return self.calculate_meff_with_identity(identity)
 
-    @deprecate('0.11', msg='Use calculate_meff_with_identity instead.')
+    @deprecate("0.11", msg="Use calculate_meff_with_identity instead.")
     def calculate_neff_with_identity(self, identity):
         """Calculate the number of effective sequences with specified sequence identity"""
         return self.calculate_meff_with_identity(identity)
 
-    @deprecate('0.11', msg='Use get_weights instead.')
+    @deprecate("0.11", msg="Use get_weights instead.")
     def calculate_weights(self, identity=0.8):
         """Calculate the sequence weights"""
         return self.get_weights(identity=identity)
 
-    @deprecate('0.11', msg='Use get_frequency instead.')
+    @deprecate("0.11", msg="Use get_frequency instead.")
     def calculate_freq(self):
         """Calculate the gap frequency in each alignment column"""
         return self.get_frequency("X")
@@ -288,12 +289,13 @@ class SequenceFile(Entity):
 
         if self.is_alignment:
             from conkit.core.ext.c_sequencefile import c_get_weights
+
             X = np.array(self.ascii_matrix, dtype=np.int64)
             hamming = np.zeros(X.shape[0], dtype=np.float64)
             c_get_weights(X, identity, hamming)
             return hamming.tolist()
         else:
-            raise ValueError('This is not an alignment')
+            raise ValueError("This is not an alignment")
 
     def get_frequency(self, symbol):
         """Calculate the frequency of an amino acid (symbol) in each Multiple Sequence Alignment column
@@ -311,13 +313,14 @@ class SequenceFile(Entity):
         """
         if self.is_alignment:
             from conkit.core.ext.c_sequencefile import c_get_frequency
+
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
             frequencies = np.zeros(X.shape[1], dtype=np.int64)
             c_get_frequency(X, symbol, frequencies)
             return frequencies.tolist()
         else:
-            raise ValueError('This is not an alignment')
+            raise ValueError("This is not an alignment")
 
     def filter(self, min_id=0.3, max_id=0.9, inplace=False):
         """Filter sequences from an alignment according to the minimum and maximum identity
@@ -354,6 +357,7 @@ class SequenceFile(Entity):
 
         if self.is_alignment:
             from conkit.core.ext.c_sequencefile import c_filter
+
             X = np.array(self.ascii_matrix, dtype=np.int64)
             throwables = np.full(X.shape[0], False, dtype=np.bool)
             c_filter(X, min_id, max_id, throwables)
@@ -363,7 +367,7 @@ class SequenceFile(Entity):
                     filtered.remove(sequence.id)
             return filtered
         else:
-            raise ValueError('This is not an alignment')
+            raise ValueError("This is not an alignment")
 
     def filter_gapped(self, min_prop=0.0, max_prop=0.9, inplace=True):
         """Filter all sequences a gap proportion greater than the limit
@@ -392,15 +396,16 @@ class SequenceFile(Entity):
            Maximum gap proportion needs to be between 0 and 1
 
         """
-        if 0. > min_prop > 1.:
+        if 0.0 > min_prop > 1.0:
             raise ValueError("Minimum gap proportion needs to be between 0 and 1")
-        elif 0. > max_prop > 1.:
+        elif 0.0 > max_prop > 1.0:
             raise ValueError("Maximum gap proportion needs to be between 0 and 1")
 
         symbol = "X"
 
         if self.is_alignment:
             from conkit.core.ext.c_sequencefile import c_filter_symbol
+
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
             throwables = np.full(X.shape[0], False, dtype=np.bool)
@@ -411,7 +416,7 @@ class SequenceFile(Entity):
                     filtered.remove(sequence.id)
             return filtered
         else:
-            raise ValueError('This is not an alignment')
+            raise ValueError("This is not an alignment")
 
     def sort(self, kword, reverse=False, inplace=False):
         """Sort the :obj:`~conkit.core.sequencefile.SequenceFile`
@@ -443,7 +448,7 @@ class SequenceFile(Entity):
     def to_string(self):
         """Return the :obj:`~conkit.core.sequencefile.SequenceFile` as :obj:`str`"""
         content = [s.seq for s in self]
-        return '\n'.join(content)
+        return "\n".join(content)
 
     def trim(self, start, end, inplace=False):
         """Trim the :obj:`~conkit.core.sequencefile.SequenceFile`
@@ -481,10 +486,11 @@ class SequenceFile(Entity):
         str
 
         """
-        sstream = 'Summary for {id}{nline}'
-        sstream += '-------------------------------{nline}'
-        sstream += 'Alignment:{tab}{tab}{is_alignment}'
-        sstream += 'Number of sequences:{tab}{nseq}{nline}' % self.nseq
-        sstream += 'Alignment depth (0.8):{tab}{meff}{nline}' % self.meff
+        sstream = "Summary for {id}{nline}"
+        sstream += "-------------------------------{nline}"
+        sstream += "Alignment:{tab}{tab}{is_alignment}"
+        sstream += "Number of sequences:{tab}{nseq}{nline}" % self.nseq
+        sstream += "Alignment depth (0.8):{tab}{meff}{nline}" % self.meff
         return sstream.format(
-            id=self.id, is_alignment=self.is_alignment, tab='\t', nline='\n', nseq=self.nseq, meff=self.meff)
+            id=self.id, is_alignment=self.is_alignment, tab="\t", nline="\n", nseq=self.nseq, meff=self.meff
+        )

@@ -29,9 +29,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Energy function templates for restraint generation"""
 
-__author__ = 'Felix Simkovic'
-__date__ = '13 Aug 2018'
-__version__ = '1.0'
+__author__ = "Felix Simkovic"
+__date__ = "13 Aug 2018"
+__version__ = "1.0"
 
 from multiprocessing import Pool
 
@@ -57,7 +57,7 @@ class StructureSelector(object):
         self.contactmap = contactmap
         self.nprocesses = nprocesses
 
-    def assess(self, decoys, decoy_format, mode='linear'):
+    def assess(self, decoys, decoy_format, mode="linear"):
         """Subselect decoys excluding those not satisfying long-distance restraints
 
         Parameters
@@ -81,7 +81,7 @@ class StructureSelector(object):
 
         """
         if mode not in SUBSELECTION_ALGORITHMS:
-            raise ValueError('Unknown subselection mode: {}'.format(mode))
+            raise ValueError("Unknown subselection mode: {}".format(mode))
         scores = self.compute_precision_by_range(decoys, decoy_format)
         _, _, longrange = zip(*scores)
         f = getattr(SubselectionAlgorithm, mode)
@@ -119,7 +119,7 @@ def _compute_single(args):
     shortrange = matched.short_range_contacts
     mediumrange = matched.medium_range_contacts
     longrange = matched.long_range_contacts
-    sprec, mprec, lprec = float('NaN'), float('NaN'), float('NaN')
+    sprec, mprec, lprec = float("NaN"), float("NaN"), float("NaN")
     if shortrange.ncontacts > 0:
         sprec = shortrange.precision
     if mediumrange.ncontacts > 0:

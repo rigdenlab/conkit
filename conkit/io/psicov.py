@@ -73,10 +73,11 @@ class PsicovParser(ContactFileParser):
 
             elif line[0].isdigit():
                 _contact = Contact(
-                    int(line[0]), int(line[1]), float(line[4]), distance_bound=(float(line[2]), float(line[3])))
+                    int(line[0]), int(line[1]), float(line[4]), distance_bound=(float(line[2]), float(line[3]))
+                )
                 _map.add(_contact)
 
-        hierarchy.method = 'Contact map predicted using PSICOV'
+        hierarchy.method = "Contact map predicted using PSICOV"
 
         return hierarchy
 
@@ -98,11 +99,11 @@ class PsicovParser(ContactFileParser):
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
-        content = ''
+            raise RuntimeError("More than one contact map provided")
+        content = ""
         for contact_map in contact_file:
             for contact in contact_map:
-                line = '{} {} {} {} {:.6f}\n'
+                line = "{} {} {} {} {:.6f}\n"
                 lb = int(contact.lower_bound) if float(contact.lower_bound).is_integer() else contact.lower_bound
                 ub = int(contact.upper_bound) if float(contact.upper_bound).is_integer() else contact.upper_bound
                 content += line.format(contact.res1_seq, contact.res2_seq, lb, ub, contact.raw_score)

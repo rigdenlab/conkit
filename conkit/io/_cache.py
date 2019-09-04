@@ -39,34 +39,20 @@ Thus, we only cache the results to ultimately import the bits we really require.
 
 """
 
-__author__ = 'Felix Simkovic'
-__date__ = '19 Jun 2017'
+__author__ = "Felix Simkovic"
+__date__ = "19 Jun 2017"
 __version__ = "1.0"
 
+import collections
 import copy
 import glob
 import importlib
 import os
 import re
 
-RE_CLASS_DECLARATION = re.compile("^class\s+([A-Za-z0-9]+)\s*(.*):$")
+RE_CLASS_DECLARATION = re.compile(r"^class\s+([A-Za-z0-9]+)\s*(.*):$")
 
-
-class CacheObj(object):
-    """Container for individual module"""
-
-    __slots__ = ["id", "module", "object", "group"]
-
-    def __init__(self, id, module, object, group):
-        self.id = id
-        self.module = module
-        self.object = object
-        self.group = group
-
-    def __repr__(self):
-        return "{name}(id={id} module={module} object={object} group={group}".format(
-            name=self.__class__.__name__, **{k: getattr(self, k)
-                                             for k in self.__class__.__slots__})
+CacheObj = collections.namedtuple("CacheObj", ["id", "module", "object", "group"])
 
 
 class ParserCache(object):
@@ -74,14 +60,14 @@ class ParserCache(object):
 
     # This mask is for backward-compatibility and extensions to avoid re-writing the same algorithms
     MASKS = {
-        'a2m': ['a2m', 'jones'],
-        'a3m': ['a3m', 'a3m-inserts'],
-        'casp': ['casp', 'casprr'],
-        'pcons': ['flib', 'pconsc', 'pconsc2', 'pconsc3', 'saint2'],
-        'psicov': ['psicov', 'metapsicov', 'nebcon'],
+        "a2m": ["a2m", "jones"],
+        "a3m": ["a3m", "a3m-inserts"],
+        "casp": ["casp", "casprr"],
+        "pcons": ["flib", "pconsc", "pconsc2", "pconsc3", "saint2"],
+        "psicov": ["psicov", "metapsicov", "nebcon"],
     }
 
-    BLINDFOLD = set(['ContactFileParser', 'GenericStructureParser', 'SequenceFileParser'])
+    BLINDFOLD = set(["ContactFileParser", "GenericStructureParser", "SequenceFileParser"])
 
     def __init__(self):
         self._parsers = []
@@ -96,7 +82,7 @@ class ParserCache(object):
 
     def __repr__(self):
         nparsers = len(self.contact_file_parsers) + len(self.sequence_file_parsers)
-        return '{}(nparsers={})'.format(self.__class__.__name__, nparsers)
+        return "{}(nparsers={})".format(self.__class__.__name__, nparsers)
 
     @property
     def contact_file_parsers(self):
@@ -116,25 +102,25 @@ class ParserCache(object):
             with open(m, "r") as f_in:
                 lines = [RE_CLASS_DECLARATION.match(l.strip()) for l in f_in if RE_CLASS_DECLARATION.match(l.strip())]
             for match in lines:
-                decl = CacheObj(None, None, match.group(1), None)
+                object_ = match.group(1)
                 ggroup = match.group(2)
                 if ggroup and ggroup.startswith("(") and ggroup.endswith(")"):
-                    decl.group = ggroup.replace("(", "").replace(")", "")
+                    group = ggroup.replace("(", "").replace(")", "")
                 else:
-                    decl.group = "Ungrouped"
+                    group = "Ungrouped"
+
                 name = os.path.basename(m).replace(".py", "")
-                decl.module = "conkit.io." + name
-                objname = decl.object.lower().replace("parser", "")
-                if decl.object in ParserCache.BLINDFOLD:
+                module = "conkit.io." + name
+                objname = object_.lower().replace("parser", "")
+
+                if object_ in ParserCache.BLINDFOLD:
                     continue
                 elif objname in ParserCache.MASKS:
-                    for extra in ParserCache.MASKS[objname]:
-                        decl_ = copy.copy(decl)
-                        decl_.id = extra
-                        self._parsers += [decl_]
+                    self._parsers.extend(
+                        [CacheObj(extra, module, object_, group) for extra in ParserCache.MASKS[objname]]
+                    )
                 else:
-                    decl.id = objname
-                    self._parsers += [decl]
+                    self._parsers.append(CacheObj(objname, module, object_, group))
 
     def import_module(self, format):
         return importlib.import_module(self[format].module)

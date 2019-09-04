@@ -49,29 +49,31 @@ logger = None
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
-        '-c',
-        dest='pdbchain',
+        "-c",
+        dest="pdbchain",
         default=None,
-        help='PDB chain to use [default: first in file]. '
-        'Inter-molecular predictions use two letter '
-        'convention, i.e AD for contacts between A and D.')
-    parser.add_argument('-d', dest='dtn', default=5, type=int, help='Minimum sequence separation [default: 5]')
+        help="PDB chain to use [default: first in file]. "
+        "Inter-molecular predictions use two letter "
+        "convention, i.e AD for contacts between A and D.",
+    )
+    parser.add_argument("-d", dest="dtn", default=5, type=int, help="Minimum sequence separation [default: 5]")
     parser.add_argument(
-        '-f',
-        dest='dfactor',
+        "-f",
+        dest="dfactor",
         default=1.0,
         type=float,
-        help='number of contacts to include relative to sequence length [default: 1.0]')
-    parser.add_argument('pdbfile')
-    parser.add_argument('pdbformat')
-    parser.add_argument('seqfile')
-    parser.add_argument('seqformat')
-    parser.add_argument('confile')
-    parser.add_argument('conformat')
+        help="number of contacts to include relative to sequence length [default: 1.0]",
+    )
+    parser.add_argument("pdbfile")
+    parser.add_argument("pdbformat")
+    parser.add_argument("seqfile")
+    parser.add_argument("seqformat")
+    parser.add_argument("confile")
+    parser.add_argument("conformat")
     args = parser.parse_args()
 
     global logger
-    logger = conkit.command_line.setup_logging(level='info')
+    logger = conkit.command_line.setup_logging(level="info")
 
     if args.pdbchain:
         pdb = conkit.io.read(args.pdbfile, args.pdbformat)[args.pdbchain]
@@ -83,23 +85,24 @@ def main():
     con.sequence = seq
     con.set_sequence_register()
 
-    logger.info('Min sequence separation for contacting residues: %d', args.dtn)
-    logger.info('Contact list cutoff factor: %f * L', args.dfactor)
+    logger.info("Min sequence separation for contacting residues: %d", args.dtn)
+    logger.info("Contact list cutoff factor: %f * L", args.dfactor)
 
     con.remove_neighbors(min_distance=args.dtn, inplace=True)
     ncontacts = int(seq.seq_len * args.dfactor)
-    con.sort('raw_score', reverse=True, inplace=True)
+    con.sort("raw_score", reverse=True, inplace=True)
     con_sliced = con[:ncontacts]
 
     con_matched = con_sliced.match(pdb)
     precision = con_matched.precision
 
-    logger.info('Precision score: %f', precision)
+    logger.info("Precision score: %f", precision)
 
 
 if __name__ == "__main__":
     import sys
     import traceback
+
     try:
         main()
         sys.exit(0)

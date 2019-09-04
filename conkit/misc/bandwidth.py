@@ -39,7 +39,7 @@ __version__ = "1.0.1"
 import abc
 import numpy as np
 
-ABC = abc.ABCMeta('ABC', (object, ), {})
+ABC = abc.ABCMeta("ABC", (object,), {})
 
 
 class BandwidthBase(ABC):
@@ -73,6 +73,7 @@ class AmiseBW(BandwidthBase):
     @property
     def bandwidth(self):
         from conkit.misc.ext.c_bandwidth import c_optimize_bandwidth
+
         data = self._data
         x0 = BowmanBW(data).bandwidth
         y0 = c_optimize_bandwidth(data, x0)
@@ -105,7 +106,7 @@ class BowmanBW(BandwidthBase):
     def bandwidth(self):
         data = self._data
         M, N = data.shape
-        return np.sqrt((data**2).sum() / M - (data.sum() / M)**2) * ((((N + 2) * M) / 4.)**(-1. / (N + 4)))
+        return np.sqrt((data ** 2).sum() / M - (data.sum() / M) ** 2) * ((((N + 2) * M) / 4.0) ** (-1.0 / (N + 4)))
 
 
 class LinearBW(BandwidthBase):
@@ -148,7 +149,7 @@ class ScottBW(BandwidthBase):
         data = self._data
         M, N = data.shape
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
-        return 1.059 * sigma * M**(-1. / (N + 4))
+        return 1.059 * sigma * M ** (-1.0 / (N + 4))
 
 
 class SilvermanBW(BandwidthBase):
@@ -171,7 +172,7 @@ class SilvermanBW(BandwidthBase):
         data = self._data
         M, N = data.shape
         sigma = np.minimum(np.std(data, axis=0, ddof=1), (np.percentile(data, 75) - np.percentile(data, 25)) / 1.349)[0]
-        return 0.9 * sigma * (M * (N + 2) / 4.)**(-1. / (N + 4))
+        return 0.9 * sigma * (M * (N + 2) / 4.0) ** (-1.0 / (N + 4))
 
 
 def bandwidth_factory(method):

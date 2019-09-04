@@ -31,9 +31,9 @@
 Parser module specific to CLUSTAL sequence files
 """
 
-__author__ = 'Felix Simkovic'
-__date__ = '30 Jul 2018'
-__version__ = '0.1'
+__author__ = "Felix Simkovic"
+__date__ = "30 Jul 2018"
+__version__ = "0.1"
 
 import collections
 
@@ -49,7 +49,7 @@ class ClustalParser(SequenceFileParser):
     def __init__(self):
         super(ClustalParser, self).__init__()
 
-    def read(self, f_handle, f_id='fasta'):
+    def read(self, f_handle, f_id="fasta"):
         """Read a sequence file
 
         Parameters
@@ -70,13 +70,13 @@ class ClustalParser(SequenceFileParser):
 
         """
         header = f_handle.readline().rstrip()
-        if header[:7].upper() != 'CLUSTAL':
-            raise TypeError('Incorrect file format')
+        if header[:7].upper() != "CLUSTAL":
+            raise TypeError("Incorrect file format")
         cache = collections.OrderedDict()
         for line in f_handle:
             line = line.strip()
             line_set = set(line)
-            if not line or any(char in line_set for char in ['*', ':', '.']):
+            if not line or any(char in line_set for char in ["*", ":", "."]):
                 continue
             else:
                 parts = line.strip().split()
@@ -112,10 +112,10 @@ class ClustalParser(SequenceFileParser):
             if len(sequence.id) > longest:
                 longest = len(sequence.id)
             for i in range(0, sequence.seq_len, 60):
-                this += [sequence.seq[i:i + 60]]
+                this += [sequence.seq[i : i + 60]]
             chunker += [this]
-        content = 'CLUSTAL FORMAT written with ConKit\n\n'
-        linetemplate = '%-{}s\t%s\n'.format(longest)
+        content = "CLUSTAL FORMAT written with ConKit\n\n"
+        linetemplate = "%-{}s\t%s\n".format(longest)
         while len(chunker) > 0:
             entry = chunker.pop(0)
             content += linetemplate % (entry[0], entry[1])

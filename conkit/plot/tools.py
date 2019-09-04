@@ -43,11 +43,11 @@ from conkit.core.sequencefile import SequenceFile
 from conkit.misc import deprecate
 
 HierarchyIndex = {
-    'Contact': Contact,
-    'ContactMap': ContactMap,
-    'ContactFile': ContactFile,
-    'Sequence': Sequence,
-    'SequenceFile': SequenceFile
+    "Contact": Contact,
+    "ContactMap": ContactMap,
+    "ContactFile": ContactFile,
+    "Sequence": Sequence,
+    "SequenceFile": SequenceFile,
 }
 
 
@@ -55,36 +55,37 @@ class ColorDefinitions(object):
     """A class storing all color definitions for the various plots
     for fast and easy handling
     """
-    GENERAL = '#000000'
-    MATCH = '#0F0B2C'
-    MISMATCH = '#DC4869'
-    STRUCTURAL = '#D8D6D6'
-    L5CUTOFF = '#3F4587'
-    L20CUTOFF = '#B5DD2B'
+
+    GENERAL = "#000000"
+    MATCH = "#0F0B2C"
+    MISMATCH = "#DC4869"
+    STRUCTURAL = "#D8D6D6"
+    L5CUTOFF = "#3F4587"
+    L20CUTOFF = "#B5DD2B"
     PRECISION50 = L5CUTOFF
     FACTOR1 = L20CUTOFF
     AA_ENCODING = {
-        'A': '#882D17',
-        'C': '#F3C300',
-        'D': '#875692',
-        'E': '#F38400',
-        'F': '#A1CAF1',
-        'G': '#BE0032',
-        'H': '#C2B280',
-        'I': '#848482',
-        'K': '#008856',
-        'L': '#E68FAC',
-        'M': '#0067A5',
-        'N': '#F99379',
-        'P': '#604E97',
-        'Q': '#F6A600',
-        'R': '#B3446C',
-        'S': '#DCD300',
-        'T': '#8DB600',
-        'V': '#654522',
-        'W': '#E25822',
-        'Y': '#2B3D26',
-        'X': '#000000'
+        "A": "#882D17",
+        "C": "#F3C300",
+        "D": "#875692",
+        "E": "#F38400",
+        "F": "#A1CAF1",
+        "G": "#BE0032",
+        "H": "#C2B280",
+        "I": "#848482",
+        "K": "#008856",
+        "L": "#E68FAC",
+        "M": "#0067A5",
+        "N": "#F99379",
+        "P": "#604E97",
+        "Q": "#F6A600",
+        "R": "#B3446C",
+        "S": "#DCD300",
+        "T": "#8DB600",
+        "V": "#654522",
+        "W": "#E25822",
+        "Y": "#2B3D26",
+        "X": "#000000",
     }
 
 
@@ -125,7 +126,7 @@ def find_minima(data, order=1):
     for i in np.arange(1, nelements - 1):
         start = 0 if i - order < 0 else i - order
         end = nelements if i + order + 1 > nelements else i + order + 1
-        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1:end])
+        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1 : end])
     return np.where(results)[0].tolist()
 
 
@@ -153,7 +154,7 @@ def get_adjusted_aspect(ax, aspect_ratio):
     return float(default_ratio * aspect_ratio)
 
 
-@deprecate('0.11', msg='Use get_points_on_circle instead')
+@deprecate("0.11", msg="Use get_points_on_circle instead")
 def points_on_circle(*args, **kwargs):
     return get_points_on_circle(*args, **kwargs)
 

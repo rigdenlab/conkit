@@ -105,7 +105,7 @@ class SequenceCoverageFigure(Figure):
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
-    @deprecate('0.11', msg='Use draw instead')
+    @deprecate("0.11", msg="Use draw instead")
     def redraw(self):
         self.draw()
 
@@ -118,18 +118,21 @@ class SequenceCoverageFigure(Figure):
             aa_counts,
             color=ColorDefinitions.GENERAL,
             marker=None,
-            linestyle='-',
-            label='Amino acid count',
-            zorder=1)
+            linestyle="-",
+            label="Amino acid count",
+            zorder=1,
+        )
 
         self.ax.axhline(
-            self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label='5 x Nresidues', zorder=0)
+            self._hierarchy.top_sequence.seq_len * 5, color=ColorDefinitions.L5CUTOFF, label="5 x Nresidues", zorder=0
+        )
         if np.any(aa_counts >= self._hierarchy.top_sequence.seq_len * 20):
             self.ax.axhline(
                 self._hierarchy.top_sequence.seq_len * 20,
                 color=ColorDefinitions.L20CUTOFF,
-                label='20 x Nresidues',
-                zorder=0)
+                label="20 x Nresidues",
+                zorder=0,
+            )
 
         self.ax.set_xlim(residues[0], residues[-1])
         xticks = self.ax.get_xticks().astype(np.int64) + residues[0]
@@ -137,11 +140,11 @@ class SequenceCoverageFigure(Figure):
         self.ax.set_xticks(xticks)
         self.ax.set_xticklabels(xticks)
 
-        self.ax.set_xlabel('Residue number')
-        self.ax.set_ylabel('Sequence Count')
+        self.ax.set_xlabel("Residue number")
+        self.ax.set_ylabel("Sequence Count")
 
         if self.legend:
-            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=3, mode="expand", borderaxespad=0.)
+            self.ax.legend(bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3, ncol=3, mode="expand", borderaxespad=0.0)
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

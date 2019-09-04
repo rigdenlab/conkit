@@ -38,7 +38,7 @@ import sys
 import tempfile
 
 
-def create_tmp_f(content=None, mode='w'):
+def create_tmp_f(content=None, mode="w"):
     """Create a temporary file
 
     Parameters
@@ -82,7 +82,7 @@ def is_str_like(content):
 
     """
     try:
-        content + ''
+        content + ""
     except (TypeError, ValueError):
         return False
     return True
@@ -111,8 +111,8 @@ def open_f_handle(f_handle, mode):
        Mode needs to be one of: append, read, write
 
     """
-    if mode not in ['append', 'read', 'write']:
-        raise ValueError('Mode needs to be one of: append, read, write')
+    if mode not in ["append", "read", "write"]:
+        raise ValueError("Mode needs to be one of: append, read, write")
 
     try:
         if is_str_like(f_handle) and sys.version_info.major >= 3:

@@ -42,10 +42,10 @@ from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
-RE_HEADER_INTRA = re.compile(r'^i\s+j\s+i_id\s+j_id\s+r_sco\s+s_sco\s+prob$')
-RE_HEADER_INTER = re.compile(r'^i\s+j\s+gene\s+i_id\s+j_id\s+r_sco\s+s_sco\s+prob\s+I_prob$')
-RE_COMMENT = re.compile(r'^#+(.*)$')
-RE_SPLIT = re.compile(r'\s+')
+RE_HEADER_INTRA = re.compile(r"^i\s+j\s+i_id\s+j_id\s+r_sco\s+s_sco\s+prob$")
+RE_HEADER_INTER = re.compile(r"^i\s+j\s+gene\s+i_id\s+j_id\s+r_sco\s+s_sco\s+prob\s+I_prob$")
+RE_COMMENT = re.compile(r"^#+(.*)$")
+RE_SPLIT = re.compile(r"\s+")
 
 
 class GremlinParser(ContactFileParser):
@@ -93,13 +93,13 @@ class GremlinParser(ContactFileParser):
                     res1_seq, res2_seq, chain, _, _, raw_score, scalar_score, _, _ = RE_SPLIT.split(line)
                 else:
                     res1_seq, res2_seq, _, _, raw_score, scalar_score, _ = RE_SPLIT.split(line)
-                    chain = 'UNK'
+                    chain = "UNK"
 
                 c = Contact(int(res1_seq), int(res2_seq), float(raw_score))
                 c.scalar_score = float(scalar_score)
 
-                if chain == 'UNK':
-                    chain_list.add('UNK')
+                if chain == "UNK":
+                    chain_list.add("UNK")
                 elif len(chain) == 1:
                     c.res1_chain = chain[0]
                     c.res2_chain = chain[0]
@@ -109,15 +109,15 @@ class GremlinParser(ContactFileParser):
                     c.res2_chain = chain[1]
                     chain_list.add((c.res1_chain, c.res2_chain))
                 elif len(chain) > 2:
-                    raise ValueError('Cannot distinguish between chains')
+                    raise ValueError("Cannot distinguish between chains")
 
                 contact_list.append(c)
 
             line = next(lines, done)
 
         chain_list = list(chain_list)
-        if len(chain_list) == 1 and chain_list[0] == 'UNK':
-            contact_map = ContactMap('1')
+        if len(chain_list) == 1 and chain_list[0] == "UNK":
+            contact_map = ContactMap("1")
             for c in contact_list:
                 contact_map.add(c)
             hierarchy.add(contact_map)
@@ -137,7 +137,7 @@ class GremlinParser(ContactFileParser):
                         contact_map.add(c)
                 hierarchy.add(contact_map)
 
-        hierarchy.sort('id', inplace=True)
+        hierarchy.sort("id", inplace=True)
         return hierarchy
 
     def write(self, f_handle, hierarchy):
@@ -154,28 +154,41 @@ class GremlinParser(ContactFileParser):
         contact_file = self._reconstruct(hierarchy)
         content = ""
         if contact_file.top_map.top_contact.res1_chain and contact_file.top_map.top_contact.res2_chain:
-            header_args = ['i', 'j', 'gene', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob', 'I_prob']
-            content += '\t'.join(header_args) + '\n'
+            header_args = ["i", "j", "gene", "i_id", "j_id", "r_sco", "s_sco", "prob", "I_prob"]
+            content += "\t".join(header_args) + "\n"
             out_kwargs = [
-                '{res1_seq}', '{res2_seq}', '{chains}', '{res1_code}', '{res2_code}', '{raw_score}', '{scalar_score}',
-                '1.0', 'N/A'
+                "{res1_seq}",
+                "{res2_seq}",
+                "{chains}",
+                "{res1_code}",
+                "{res2_code}",
+                "{raw_score}",
+                "{scalar_score}",
+                "1.0",
+                "N/A",
             ]
         else:
-            header_args = ['i', 'j', 'i_id', 'j_id', 'r_sco', 's_sco', 'prob']
-            content += '\t'.join(header_args) + '\n'
+            header_args = ["i", "j", "i_id", "j_id", "r_sco", "s_sco", "prob"]
+            content += "\t".join(header_args) + "\n"
             out_kwargs = [
-                '{res1_seq}', '{res2_seq}', '{res1_code}', '{res2_code}', '{raw_score}', '{scalar_score}', '1.0'
+                "{res1_seq}",
+                "{res2_seq}",
+                "{res1_code}",
+                "{res2_code}",
+                "{raw_score}",
+                "{scalar_score}",
+                "1.0",
             ]
         for contact_map in contact_file:
             contact_map.set_scalar_score()
             for c in contact_map:
-                res1_code = str(c.res1_seq) + '_' + c.res1
-                res2_code = str(c.res2_seq) + '_' + c.res2
+                res1_code = str(c.res1_seq) + "_" + c.res1
+                res2_code = str(c.res2_seq) + "_" + c.res2
                 if c.res1_chain == c.res2_chain:
                     chains = c.res1_chain
                 else:
                     chains = "{}{}".format(c.res1_chain, c.res2_chain)
-                out_line = '\t'.join(out_kwargs)
+                out_line = "\t".join(out_kwargs)
                 out_line = out_line.format(
                     res1_seq=c.res1_seq,
                     res2_seq=c.res2_seq,
@@ -183,6 +196,7 @@ class GremlinParser(ContactFileParser):
                     res2_code=res2_code,
                     chains=chains,
                     raw_score=c.raw_score,
-                    scalar_score=round(c.scalar_score, 1))
-                content += out_line + '\n'
+                    scalar_score=round(c.scalar_score, 1),
+                )
+                content += out_line + "\n"
         f_handle.write(content)

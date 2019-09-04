@@ -117,7 +117,7 @@ class ContactMapChordFigure(Figure):
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
-    @deprecate('0.11', msg='Use draw instead')
+    @deprecate("0.11", msg="Use draw instead")
     def redraw(self):
         self.draw()
 
@@ -136,8 +136,8 @@ class ContactMapChordFigure(Figure):
             x1, y1 = coords[int(c[1]) - self_data_range.min()]
             x2, y2 = coords[int(c[3]) - self_data_range.min()]
             xb, yb = [0, 0]
-            x = (1 - bezier_path)**2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path**2 * x2
-            y = (1 - bezier_path)**2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path**2 * y2
+            x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path ** 2 * x2
+            y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path ** 2 * y2
             alpha = float(c[4]) if self.use_conf else 1.0
             color = {
                 ContactMatchState.false_positive: ColorDefinitions.MISMATCH,
@@ -151,7 +151,7 @@ class ContactMapChordFigure(Figure):
 
         residue_data = np.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
         residue_data = residue_data.reshape(self_data[:, 0].shape[0] * 2, 2)
-        color_codes = dict([(k, ColorDefinitions.AA_ENCODING['X']) for k in self_data_range])
+        color_codes = dict([(k, ColorDefinitions.AA_ENCODING["X"]) for k in self_data_range])
         for k, v in np.vstack({tuple(row) for row in residue_data}):
             color_codes[int(k)] = ColorDefinitions.AA_ENCODING[v]
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
@@ -162,11 +162,13 @@ class ContactMapChordFigure(Figure):
         label_coords = np.zeros((npoints, 2))
         space = 2 * np.pi / npoints
         for i in np.arange(npoints):
-            label_coords[i] = [(npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
-                               (npoints + npoints / 10) * np.sin(space * i) - npoints / 40]
+            label_coords[i] = [
+                (npoints + npoints / 10) * np.cos(space * i) - npoints / 20,
+                (npoints + npoints / 10) * np.sin(space * i) - npoints / 40,
+            ]
 
         xy_highlight = []
-        for r in sorted(label_data)[::int(npoints / (npoints / 10))]:
+        for r in sorted(label_data)[:: int(npoints / (npoints / 10))]:
             i = r - self_data_range.min()
             xy = coords[i]
             xytext = label_coords[i]
@@ -189,6 +191,6 @@ class ContactMapChordFigure(Figure):
             self.savefig(self._file_name, dpi=self._dpi)
 
     @staticmethod
-    @deprecate('0.11', msg='Use get_radius_around_circle instead')
+    @deprecate("0.11", msg="Use get_radius_around_circle instead")
     def get_radius_around_circle(coords, pad=0.01):
         return get_radius_around_circle(coords[0], coords[1])

@@ -7,7 +7,7 @@ from setuptools import setup, Extension
 import os
 import sys
 
-SETUPREQUIRES = ['cython >=0.28.2', 'scipy >=0.13.3', 'numpy >=1.8.2', 'pytest-runner']
+SETUPREQUIRES = ['cython >=0.28.2', 'scipy >=0.13.3', 'numpy >=1.8.2', 'pytest-runner ==5.1', 'configparser>=3.5;python_version<"3"']
 
 # Credits to https://github.com/pytest-dev/pytest-xdist/issues/136#issuecomment-293029492
 try:
@@ -184,6 +184,17 @@ CLASSIFIERS = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
+TEST_REQUIREMENTS = [
+    'codecov ==2.0.15',
+    'coverage ==4.5.4',
+    'importlib-metadata ==0.20',
+    'pluggy ==0.12',
+    'pytest ==4.6.5',
+    'pytest-cov ==2.7.1',
+    'pytest-pep8 ==1.0.6',
+    'pytest-helpers-namespace ==2019.1.8',
+]
+
 setup(
     cmdclass={
         'build': BuildCommand,
@@ -205,7 +216,7 @@ setup(
     classifiers=CLASSIFIERS,
     setup_requires=SETUPREQUIRES,
     install_requires=DEPENDENCIES,
-    tests_require=['codecov', 'coverage', 'pytest', 'pytest-cov', 'pytest-pep8', 'pytest-helpers-namespace'],
+    tests_require=TEST_REQUIREMENTS,
     include_package_data=True,
     zip_safe=False,
 )

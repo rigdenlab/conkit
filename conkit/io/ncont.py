@@ -43,13 +43,14 @@ from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
-_re_hit_part = "\/\d+\/([A-Za-z])\/\s*(\d+)\(([A-Z]{3})\)\.\s+\/\s*[A-Z]+\s+\[\s*[A-Z]\]:\s+"
-RE_CONTACT = re.compile(_re_hit_part + _re_hit_part + "(\d+\.\d+)\s*")
+# re module doesn't support capture of 2+ capturing groups in repeated pattern
+# see: https://stackoverflow.com/a/9765390/3046533
+_re_hit_part = "\/\d+\/([A-Za-z])+\/\s*(\d+)\(([A-Z]{3})\)\.\s+\/\s*[A-Z]+\s+\[\s*[A-Z]\]:\s+"
+RE_CONTACT = re.compile(r"{}(\d+\.\d+)\s*".format(_re_hit_part * 2))
 
 
 class NcontParser(ContactFileParser):
-    """Class to parse a Ncont contact file
-    """
+    """Class to parse a Ncont contact file."""
 
     def __init__(self):
         super(NcontParser, self).__init__()
@@ -84,8 +85,10 @@ class NcontParser(ContactFileParser):
                 lb = ub = float(matches.group(7))
 
                 if (res1_seq, res2_seq) in contact_map:
-                    msg = "This parser cannot handle multiple atoms of the same residue. " \
-                          "If your contact map contains such entries, only the first will be stored!"
+                    msg = (
+                        "This parser cannot handle multiple atoms of the same residue. "
+                        "If your contact map contains such entries, only the first will be stored!"
+                    )
                     warnings.warn(msg, Warning)
                     continue
 
@@ -96,7 +99,7 @@ class NcontParser(ContactFileParser):
                 contact.res2 = matches.group(6)
                 contact_map.add(contact)
 
-        contact_file.method = 'Contact map generated using Ncont'
+        contact_file.method = "Contact map generated using Ncont"
         return contact_file
 
     def write(self, f_handle, hierarchy):

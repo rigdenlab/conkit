@@ -49,7 +49,7 @@ from conkit.core.sequence import Sequence
 
 RE_COMMENT = re.compile(r"^#+\s*$")
 RE_JUNK = re.compile(r"^(PconsC3|Total|Sequence number|Sequence length).*\s*$")
-RE_GENERATED = re.compile(r'^Generated.*$')
+RE_GENERATED = re.compile(r"^Generated.*$")
 RE_SEQUENCE_NAME = re.compile(r"^Sequence name:\s+(.*)\s*$")
 RE_SEQUENCE = re.compile(r"^Sequence:\s*$")
 RE_PRED_CONTACTS = re.compile(r"^Predicted\s+contacts:\s*$")
@@ -91,8 +91,8 @@ class PconsParser(ContactFileParser):
         done = object()
         line = next(lines, done)
 
-        seq = ''
-        seq_id = 'seq_1'
+        seq = ""
+        seq_id = "seq_1"
 
         while line is not done:
 
@@ -130,7 +130,7 @@ class PconsParser(ContactFileParser):
         if seq:
             contact_map.sequence = Sequence(seq_id, seq)
 
-        contact_file.method = 'Contact map predicted using Pcons'
+        contact_file.method = "Contact map predicted using Pcons"
 
         return contact_file
 
@@ -157,28 +157,28 @@ class PconsParser(ContactFileParser):
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
-            raise RuntimeError('More than one contact map provided')
-        comment_line = '##############################################################################\n'
-        content = ''
+            raise RuntimeError("More than one contact map provided")
+        comment_line = "##############################################################################\n"
+        content = ""
         for contact_map in contact_file:
             if write_header_footer:
                 content += comment_line
-                content += 'PconsC3 result file\n'
-                content += 'Generated using ConKit\n'
+                content += "PconsC3 result file\n"
+                content += "Generated using ConKit\n"
                 content += comment_line
                 if contact_map.sequence is not None:
-                    content += 'Sequence number: 1\n'
-                    content += 'Sequence name: {}\n'.format(contact_map.sequence.id)
-                    content += 'Sequence length: {} aa.\n'.format(contact_map.sequence.seq_len)
-                    content += 'Sequence:\n'
-                    content += contact_map.sequence.seq + '\n' * 3
-                content += 'Predicted contacts:\n'
-                content += 'Res1 Res2 Score\n'
+                    content += "Sequence number: 1\n"
+                    content += "Sequence name: {}\n".format(contact_map.sequence.id)
+                    content += "Sequence length: {} aa.\n".format(contact_map.sequence.seq_len)
+                    content += "Sequence:\n"
+                    content += contact_map.sequence.seq + "\n" * 3
+                content += "Predicted contacts:\n"
+                content += "Res1 Res2 Score\n"
             for contact in contact_map:
                 res1_seq = contact.res1_seq
                 res2_seq = contact.res2_seq
                 raw_score = contact.raw_score
-                content += '{:>4} {:>4} {:>.6f}\n'.format(res1_seq, res2_seq, raw_score)
+                content += "{:>4} {:>4} {:>.6f}\n".format(res1_seq, res2_seq, raw_score)
             if write_header_footer:
-                content += '\n' + comment_line
+                content += "\n" + comment_line
         f_handle.write(content)

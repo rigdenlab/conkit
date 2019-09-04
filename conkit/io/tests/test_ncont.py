@@ -72,7 +72,7 @@ class TestNcontParser(unittest.TestCase):
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
         os.unlink(f_name)
         cmap = contact_file.top
@@ -129,7 +129,7 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
         os.unlink(f_name)
         cmap = contact_file.top
@@ -193,7 +193,7 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
-        with open(f_name, 'r') as f_in:
+        with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
         os.unlink(f_name)
         cmap = contact_file.top
