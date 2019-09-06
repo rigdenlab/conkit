@@ -65,6 +65,7 @@ class ParserCache(object):
         "casp": ["casp", "casprr"],
         "pcons": ["flib", "pconsc", "pconsc2", "pconsc3", "saint2"],
         "psicov": ["psicov", "metapsicov", "nebcon"],
+        "mapalign": ["mapalign"],
     }
 
     BLINDFOLD = set(["ContactFileParser", "GenericStructureParser", "SequenceFileParser"])
