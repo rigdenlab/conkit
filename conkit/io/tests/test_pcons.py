@@ -34,6 +34,7 @@ class TestPconsParser(unittest.TestCase):
 1 17 0.01192
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -42,7 +43,6 @@ class TestPconsParser(unittest.TestCase):
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
         self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
-        os.unlink(f_name)
 
     def test_read_2(self):
         content = """# Check one two
@@ -65,6 +65,7 @@ Hello WOrld
 1 17 0.01192
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -73,7 +74,6 @@ Hello WOrld
         self.assertEqual([1] * 16, [c.res1_seq for c in contact_map1])
         self.assertEqual(list(range(2, 18)), [c.res2_seq for c in contact_map1])
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
-        os.unlink(f_name)
 
     def test_read_3(self):
         content = """##############################################################################
@@ -110,6 +110,7 @@ Res1 Res2 Score
 ##############################################################################
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -121,7 +122,6 @@ Res1 Res2 Score
         self.assertEqual([0.93514, 0.67324, 0.23692, 0.13166, 0.09188], [c.raw_score for c in contact_map1][:5])
         self.assertEqual("shorter_test", contact_map1.sequence.id)
         self.assertEqual("HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD", contact_map1.sequence.seq)
-        os.unlink(f_name)
 
     def test_read_4(self):
         content = """##############################################################################
@@ -159,6 +159,7 @@ Res1 Res2 Score
 ##############################################################################
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -174,7 +175,6 @@ Res1 Res2 Score
             "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD",
             contact_map1.sequence.seq,
         )
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
@@ -190,6 +190,7 @@ Res1 Res2 Score
         contact_map.sequence = Sequence("sequence_1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             PconsParser().write(f_out, contact_file)
         content = [
@@ -216,7 +217,9 @@ Res1 Res2 Score
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

@@ -46,6 +46,7 @@ class TestComsatParser(unittest.TestCase):
 9    V   171  V   H1-H6
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = ComsatParser().read(f_in, "r")
         contact_map1 = contact_file.top_map
@@ -84,7 +85,6 @@ class TestComsatParser(unittest.TestCase):
             ],
             [c.res1_seq for c in contact_map1],
         )
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
@@ -100,13 +100,16 @@ class TestComsatParser(unittest.TestCase):
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             ComsatParser().write(f_out, contact_file)
         content = ["1	H	9	L	Hx-Hx", "1	H	10	L	Hx-Hx", "2	L	8	I	Hx-Hx", "3	E	12	K	Hx-Hx"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

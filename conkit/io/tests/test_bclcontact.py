@@ -25,6 +25,7 @@ class TestBCLContactParser(unittest.TestCase):
 6 T   94 Q 0.000 0.068 0.041 0.534 0.489 0.679
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = BCLContactParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -36,7 +37,9 @@ class TestBCLContactParser(unittest.TestCase):
             [0.749, 0.634, 0.727, 0.557, 0.535, 0.585, 0.529, 0.581, 0.679, 0.578, 0.679],
             [c.raw_score for c in contact_map1],
         )
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

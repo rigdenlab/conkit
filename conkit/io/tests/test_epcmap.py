@@ -28,6 +28,7 @@ class TestEPCMapParser(unittest.TestCase):
 100 140 0 8 5.382865
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = EPCMapParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -39,7 +40,6 @@ class TestEPCMapParser(unittest.TestCase):
             [9.301869, 8.856009, 7.252451, 6.800462, 6.588349, 6.184269, 6.163786, 5.519271, 5.440612, 5.382865],
             [c.raw_score for c in contact_map1],
         )
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
@@ -55,13 +55,16 @@ class TestEPCMapParser(unittest.TestCase):
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             EPCMapParser().write(f_out, contact_file)
         content = ["1 9 0 8 0.700000", "1 10 0 8 0.700000", "2 8 0 8 0.900000", "3 12 0 8 0.400000"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

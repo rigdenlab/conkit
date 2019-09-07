@@ -18,6 +18,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
 SSEHP
 """
         f_name = create_tmp_f(content=seq)
+        self.addCleanup(os.remove, f_name)
         parser = FastaParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -26,7 +27,6 @@ SSEHP
         self.assertEqual(ref_id, sequence_entry.id)
         ref_seq = "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLKEVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSASSEHP"
         self.assertEqual(ref_seq, sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_read_2(self):
         seq = """# Hello World
@@ -34,6 +34,7 @@ SSEHP
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 """
         f_name = create_tmp_f(content=seq)
+        self.addCleanup(os.remove, f_name)
         parser = FastaParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -44,7 +45,6 @@ GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
         self.assertEqual(ref_id, sequence_entry.id)
         ref_seq = "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK"
         self.assertEqual(ref_seq, sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_read_3(self):
         msa = """#foo
@@ -57,6 +57,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
+        self.addCleanup(os.remove, f_name)
         parser = FastaParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -71,7 +72,6 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             elif i == 2:
                 self.assertEqual("seq3", sequence_entry.id)
                 self.assertEqual("EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF", sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_write_1(self):
         seq = [
@@ -81,7 +81,9 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             "SSEHP",
         ]
         f_name_in = create_tmp_f(content="\n".join(seq))
+        self.addCleanup(os.remove, f_name_in)
         f_name_out = create_tmp_f()
+        self.addCleanup(os.remove, f_name_out)
         parser = FastaParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -89,7 +91,6 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-        map(os.unlink, [f_name_in, f_name_out])
 
     def test_write_2(self):
         seq = [
@@ -106,7 +107,6 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-        map(os.unlink, [f_name_in, f_name_out])
 
     def test_write_3(self):
         msa = [
@@ -120,7 +120,9 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             "EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF",
         ]
         f_name_in = create_tmp_f(content="\n".join(msa))
+        self.addCleanup(os.remove, f_name_in)
         f_name_out = create_tmp_f()
+        self.addCleanup(os.remove, f_name_out)
         parser = FastaParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -128,6 +130,9 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(msa, output)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

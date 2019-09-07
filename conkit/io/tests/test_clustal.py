@@ -20,6 +20,7 @@ seq_0           -RIIKNVQV
 
 """
         f_name = create_tmp_f(content=seq)
+        self.addCleanup(os.remove, f_name)
         parser = ClustalParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -28,7 +29,6 @@ seq_0           -RIIKNVQV
         self.assertEqual(ref_id, sequence_entry.id)
         ref_seq = "MLDLEVVPE-RSLGNEQW-------E-F-TLG-MPLAQAV-AILQKHC---RIIKNVQV"
         self.assertEqual(ref_seq, sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_read_2(self):
         msa = """CLUSTAL W
@@ -44,6 +44,7 @@ seq_2           CCCCCCCCC
 
 """
         f_name = create_tmp_f(content=msa)
+        self.addCleanup(os.remove, f_name)
         parser = ClustalParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -57,7 +58,6 @@ seq_2           CCCCCCCCC
             elif i == 2:
                 self.assertEqual("seq_2", sequence_entry.id)
                 self.assertEqual("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_read_3(self):
         msa = """CLUSTAL FORMAT for
@@ -72,6 +72,7 @@ seq_2           CCCCCCCCC
 
 """
         f_name = create_tmp_f(content=msa)
+        self.addCleanup(os.remove, f_name)
         parser = ClustalParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -85,7 +86,6 @@ seq_2           CCCCCCCCC
             elif i == 2:
                 self.assertEqual("seq_2", sequence_entry.id)
                 self.assertEqual("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_write_1(self):
         seq = [
@@ -98,7 +98,9 @@ seq_2           CCCCCCCCC
         ]
         joinedseq = "\n".join(seq)
         f_name_in = create_tmp_f(content=joinedseq)
+        self.addCleanup(os.remove, f_name_in)
         f_name_out = create_tmp_f()
+        self.addCleanup(os.remove, f_name_out)
         parser = ClustalParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -106,7 +108,9 @@ seq_2           CCCCCCCCC
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-        map(os.unlink, [f_name_in, f_name_out])
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

@@ -18,6 +18,7 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
+        self.addCleanup(os.remove, f_name)
         parser = A2mParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -34,7 +35,6 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             elif i == 3:
                 self.assertEqual("seq_3", sequence_entry.id)
                 self.assertEqual("EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF", sequence_entry.seq)
-        os.unlink(f_name)
 
     def test_read_2(self):
         msa = """>header1
@@ -47,11 +47,11 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
         f_name = create_tmp_f(content=msa)
+        self.addCleanup(os.remove, f_name)
         parser = A2mParser()
         with open(f_name, "r") as f_in:
             with self.assertRaises(ValueError):
                 parser.read(f_in)
-        os.unlink(f_name)
 
     def test_write_1(self):
         msa = [
@@ -61,7 +61,9 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             "EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF",
         ]
         f_name_in = create_tmp_f(content="\n".join(msa))
+        self.addCleanup(os.remove, f_name_in)
         f_name_out = create_tmp_f()
+        self.addCleanup(os.remove, f_name_out)
         parser = A2mParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -69,7 +71,9 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(msa, output)
-        map(os.unlink, [f_name_in, f_name_out])
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":
