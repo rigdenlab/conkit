@@ -28,6 +28,7 @@ class TestFreeContactParser(unittest.TestCase):
 1 M 11 G 0.0234555 0
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = FreeContactParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -50,7 +51,6 @@ class TestFreeContactParser(unittest.TestCase):
             ],
             [c.raw_score for c in contact_map1],
         )
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
@@ -66,13 +66,16 @@ class TestFreeContactParser(unittest.TestCase):
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             FreeContactParser().write(f_out, contact_file)
         content = ["1 H 9 L 0.7 0", "1 H 10 L 0.7 0", "2 L 8 I 0.9 0", "3 E 12 K 0.4 0"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

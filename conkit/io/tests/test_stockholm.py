@@ -51,6 +51,7 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
 //
 """
         f_name = create_tmp_f(content=msa)
+        self.addCleanup(os.remove, f_name)
         parser = StockholmParser()
         with open(f_name, "r") as f_in:
             hierarchy = parser.read(f_in)
@@ -151,8 +152,6 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
                     sequence_entry.remark,
                 )
 
-        os.unlink(f_name)
-
     def test_write_1(self):
         msa = [
             "# STOCKHOLM 1.0",
@@ -195,7 +194,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
         ]
         parser = StockholmParser()
         f_name_in = create_tmp_f(content="\n".join(msa))
+        self.addCleanup(os.remove, f_name_in)
         f_name_out = create_tmp_f()
+        self.addCleanup(os.remove, f_name_out)
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             hierarchy = parser.read(f_in)
             parser.write(f_out, hierarchy)
@@ -228,7 +229,9 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(ref, output)
-        map(os.unlink, [f_name_in, f_name_out])
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

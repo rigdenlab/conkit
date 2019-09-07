@@ -28,6 +28,7 @@ class TestPlmDCAParser(unittest.TestCase):
 1,11,0.045109
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PlmDCAParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -39,7 +40,6 @@ class TestPlmDCAParser(unittest.TestCase):
             [0.12212, 0.14004, 0.12926, 0.089211, 0.079976, 0.078954, 0.052275, 0.026012, 0.049844, 0.045109],
             [c.raw_score for c in contact_map1],
         )
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
@@ -55,13 +55,16 @@ class TestPlmDCAParser(unittest.TestCase):
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             PlmDCAParser().write(f_out, contact_file)
         content = ["1,9,0.700000", "1,10,0.700000", "2,8,0.900000", "3,12,0.400000"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

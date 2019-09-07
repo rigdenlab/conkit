@@ -31,6 +31,7 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CB")
         contact_map1 = contact_file.top_map
@@ -39,7 +40,6 @@ END
         self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([86, 208], [c.res2_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([0.934108, 0.920229], [c.raw_score for c in contact_map1 if c.true_positive])
-        os.unlink(f_name)
 
     def test_read_2(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
@@ -61,6 +61,7 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CA")
         contact_map1 = contact_file.top_map
@@ -69,7 +70,6 @@ END
         self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([0.934927], [c.raw_score for c in contact_map1 if c.true_positive])
-        os.unlink(f_name)
 
     def test_read_3(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
@@ -91,6 +91,7 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PdbParser().read(f_in, distance_cutoff=7, atom_type="CB")
         contact_map1 = contact_file.top_map
@@ -99,7 +100,6 @@ END
         self.assertEqual([36], [c.res1_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([86], [c.res2_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([0.934108], [c.raw_score for c in contact_map1 if c.true_positive])
-        os.unlink(f_name)
 
     def test_read_4(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
@@ -122,6 +122,7 @@ ATOM     16  CB  PHE B 208      31.726  43.102  -3.518  0.50 19.90           C
 END
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CB")
         # Two maps because no contacts in B
@@ -138,7 +139,6 @@ END
         self.assertEqual(1, len(contact_map3))
         self.assertEqual(["B", "A"], [contact_map3.top_contact.res1_chain, contact_map3.top_contact.res2_chain])
         self.assertEqual([208, 86], [contact_map3.top_contact.res1_seq, contact_map3.top_contact.res2_seq])
-        os.unlink(f_name)
 
     def test_read_5(self):
         content = """ATOM      1  N   TYR A  36      39.107  51.628   3.103  0.50 43.13           N
@@ -160,6 +160,7 @@ ATOM     16  CB  PHE A 208      31.726  43.102  -3.518  0.50 19.90           C
 END
         """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = PdbParser().read(f_in, distance_cutoff=0, atom_type="CB")
         contact_map1 = contact_file.top_map
@@ -167,7 +168,9 @@ END
         self.assertEqual(6, len(contact_map1))
         self.assertEqual([36, 36, 36, 86, 86, 171], [c.res1_seq for c in contact_map1 if c.true_positive])
         self.assertEqual([86, 171, 208, 171, 208, 208], [c.res2_seq for c in contact_map1 if c.true_positive])
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

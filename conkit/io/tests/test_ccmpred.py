@@ -29,6 +29,7 @@ class TestCCMpredParser(unittest.TestCase):
 7.60651111602783203125e-01      5.52687942981719970703e-01      6.22575819492340087891e-01      3.63562554121017456055e-01      2.77379721403121948242e-01      5.38770556449890136719e-01      5.63172996044158935547e-01      1.05407856665351573611e-07      3.14439445734024047852e-01      0.00000000000000000000e+00
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = CCMpredParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -98,7 +99,6 @@ class TestCCMpredParser(unittest.TestCase):
             ],
             [c.raw_score for c in contact_map1],
         )
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("test")
@@ -109,6 +109,7 @@ class TestCCMpredParser(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
         mode = "wb" if sys.version_info.major == 3 else "w"
         with open(f_name, mode) as f_out:
@@ -130,7 +131,6 @@ class TestCCMpredParser(unittest.TestCase):
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
 
     def test_write_2(self):
         contact_file = ContactFile("test")
@@ -141,6 +141,7 @@ class TestCCMpredParser(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
         with open(f_name, "w") as f_out:
             if sys.version_info.major == 3:
@@ -148,6 +149,9 @@ class TestCCMpredParser(unittest.TestCase):
                     CCMpredParser().write(f_out, contact_file)
             else:
                 self.assertTrue(True)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

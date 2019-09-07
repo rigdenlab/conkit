@@ -236,6 +236,7 @@ A9 B14  0  8  0.50
 END
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = CaspParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -243,7 +244,6 @@ END
         self.assertEqual(15, len(contact_map1))
         self.assertEqual("HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD", contact_map1.sequence.seq)
         self.assertEqual("HLEG-IGILL-K-E-------------------", contact_map1.repr_sequence.seq)
-        os.unlink(f_name)
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
@@ -259,6 +259,7 @@ END
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
@@ -280,7 +281,6 @@ END
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
 
     def test_write_2(self):
         contact_file = ContactFile("RR")
@@ -291,6 +291,7 @@ END
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
@@ -307,7 +308,6 @@ END
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
 
     def test_write_3(self):
         contact_file = ContactFile("RR")
@@ -317,6 +317,7 @@ END
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
@@ -332,7 +333,6 @@ END
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
 
     def test_write_4(self):
         contact_file = ContactFile("RR")
@@ -343,6 +343,7 @@ END
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
@@ -360,7 +361,6 @@ END
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
 
     def test_write_5(self):
         contact_file = ContactFile("RR")
@@ -371,6 +371,7 @@ END
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
@@ -388,7 +389,6 @@ END
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
 
     def test_write_6(self):
         contact_file = ContactFile("RR")
@@ -406,6 +406,7 @@ END
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         f_name = create_tmp_f()
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "w") as f_out:
             CaspParser().write(f_out, contact_file)
         content = [
@@ -423,7 +424,9 @@ END
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-        os.unlink(f_name)
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

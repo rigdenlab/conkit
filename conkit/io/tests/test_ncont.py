@@ -72,9 +72,9 @@ class TestNcontParser(unittest.TestCase):
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
-        os.unlink(f_name)
         cmap = contact_file.top
         self.assertEqual(cmap.ncontacts, 12)
         self.assertEqual([c.res1_seq for c in cmap], list(range(127, 139)))
@@ -129,9 +129,9 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
-        os.unlink(f_name)
         cmap = contact_file.top
         self.assertEqual(cmap.ncontacts, 0)
 
@@ -193,15 +193,18 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
         f_name = create_tmp_f(content=content)
+        self.addCleanup(os.remove, f_name)
         with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
-        os.unlink(f_name)
         cmap = contact_file.top
         self.assertEqual(cmap.ncontacts, 5)
         self.assertEqual([c.res1_seq for c in cmap], [129, 130, 131, 132, 135])
         self.assertEqual([c.res2_seq for c in cmap], [131, 132, 133, 134, 137])
         self.assertEqual(set([c.res1_chain for c in cmap]), set(["A"]))
         self.assertEqual(set([c.res2_chain for c in cmap]), set(["B"]))
+
+    def tearDown(self):
+        self.doCleanups()
 
 
 if __name__ == "__main__":

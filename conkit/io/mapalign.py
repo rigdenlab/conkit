@@ -55,35 +55,17 @@ class MapAlignParser(ContactFileParser):
         -------
         :obj:`~conkit.core.contactfile.ContactFile`
 
-        Raises
-        ------
-        :exc:`RuntimeError`
-           Sequence length exceeds the length stated with the LEN card
-
         """
 
         hierarchy = ContactFile(f_id)
         _map = ContactMap("map_1")
         hierarchy.add(_map)
-        seq_length = None
 
         for line in f_handle:
             line = line.strip().split()
 
-            if line[0] == "LEN":
-                seq_length = int(line[1])
-                continue
-
-            elif line[0] != "CON":
-                continue
-
-            elif line[1].isdigit() and line[2].isdigit():
-                line.pop(0)
-                if seq_length is not None and (int(line[0]) > seq_length or int(line[1]) > seq_length):
-                    raise RuntimeError(
-                        "Contacting residues outside sequence range ({} residues)! Conflicting contact: {}-{}".format(
-                            seq_length, line[0], line[1]))
-                _contact = Contact(int(line[0]), int(line[1]), float(line[2]))
+            if line[0] == "CON" and line[1].isdigit() and line[2].isdigit():
+                _contact = Contact(int(line[1]), int(line[2]), float(line[3]))
                 _map.add(_contact)
 
         hierarchy.method = "Contact map compatible with map_algin"
@@ -91,7 +73,7 @@ class MapAlignParser(ContactFileParser):
         return hierarchy
 
     def write(self, f_handle, hierarchy):
-        """Write a contact file instance to to file
+        """Write a contact file instance to a file
 
         Parameters
         ----------
@@ -111,8 +93,7 @@ class MapAlignParser(ContactFileParser):
             raise RuntimeError("More than one contact map provided")
         seq_length = max([max(contact.res1_seq, contact.res2_seq) for contact in contact_file.top_map])
         content = "LEN {}\n".format(seq_length)
-        for contact_map in contact_file:
-            for contact in contact_map:
-                line = "CON {} {} {:.6f}\n"
-                content += line.format(contact.res1_seq, contact.res2_seq, contact.raw_score)
+        line_template = "CON {} {} {:.6f}\n"
+        for contact in contact_file.top_map:
+            content += line_template.format(contact.res1_seq, contact.res2_seq, contact.raw_score)
         f_handle.write(content)
