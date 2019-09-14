@@ -1,3 +1,18 @@
+**[0.11.3]**
+
+*Fixed*
+
+- Test cases ensure file removal regardless of failure
+
+*Changed*
+
+- Code formatting to adapt [Black](https://black.readthedocs.io/en/stable/) formatting
+
+*Added*
+
+- [``map_align``](https://github.com/sokrypton/map_align) contact file parser
+- AppVeyor and TravisCI runs against Python3.7
+
 **[0.11.2]**
 
 *Fixed*
