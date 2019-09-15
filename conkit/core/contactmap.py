@@ -395,6 +395,26 @@ class ContactMap(Entity):
         return singletons
 
     @property
+    def highest_contact(self):
+        """The :obj:`~conkit.core.contact.Contact` with the highest residue sequence number in the :obj:`~conkit.core.contactmap.ContactMap`
+
+        Returns
+        -------
+        :obj:`~conkit.core.contact.Contact`
+           A :obj:`~conkit.core.contact.Contact` object
+
+        """
+        highest_index = 0
+        highest_id = None
+
+        for contactid in self.as_list():
+            if contactid[0] > highest_index or contactid[1] > highest_index:
+                highest_index = max(contactid)
+                highest_id = tuple(contactid)
+
+        return self[highest_id]
+
+    @property
     def sequence(self):
         """The :obj:`~conkit.core.sequence.Sequence` associated with the :obj:`~conkit.core.contactmap.ContactMap`
 
@@ -661,7 +681,8 @@ class ContactMap(Entity):
         return contact_map
 
     def match(
-        self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False, inplace=False
+            self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False,
+            inplace=False
     ):
         """Modify both hierarchies so residue numbers match one another.
 
@@ -892,6 +913,65 @@ class ContactMap(Entity):
                 continue
             else:
                 contact_map.remove(tuple(contactid))
+        return contact_map
+
+    def trim_region(self, region, inplace=False):
+        """Trim away a specific region of a contact map
+
+        Parameters
+        ----------
+        region : int, list, tuple, required
+           List with the residues indexes to cut away
+        inplace : bool, optional
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+           The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of inplace
+
+        """
+        if isinstance(region, int):
+            region = [region]
+        region = set(region)
+        contact_map = self._inplace(inplace)
+        for contactid in contact_map.as_list():
+            if contactid[1] not in region and contactid[0] not in region:
+                continue
+            else:
+                contact_map.remove(tuple(contactid))
+        return contact_map
+
+    def filter_score(self, score_threshold, inplace=False):
+        """Filter out contacts below selected threshold
+
+        Parameters
+        ----------
+        score_threshold : int, required
+           Score threshold to be applied in the filter
+        inplace : bool, optional
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+           The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of inplace
+
+        Raises
+        ------
+        :exc:`TypeError`
+           score_threshold must be int or float
+
+        """
+        if not isinstance(score_threshold, int) and not isinstance(score_threshold, float):
+            raise TypeError("Score threshold must be an int or float!")
+
+        contact_map = self._inplace(inplace)
+        for contact in contact_map:
+            if contact.raw_score >= score_threshold:
+                continue
+            else:
+                contact_map.remove(contact.id)
         return contact_map
 
     def rescale(self, inplace=False):

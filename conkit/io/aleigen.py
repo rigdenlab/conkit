@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-Parser module specific to map_align map files
+Parser module specific to al-eigen map files
 """
 
 from conkit.io._parser import ContactFileParser
@@ -37,24 +37,21 @@ from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 
 
-class MapAlignParser(ContactFileParser):
-    """Class to parse a map_align map file
+class AleigenParser(ContactFileParser):
+    """Class to parse a al-eigen map file
     """
 
     def read(self, f_handle, f_id="map_align"):
         """Read a contact file
-
         Parameters
         ----------
         f_handle
            Open file handle [read permissions]
         f_id : str, optional
            Unique contact file identifier
-
         Returns
         -------
         :obj:`~conkit.core.contactfile.ContactFile`
-
         """
 
         hierarchy = ContactFile(f_id)
@@ -64,36 +61,34 @@ class MapAlignParser(ContactFileParser):
         for line in f_handle:
             line = line.strip().split()
 
-            if line[0] == "CON" and line[1].isdigit() and line[2].isdigit():
-                _contact = Contact(int(line[1]), int(line[2]), float(line[3]))
+            if len(line) == 2 and line[0].isdigit() and line[1].isdigit():
+                # Al-eigen has no score field so we assume score=1.0
+                _contact = Contact(int(line[0]), int(line[1]), 1.0)
                 _map.add(_contact)
 
-        hierarchy.method = "Contact map compatible with map_algin"
+        hierarchy.method = "Contact map compatible with Al-Eigen"
 
         return hierarchy
 
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to a file
-
         Parameters
         ----------
         f_handle
            Open file handle [write permissions]
         hierarchy : :obj:`~conkit.core.contactfile.ContactFile`, :obj:`~conkit.core.contactmap.ContactMap`
                     or :obj:`~conkit.core.contact.Contact`
-
         Raises
         ------
         :exc:`RuntimeError`
            More than one contact map in the hierarchy
-
         """
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
             raise RuntimeError("More than one contact map provided")
         seq_length = max(contact_file.top_map.highest_contact.id)
-        content = "LEN {}\n".format(seq_length)
-        line_template = "CON {} {} {:.6f}\n"
+        content = "%s\n" % seq_length
+        line_template = "{} {}\n"
         for contact in contact_file.top_map:
-            content += line_template.format(contact.res1_seq, contact.res2_seq, contact.raw_score)
+            content += line_template.format(contact.res1_seq, contact.res2_seq)
         f_handle.write(content)

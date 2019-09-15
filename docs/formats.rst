@@ -25,7 +25,9 @@ The following table contains the various different file formats currently implem
 +--------------------+------------------------+-----------------------------------------------------------+-------------------------------------------------+
 | Type               | Format                 | Keyword                                                   | Parser                                          |
 +====================+========================+===========================================================+=================================================+
-| Contact Prediction | Bbcontacts             | ``bbcontacts``:sup:`*`                                    | :obj:`~conkit.io.bbcontacts.BbcontactsParser`   |
+| Contact Prediction | Al-eigen               | ``aleigen``:sup:                                          | :obj:`~conkit.io.aleigen.AleigenParser`         |
++                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
+|                    | Bbcontacts             | ``bbcontacts``:sup:`*`                                    | :obj:`~conkit.io.bbcontacts.BbcontactsParser`   |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
 |                    | BCLContacts            | ``bclcontacts``:sup:`*`                                   | :obj:`~conkit.io.bclcontact.BCLContactParser`   |
 +                    +------------------------+-----------------------------------------------------------+-------------------------------------------------+
@@ -88,3 +90,4 @@ The following table contains the various different file formats currently implem
 | :sup:`b` The ``jones`` format corresponds to the HH-suite A2M format.                                                                                     |
 |                                                                                                                                                           |
 +--------------------+------------------------+-----------------------------------------------------------+-------------------------------------------------+
+
