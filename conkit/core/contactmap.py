@@ -977,7 +977,7 @@ class ContactMap(Entity):
 
         contact_map = self._inplace(inplace)
         for contactid in contact_map.as_list():
-            raw_score = contact_map[contactid].raw_score
+            raw_score = contact_map[tuple(contactid)].raw_score
             if raw_score >= score_threshold:
                 continue
             else:

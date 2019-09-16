@@ -912,7 +912,6 @@ class TestContactMap(unittest.TestCase):
         self.assertListEqual([(1, 5), (3, 3)], [c.id for c in contact_map])
         self.assertEqual([(1, 5), (3, 3)], sorted(contact_map.child_dict.keys()))
 
-
     def test_rescale_1(self):
         contact_map = ContactMap("test")
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
