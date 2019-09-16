@@ -1,4 +1,4 @@
-"""Testing facility for conkit.io.map_align"""
+"""Testing facility for conkit.io.aleigen"""
 
 import os
 import unittest
