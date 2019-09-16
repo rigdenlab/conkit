@@ -404,6 +404,9 @@ class ContactMap(Entity):
            A :obj:`~conkit.core.contact.Contact` object
 
         """
+        if len(self) == 0:
+            return None
+
         highest_index = 0
         highest_id = None
 
@@ -930,9 +933,15 @@ class ContactMap(Entity):
         :obj:`~conkit.core.contactmap.ContactMap`
            The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of inplace
 
+        Raises
+        ------
+        :exc:`TypeError`
+           Region must be int, list or tuple
         """
         if isinstance(region, int):
             region = [region]
+        elif not isinstance(region, list) and not isinstance(region, tuple):
+            raise TypeError("The region must be specified as an integer, list or tuple!")
         region = set(region)
         contact_map = self._inplace(inplace)
         for contactid in contact_map.as_list():
@@ -967,11 +976,12 @@ class ContactMap(Entity):
             raise TypeError("Score threshold must be an int or float!")
 
         contact_map = self._inplace(inplace)
-        for contact in contact_map:
-            if contact.raw_score >= score_threshold:
+        for contactid in contact_map.as_list():
+            raw_score = contact_map[contactid].raw_score
+            if raw_score >= score_threshold:
                 continue
             else:
-                contact_map.remove(contact.id)
+                contact_map.remove(tuple(contactid))
         return contact_map
 
     def rescale(self, inplace=False):

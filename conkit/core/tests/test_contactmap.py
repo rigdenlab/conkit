@@ -208,6 +208,18 @@ class TestContactMap(unittest.TestCase):
         contact_map.add(contact2)
         self.assertEqual(contact1, contact_map.top_contact)
 
+    def test_highest_contact_1(self):
+        contact_map = ContactMap("test")
+        self.assertEqual(None, contact_map.highest_contact)
+
+    def test_highest_contact_2(self):
+        contact_map = ContactMap("test")
+        contact1 = Contact(1, 10, 1.0)
+        contact2 = Contact(2, 100, 1.0)
+        contact_map.add(contact1)
+        contact_map.add(contact2)
+        self.assertEqual(contact2, contact_map.highest_contact)
+
     def test__construct_repr_sequence_1(self):
         contact_map = ContactMap("test")
         for contact in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
@@ -859,6 +871,47 @@ class TestContactMap(unittest.TestCase):
         contact_map_mod = contact_map.remove_neighbors(min_distance=6, max_distance=24, inplace=True)
         self.assertEqual([(2, 10), (3, 20)], [c.id for c in contact_map_mod])
         self.assertEqual([(2, 10), (3, 20)], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_trim_region_1(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.trim_region(region=2)
+        self.assertListEqual([(1, 5), (3, 3), (5, 1)], [c.id for c in contact_map_mod])
+        self.assertEqual([(1, 5), (3, 3), (5, 1)], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_trim_region_2(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.trim_region(region=[2, 5, 10, 3])
+        self.assertListEqual([], [c.id for c in contact_map_mod])
+        self.assertEqual([], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_trim_region_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map.add(c)
+        contact_map.trim_region(region=(2,), inplace=True)
+        self.assertListEqual([(1, 5), (3, 3), (5, 1)], [c.id for c in contact_map])
+        self.assertEqual([(1, 5), (3, 3), (5, 1)], sorted(contact_map.child_dict.keys()))
+
+    def test_filter_score_1(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.filter_score(score_threshold=0.5)
+        self.assertListEqual([(1, 5)], [c.id for c in contact_map_mod])
+        self.assertEqual([(1, 5)], sorted(contact_map_mod.child_dict.keys()))
+
+    def test_filter_score_2(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
+            contact_map.add(c)
+        contact_map_mod = contact_map.filter_score(score_threshold=0.3, inplace=True)
+        self.assertListEqual([(1, 5), (3, 3)], [c.id for c in contact_map])
+        self.assertEqual([(1, 5), (3, 3)], sorted(contact_map.child_dict.keys()))
+
 
     def test_rescale_1(self):
         contact_map = ContactMap("test")
