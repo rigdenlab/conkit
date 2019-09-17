@@ -43,6 +43,7 @@ class AleigenParser(ContactFileParser):
 
     def read(self, f_handle, f_id="map_align"):
         """Read a contact file
+
         Parameters
         ----------
         f_handle
@@ -62,8 +63,8 @@ class AleigenParser(ContactFileParser):
             line = line.strip().split()
 
             if len(line) == 2 and line[0].isdigit() and line[1].isdigit():
-                # Al-eigen has no score field so we assume score=1.0
-                _contact = Contact(int(line[0]), int(line[1]), 1.0)
+                # Al-eigen has no score field so we assume score=0.5
+                _contact = Contact(int(line[0]), int(line[1]), 0.5)
                 _map.add(_contact)
 
         hierarchy.method = "Contact map compatible with Al-Eigen"
@@ -72,6 +73,7 @@ class AleigenParser(ContactFileParser):
 
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to a file
+
         Parameters
         ----------
         f_handle
@@ -86,9 +88,9 @@ class AleigenParser(ContactFileParser):
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
             raise RuntimeError("More than one contact map provided")
-        seq_length = max(contact_file.top_map.highest_contact.id)
-        content = "%s\n" % seq_length
+        cmap = contact_file.top_map
+        content = "{}\n".format(cmap.highest_residue_number)
         line_template = "{} {}\n"
-        for contact in contact_file.top_map:
+        for contact in cmap:
             content += line_template.format(contact.res1_seq, contact.res2_seq)
         f_handle.write(content)

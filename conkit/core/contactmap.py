@@ -395,27 +395,19 @@ class ContactMap(Entity):
         return singletons
 
     @property
-    def highest_contact(self):
-        """The :obj:`~conkit.core.contact.Contact` with the highest residue sequence number in the :obj:`~conkit.core.contactmap.ContactMap`
+    def highest_residue_number(self):
+        """The highest residue sequence number among contacts in the :obj:`~conkit.core.contactmap.ContactMap`
 
         Returns
         -------
-        :obj:`~conkit.core.contact.Contact`
-           A :obj:`~conkit.core.contact.Contact` object
+        int
+           Highest residue sequence number in the contact map
 
         """
         if len(self) == 0:
             return None
-
-        highest_index = 0
-        highest_id = None
-
-        for contactid in self.as_list():
-            if contactid[0] > highest_index or contactid[1] > highest_index:
-                highest_index = max(contactid)
-                highest_id = tuple(contactid)
-
-        return self[highest_id]
+        else:
+            return max([max(contact.id) for contact in self])
 
     @property
     def sequence(self):
@@ -684,8 +676,7 @@ class ContactMap(Entity):
         return contact_map
 
     def match(
-            self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False,
-            inplace=False
+        self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False, inplace=False
     ):
         """Modify both hierarchies so residue numbers match one another.
 
@@ -918,46 +909,15 @@ class ContactMap(Entity):
                 contact_map.remove(tuple(contactid))
         return contact_map
 
-    def trim_region(self, region, inplace=False):
-        """Trim away a specific region of a contact map
-
-        Parameters
-        ----------
-        region : int, list, tuple, required
-           List with the residues indexes to cut away
-        inplace : bool, optional
-           Replace the saved order of contacts [default: False]
-
-        Returns
-        -------
-        :obj:`~conkit.core.contactmap.ContactMap`
-           The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of inplace
-
-        Raises
-        ------
-        :exc:`TypeError`
-           Region must be int, list or tuple
-        """
-        if isinstance(region, int):
-            region = [region]
-        elif not isinstance(region, list) and not isinstance(region, tuple):
-            raise TypeError("The region must be specified as an integer, list or tuple!")
-        region = set(region)
-        contact_map = self._inplace(inplace)
-        for contactid in contact_map.as_list():
-            if contactid[1] not in region and contactid[0] not in region:
-                continue
-            else:
-                contact_map.remove(tuple(contactid))
-        return contact_map
-
-    def filter_score(self, score_threshold, inplace=False):
+    def filter(self, threshold, filter_by='raw_score', inplace=False):
         """Filter out contacts below selected threshold
 
         Parameters
         ----------
-        score_threshold : int, required
-           Score threshold to be applied in the filter
+        threshold : int
+           Threshold to be applied in the filter
+        filter_by : str
+            Contact attribute to be used in the filter.
         inplace : bool, optional
            Replace the saved order of contacts [default: False]
 
@@ -969,19 +929,17 @@ class ContactMap(Entity):
         Raises
         ------
         :exc:`TypeError`
-           score_threshold must be int or float
+           threshold must be int or float
 
         """
-        if not isinstance(score_threshold, int) and not isinstance(score_threshold, float):
+        if not isinstance(threshold, (int, float)):
             raise TypeError("Score threshold must be an int or float!")
 
         contact_map = self._inplace(inplace)
         for contactid in contact_map.as_list():
-            raw_score = contact_map[tuple(contactid)].raw_score
-            if raw_score >= score_threshold:
-                continue
-            else:
-                contact_map.remove(tuple(contactid))
+            contactid = tuple(contactid)
+            if float(getattr(contact_map[contactid], filter_by)) < threshold:
+                contact_map.remove(contactid)
         return contact_map
 
     def rescale(self, inplace=False):

@@ -34,7 +34,7 @@ class TestAleigenParser(unittest.TestCase):
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([10, 1, 10, 6, 5, 36, 1, 33, 21, 38], [c.res1_seq for c in contact_map1])
         self.assertEqual([14, 7, 13, 9, 71, 42, 73, 37, 68, 57], [c.res2_seq for c in contact_map1])
-        self.assertEqual([1.0 for x in range(0, 10)], [c.raw_score for c in contact_map1])
+        self.assertEqual([0.5 for x in range(0, 10)], [c.raw_score for c in contact_map1])
 
     def test_write_1(self):
         contact_file = ContactFile("RR")

@@ -62,11 +62,11 @@ class ParserCache(object):
     MASKS = {
         "a2m": ["a2m", "jones"],
         "a3m": ["a3m", "a3m-inserts"],
+        "aleigen": ["aleigen"],
         "casp": ["casp", "casprr"],
+        "mapalign": ["mapalign"],
         "pcons": ["flib", "pconsc", "pconsc2", "pconsc3", "saint2"],
         "psicov": ["psicov", "metapsicov", "nebcon"],
-        "mapalign": ["mapalign"],
-        "aleigen": ["aleigen"],
     }
 
     BLINDFOLD = set(["ContactFileParser", "GenericStructureParser", "SequenceFileParser"])
