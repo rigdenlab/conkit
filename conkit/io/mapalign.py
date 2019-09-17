@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-18, University of Liverpool
+# Copyright (c) 2016-19, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -91,9 +91,9 @@ class MapAlignParser(ContactFileParser):
         contact_file = self._reconstruct(hierarchy)
         if len(contact_file) > 1:
             raise RuntimeError("More than one contact map provided")
-        seq_length = max([max(contact.res1_seq, contact.res2_seq) for contact in contact_file.top_map])
-        content = "LEN {}\n".format(seq_length)
+        cmap = contact_file.top_map
+        content = "LEN {}\n".format(cmap.highest_residue_number)
         line_template = "CON {} {} {:.6f}\n"
-        for contact in contact_file.top_map:
+        for contact in cmap:
             content += line_template.format(contact.res1_seq, contact.res2_seq, contact.raw_score)
         f_handle.write(content)

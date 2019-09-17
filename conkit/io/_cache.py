@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-18, University of Liverpool
+# Copyright (c) 2016-19, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,10 +62,11 @@ class ParserCache(object):
     MASKS = {
         "a2m": ["a2m", "jones"],
         "a3m": ["a3m", "a3m-inserts"],
+        "aleigen": ["aleigen"],
         "casp": ["casp", "casprr"],
+        "mapalign": ["mapalign"],
         "pcons": ["flib", "pconsc", "pconsc2", "pconsc3", "saint2"],
         "psicov": ["psicov", "metapsicov", "nebcon"],
-        "mapalign": ["mapalign"],
     }
 
     BLINDFOLD = set(["ContactFileParser", "GenericStructureParser", "SequenceFileParser"])

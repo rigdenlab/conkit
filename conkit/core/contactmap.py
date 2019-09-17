@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-18, University of Liverpool
+# Copyright (c) 2016-19, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -393,6 +393,21 @@ class ContactMap(Entity):
             if throwables[i]:
                 singletons.remove(contact.id)
         return singletons
+
+    @property
+    def highest_residue_number(self):
+        """The highest residue sequence number among contacts in the :obj:`~conkit.core.contactmap.ContactMap`
+
+        Returns
+        -------
+        int
+           Highest residue sequence number in the contact map
+
+        """
+        if len(self) == 0:
+            return None
+        else:
+            return max([max(contact.id) for contact in self])
 
     @property
     def sequence(self):
@@ -892,6 +907,39 @@ class ContactMap(Entity):
                 continue
             else:
                 contact_map.remove(tuple(contactid))
+        return contact_map
+
+    def filter(self, threshold, filter_by='raw_score', inplace=False):
+        """Filter out contacts below selected threshold
+
+        Parameters
+        ----------
+        threshold : int
+           Threshold to be applied in the filter
+        filter_by : str
+            Contact attribute to be used in the filter.
+        inplace : bool, optional
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+           The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of inplace
+
+        Raises
+        ------
+        :exc:`TypeError`
+           threshold must be int or float
+
+        """
+        if not isinstance(threshold, (int, float)):
+            raise TypeError("Score threshold must be an int or float!")
+
+        contact_map = self._inplace(inplace)
+        for contactid in contact_map.as_list():
+            contactid = tuple(contactid)
+            if float(getattr(contact_map[contactid], filter_by)) < threshold:
+                contact_map.remove(contactid)
         return contact_map
 
     def rescale(self, inplace=False):
