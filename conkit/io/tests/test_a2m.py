@@ -3,25 +3,23 @@
 __author__ = "Felix Simkovic"
 __date__ = "30 Jul 2018"
 
-import os
 import unittest
 
 from conkit.io.a2m import A2mParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestA2mParser(unittest.TestCase):
+class TestA2mParser(ParserTestCase):
+
     def test_read_1(self):
         msa = """GSMFTPKPPQDSAVI--GYCVKQGAVMKNWKRRY--LDENTIGYF
 EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
-        parser = A2mParser()
-        with open(f_name, "r") as f_in:
-            sequence_file = parser.read(f_in)
+        fname = self._create_iotools_fname(content=msa)
+        with open(fname, "r") as f_in:
+            sequence_file = A2mParser().read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual("seq_0", sequence_entry.id)
@@ -46,12 +44,10 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 >header4
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
-        parser = A2mParser()
-        with open(f_name, "r") as f_in:
+        fname = self._create_iotools_fname(content=msa)
+        with open(fname, "r") as f_in:
             with self.assertRaises(ValueError):
-                parser.read(f_in)
+                A2mParser().read(f_in)
 
     def test_write_1(self):
         msa = [
@@ -60,20 +56,14 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             "EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF",
             "EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF",
         ]
-        f_name_in = create_tmp_f(content="\n".join(msa))
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
-        self.addCleanup(os.remove, f_name_out)
-        parser = A2mParser()
-        with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
+        infname = self._create_iotools_fname(content="\n".join(msa))
+        outfname = self._create_iotools_fname()
+        with open(infname, "r") as f_in, open(outfname, "w") as f_out:
             sequence_file = parser.read(f_in)
-            parser.write(f_out, sequence_file)
-        with open(f_name_out, "r") as f_in:
+            A2mParser().write(f_out, sequence_file)
+        with open(outfname, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(msa, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

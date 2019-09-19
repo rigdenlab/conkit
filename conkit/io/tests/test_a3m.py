@@ -7,10 +7,10 @@ import os
 import unittest
 
 from conkit.io.a3m import A3mParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestA3mParser(unittest.TestCase):
+class TestA3mParser(ParserTestCase):
     def test_read_1(self):
         msa = """>d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}
 PPDHLWVHQEGIYRDEYQRTWVAVVEEETSFLRARVQQIQVPLGDAARPSHLLTSQL
@@ -33,11 +33,9 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 >gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]
 ---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
-        parser = A3mParser()
+        f_name = self._create_iotools_fname(content=msa)
         with open(f_name, "r") as f_in:
-            sequence_file = parser.read(f_in, remove_inserts=True)  # <------------
+            sequence_file = A3mParser().read(f_in, remove_inserts=True)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual("d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}", sequence_entry.id)
@@ -117,11 +115,9 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 >gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]
 ---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
-        parser = A3mParser()
+        f_name = self._create_iotools_fname(content=msa)
         with open(f_name, "r") as f_in:
-            sequence_file = parser.read(f_in, remove_inserts=False)  # <------------
+            sequence_file = A3mParser().read(f_in, remove_inserts=False)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual("d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}", sequence_entry.id)
@@ -219,11 +215,9 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 >gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]
 HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
-        parser = A3mParser()
+        f_name = self._create_iotools_fname(content=msa)
         with open(f_name, "r") as f_in:
-            sequence_file = parser.read(f_in, remove_inserts=False)  # <------------
+            sequence_file = A3mParser().read(f_in, remove_inserts=False)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
                 self.assertEqual("d1a1x__ b.63.1.1 (-) p13-MTCP1 {Human (Homo sapiens)}", sequence_entry.id)
@@ -273,9 +267,8 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
-        f_name_in = create_tmp_f(content="\n".join(msa))
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
+        f_name_in = self._create_iotools_fname(content="\n".join(msa))
+        f_name_out = self._create_iotools_fname()
         self.addCleanup(os.remove, f_name_out)
         parser = A3mParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
