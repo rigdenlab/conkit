@@ -17,8 +17,8 @@ EVHK--ECKQSDIMMRD--FEIVTTSRTFYVQADSPEEMHSWIKA
 EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        fname = self._create_iotools_fname(content=msa)
-        with open(fname, "r") as f_in:
+        f_name = self.tempfile(content=msa)
+        with open(f_name, "r") as f_in:
             sequence_file = A2mParser().read(f_in)
         for i, sequence_entry in enumerate(sequence_file):
             if i == 0:
@@ -44,8 +44,8 @@ EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF
 >header4
 EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
 """
-        fname = self._create_iotools_fname(content=msa)
-        with open(fname, "r") as f_in:
+        f_name = self.tempfile(content=msa)
+        with open(f_name, "r") as f_in:
             with self.assertRaises(ValueError):
                 A2mParser().read(f_in)
 
@@ -56,12 +56,12 @@ EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF
             "EVHKVQECK--DIMMRDNLFEI--TSRTFWKRRY--LDENTIGYF",
             "EVHKVQECK--DIMMRDNLFEI--TSRTF--RRY--LDENTIGYF",
         ]
-        infname = self._create_iotools_fname(content="\n".join(msa))
-        outfname = self._create_iotools_fname()
-        with open(infname, "r") as f_in, open(outfname, "w") as f_out:
-            sequence_file = parser.read(f_in)
+        f_name_in = self.tempfile(content='\n'.join(msa))
+        f_name_out = self.tempfile()
+        with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
+            sequence_file = A2mParser().read(f_in)
             A2mParser().write(f_out, sequence_file)
-        with open(outfname, "r") as f_in:
+        with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(msa, output)
 

@@ -7,10 +7,10 @@ import os
 import unittest
 
 from conkit.io.ncont import NcontParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestNcontParser(unittest.TestCase):
+class TestNcontParser(ParserTestCase):
     def test_read_1(self):
         content = """
  ###############################################################
@@ -71,8 +71,7 @@ class TestNcontParser(unittest.TestCase):
  NCONT:  Normal termination
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
         cmap = contact_file.top
@@ -128,8 +127,7 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
  NCONT:  Normal termination
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
         cmap = contact_file.top
@@ -192,8 +190,7 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
  NCONT:  Normal termination
 Times: User:       0.1s System:    0.0s Elapsed:     0:00
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = NcontParser().read(f_in)
         cmap = contact_file.top
@@ -202,9 +199,6 @@ Times: User:       0.1s System:    0.0s Elapsed:     0:00
         self.assertEqual([c.res2_seq for c in cmap], [131, 132, 133, 134, 137])
         self.assertEqual(set([c.res1_chain for c in cmap]), set(["A"]))
         self.assertEqual(set([c.res2_chain for c in cmap]), set(["B"]))
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

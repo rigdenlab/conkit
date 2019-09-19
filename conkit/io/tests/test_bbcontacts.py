@@ -7,10 +7,10 @@ import os
 import unittest
 
 from conkit.io.bbcontacts import BbcontactsParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestBbcontactsParser(unittest.TestCase):
+class TestBbcontactsParser(ParserTestCase):
     def test_read_1(self):
         content = """#identifier diversity     direction viterbiscore indexpred        state  res1  res2
 1EAZ      0.65  Antiparallel     9.860725         1        first    29    24
@@ -20,8 +20,7 @@ class TestBbcontactsParser(unittest.TestCase):
 1EAZ      0.65      Parallel    -6.855870        29     internal    88    55
 1EAZ      0.65      Parallel    -6.855870        29         last    89    56
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = BbcontactsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -40,8 +39,7 @@ class TestBbcontactsParser(unittest.TestCase):
 1EAZ      0.65  Antiparallel     9.860725         1         last    30    23
 1EAZ      0.65      Parallel    -6.855870        29        first    87    54
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = BbcontactsParser().read(f_in, del_one_two=True)
         contact_map1 = contact_file.top_map
@@ -60,8 +58,7 @@ class TestBbcontactsParser(unittest.TestCase):
 1EAZ      0.65  Antiparallel     0.000000         1         last   101    23
 1EAZ      0.65      Parallel     0.000000        29        first   100    15
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = BbcontactsParser().read(f_in, del_one_two=False)
         contact_map1 = contact_file.top_map
@@ -73,9 +70,6 @@ class TestBbcontactsParser(unittest.TestCase):
             sorted([9.860725, 9.860725, 9.860725, -6.855870, -6.855870, -6.855870, 0.0, 0.0, 0.0]),
             sorted([c.raw_score for c in contact_map1]),
         )
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

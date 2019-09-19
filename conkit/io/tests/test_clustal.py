@@ -7,10 +7,10 @@ import os
 import unittest
 
 from conkit.io.clustal import ClustalParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestClustalParser(unittest.TestCase):
+class TestClustalParser(ParserTestCase):
     def test_read_1(self):
         seq = """CLUSTAL W
 
@@ -19,8 +19,7 @@ seq_0           MLDLEVVPE-RSLGNEQW-------E-F-TLG-MPLAQAV-AILQKHC--
 seq_0           -RIIKNVQV
 
 """
-        f_name = create_tmp_f(content=seq)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=seq)
         parser = ClustalParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -43,8 +42,7 @@ seq_2           CCCCCCCCC
                 *********
 
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=msa)
         parser = ClustalParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -71,8 +69,7 @@ seq_1           BBBBBBBBB
 seq_2           CCCCCCCCC
 
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=msa)
         parser = ClustalParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -97,10 +94,8 @@ seq_2           CCCCCCCCC
             "seq_1\tBBBBBBBBBBBBBBBBBBBBBB",
         ]
         joinedseq = "\n".join(seq)
-        f_name_in = create_tmp_f(content=joinedseq)
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
-        self.addCleanup(os.remove, f_name_out)
+        f_name_in = self.tempfile(content=joinedseq)
+        f_name_out = self.tempfile()
         parser = ClustalParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -108,9 +103,6 @@ seq_2           CCCCCCCCC
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(seq, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

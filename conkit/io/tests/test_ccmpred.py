@@ -12,10 +12,10 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
 from conkit.io.ccmpred import CCMpredParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestCCMpredParser(unittest.TestCase):
+class TestCCMpredParser(ParserTestCase):
     def test_read_1(self):
         content = """0.00000000000000000000e+00      9.05865192413330078125e-01      4.48399752378463745117e-01      3.83993983268737792969e-02      7.80840754508972167969e-01      5.15280842781066894531e-01      2.66545146703720092773e-01      4.99921828508377075195e-01      4.54095661640167236328e-01      7.60651350021362304688e-01
 9.05863702297210693359e-01      0.00000000000000000000e+00      7.22257912158966064453e-01      1.90076664090156555176e-01      1.08203485608100891113e-01      1.23369038105010986328e-01      5.28753221035003662109e-01      3.98827701807022094727e-01      7.34628140926361083984e-01      5.52688777446746826172e-01
@@ -28,8 +28,7 @@ class TestCCMpredParser(unittest.TestCase):
 4.54095035791397094727e-01      7.34628796577453613281e-01      3.75739067792892456055e-01      3.39132964611053466797e-01      1.31566718220710754395e-01      9.12294447422027587891e-01      5.99323771893978118896e-02      6.80750906467437744141e-01      0.00000000000000000000e+00      3.14438492059707641602e-01
 7.60651111602783203125e-01      5.52687942981719970703e-01      6.22575819492340087891e-01      3.63562554121017456055e-01      2.77379721403121948242e-01      5.38770556449890136719e-01      5.63172996044158935547e-01      1.05407856665351573611e-07      3.14439445734024047852e-01      0.00000000000000000000e+00
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = CCMpredParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -108,8 +107,7 @@ class TestCCMpredParser(unittest.TestCase):
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
         mode = "wb" if sys.version_info.major == 3 else "w"
         with open(f_name, mode) as f_out:
@@ -140,8 +138,7 @@ class TestCCMpredParser(unittest.TestCase):
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
         with open(f_name, "w") as f_out:
             if sys.version_info.major == 3:
@@ -149,9 +146,6 @@ class TestCCMpredParser(unittest.TestCase):
                     CCMpredParser().write(f_out, contact_file)
             else:
                 self.assertTrue(True)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

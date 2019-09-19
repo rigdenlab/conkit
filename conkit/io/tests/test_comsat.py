@@ -11,10 +11,10 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
 from conkit.io.comsat import ComsatParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestComsatParser(unittest.TestCase):
+class TestComsatParser(ParserTestCase):
     def test_read_1(self):
         content = """19   A   41   A   H1-H2
 19   A   42   C   H1-H2
@@ -45,8 +45,7 @@ class TestComsatParser(unittest.TestCase):
 8    N   171  V   H1-H6
 9    V   171  V   H1-H6
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = ComsatParser().read(f_in, "r")
         contact_map1 = contact_file.top_map
@@ -99,17 +98,13 @@ class TestComsatParser(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             ComsatParser().write(f_out, contact_file)
         content = ["1	H	9	L	Hx-Hx", "1	H	10	L	Hx-Hx", "2	L	8	I	Hx-Hx", "3	E	12	K	Hx-Hx"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

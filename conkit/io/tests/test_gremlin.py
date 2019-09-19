@@ -11,10 +11,10 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
 from conkit.io.gremlin import GremlinParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestGremlinParser(unittest.TestCase):
+class TestGremlinParser(ParserTestCase):
     def test_read_1(self):
         content = """i	j	i_id	j_id	r_sco	s_sco	prob
 179	246	179_C	246_L	0.2019	4.740	1.000
@@ -28,8 +28,7 @@ class TestGremlinParser(unittest.TestCase):
 215	268	215_V	268_A	0.1109	2.604	0.998
 262	266	262_G	266_K	0.1040	2.442	0.997
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = GremlinParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -56,8 +55,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 215	268	215_V	268_A	0.1109	2.604	0.998
 262	266	262_G	266_K	0.1040	2.442	0.997
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = GremlinParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -85,8 +83,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
 30	65	A	30_A	65_T	0.054	1.065	0.532	N/A
 24	434	AB	24_A	244_L	0.054	1.064	0.531	0.123
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = GremlinParser().read(f_in)
         self.assertEqual(3, len(contact_file))
@@ -115,8 +112,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             GremlinParser().write(f_out, contact_file)
         content = [
@@ -137,8 +133,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
             contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
             contact_map.add(contact)
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             GremlinParser().write(f_out, contact_file)
         content = [
@@ -169,8 +164,7 @@ i	j	i_id	j_id	r_sco	s_sco	prob
                 contact_map.add(c)
             contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
             contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             GremlinParser().write(f_out, contact_file)
         content = [
@@ -191,9 +185,6 @@ i	j	i_id	j_id	r_sco	s_sco	prob
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

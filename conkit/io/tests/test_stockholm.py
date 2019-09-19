@@ -7,10 +7,10 @@ import os
 import unittest
 
 from conkit.io.stockholm import StockholmParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestStockholmParser(unittest.TestCase):
+class TestStockholmParser(ParserTestCase):
     def test_read_1(self):
         msa = """# STOCKHOLM 1.0
 #=GF ID 1EAZ:A|PDBID|CHAIN|SEQUENCE-i5
@@ -50,8 +50,7 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
 #=GC RF                                   ...................x.......................xx.............................................................................................x..x.x............x....x.xx........x..x.......................
 //
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=msa)
         parser = StockholmParser()
         with open(f_name, "r") as f_in:
             hierarchy = parser.read(f_in)
@@ -193,10 +192,8 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
             "//",
         ]
         parser = StockholmParser()
-        f_name_in = create_tmp_f(content="\n".join(msa))
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
-        self.addCleanup(os.remove, f_name_out)
+        f_name_in = self.tempfile(content="\n".join(msa))
+        f_name_out = self.tempfile()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             hierarchy = parser.read(f_in)
             parser.write(f_out, hierarchy)
@@ -229,9 +226,6 @@ UniRef100_A0A0D2WIY8/1752-1857            -------------------K------------------
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(ref, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

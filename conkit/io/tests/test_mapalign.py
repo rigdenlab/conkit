@@ -8,10 +8,10 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
 from conkit.io.mapalign import MapAlignParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestMapAlignParser(unittest.TestCase):
+class TestMapAlignParser(ParserTestCase):
     def test_read_1(self):
         content = """LEN     77
 CON     10      14      1
@@ -30,8 +30,7 @@ PRF     2       K       X       0.0322  0.0048  0.0563  0.128   0.0116  0.0481  
 PRF     3       I       X       0.0147  0.0062  0.0025  0.0034  0.2786  0.0058  0.0057  0.1876  0.0053  0.2779  0.0302
 PRF     4       I       X       0.0404  0.0057  0.1139  0.2398  0.0104  0.028   0.0275  0.0278  0.0491  0.0283  0.0051
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = MapAlignParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -56,17 +55,13 @@ PRF     4       I       X       0.0404  0.0057  0.1139  0.2398  0.0104  0.028   
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             MapAlignParser().write(f_out, contact_file)
         content = ["LEN 12", "CON 1 9 0.700000", "CON 1 10 0.700000", "CON 2 8 0.900000", "CON 3 12 0.400000"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

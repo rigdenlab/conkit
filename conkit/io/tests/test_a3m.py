@@ -33,7 +33,7 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 >gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]
 ---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL
 """
-        f_name = self._create_iotools_fname(content=msa)
+        f_name = self.tempfile(content=msa)
         with open(f_name, "r") as f_in:
             sequence_file = A3mParser().read(f_in, remove_inserts=True)
         for i, sequence_entry in enumerate(sequence_file):
@@ -115,7 +115,7 @@ PPCFLVCTRDDIYEDEHGRQWVAAKVETSSHSPycskietcvtVHLWQMTTLFQEPSPDSLKTFNFL
 >gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]
 ---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL
 """
-        f_name = self._create_iotools_fname(content=msa)
+        f_name = self.tempfile(content=msa)
         with open(f_name, "r") as f_in:
             sequence_file = A3mParser().read(f_in, remove_inserts=False)
         for i, sequence_entry in enumerate(sequence_file):
@@ -215,7 +215,7 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 >gi|6678257|ref|NP_033363.1|:(7-103) T-cell lymphoma breakpoint 1 [Mus musculus]
 HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
 """
-        f_name = self._create_iotools_fname(content=msa)
+        f_name = self.tempfile(content=msa)
         with open(f_name, "r") as f_in:
             sequence_file = A3mParser().read(f_in, remove_inserts=False)
         for i, sequence_entry in enumerate(sequence_file):
@@ -267,9 +267,8 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             ">gi|7305555|ref|NP_038803.1|:(9-102) T-cell leukemia/lymphoma 1B, 2 [Mus musculus]",
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
-        f_name_in = self._create_iotools_fname(content="\n".join(msa))
-        f_name_out = self._create_iotools_fname()
-        self.addCleanup(os.remove, f_name_out)
+        f_name_in = self.tempfile(content='\n'.join(msa))
+        f_name_out = self.tempfile()
         parser = A3mParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in, remove_inserts=True)
@@ -324,10 +323,8 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
             "---------PGFYEDEHHRLWMVAKLETCSHSPycnkietcvtVHLWQMTRYPQEPAPYNPMNYNFL",
         ]
 
-        f_name_in = create_tmp_f(content="\n".join(msa))
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
-        self.addCleanup(os.remove, f_name_out)
+        f_name_in = self.tempfile(content="\n".join(msa))
+        f_name_out = self.tempfile()
         parser = A3mParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in, remove_inserts=False)
@@ -357,9 +354,6 @@ HPNRLWIWEKHVYLDEFRRSWLPVVIKSNEKFQVILRQEDVTLGEAMSPSQLVPYEL
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(ref, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":
