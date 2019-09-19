@@ -18,7 +18,7 @@ jobs:
         version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        echo ${{ CONDA }}
+        conda info
         python -m pip install --upgrade pip
         python -m pip install -U setuptools
         python setup.py install
