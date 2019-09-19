@@ -890,8 +890,12 @@ class TestContactMap(unittest.TestCase):
 
     def test_filter_3(self):
         contact_map = ContactMap("test")
-        for c in [Contact(1, 5, 1.0, (0, 8)), Contact(3, 3, 0.4, (0, 10)), Contact(2, 4, 0.1, (5, 7)),
-                  Contact(5, 1, 0.2, (3, 10))]:
+        for c in [
+            Contact(1, 5, 1.0, (0, 8)),
+            Contact(3, 3, 0.4, (0, 10)),
+            Contact(2, 4, 0.1, (5, 7)),
+            Contact(5, 1, 0.2, (3, 10)),
+        ]:
             contact_map.add(c)
         contact_map_mod = contact_map.filter(threshold=3, inplace=True, filter_by="lower_bound")
         self.assertListEqual([(2, 4), (5, 1)], [c.id for c in contact_map])

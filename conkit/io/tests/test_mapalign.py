@@ -39,8 +39,9 @@ PRF     4       I       X       0.0404  0.0057  0.1139  0.2398  0.0104  0.028   
         self.assertEqual(10, len(contact_map1))
         self.assertEqual([10, 1, 10, 6, 5, 36, 1, 33, 21, 38], [c.res1_seq for c in contact_map1])
         self.assertEqual([14, 7, 13, 9, 71, 42, 73, 37, 68, 57], [c.res2_seq for c in contact_map1])
-        self.assertEqual([1.0, 0.883, 0.871, 0.847, 0.816, 0.807, 0.806, 0.8, 0.563, 0.561],
-                         [c.raw_score for c in contact_map1])
+        self.assertEqual(
+            [1.0, 0.883, 0.871, 0.847, 0.816, 0.807, 0.806, 0.8, 0.563, 0.561], [c.raw_score for c in contact_map1]
+        )
 
     def test_write_1(self):
         contact_file = ContactFile("RR")
