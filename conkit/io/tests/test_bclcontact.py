@@ -7,10 +7,10 @@ import os
 import unittest
 
 from conkit.io.bclcontact import BCLContactParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestBCLContactParser(unittest.TestCase):
+class TestBCLContactParser(ParserTestCase):
     def test_read_1(self):
         content = """5 I    9 Q 0.000 0.286 0.185 0.836 0.875 0.749
 5 I   10 R 0.000 0.000 0.105 0.875 0.482 0.634
@@ -24,8 +24,7 @@ class TestBCLContactParser(unittest.TestCase):
 6 T   80 I 0.000 0.076 0.003 0.513 0.386 0.578
 6 T   94 Q 0.000 0.068 0.041 0.534 0.489 0.679
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = BCLContactParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -37,9 +36,6 @@ class TestBCLContactParser(unittest.TestCase):
             [0.749, 0.634, 0.727, 0.557, 0.535, 0.585, 0.529, 0.581, 0.679, 0.578, 0.679],
             [c.raw_score for c in contact_map1],
         )
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

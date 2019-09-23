@@ -40,13 +40,13 @@ import numpy as np
 class SubselectionAlgorithm(object):
     """A class to collect all subselection algorithms"""
 
-    @staticmethod
-    def _numpify(data):
+    @classmethod
+    def _numpify(cls, data):
         """Convert a Python array to a :obj:`~numpy.ndarray`"""
         return np.asarray(data)
 
-    @staticmethod
-    def cutoff(data, cutoff=0.287):
+    @classmethod
+    def cutoff(cls, data, cutoff=0.287):
         """A cutoff-defined subselection algorithm
 
         This algorithm removes a decoy, if its score is less
@@ -67,13 +67,13 @@ class SubselectionAlgorithm(object):
            The decoy indices to throw
 
         """
-        data = SubselectionAlgorithm._numpify(data)
+        data = cls._numpify(data)
         keep = np.where(data >= cutoff)[0]
         throw = np.where(data < cutoff)[0]
         return keep.tolist(), throw.tolist()
 
-    @staticmethod
-    def linear(data, cutoff=0.5):
+    @classmethod
+    def linear(cls, data, cutoff=0.5):
         """A linearly-defined subselection algorithm
 
         This algorithm removes the worst ``x``% decoys, where ``x``
@@ -94,14 +94,14 @@ class SubselectionAlgorithm(object):
            The decoy indices to throw
 
         """
-        sorted_indices = SubselectionAlgorithm._numpify(data).argsort()[::-1]
+        sorted_indices = cls._numpify(data).argsort()[::-1]
         pivot = np.ceil(sorted_indices.shape[0] * cutoff).astype(np.int)
         keep = sorted_indices[:pivot]
         throw = sorted_indices[pivot:]
         return keep.tolist(), throw.tolist()
 
-    @staticmethod
-    def scaled(data, cutoff=0.5):
+    @classmethod
+    def scaled(cls, data, cutoff=0.5):
         """A scaling-defined subselection algorithm
 
         This algorithm removes a decoy, if its scaled score
@@ -124,12 +124,12 @@ class SubselectionAlgorithm(object):
            The decoy indices to throw
 
         """
-        data = SubselectionAlgorithm._numpify(data)
+        data = cls._numpify(data)
         data_scaled = data / np.mean(data)
         return SubselectionAlgorithm.cutoff(data_scaled, cutoff=cutoff)
 
-    @staticmethod
-    def ignore(data):
+    @classmethod
+    def ignore(cls, data):
         """"A subselection algorithm to keep all
 
         This algorithm doesn't do anything except mimic others.
@@ -149,8 +149,8 @@ class SubselectionAlgorithm(object):
            The decoy indices to throw
 
         """
-        data = SubselectionAlgorithm._numpify(data)
-        return SubselectionAlgorithm.cutoff(data, cutoff=0)
+        data = cls._numpify(data)
+        return cls.cutoff(data, cutoff=0)
 
 
 SUBSELECTION_ALGORITHMS = [

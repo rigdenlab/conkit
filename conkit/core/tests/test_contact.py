@@ -285,7 +285,7 @@ class TestContact(unittest.TestCase):
         }
         contact_dict = contact._to_dict()
         for k in answer_dict.keys():
-            self.assertEqual(answer_dict[k], contact_dict[k], "Key %s differs" % k)
+            self.assertEqual(answer_dict[k], contact_dict[k], "Key {} differs".format(k))
 
     def test__to_dict_2(self):
         contact = Contact(1, 2, 1.0)
@@ -314,7 +314,7 @@ class TestContact(unittest.TestCase):
         }
         contact_dict = contact._to_dict()
         for k in answer_dict.keys():
-            self.assertEqual(answer_dict[k], contact_dict[k], "Key %s differs" % k)
+            self.assertEqual(answer_dict[k], contact_dict[k], "Key {} differs".format(k))
 
     def test__set_residue_1(self):
         self.assertEqual("A", Contact._set_residue("ALA"))

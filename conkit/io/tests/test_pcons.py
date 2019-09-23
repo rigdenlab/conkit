@@ -10,11 +10,11 @@ from conkit.core.contact import Contact
 from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
+from conkit.io.tests.helpers import ParserTestCase
 from conkit.io.pcons import PconsParser
-from conkit.io._iotools import create_tmp_f
 
 
-class TestPconsParser(unittest.TestCase):
+class TestPconsParser(ParserTestCase):
     def test_read_1(self):
         content = """1 2 0.93514
 1 3 0.67324
@@ -33,8 +33,7 @@ class TestPconsParser(unittest.TestCase):
 1 16 0.01397
 1 17 0.01192
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -64,8 +63,7 @@ Hello WOrld
 1 16 0.01397
 1 17 0.01192
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -109,8 +107,7 @@ Res1 Res2 Score
 
 ##############################################################################
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -158,8 +155,7 @@ Res1 Res2 Score
 
 ##############################################################################
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = PconsParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -189,8 +185,7 @@ Res1 Res2 Score
             contact_map.add(contact)
         contact_map.sequence = Sequence("sequence_1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             PconsParser().write(f_out, contact_file)
         content = [
@@ -217,9 +212,6 @@ Res1 Res2 Score
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

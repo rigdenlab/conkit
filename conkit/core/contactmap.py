@@ -39,6 +39,7 @@ __version__ = "1.0"
 
 import collections
 import numpy as np
+import operator
 import sys
 
 if sys.version_info.major < 3:
@@ -48,7 +49,7 @@ from conkit.core.entity import Entity
 from conkit.core.struct import Gap, Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
 from conkit.core.sequence import Sequence
-from conkit.misc import fAND, fOR, deprecate, normalize
+from conkit.misc import deprecate, normalize
 
 
 class ContactMap(Entity):
@@ -668,7 +669,7 @@ class ContactMap(Entity):
         if isinstance(register, int):
             register = [register]
         register = set(register)
-        comparison_operator = fAND if strict else fOR
+        comparison_operator = operator.and_ if strict else operator.or_
         contact_map = self.deepcopy()
         for contactid in self.as_list(altloc=altloc):
             if not comparison_operator(contactid[0] in register, contactid[1] in register):

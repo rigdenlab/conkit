@@ -7,18 +7,17 @@ import os
 import unittest
 
 from conkit.io.fasta import FastaParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestFastaParser(unittest.TestCase):
+class TestFastaParser(ParserTestCase):
     def test_read_1(self):
         seq = """>00FAF_A <unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA
 SSEHP
 """
-        f_name = create_tmp_f(content=seq)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=seq)
         parser = FastaParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -33,8 +32,7 @@ SSEHP
 >00FAF_A <unknown description>
 GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK
 """
-        f_name = create_tmp_f(content=seq)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=seq)
         parser = FastaParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -56,8 +54,7 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKA
 >seq3
 EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
 """
-        f_name = create_tmp_f(content=msa)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=msa)
         parser = FastaParser()
         with open(f_name, "r") as f_in:
             sequence_file = parser.read(f_in)
@@ -80,10 +77,8 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             "EVHKVQECKQSDIMMRDNLFEIVTTSRTFYVQADSPEEMHSWIKAVSGAIVAQRGPGRSA",
             "SSEHP",
         ]
-        f_name_in = create_tmp_f(content="\n".join(seq))
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
-        self.addCleanup(os.remove, f_name_out)
+        f_name_in = self.tempfile(content="\n".join(seq))
+        f_name_out = self.tempfile()
         parser = FastaParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -98,8 +93,8 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             ">00FAF_A|<unknown description>",
             "GSMFTPKPPQDSAVIKAGYCVKQGAVMKNWKRRYFQLDENTIGYFKSELEKEPLRVIPLK",
         ]
-        f_name_in = create_tmp_f(content="\n".join(seq))
-        f_name_out = create_tmp_f()
+        f_name_in = self.tempfile(content="\n".join(seq))
+        f_name_out = self.tempfile()
         parser = FastaParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -119,10 +114,8 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
             ">seq3",
             "EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF",
         ]
-        f_name_in = create_tmp_f(content="\n".join(msa))
-        self.addCleanup(os.remove, f_name_in)
-        f_name_out = create_tmp_f()
-        self.addCleanup(os.remove, f_name_out)
+        f_name_in = self.tempfile(content="\n".join(msa))
+        f_name_out = self.tempfile()
         parser = FastaParser()
         with open(f_name_in, "r") as f_in, open(f_name_out, "w") as f_out:
             sequence_file = parser.read(f_in)
@@ -130,9 +123,6 @@ EVHKVQECKQSDIMMRDNLFEIVTTSRTFWKRRYFQLDENTIGYF
         with open(f_name_out, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(msa, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

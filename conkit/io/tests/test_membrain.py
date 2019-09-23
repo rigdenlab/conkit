@@ -10,11 +10,11 @@ from conkit.core.contact import Contact
 from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
+from conkit.io.tests.helpers import ParserTestCase
 from conkit.io.membrain import MemBrainParser
-from conkit.io._iotools import create_tmp_f
 
 
-class TestMemBrainParser(unittest.TestCase):
+class TestMemBrainParser(ParserTestCase):
     def test_read_1(self):
         content = """Helix   Position        Residue Helix   Position        Residue Probability
 H1      30      F       H2      55      F       1.000000
@@ -30,8 +30,7 @@ H1      24      I       H2      51      A       0.790044
 H1      19      L       H2      62      G       0.784613
 H1      19      L       H2      55      F       0.782741
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = MemBrainParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -70,8 +69,7 @@ H1      19      L       H2      55      F       0.782741
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             MemBrainParser().write(f_out, contact_file)
         content = [
@@ -84,9 +82,6 @@ H1      19      L       H2      55      F       0.782741
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":

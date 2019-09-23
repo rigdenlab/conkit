@@ -8,10 +8,10 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.contactmap import ContactMap
 from conkit.core.sequence import Sequence
 from conkit.io.aleigen import AleigenParser
-from conkit.io._iotools import create_tmp_f
+from conkit.io.tests.helpers import ParserTestCase
 
 
-class TestAleigenParser(unittest.TestCase):
+class TestAleigenParser(ParserTestCase):
     def test_read_1(self):
         content = """77
 10 14
@@ -25,8 +25,7 @@ class TestAleigenParser(unittest.TestCase):
 21 68
 38 57
 """
-        f_name = create_tmp_f(content=content)
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile(content=content)
         with open(f_name, "r") as f_in:
             contact_file = AleigenParser().read(f_in)
         contact_map1 = contact_file.top_map
@@ -49,17 +48,13 @@ class TestAleigenParser(unittest.TestCase):
             contact_map.add(contact)
         contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
         contact_map.set_sequence_register()
-        f_name = create_tmp_f()
-        self.addCleanup(os.remove, f_name)
+        f_name = self.tempfile()
         with open(f_name, "w") as f_out:
             AleigenParser().write(f_out, contact_file)
         content = ["12", "1 9", "1 10", "2 8", "3 12"]
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
-
-    def tearDown(self):
-        self.doCleanups()
 
 
 if __name__ == "__main__":
