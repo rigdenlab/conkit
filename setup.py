@@ -5,17 +5,15 @@ from distutils.util import convert_path
 from setuptools import setup, Extension
 
 import os
+import subprocess
 import sys
 
+# Ensure we have these dependencies before we proceed
 SETUPREQUIRES = ['cython >=0.28.2', 'scipy >=0.13.3', 'numpy >=1.8.2', 'pytest-runner ==5.1', 'configparser>=3.5;python_version<"3"']
+subprocess.check_call(['pip', 'install'] + SETUPREQUIRES)
 
-# Credits to https://github.com/pytest-dev/pytest-xdist/issues/136#issuecomment-293029492
-try:
-    from pip._internal import main as pip_main
-    pip_main(['install'] + SETUPREQUIRES)
-    SETUPREQUIRES = []
-except Exception:
-    pass
+SETUPREQUIRES = []
+
 
 from Cython.Distutils import build_ext
 import numpy
