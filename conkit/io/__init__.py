@@ -77,6 +77,9 @@ def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_o
     ...     io.convert(f_in, 'pconsc3', f_out, 'casprr'))
 
     """
+
+    # TODO if formats are in different lists
+
     if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:

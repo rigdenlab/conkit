@@ -1,52 +1,33 @@
-class MempredFile(object):
-
-    """Class to contain TM prediction data from a file"""
-
-    def __init__(self):
-        self._fname = None
-        self._membrane_pred_list = None
-
-    @property
-    def membrane_pred_list(self):
-        return self._membrane_pred_list
-
-    @membrane_pred_list.setter
-    def membrane_pred_list(self, value):
-        self._membrane_pred_list = value
-
-    @property
-    def fname(self):
-        return self._fname
-
-    @fname.setter
-    def fname(self, value):
-        self._fname = value
+from conkit.io._parser import PredictionFileParser
+from conkit.core.predictionfile import PredictionFile
+from conkit.core.predres import ResiduePrediction
 
 
-class TopconsParser(object):
+class TopconsParser(PredictionFileParser):
     """Class for parsing topcons files."""
 
-    def __init__(self):
-        """Initialise an instance of the topconsParser."""
-        pass
 
-    @staticmethod
-    def read(fname):
+    def read(self, f_handle, f_id="topcons"):
         """Return topcons prediction instance."""
 
-        with open(fname, 'r') as file:
-            topcons = file.readlines()
-
-        topcons_index = topcons.index('TOPCONS predicted topology:\n')
-        membrane_pred = topcons[topcons_index + 1]
+        hierarchy = PredictionFile(f_id)
+        topcons_prediction_file = list(f_handle)
+        topcons_index = topcons_prediction_file.index('TOPCONS predicted topology:\n')
+        membrane_pred = topcons_prediction_file[topcons_index + 1]
         membrane_pred_list = []
+
         for x in membrane_pred:
             membrane_pred_list.append(x)
         membrane_pred_list.remove('\n')
-        hierarchy = MempredFile()
-        hierarchy.fname = fname
-        hierarchy.membrane_pred_list = membrane_pred_list
+
+        for idx, x in enumerate(membrane_pred_list):
+            residue = ResiduePrediction(str(idx + 1))
+            residue.membrane_prediction = x
+
+            hierarchy.add(residue)
+
         return hierarchy
+
 
     @staticmethod
     def write(self):
@@ -55,8 +36,12 @@ class TopconsParser(object):
 
 if __name__ == '__main__':
 
-    topcons_prediction = TopconsParser().read('/Users/shahrammesdaghi/cmap_plus/query.result.txt')
-    print(topcons_prediction.membrane_pred_list)
+    import conkit.io
+    mem_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', "topcons")
+    for residue in mem_prediction:
+        #print(residue.res_seq)
+        print(residue.membrane_prediction)
+        #print(residue.id)
 
 
 

@@ -1,58 +1,37 @@
+from conkit.io._parser import PredictionFileParser
+from conkit.core.predictionfile import PredictionFile
+from conkit.core.predres import ResiduePrediction
 import pandas as pd
 
-
-class SspredFile(object):
-
-    """Class to contain SS prediction data from a file"""
-
-    def __init__(self):
-        self._fname = None
-        self._df = None
-
-    @property
-    def df(self):
-        return self._df
-
-    @df.setter
-    def df(self, value):
-        self._df = value
-
-    @property
-    def fname(self):
-        return self._fname
-
-    @fname.setter
-    def fname(self, value):
-        self._fname = value
-
-    def __getitem__(self, item):
-        return self.df[item].tolist()
-
-
-class PsipredParser(object):
+class PsipredParser(PredictionFileParser):
 
     """Class for parsing psipred files."""
 
-    def __init__(self):
-
-        """Initialise an instance of the psipredParser."""
-
-        pass
-
-    @staticmethod
-    def read(fname):
+    def read(self, f_handle, f_id="psipred"):
         """Return psipred prediction instance."""
 
+        hierarchy = PredictionFile(f_id)
+
         ss = [[]]
-        with open(fname, 'r') as file:
-            for line in file:
-                line = line.split()
-                ss.append(line)
+
+        for line in f_handle:
+            line = line.split()
+            ss.append(line)
         del ss[0:3]
-        hierarchy = SspredFile()
-        hierarchy.fname = fname
-        hierarchy.df = pd.DataFrame(ss, columns=['position', 'aa', 'prediction', '1', '2', '3'])
+
+        df = pd.DataFrame(ss, columns=['position', 'aa', 'prediction', '1', '2', '3'])
+
+        ss_pred = df['prediction'].tolist()
+
+
+        for idx, x in enumerate(ss_pred):
+            residue = ResiduePrediction(str(idx + 1))
+            residue.ss2_prediction = x
+
+            hierarchy.add(residue)
+
         return hierarchy
+
 
     @staticmethod
     def write(fname):
@@ -61,11 +40,19 @@ class PsipredParser(object):
 
 if __name__ == '__main__':
 
-    ss_prediction = PsipredParser().read('/Users/shahrammesdaghi/cmap_plus/w9dy28.ss2')
-    for pred in ss_prediction["prediction"]:
-        print(pred)
-    for aa in ss_prediction["aa"]:
-        print(aa)
+    import conkit.io
+
+    ss_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.ss2', "psipred")
+    for residue in ss_prediction:
+        print(residue.res_seq)
+        print(residue.ss2_prediction)
+        print(residue.id)
+
+
+    # res_name = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.ss2', "psipred")
+    # for residue in res_name:
+    #     print(residue.residue_name)
+
 
 
 

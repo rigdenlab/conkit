@@ -1,75 +1,59 @@
-class ConsurfFile(object):
-
-    """Class to contain consurf data from a file"""
-
-    def __init__(self):
-        self._fname = None
-        self._con_score = None
-
-    @property
-    def con_score(self):
-        return self._con_score
-
-    @con_score.setter
-    def con_score(self, value):
-        self._con_score = value
-
-    @property
-    def fname(self):
-        return self._fname
-
-    @fname.setter
-    def fname(self, value):
-        self._fname = value
+from conkit.io._parser import PredictionFileParser
+from conkit.core.predictionfile import PredictionFile
+from conkit.core.predres import ResiduePrediction
 
 
-class ConsurfParser(object):
+class ConsurfParser(PredictionFileParser):
     """Class for parsing consurf files."""
 
-    def __init__(self):
-
-        """Initialise an instance of the psipredParser."""
-
-        pass
-
-    @staticmethod
-    def read(fname):
+    def read(self, f_handle, f_id="consurf"):
         """Return consurf conservation scores instance."""
 
-        consurf = []
-        with open(fname, 'r') as file:
-            for line in file:
+        hierarchy = PredictionFile(f_id)
+
+        tmp_list = []
+
+        # TODO This could be done in one loop
+
+        for line in f_handle:
                 line = line.split()
                 try:
                     test = line[0]
                     if test.isnumeric():
-                        consurf.append(line)
+                        tmp_list.append(line)
+                # TODO Catch exeption with if instead
                 except:
                     continue
 
-        con_score = []
-        for x in consurf:
+        for idx, x in enumerate(tmp_list):
             # allows both types of consurf output to be parsed
             try:
-                x = x[3].replace('*','')
+                x = x[3].replace('*', '')
                 x = int(x)
             except:
                 x = x[4].replace('*', '')
                 x = int(x)
-            con_score.append(x)
 
+            residue = ResiduePrediction(str(idx+1))
+            residue.conservation_score = x
 
-        hierarchy = ConsurfFile()
-        hierarchy.fname = fname
-        hierarchy.con_score = con_score
+            hierarchy.add(residue)
+
         return hierarchy
 
-    @staticmethod
     def write(self):
+
         raise NotImplementedError('This is not implemented!')
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    consurf_prediction = ConsurfParser().read('/Users/shahrammesdaghi/cmap_plus/consurf.grades')
-    print(consurf_prediction.con_score)
+    import conkit.io
+
+    conservation_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/consurf.grades', "consurf")
+
+
+    for residue in conservation_prediction:
+        #print(residue.res_seq)
+        print(residue.conservation_score)
+        #print(residue.id)

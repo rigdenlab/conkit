@@ -70,3 +70,19 @@ def SequenceFile(*args, **kwargs):
     from conkit.core.sequencefile import SequenceFile
 
     return SequenceFile(*args, **kwargs)
+
+################################added 251119########
+
+
+def PredRes(*args, **kwargs):
+    """:obj:`ResiduePrediction <conkit.core.ResiduePrediction.ResiduePrediction>` instance"""
+    from conkit.core.predres import ResiduePrediction
+
+    return ResiduePrediction(*args, **kwargs)
+
+
+def PredictionFile(*args, **kwargs):
+    """:obj:`PredictionFile <conkit.core.PredictionFile.PredictionFile>` instance"""
+    from conkit.core.predictionfile import PredictionFile
+
+    return PredictionFile(*args, **kwargs)

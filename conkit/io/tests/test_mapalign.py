@@ -1,6 +1,5 @@
 """Testing facility for conkit.io.map_align"""
 
-import os
 import unittest
 
 from conkit.core.contact import Contact
