@@ -13,27 +13,19 @@ class ConsurfParser(PredictionFileParser):
 
         tmp_list = []
 
-        # TODO This could be done in one loop
-
         for line in f_handle:
                 line = line.split()
                 try:
                     test = line[0]
                     if test.isnumeric():
                         tmp_list.append(line)
-                # TODO Catch exeption with if instead
-                except:
-                    continue
+                except Exception as e:
+                    if str(e) == 'list index out of range':
+                        continue
 
         for idx, x in enumerate(tmp_list):
-            # allows both types of consurf output to be parsed
-            try:
-                x = x[3].replace('*', '')
-                x = int(x)
-            except:
-                x = x[4].replace('*', '')
-                x = int(x)
-
+            x = x[3].replace('*', '')
+            x = int(x)
             residue = ResiduePrediction(str(idx+1))
             residue.conservation_score = x
 

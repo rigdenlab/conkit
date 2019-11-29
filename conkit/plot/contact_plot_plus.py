@@ -84,20 +84,20 @@ class ContactPlotPlus(Figure):
             sequence_for_pred.append(x)
             position.append(indx+1)
 
+
         #create df to hold predictions and seq
         data = pd.DataFrame({'position': position,
                             'aa': sequence_for_pred})
+
+
 
         # plot membrane prediction data if present
         if self.mem_pred != None:
             mem_pred = self.mem_pred
             membrane_pred_list = []
-            #position = []
             for x in mem_pred:
                 membrane_pred_list.append(x.membrane_prediction)
-                #position.append(x.res_seq)
 
-            #data['position'] = position
             data['mem_pred'] = membrane_pred_list
             zeros = [0] * len(membrane_pred_list)
             data['zeros'] = zeros
@@ -184,6 +184,8 @@ class ContactPlotPlus(Figure):
             for x in con_pred:
                 cons_score.append(x.conservation_score)
 
+            print(cons_score)
+
             data['consurf_pred'] = cons_score
 
             consurf_values = list(range(1, 10))
@@ -220,7 +222,7 @@ class ContactPlotPlus(Figure):
             y_d = []
             for x in x_d:
                 x = int(
-                    x) - 3  #############################adjust depending on size of prot eg 168 aa -3, 404 aa =7, 236=5
+                    x) - 3
                 y_d.append(x)
 
             data_not_disorder = data.loc[(data.disorder_pred < 0.5)]
@@ -228,7 +230,7 @@ class ContactPlotPlus(Figure):
             y_not_dis = []
             for x in x_not_dis:
                 x = int(
-                    x) - 3  #############################adjust depending on size of prot eg 168 aa -3, 404 aa =7, 236=5
+                    x) - 3
                 y_not_dis.append(x)
 
             x_d = x_d
@@ -261,7 +263,7 @@ if __name__ == '__main__':
     conpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28_meta_respre.evfold', 'evfold').top
     seq = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.fasta', 'fasta').top
     ss_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.ss2', 'psipred')
-    con_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/consurf.grades', 'consurf')
+    con_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/consurf.grades.txt', 'consurf')
     mem_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', 'topcons')
     dis_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/iupred2a.txt', 'iupred2a')
 
