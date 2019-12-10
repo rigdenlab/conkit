@@ -1,5 +1,5 @@
 from conkit.core.entity import Entity
-import numpy as np
+
 
 
 class ResiduePrediction(Entity):
@@ -16,10 +16,10 @@ class ResiduePrediction(Entity):
 
         self.res_seq = res_seq
 
-        self._conservation_score = np.nan
-        self._ss2_prediction = np.nan
-        self._membrane_prediction = np.nan
-        self._disorder_prediction = np.nan
+        self._conservation_score = None
+        self._ss2_prediction = None
+        self._membrane_prediction = None
+        self._disorder_prediction = None
 
         super(ResiduePrediction, self).__init__(res_seq)
 

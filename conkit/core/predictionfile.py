@@ -7,9 +7,6 @@ class PredictionFile(Entity):
     """Class to contain residue prediction data"""
 
     def __init__(self, id):
-
-        self._method = []
-        self._remark = []
         super(PredictionFile, self).__init__(id)
 
     def __repr__(self):

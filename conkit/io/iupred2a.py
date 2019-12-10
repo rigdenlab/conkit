@@ -1,8 +1,6 @@
 from conkit.io._parser import PredictionFileParser
 from conkit.core.predictionfile import PredictionFile
-from conkit.core.predres import ResiduePrediction
-import pandas as pd
-
+from conkit.core.residueprediction import ResiduePrediction
 
 class iupred2aParser(PredictionFileParser):
     """Class for parsing iupred2a files."""
@@ -12,28 +10,20 @@ class iupred2aParser(PredictionFileParser):
 
         hierarchy = PredictionFile(f_id)
 
-        iupred_data = pd.read_csv(f_handle, sep='\t', comment='#', skip_blank_lines=True, header=None)
-        iupred2a = iupred_data[2].tolist()
-
-        for idx, x in enumerate(iupred2a):
-            residue = ResiduePrediction(str(idx + 1))
-            residue.disorder_prediction = x
-
-            hierarchy.add(residue)
+        for line in f_handle:
+            line = line.split()
+            if len(line) >= 1:
+                residue_position = line[0]
+                if residue_position.isnumeric():
+                    disorder_score = line[2]
+                    residue = ResiduePrediction(residue_position)
+                    residue.disorder_prediction = float(disorder_score)
+                    hierarchy.add(residue)
 
         return hierarchy
 
     @staticmethod
     def write(self):
-        raise NotImplementedError('This is not implemented!')
+        raise NotImplementedError('Conkit does not support iupred2a writing!')
 
 
-if __name__ == '__main__':
-
-    import conkit.io
-
-    disorder_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/iupred2a.txt', "iupred2a")
-    for residue in disorder_prediction:
-        # print(residue.res_seq)
-        print(residue.disorder_prediction)
-        # print(residue.id)

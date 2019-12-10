@@ -8,16 +8,16 @@ from bokeh.models import ColumnDataSource
 
 class ContactPlotPlusFigure(Figure):
 
-    def __init__(self, seq, conpred, ss_prediction=None,
-                 con_pred=None, mem_pred = None, dis_pred=None,
+    def __init__(self, seq, conpred, sspred=None,
+                 conservationpred=None, mempred = None, dispred=None,
                  data=None, dfObj=None):
 
         self.conpred = conpred
         self.seq = seq
-        self.ss_prediction = ss_prediction
-        self.con_pred = con_pred
-        self.mem_pred = mem_pred
-        self.dis_pred = dis_pred
+        self.sspred = sspred
+        self.conservationpred = conservationpred
+        self.mempred = mempred
+        self.dispred = dispred
         self.data = data
         self.dfObj = dfObj
 
@@ -58,10 +58,8 @@ class ContactPlotPlusFigure(Figure):
         # create df to hold predictions and seq & positions
         data = pd.DataFrame({'position': position, 'aa': sequence_for_pred})
 
-
-        #TODO this can be done as a static method?????
-        predictions  = {self.ss_prediction:'ss2_prediction', self.con_pred:'conservation_score',
-                        self.mem_pred:'membrane_prediction', self.dis_pred:'disorder_prediction'}
+        predictions  = {self.sspred:'ss2_prediction', self.conservationpred:'conservation_score',
+                        self.mempred:'membrane_prediction', self.dispred:'disorder_prediction'}
 
         for key, value in predictions.items():
             if key != None:
@@ -74,7 +72,7 @@ class ContactPlotPlusFigure(Figure):
         return data
 
 
-    def plot_plus(self):
+    def plot(self):
 
         #plot contact data
         dfObj = self.contact_data()
@@ -97,7 +95,7 @@ class ContactPlotPlusFigure(Figure):
         data = self.data_frame_maker()
 
         #plot mem prediction
-        if self.mem_pred != None:
+        if self.mempred != None:
             data_i = data.loc[(data.membrane_prediction == 'i')]
             xy_i = data_i['position'].tolist()
             data_m = data.loc[(data.membrane_prediction == 'M')]
@@ -117,7 +115,7 @@ class ContactPlotPlusFigure(Figure):
             p4 = p.circle(x_o, y_o, color='yellow', size=10)
 
         #plot ss prediction
-        if self.ss_prediction != None:
+        if self.sspred != None:
             #create a seperate data set for each ss classification
             data_h = data.loc[(data.ss2_prediction == 'H')]
             xy_h = data_h['position'].tolist()
@@ -190,7 +188,7 @@ class ContactPlotPlusFigure(Figure):
                                                             ('Properties', '@aa_properties')]))
 
         # plot consurf values
-        if self.con_pred != None:
+        if self.conservationpred != None:
             consurf_values = list(range(1, 10))
 
             x_dct = {}
@@ -211,7 +209,7 @@ class ContactPlotPlusFigure(Figure):
                 p.triangle(x_dct[x], y_dct[x], size=5, color=Blues[x])
 
         # plot disorder prediction
-        if self.dis_pred != None:
+        if self.dispred != None:
             data_disorder = data.loc[(data.disorder_prediction >= 0.5)]
             x_d = data_disorder['position'].tolist()
             y_d = []
@@ -256,23 +254,6 @@ class ContactPlotPlusFigure(Figure):
         #return output
 
 
-if __name__ == '__main__':
-
-    import conkit.io
-
-    conpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28_meta_respre.evfold', 'evfold').top
-    seq = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.fasta', 'fasta').top
-    ss_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.ss2', 'psipred')
-    con_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/consurf.grades.txt', 'consurf')
-    mem_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', 'topcons')
-    dis_pred = conkit.io.read('/Users/shahrammesdaghi/Downloads/iupred2a.txt', 'iupred2a')
-
-    #test_plot = ContactPlotPlusFigure(seq, conpred, ss_prediction, con_pred, mem_pred, dis_pred)
-    #test_plot.plot_plus()
-
-    test_plot_2 = conkit.plot.ContactPlotPlusFigure(seq=seq, conpred=conpred, con_pred=con_pred,
-                                                    mem_pred=mem_pred, dis_pred=dis_pred, ss_prediction=ss_prediction)
-    test_plot_2.plot_plus()
 
 
 

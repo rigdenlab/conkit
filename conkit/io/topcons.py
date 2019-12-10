@@ -1,6 +1,6 @@
 from conkit.io._parser import PredictionFileParser
 from conkit.core.predictionfile import PredictionFile
-from conkit.core.predres import ResiduePrediction
+from conkit.core.residueprediction import ResiduePrediction
 
 
 class TopconsParser(PredictionFileParser):
@@ -11,14 +11,10 @@ class TopconsParser(PredictionFileParser):
         """Return topcons prediction instance."""
 
         hierarchy = PredictionFile(f_id)
-        topcons_prediction_file = list(f_handle)
-        topcons_index = topcons_prediction_file.index('TOPCONS predicted topology:\n')
-        membrane_pred = topcons_prediction_file[topcons_index + 1]
-        membrane_pred_list = []
 
-        for x in membrane_pred:
-            membrane_pred_list.append(x)
-        membrane_pred_list.remove('\n')
+        lines = f_handle.readlines()
+        membrane_pred = lines[lines.index('TOPCONS predicted topology:\n') + 1]
+        membrane_pred_list = list(membrane_pred.rstrip())
 
         for idx, x in enumerate(membrane_pred_list):
             residue = ResiduePrediction(str(idx + 1))
@@ -31,17 +27,9 @@ class TopconsParser(PredictionFileParser):
 
     @staticmethod
     def write(self):
-        raise NotImplementedError('This is not implemented!')
+        raise NotImplementedError('Conkit does not support topcons writing!')
 
 
-if __name__ == '__main__':
-
-    import conkit.io
-    mem_prediction = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', "topcons")
-    for residue in mem_prediction:
-        #print(residue.res_seq)
-        print(residue.membrane_prediction)
-        #print(residue.id)
 
 
 
