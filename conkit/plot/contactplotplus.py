@@ -254,6 +254,22 @@ class ContactPlotPlusFigure(Figure):
         #return output
 
 
+if __name__ == '__main__':
 
+    import conkit.io
+
+    conpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28_meta_respre.evfold', 'evfold').top
+    seq = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.fasta', 'fasta').top
+    sspred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.ss2', 'psipred')
+    conservationpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/consurf.grades.txt', 'consurf')
+    mempred = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', 'topcons')
+    dispred = conkit.io.read('/Users/shahrammesdaghi/Downloads/iupred2a.txt', 'iupred2a')
+
+    #test_plot = ContactPlotPlusFigure(seq, conpred, ss_prediction, con_pred, mem_pred, dis_pred)
+    #test_plot.plot_plus()
+
+    test_plot_2 = conkit.plot.ContactPlotPlusFigure(seq=seq, conpred=conpred, conservationpred=conservationpred,
+                                                    mempred=mempred, dispred=dispred, sspred=sspred)
+    test_plot_2.plot()
 
 

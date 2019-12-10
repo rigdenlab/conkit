@@ -13,13 +13,11 @@ class ConsurfParser(PredictionFileParser):
 
         for line in f_handle:
             line = line.split()
-            if len(line) >= 1:
-                residue_position = line[0]
-                if residue_position.isnumeric():
-                    conservation_score = int(line[3].replace('*', ''))
-                    residue = ResiduePrediction(residue_position)
-                    residue.conservation_score = conservation_score
-                    hierarchy.add(residue)
+            if len(line) >= 1 and line[0].isnumeric():
+                conservation_score = int(line[3].replace('*', ''))
+                residue = ResiduePrediction(line[0])
+                residue.conservation_score = conservation_score
+                hierarchy.add(residue)
 
         return hierarchy
 

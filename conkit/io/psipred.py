@@ -13,13 +13,11 @@ class PsipredParser(PredictionFileParser):
 
         for line in f_handle:
             line = line.split()
-            if len(line) >= 1:
-                residue_position = line[0]
-                if residue_position.isnumeric():
-                    ss2_prediction = line[2]
-                    residue = ResiduePrediction(residue_position)
-                    residue.ss2_prediction = ss2_prediction
-                    hierarchy.add(residue)
+            if len(line) >= 1 and line[0].isnumeric():
+                ss2_prediction = line[2]
+                residue = ResiduePrediction(line[0])
+                residue.ss2_prediction = ss2_prediction
+                hierarchy.add(residue)
 
         return hierarchy
 
@@ -27,7 +25,6 @@ class PsipredParser(PredictionFileParser):
     @staticmethod
     def write(fname):
         raise NotImplementedError('Conkit does not support psipred writing!')
-
 
 
 
