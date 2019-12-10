@@ -13,9 +13,8 @@ class iupred2aParser(PredictionFileParser):
         for line in f_handle:
             line = line.split()
             if len(line) >= 1 and line[0].isnumeric():
-                disorder_score = line[2]
                 residue = ResiduePrediction(line[0])
-                residue.disorder_prediction = float(disorder_score)
+                residue.disorder_prediction = float(line[2])
                 hierarchy.add(residue)
 
         return hierarchy

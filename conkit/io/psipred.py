@@ -14,9 +14,8 @@ class PsipredParser(PredictionFileParser):
         for line in f_handle:
             line = line.split()
             if len(line) >= 1 and line[0].isnumeric():
-                ss2_prediction = line[2]
                 residue = ResiduePrediction(line[0])
-                residue.ss2_prediction = ss2_prediction
+                residue.ss2_prediction = line[2]
                 hierarchy.add(residue)
 
         return hierarchy
