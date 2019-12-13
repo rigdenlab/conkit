@@ -19,6 +19,9 @@ class TopconsParser(PredictionFileParser):
         for idx, x in enumerate(membrane_pred_list):
             residue = ResiduePrediction(str(idx + 1))
             residue.membrane_prediction = x
+            # if x == 'i':
+            #     residue.x_i = idx + 1
+
 
             hierarchy.add(residue)
 

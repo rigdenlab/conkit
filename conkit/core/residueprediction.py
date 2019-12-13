@@ -10,6 +10,7 @@ class ResiduePrediction(Entity):
         "_membrane_prediction",
         "_disorder_prediction",
         "res_seq"
+        #"_x_i"
     ]
 
     def __init__(self, res_seq):
@@ -20,6 +21,8 @@ class ResiduePrediction(Entity):
         self._ss2_prediction = None
         self._membrane_prediction = None
         self._disorder_prediction = None
+
+        #self._x_i = None
 
         super(ResiduePrediction, self).__init__(res_seq)
 
@@ -56,3 +59,11 @@ class ResiduePrediction(Entity):
     def disorder_prediction(self, value):
         self._disorder_prediction = value
 
+    # @property
+    # def x_i(self):
+    #     return self._x_i
+    #
+    # @x_i.setter
+    # def x_i(self, value):
+    #     self._x_i = value
+    #

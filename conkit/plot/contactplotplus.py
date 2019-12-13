@@ -1,5 +1,4 @@
 from conkit.plot.figure import Figure
-import pandas as pd
 from bokeh.plotting import figure, show, output_file
 from bokeh.models import Range1d, Legend
 from bokeh.models.tools import HoverTool
@@ -9,8 +8,7 @@ from bokeh.models import ColumnDataSource
 class ContactPlotPlusFigure(Figure):
 
     def __init__(self, seq, conpred, sspred=None,
-                 conservationpred=None, mempred = None, dispred=None,
-                 data=None, dfObj=None):
+                 conservationpred=None, mempred = None, dispred=None):
 
         self.conpred = conpred
         self.seq = seq
@@ -18,11 +16,19 @@ class ContactPlotPlusFigure(Figure):
         self.conservationpred = conservationpred
         self.mempred = mempred
         self.dispred = dispred
-        self.data = data
-        self.dfObj = dfObj
 
 
-    def contact_data(self):
+    def plot(self):
+        #plot contact data
+        id = []
+        res1 = []
+        res1_chain = []
+        res1_seq = []
+        res2 = []
+        res2_chain = []
+        res2_seq = []
+        raw_score = []
+
         # Assign the sequence register to your contact prediction
         self.conpred.sequence = self.seq
         self.conpred.set_sequence_register()
@@ -34,53 +40,23 @@ class ContactPlotPlusFigure(Figure):
         # plot top-L only so slice the contact cmap
         cmap = self.conpred[:self.conpred.sequence.seq_len]
 
-        # place contact and seq data into df
-        dfObj = pd.DataFrame(
-            columns=['id', 'res1', 'res1_chain', 'res1_seq', 'res2', 'res2_chain', 'res2_seq', 'raw_score'])
-
         for x in cmap:
-            dfObj = dfObj.append({'id': x.id, 'res1': x.res1, 'res1_chain': x.res1_chain, 'res1_seq': x.res1_seq,
-                                  'res2': x.res2, 'res2_chain': x.res2_chain, 'res2_seq': x.res2_seq,
-                                  'raw_score': x.raw_score}, ignore_index=True)
+            id.append(x.id)
+            res1.append(x.res1)
+            res1_chain.append(x.res1_chain)
+            res1_seq.append(x.res1_seq)
+            res2.append(x.res2)
+            res2_chain.append(x.res2_chain)
+            res2_seq.append(x.res2_seq)
+            raw_score.append(x.raw_score)
 
-        return dfObj
+        source = ColumnDataSource(data=dict(id=id, res1=res1, res1_chain=res1_chain,res1_seq=res1_seq,
+                                            res2=res2, res2_chain=res2_chain,res2_seq=res2_seq, raw_score=raw_score))
 
-
-    def data_frame_maker(self):
-        # create residue list from seq object
-        sequence = self.seq
-        sequence_for_pred = []
-        position = []
-        for indx, x in enumerate(sequence.seq):
-            sequence_for_pred.append(x)
-            position.append(indx + 1)
-
-        # create df to hold predictions and seq & positions
-        data = pd.DataFrame({'position': position, 'aa': sequence_for_pred})
-
-        predictions  = {self.sspred:'ss2_prediction', self.conservationpred:'conservation_score',
-                        self.mempred:'membrane_prediction', self.dispred:'disorder_prediction'}
-
-        for key, value in predictions.items():
-            if key != None:
-                temp = key
-                temp_pred_list = []
-                for y in temp:
-                    temp_pred_list.append(getattr(y, value))
-                data[value] = temp_pred_list
-
-        return data
-
-
-    def plot(self):
-
-        #plot contact data
-        dfObj = self.contact_data()
-        source = ColumnDataSource(dfObj)
-        p = figure(x_range=Range1d(0, len(dfObj)), y_range=Range1d(0, len(dfObj)),
-                   tools=['pan', 'wheel_zoom', 'box_zoom', 'reset', 'save']
-                   , toolbar_location="above",
+        p = figure(x_range=Range1d(0, len(cmap)), y_range=Range1d(0, len(cmap)),
+                   tools=['pan', 'wheel_zoom', 'box_zoom', 'reset', 'save'] , toolbar_location="above",
                    plot_height=575, plot_width=700)
+
         p1 = p.circle(x='res1_seq', y='res2_seq', size=3, color='black', source=source)
         p.add_tools(HoverTool(renderers=[p1], tooltips=[('Contact', '@id'), ('res1', '@res1'), ('res2', '@res2'),
                                                         ('confidence', '@raw_score')]))
@@ -92,23 +68,25 @@ class ContactPlotPlusFigure(Figure):
         p2 = p3 = p4 = p5 = p6 = p7 = p8 = p9 = None
 
         #grap prediction data
-        data = self.data_frame_maker()
 
         #plot mem prediction
         if self.mempred != None:
-            data_i = data.loc[(data.membrane_prediction == 'i')]
-            xy_i = data_i['position'].tolist()
-            data_m = data.loc[(data.membrane_prediction == 'M')]
-            xy_m = data_m['position'].tolist()
-            data_o = data.loc[(data.membrane_prediction == 'o')]
-            xy_o = data_o['position'].tolist()
+            x_i = []
+            x_m = []
+            x_o = []
 
-            x_i = xy_i
-            y_i = xy_i
-            x_m = xy_m
-            y_m = xy_m
-            x_o = xy_o
-            y_o = xy_o
+            for position, residue in enumerate(self.mempred):
+                if residue.membrane_prediction == 'i':
+                    #x_i.append(residue.x_i)
+                    x_i.append(position + 1)
+                elif residue.membrane_prediction == 'M':
+                    x_m.append(position + 1)
+                elif residue.membrane_prediction == 'o':
+                    x_o.append(position + 1)
+
+            y_i = x_i
+            y_m = x_m
+            y_o = x_o
 
             p2 = p.circle(x_i, y_i, size=10, color='green')
             p3 = p.circle(x_m, y_m, color='red', size=10)
@@ -116,16 +94,34 @@ class ContactPlotPlusFigure(Figure):
 
         #plot ss prediction
         if self.sspred != None:
-            #create a seperate data set for each ss classification
-            data_h = data.loc[(data.ss2_prediction == 'H')]
-            xy_h = data_h['position'].tolist()
-            xy_h_aa_name = data_h['aa'].tolist()
-            data_c = data.loc[(data.ss2_prediction == 'C')]
-            xy_c = data_c['position'].tolist()
-            xy_c_aa_name = data_c['aa'].tolist()
-            data_e = data.loc[(data.ss2_prediction == 'E')]
-            xy_e = data_e['position'].tolist()
-            xy_e_aa_name = data_e['aa'].tolist()
+            sequence = self.seq
+            sequence_for_pred = []
+            for indx, x in enumerate(sequence.seq):
+                sequence_for_pred.append(x)
+
+            xy_h = []
+            xy_h_aa_name = []
+            xy_c = []
+            xy_c_aa_name = []
+            xy_e = []
+            xy_e_aa_name = []
+
+            for position, residue in enumerate(self.sspred):
+                if residue.ss2_prediction == 'H':
+                    xy_h.append(position + 1)
+                    for seq_position, aa in enumerate(sequence.seq):
+                        if position == seq_position:
+                            xy_h_aa_name.append(aa)
+                elif residue.ss2_prediction == 'C':
+                    xy_c.append(position + 1)
+                    for seq_position, aa in enumerate(sequence.seq):
+                        if position == seq_position:
+                            xy_c_aa_name.append(aa)
+                elif residue.ss2_prediction == 'E':  #todo CHECK!!
+                    xy_e.append(position + 1)
+                    for seq_position, aa in enumerate(sequence.seq):
+                        if position == seq_position:
+                            xy_e_aa_name.append(aa)
 
             # initialise aa property dictionary
             aa_properites = {'A': 'Non-polar, aliphatic',
@@ -171,7 +167,6 @@ class ContactPlotPlusFigure(Figure):
                     if x == y:
                         e_aa_properies.append(aa_properites[y])
 
-
             #plot ss on to the contact plot with residue properties
             source2 = ColumnDataSource(data=dict(x=xy_h, y=xy_h, aa_name=xy_h_aa_name, aa_properties=h_aa_properies))
             source3 = ColumnDataSource(data=dict(x=xy_c, y=xy_c, aa_name=xy_c_aa_name, aa_properties=c_aa_properies))
@@ -192,15 +187,20 @@ class ContactPlotPlusFigure(Figure):
             consurf_values = list(range(1, 10))
 
             x_dct = {}
-            for x in consurf_values:
-                conserved_aa = data.loc[(data.conservation_score == x)]
-                x_dct[x] = conserved_aa['position'].tolist()
-
             y_dct = {}
-            for y in consurf_values:
-                conserved_aa = data.loc[(data.conservation_score == y)]
-                y_dct[y] = conserved_aa['position'].tolist()
-                y_dct[y] = [int(x) + 3 for x in y_dct[y]]
+            conserved_scores = []
+
+            for x in self.conservationpred:
+                conserved_scores.append(x.conservation_score)
+
+            for score in consurf_values:
+                temp = []
+                for position, prediction in enumerate(conserved_scores):
+                    if score == prediction:
+                        temp.append(position+1)
+                x_dct[score] = temp
+                y_dct[score] = temp
+                y_dct[score] = [int(x) + 3 for x in y_dct[score]]
 
             Blues = {1: '#f7fbff', 2: '#deebf7', 3: '#c6dbef', 4: '#9ecae1', 5: '#6baed6', 6: '#4292c6',
                          7: '#2171b5', 8: '#08519c', 9: '#08306b'}
@@ -210,24 +210,19 @@ class ContactPlotPlusFigure(Figure):
 
         # plot disorder prediction
         if self.dispred != None:
-            data_disorder = data.loc[(data.disorder_prediction >= 0.5)]
-            x_d = data_disorder['position'].tolist()
+
+            x_d = []
             y_d = []
-            for x in x_d:
-                x = int(x) - 3
-                y_d.append(x)
+            x_nd = []
+            y_nd = []
 
-            data_not_disorder = data.loc[(data.disorder_prediction < 0.5)]
-            x_not_dis = data_not_disorder['position'].tolist()
-            y_not_dis = []
-            for x in x_not_dis:
-                x = int(x) - 3
-                y_not_dis.append(x)
-
-            x_d = x_d
-            y_d = y_d
-            x_nd = x_not_dis
-            y_nd = y_not_dis
+            for position, disorder_value in enumerate(self.dispred):
+                if disorder_value.disorder_prediction >= 0.5:
+                    x_d.append(position + 1)
+                    y_d.append(position - 2)
+                elif disorder_value.disorder_prediction < 0.5:
+                    x_nd.append(position + 1)
+                    y_nd.append(position - 2)
 
             p8 = p.circle(x_d, y_d, size=5, color='lime')
             p9 = p.circle(x_nd, y_nd, color='grey', size=5)
@@ -251,8 +246,6 @@ class ContactPlotPlusFigure(Figure):
         #save and show plot
         output_file('/Users/shahrammesdaghi/Downloads/test.html')
         show(p)
-        #return output
-
 
 
 
