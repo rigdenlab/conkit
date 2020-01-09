@@ -4,8 +4,6 @@ environment:
     PYTHONIOENCODING: UTF-8
 
   matrix:
-    - PYTHON_VERSION: "3.5"
-      CONDA_INSTALL_LOCN: "C:\\Miniconda35-x64"
     - PYTHON_VERSION: "3.6"
       CONDA_INSTALL_LOCN: "C:\\Miniconda36-x64"
     - PYTHON_VERSION: "3.7"

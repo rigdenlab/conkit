@@ -7,6 +7,7 @@
 *Changed*
 
 - Remove support for Python2.7
+- Remove support for Python3.5
 - Add support for Python3.8
 
 **[0.11.3]**

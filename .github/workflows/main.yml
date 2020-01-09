@@ -9,20 +9,18 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8]
     steps:
     - uses: actions/checkout@master
-    - name: Setup Python ${{ matrix.python-version }}
+    - name: Testing with Python ${{ matrix.python-version }}
       uses: actions/setup-python@master
       with:
         version: ${{ matrix.python-version }}
-    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install -U setuptools
         python setup.py install
-    - name: Run tests
-      run: python setup.py test
+        python setup.py test
   
   codecov:
     runs-on: ubuntu-latest
@@ -30,8 +28,6 @@ jobs:
     - uses: actions/checkout@master
     - name: Setup Python  
       uses: actions/setup-python@master
-      with:
-        version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
