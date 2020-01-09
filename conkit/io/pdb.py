@@ -42,9 +42,6 @@ import itertools
 import sys
 import warnings
 
-if sys.version_info.major < 3:
-    from itertools import izip as zip
-
 from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 

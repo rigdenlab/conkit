@@ -14,15 +14,11 @@
 
 import datetime
 import glob
-
 import os
 import subprocess
 import sys
 
-if sys.version_info.major < 3:
-    from importlib import import_module
-else:
-    from importlib import __import__ as import_module
+from importlib import __import__ as import_module
 
 # Required by autosummary
 sys.path.insert(0, os.path.abspath('.'))
