@@ -10,10 +10,9 @@ import sys
 
 # Ensure we have these dependencies before we proceed
 SETUPREQUIRES = ['cython', 'scipy', 'numpy', 'pytest-runner']
-subprocess.check_call(['pip', 'install'] + SETUPREQUIRES)
+subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + SETUPREQUIRES, stdout=open(os.devnull, 'wb'))
 
 SETUPREQUIRES = []
-
 
 from Cython.Distutils import build_ext
 import numpy
@@ -41,8 +40,9 @@ else:
 
 # Credits to http://stackoverflow.com/a/33181352
 class BuildCommand(build):
-    user_options = build.user_options + [('script-python-path=', None,
-                                          'Path to Python interpreter to be included in the scripts')]
+    user_options = build.user_options + [
+        ('script-python-path=', None, 'Path to Python interpreter to be included in the scripts')
+    ]
 
     def initialize_options(self):
         build.initialize_options(self)
