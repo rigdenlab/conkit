@@ -389,5 +389,8 @@ intersphinx_mapping = {
 
 def setup(app):
     app.connect('builder-inited', run_apidoc)
-    app.connect('builder-inited', run_figgen)
+    try:
+        app.connect('builder-inited', run_figgen)
+    except:
+        pass
     app.add_stylesheet("custom.css")
