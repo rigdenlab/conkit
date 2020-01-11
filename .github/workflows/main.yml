@@ -46,13 +46,3 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella 
-
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Generate Sphinx docs
-      uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: 'docs/'
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
