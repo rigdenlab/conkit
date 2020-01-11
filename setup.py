@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 # Ensure we have these dependencies before we proceed
-SETUPREQUIRES = ['cython >=0.28.2', 'scipy >=0.13.3', 'numpy >=1.8.2', 'pytest-runner ==5.1', 'configparser>=3.5;python_version<"3"']
+SETUPREQUIRES = ['cython', 'scipy', 'numpy', 'pytest-runner']
 subprocess.check_call(['pip', 'install'] + SETUPREQUIRES)
 
 SETUPREQUIRES = []
@@ -175,22 +175,19 @@ CLASSIFIERS = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
 TEST_REQUIREMENTS = [
-    'codecov ==2.0.15',
-    'coverage ==4.5.4',
-    'importlib-metadata ==0.20',
-    'pluggy ==0.12',
-    'pytest ==4.6.5',
-    'pytest-cov ==2.7.1',
-    'pytest-pep8 ==1.0.6',
-    'pytest-helpers-namespace ==2019.1.8',
+    'codecov',
+    'coverage',
+    'pytest',
+    'pytest-cov',
+    'pytest-pep8',
+    'pytest-helpers-namespace',
 ]
 
 setup(

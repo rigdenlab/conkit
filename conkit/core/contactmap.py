@@ -42,9 +42,6 @@ import numpy as np
 import operator
 import sys
 
-if sys.version_info.major < 3:
-    from itertools import izip as zip
-
 from conkit.core.entity import Entity
 from conkit.core.struct import Gap, Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
