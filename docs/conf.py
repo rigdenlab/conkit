@@ -373,7 +373,7 @@ def run_apidoc(_):
 def run_figgen(_):
     # Basic way of generating all associated figures
     # TODO: refactor this and the command in Makefile into a little extension
-    subprocess.check_call(['make', 'figures'])
+    subprocess.call(['make', 'figures'])
 
 
 # -- Options for intersphinx extension ---------------------------------------
@@ -389,8 +389,5 @@ intersphinx_mapping = {
 
 def setup(app):
     app.connect('builder-inited', run_apidoc)
-    try:
-        app.connect('builder-inited', run_figgen)
-    except:
-        pass
+    app.connect('builder-inited', run_figgen)
     app.add_stylesheet("custom.css")
