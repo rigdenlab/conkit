@@ -57,4 +57,4 @@ jobs:
         docs-folder: 'docs/'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         pre-build-command: 'python -m pip install --upgrade pip && python setup install && python -m pip install -r docs/doc-requirements.txt'
-        pre-build-command: 'make html'
+        build-command: 'make html'
