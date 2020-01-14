@@ -9,13 +9,14 @@ class PsipredParser(PredictionFileParser):
     def read(self, f_handle, f_id="psipred"):
         """Return psipred prediction instance."""
 
-        hierarchy = PredictionFile(f_id)
+        #hierarchy = PredictionFile(f_id)
+        hierarchy = PredictionFile(f_id, predtype='sspred')
 
         for line in f_handle:
             line = line.split()
             if len(line) >= 1 and line[0].isnumeric():
                 residue = ResiduePrediction(line[0])
-                residue.ss2_prediction = line[2]
+                residue.prediction = line[2]
                 hierarchy.add(residue)
 
         return hierarchy

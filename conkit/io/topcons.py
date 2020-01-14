@@ -10,7 +10,7 @@ class TopconsParser(PredictionFileParser):
     def read(self, f_handle, f_id="topcons"):
         """Return topcons prediction instance."""
 
-        hierarchy = PredictionFile(f_id)
+        hierarchy = PredictionFile(f_id, predtype='mempred')
 
         lines = f_handle.readlines()
         membrane_pred = lines[lines.index('TOPCONS predicted topology:\n') + 1]
@@ -18,11 +18,7 @@ class TopconsParser(PredictionFileParser):
 
         for idx, x in enumerate(membrane_pred_list):
             residue = ResiduePrediction(str(idx + 1))
-            residue.membrane_prediction = x
-            # if x == 'i':
-            #     residue.x_i = idx + 1
-
-
+            residue.prediction = x
             hierarchy.add(residue)
 
         return hierarchy

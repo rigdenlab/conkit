@@ -17,8 +17,33 @@ class ContactPlotPlusFigure(Figure):
         self.mempred = mempred
         self.dispred = dispred
 
+    @property
+    def aa_properites(self):
+        return {'A': 'Non-polar, aliphatic',
+                             'R': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=12.5',
+                             'N': 'Polar, non-charged',
+                             'D': 'Negatively charged (acidic); Polar; Hydrophilic; pK=3.9',
+                             'C': 'Polar, non-charged',
+                             'E': 'Negatively charged (acidic); Polar; Hydrophilic; pK=4.2',
+                             'Q': 'Polar, non-charged',
+                             'G': 'Non-polar, aliphatic',
+                             'H': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=6.0',
+                             'I': 'Non-polar, aliphatic',
+                             'L': 'Non-polar, aliphatic',
+                             'K': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=10.5',
+                             'M': 'Polar, non-charged',
+                             'F': 'Aromatic',
+                             'P': 'Non-polar, aliphatic',
+                             'S': 'Polar, non-charged',
+                             'T': 'Polar, non-charged',
+                             'W': 'Aromatic',
+                             'Y': 'Aromatic',
+                             'V': 'Aromatic'
+                             }
+
 
     def plot(self):
+
         #plot contact data
         id = []
         res1 = []
@@ -67,105 +92,58 @@ class ContactPlotPlusFigure(Figure):
         #set up legend data
         p2 = p3 = p4 = p5 = p6 = p7 = p8 = p9 = None
 
-        #grap prediction data
-
         #plot mem prediction
         if self.mempred != None:
-            x_i = []
-            x_m = []
-            x_o = []
+            p2 = p.circle([residue.id for residue in self.mempred.search('i')],
+                          [residue.id for residue in self.mempred.search('i')], size=10, color='green')
+            p3 = p.circle([residue.id for residue in self.mempred.search('M')],
+                          [residue.id for residue in self.mempred.search('M')], color='red', size=10)
+            p4 = p.circle([residue.id for residue in self.mempred.search('o')],
+                          [residue.id for residue in self.mempred.search('o')], color='yellow', size=10)
 
-            for position, residue in enumerate(self.mempred):
-                if residue.membrane_prediction == 'i':
-                    #x_i.append(residue.x_i)
-                    x_i.append(position + 1)
-                elif residue.membrane_prediction == 'M':
-                    x_m.append(position + 1)
-                elif residue.membrane_prediction == 'o':
-                    x_o.append(position + 1)
-
-            y_i = x_i
-            y_m = x_m
-            y_o = x_o
-
-            p2 = p.circle(x_i, y_i, size=10, color='green')
-            p3 = p.circle(x_m, y_m, color='red', size=10)
-            p4 = p.circle(x_o, y_o, color='yellow', size=10)
 
         #plot ss prediction
         if self.sspred != None:
             sequence = self.seq
-            sequence_for_pred = []
-            for indx, x in enumerate(sequence.seq):
-                sequence_for_pred.append(x)
-
-            xy_h = []
+            xy_h = [residue.id for residue in self.sspred.search('H')]
+            xy_c = [residue.id for residue in self.sspred.search('C')]
+            xy_e = [residue.id for residue in self.sspred.search('E')]
             xy_h_aa_name = []
-            xy_c = []
             xy_c_aa_name = []
-            xy_e = []
             xy_e_aa_name = []
 
-            for position, residue in enumerate(self.sspred):
-                if residue.ss2_prediction == 'H':
-                    xy_h.append(position + 1)
-                    for seq_position, aa in enumerate(sequence.seq):
-                        if position == seq_position:
-                            xy_h_aa_name.append(aa)
-                elif residue.ss2_prediction == 'C':
-                    xy_c.append(position + 1)
-                    for seq_position, aa in enumerate(sequence.seq):
-                        if position == seq_position:
-                            xy_c_aa_name.append(aa)
-                elif residue.ss2_prediction == 'E':  #todo CHECK!!
-                    xy_e.append(position + 1)
-                    for seq_position, aa in enumerate(sequence.seq):
-                        if position == seq_position:
-                            xy_e_aa_name.append(aa)
-
-            # initialise aa property dictionary
-            aa_properites = {'A': 'Non-polar, aliphatic',
-                             'R': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=12.5',
-                             'N': 'Polar, non-charged',
-                             'D': 'Negatively charged (acidic); Polar; Hydrophilic; pK=3.9',
-                             'C': 'Polar, non-charged',
-                             'E': 'Negatively charged (acidic); Polar; Hydrophilic; pK=4.2',
-                             'Q': 'Polar, non-charged',
-                             'G': 'Non-polar, aliphatic',
-                             'H': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=6.0',
-                             'I': 'Non-polar, aliphatic',
-                             'L': 'Non-polar, aliphatic',
-                             'K': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=10.5',
-                             'M': 'Polar, non-charged',
-                             'F': 'Aromatic',
-                             'P': 'Non-polar, aliphatic',
-                             'S': 'Polar, non-charged',
-                             'T': 'Polar, non-charged',
-                             'W': 'Aromatic',
-                             'Y': 'Aromatic',
-                             'V': 'Aromatic'
-                             }
+            for id in xy_h:
+                for seq_position, aa in enumerate(sequence.seq):
+                    if int(id) == int(seq_position)+1:
+                        xy_h_aa_name.append(aa)
+            for id in xy_c:
+                for seq_position, aa in enumerate(sequence.seq):
+                    if int(id) == int(seq_position)+1:
+                        xy_c_aa_name.append(aa)
+            for id in xy_e:
+                for seq_position, aa in enumerate(sequence.seq):
+                    if int(id) == int(seq_position)+1:
+                        xy_e_aa_name.append(aa)
 
             #add aa properties to each residue from aa property dictionary
-            cnt = 0
             h_aa_properies = []
+
             for x in xy_h_aa_name:
-                for y in aa_properites:
+                for y in self.aa_properites:
                     if x == y:
-                        h_aa_properies.append(aa_properites[y])
-                        cnt += 1
+                        h_aa_properies.append(self.aa_properites[y])
 
             c_aa_properies = []
             for x in xy_c_aa_name:
-                for y in aa_properites:
+                for y in self.aa_properites:
                     if x == y:
-                        c_aa_properies.append(aa_properites[y])
+                        c_aa_properies.append(self.aa_properites[y])
 
             e_aa_properies = []
             for x in xy_e_aa_name:
-                for y in aa_properites:
+                for y in self.aa_properites:
                     if x == y:
-                        e_aa_properies.append(aa_properites[y])
+                        e_aa_properies.append(self.aa_properites[y])
 
             #plot ss on to the contact plot with residue properties
             source2 = ColumnDataSource(data=dict(x=xy_h, y=xy_h, aa_name=xy_h_aa_name, aa_properties=h_aa_properies))
@@ -188,10 +166,7 @@ class ContactPlotPlusFigure(Figure):
 
             x_dct = {}
             y_dct = {}
-            conserved_scores = []
-
-            for x in self.conservationpred:
-                conserved_scores.append(x.conservation_score)
+            conserved_scores = [residue.prediction for residue in self.conservationpred.search()]
 
             for score in consurf_values:
                 temp = []
@@ -216,11 +191,13 @@ class ContactPlotPlusFigure(Figure):
             x_nd = []
             y_nd = []
 
-            for position, disorder_value in enumerate(self.dispred):
-                if disorder_value.disorder_prediction >= 0.5:
+            disorder = [residue.prediction for residue in self.dispred.search()]
+
+            for position, prediction in enumerate(disorder):
+                if prediction >= 0.5:
                     x_d.append(position + 1)
                     y_d.append(position - 2)
-                elif disorder_value.disorder_prediction < 0.5:
+                elif prediction < 0.5:
                     x_nd.append(position + 1)
                     y_nd.append(position - 2)
 
@@ -247,5 +224,23 @@ class ContactPlotPlusFigure(Figure):
         output_file('/Users/shahrammesdaghi/Downloads/test.html')
         show(p)
 
+if __name__ == '__main__':
 
+    import conkit.io
+
+    conpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28_meta_respre.evfold', 'evfold').top
+    seq = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.fasta', 'fasta').top
+    sspred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28.ss2', 'psipred')
+    conservpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/consurf.grades.txt', 'consurf')
+    mempred = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', 'topcons')
+    dispred = conkit.io.read('/Users/shahrammesdaghi/Downloads/iupred2a.txt', 'iupred2a')
+
+    #test_plot = ContactPlotPlusFigure(seq, conpred, ss_prediction, con_pred, mem_pred, dis_pred)
+    #test_plot.plot_plus()
+
+    test_plot_2 = conkit.plot.ContactPlotPlusFigure(seq=seq, conpred=conpred, conservationpred=conservpred,
+                                                    mempred=mempred, dispred=dispred, sspred=sspred)
+
+
+    test_plot_2.plot()
 

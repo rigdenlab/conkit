@@ -1,69 +1,25 @@
 from conkit.core.entity import Entity
 
 
-
 class ResiduePrediction(Entity):
 
     __slots__ = [
-        "_conservation_score",
-        "_ss2_prediction",
-        "_membrane_prediction",
-        "_disorder_prediction",
+        "_prediction",
         "res_seq"
-        #"_x_i"
     ]
 
     def __init__(self, res_seq):
 
         self.res_seq = res_seq
-
-        self._conservation_score = None
-        self._ss2_prediction = None
-        self._membrane_prediction = None
-        self._disorder_prediction = None
-
-        #self._x_i = None
+        self._prediction=None
 
         super(ResiduePrediction, self).__init__(res_seq)
 
-
     @property
-    def ss2_prediction(self):
-        return self._ss2_prediction
+    def prediction(self):
+        return self._prediction
 
-    @ss2_prediction.setter
-    def ss2_prediction(self, value):
-        self._ss2_prediction = value
+    @prediction.setter
+    def prediction(self, value):
+        self._prediction = value
 
-    @property
-    def conservation_score(self):
-        return self._conservation_score
-
-    @conservation_score.setter
-    def conservation_score(self, value):
-        self._conservation_score = value
-
-    @property
-    def membrane_prediction(self):
-        return self._membrane_prediction
-
-    @membrane_prediction.setter
-    def membrane_prediction(self, value):
-        self._membrane_prediction = value
-
-    @property
-    def disorder_prediction(self):
-        return self._disorder_prediction
-
-    @disorder_prediction.setter
-    def disorder_prediction(self, value):
-        self._disorder_prediction = value
-
-    # @property
-    # def x_i(self):
-    #     return self._x_i
-    #
-    # @x_i.setter
-    # def x_i(self, value):
-    #     self._x_i = value
-    #

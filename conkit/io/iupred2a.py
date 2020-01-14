@@ -8,13 +8,13 @@ class iupred2aParser(PredictionFileParser):
     def read(self, f_handle, f_id="topcons"):
         """Return iupred2a prediction instance."""
 
-        hierarchy = PredictionFile(f_id)
+        hierarchy = PredictionFile(f_id, predtype='dispred')
 
         for line in f_handle:
             line = line.split()
             if len(line) >= 1 and line[0].isnumeric():
                 residue = ResiduePrediction(line[0])
-                residue.disorder_prediction = float(line[2])
+                residue.prediction = float(line[2])
                 hierarchy.add(residue)
 
         return hierarchy
