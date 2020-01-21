@@ -9,7 +9,6 @@ class PsipredParser(PredictionFileParser):
     def read(self, f_handle, f_id="psipred"):
         """Return psipred prediction instance."""
 
-        #hierarchy = PredictionFile(f_id)
         hierarchy = PredictionFile(f_id, predtype='sspred')
 
         for line in f_handle:

@@ -15,11 +15,11 @@ class ConsurfParser(PredictionFileParser):
             line = line.split()
             if len(line) >= 1 and line[0].isnumeric():
                 residue = ResiduePrediction(line[0])
-                try:
+                if line[3].replace('*', '').isnumeric():
                     residue.prediction = int(line[3].replace('*', ''))
                     hierarchy.add(residue)
-                except:
-                    print('Check your consurf file')
+                else:
+                    print('Consurf cannot be parsed. Conflict in line %s' % ''.join(line))
                     exit()
 
         return hierarchy

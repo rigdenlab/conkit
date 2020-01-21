@@ -6,7 +6,7 @@ class PredictionFile(Entity):
 
     def __init__(self, id, predtype):
 
-        self.predtype=predtype
+        self._predtype=predtype
         super(PredictionFile, self).__init__(id)
 
     def __repr__(self):
@@ -54,11 +54,8 @@ class PredictionFile(Entity):
             return None
 
         rslt=[]
-        if self.predtype in ['mempred', 'sspred']:
-            for residue in self:
-                if residue.prediction == value:
-                    rslt.append(residue)
-        elif self.predtype in ['conservationpred', 'dispred']:
-            for residue in self:
-                rslt.append(residue)
+        if self.predtype in ['mempred', 'sspred','conservationpred']:
+            rslt = [residue for residue in self if residue.prediction==value]
+        elif self.predtype in ['dispred']:
+            rslt = [residue for residue in self if residue.prediction >= value]
         return rslt
