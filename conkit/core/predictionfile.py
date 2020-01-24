@@ -29,8 +29,7 @@ class PredictionFile(Entity):
     def add(self, entity):
         """Overwrites conkit.core.entity add method"""
 
-        #if not self._is_allowed_prediction_symbol(entity.prediction):
-        if self._is_allowed_prediction_symbol(entity.prediction)==False:
+        if not self._is_allowed_prediction_symbol(entity.prediction):
             raise ValueError('Residue prediction symbol {} is not supported for {}'.format(entity.prediction,
                                                                                            self.predtype))
         super(PredictionFile, self).add(entity)
@@ -42,11 +41,23 @@ class PredictionFile(Entity):
         if self.predtype == 'mempred':
             if symbol not in ['i', 'M', 'o']:
                 return False
+            else:
+                return True
         elif self.predtype == 'sspred':
             if symbol not in ['C', 'E', 'H']:
                 return False
-        else:
-            return True
+            else:
+                return True
+        elif self.predtype == 'conservationpred':
+            if isinstance(symbol, int):
+                return True
+            else:
+                return False
+        elif self.predtype == 'dispred':
+            if isinstance(symbol, float):
+                return True
+            else:
+                return False
 
 
     def search(self, value=None):

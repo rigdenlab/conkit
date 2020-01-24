@@ -24,7 +24,7 @@ class ContactPlotPlusFigure(Figure):
         self.conpred.set_sequence_register()
         self.conpred.remove_neighbors(inplace=True)
         self.conpred.sort('raw_score', reverse=True, inplace=True)
-        self.conpred = self.conpred[:self.conpred.sequence.seq_len*factor]
+        self.conpred = self.conpred[:self.conpred.sequence.seq_len * factor]
         self._canvas = figure(x_range=Range1d(0, self.conpred.ncontacts), y_range=Range1d(0, self.conpred.ncontacts),
                               plot_width=700, tools=['pan', 'wheel_zoom', 'box_zoom', 'reset', 'save'], plot_height=575,
                               toolbar_location="above")
@@ -77,7 +77,7 @@ class ContactPlotPlusFigure(Figure):
     @mempred_m.setter
     def mempred_m(self, value):
         self._mempred_m = value
-        
+
     @property
     def mempred_o(self):
         return self._mempred_o
@@ -100,7 +100,7 @@ class ContactPlotPlusFigure(Figure):
 
     @sspred_c.setter
     def sspred_c(self, value):
-        self._sspred_c= value
+        self._sspred_c = value
 
     @property
     def sspred_e(self):
@@ -134,25 +134,25 @@ class ContactPlotPlusFigure(Figure):
     @property
     def aa_properites(self):
         return {'A': 'Non-polar, aliphatic',
-                             'R': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=12.5',
-                             'N': 'Polar, non-charged',
-                             'D': 'Negatively charged (acidic); Polar; Hydrophilic; pK=3.9',
-                             'C': 'Polar, non-charged',
-                             'E': 'Negatively charged (acidic); Polar; Hydrophilic; pK=4.2',
-                             'Q': 'Polar, non-charged',
-                             'G': 'Non-polar, aliphatic',
-                             'H': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=6.0',
-                             'I': 'Non-polar, aliphatic',
-                             'L': 'Non-polar, aliphatic',
-                             'K': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=10.5',
-                             'M': 'Polar, non-charged',
-                             'F': 'Aromatic',
-                             'P': 'Non-polar, aliphatic',
-                             'S': 'Polar, non-charged',
-                             'T': 'Polar, non-charged',
-                             'W': 'Aromatic',
-                             'Y': 'Aromatic',
-                             'V': 'Aromatic'
+                'R': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=12.5',
+                'N': 'Polar, non-charged',
+                'D': 'Negatively charged (acidic); Polar; Hydrophilic; pK=3.9',
+                'C': 'Polar, non-charged',
+                'E': 'Negatively charged (acidic); Polar; Hydrophilic; pK=4.2',
+                'Q': 'Polar, non-charged',
+                'G': 'Non-polar, aliphatic',
+                'H': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=6.0',
+                'I': 'Non-polar, aliphatic',
+                'L': 'Non-polar, aliphatic',
+                'K': 'Positively charged (basic; non-acidic); Polar; Hydrophilic; pK=10.5',
+                'M': 'Polar, non-charged',
+                'F': 'Aromatic',
+                'P': 'Non-polar, aliphatic',
+                'S': 'Polar, non-charged',
+                'T': 'Polar, non-charged',
+                'W': 'Aromatic',
+                'Y': 'Aromatic',
+                'V': 'Aromatic'
                 }
 
     @property
@@ -160,7 +160,8 @@ class ContactPlotPlusFigure(Figure):
 
         # construct legend
         legend_data = {"Mem_pred-I": [self.mempred_i], "Mem_pred-M": [self.mempred_m], "Mem_pred-O": [self.mempred_o],
-                       "SS-H": [self.sspred_h], "SS-C": [self.sspred_c], "SS-E": [self.sspred_e], "Disorder": [self.dispred_dis],
+                       "SS-H": [self.sspred_h], "SS-C": [self.sspred_c], "SS-E": [self.sspred_e],
+                       "Disorder": [self.dispred_dis],
                        "Ordered": [self.dispred_o]}
 
         items = [("Contact", [self.contact_circles])]
@@ -184,76 +185,81 @@ class ContactPlotPlusFigure(Figure):
         raw_score = [x.raw_score for x in self.conpred]
 
         source = ColumnDataSource(data=dict(id=id, res1=res1, res1_chain=res1_chain, res1_seq=res1_seq, res2=res2,
-                                          res2_chain=res2_chain, res2_seq=res2_seq, raw_score=raw_score))
+                                            res2_chain=res2_chain, res2_seq=res2_seq, raw_score=raw_score))
 
         self.contact_circles = self.canvas.circle(x='res1_seq', y='res2_seq', size=3, color='black', source=source)
 
-
-        self.canvas.add_tools(HoverTool(renderers=[self.contact_circles], tooltips=[('Contact', '@id'), ('res1', '@res1'), ('res2', '@res2'),
-                                                                                    ('confidence', '@raw_score')]))
+        self.canvas.add_tools(HoverTool(renderers=[self.contact_circles],
+                                        tooltips=[('Contact', '@id'), ('res1', '@res1'), ('res2', '@res2'),
+                                                  ('confidence', '@raw_score')]))
 
         p1a = self.canvas.circle(x='res2_seq', y='res1_seq', size=3, color='black', source=source)
 
-        self.canvas.add_tools(HoverTool(renderers=[p1a], tooltips=[('Contact', '@id'), ('res1', '@res1'), ('res2', '@res2'),
-                                                                   ('confidence', '@raw_score')]))
+        self.canvas.add_tools(
+            HoverTool(renderers=[p1a], tooltips=[('Contact', '@id'), ('res1', '@res1'), ('res2', '@res2'),
+                                                 ('confidence', '@raw_score')]))
 
     def add_mempred_layer(self, mempred):
-        
+
         self.mempred = mempred
         self.mempred_i = self.canvas.circle([residue.id for residue in self.mempred.search('i')],
-                                            [residue.id for residue in self.mempred.search('i')], size=10, color='green')
+                                            [residue.id for residue in self.mempred.search('i')], size=10,
+                                            color='green')
         self.mempred_m = self.canvas.circle([residue.id for residue in self.mempred.search('M')],
                                             [residue.id for residue in self.mempred.search('M')], color='red', size=10)
         self.mempred_o = self.canvas.circle([residue.id for residue in self.mempred.search('o')],
-                                            [residue.id for residue in self.mempred.search('o')], color='yellow', size=10)
+                                            [residue.id for residue in self.mempred.search('o')], color='yellow',
+                                            size=10)
 
     def add_sspred_layer(self, sspred):
 
         self.sspred = sspred
-        #find residue positions of specific ss prediction
+        # find residue positions of specific ss prediction
         xy_h = [int(residue.id) for residue in self.sspred.search('H')]
         xy_c = [int(residue.id) for residue in self.sspred.search('C')]
         xy_e = [int(residue.id) for residue in self.sspred.search('E')]
 
-        #find the residue name for those specific positions
+        # find the residue name for those specific positions
         xy_h_aa_name = [self.conpred.sequence.seq[res_idx - 1] for res_idx in xy_h]
         xy_c_aa_name = [self.conpred.sequence.seq[res_idx - 1] for res_idx in xy_c]
         xy_e_aa_name = [self.conpred.sequence.seq[res_idx - 1] for res_idx in xy_e]
 
-        #add aa properties to each residue from aa property dictionary
+        # add aa properties to each residue from aa property dictionary
         h_aa_properies = [self.aa_properites[x] for x in xy_h_aa_name]
         c_aa_properies = [self.aa_properites[x] for x in xy_c_aa_name]
         e_aa_properies = [self.aa_properites[x] for x in xy_e_aa_name]
 
-        #plot ss on to the contact plot with residue properties
+        # plot ss on to the contact plot with residue properties
         source2 = ColumnDataSource(data=dict(x=xy_h, y=xy_h, aa_name=xy_h_aa_name, aa_properties=h_aa_properies))
         source3 = ColumnDataSource(data=dict(x=xy_c, y=xy_c, aa_name=xy_c_aa_name, aa_properties=c_aa_properies))
         source4 = ColumnDataSource(data=dict(x=xy_e, y=xy_e, aa_name=xy_e_aa_name, aa_properties=e_aa_properies))
 
         self.sspred_h = self.canvas.circle(x='x', y='y', size=3, color='orange', source=source2)
-        self.canvas.add_tools(HoverTool(renderers=[self.sspred_h], tooltips=[('Position', '@x'), ('Residue Name', '@aa_name'),
-                                                        ('Properties', '@aa_properties')]))
+        self.canvas.add_tools(
+            HoverTool(renderers=[self.sspred_h], tooltips=[('Position', '@x'), ('Residue Name', '@aa_name'),
+                                                           ('Properties', '@aa_properties')]))
         self.sspred_c = self.canvas.circle(x='x', y='y', color='blue', size=3, source=source3)
-        self.canvas.add_tools(HoverTool(renderers=[self.sspred_c], tooltips=[('Position', '@x'), ('Residue Name', '@aa_name'),
-                                                        ('Properties', '@aa_properties')]))
+        self.canvas.add_tools(
+            HoverTool(renderers=[self.sspred_c], tooltips=[('Position', '@x'), ('Residue Name', '@aa_name'),
+                                                           ('Properties', '@aa_properties')]))
         self.sspred_e = self.canvas.circle(x='x', y='y', color='pink', size=3, source=source4)
-        self.canvas.add_tools(HoverTool(renderers=[self.sspred_e], tooltips=[('Position', '@x'), ('Residue Name', '@aa_name'),
-                                                        ('Properties', '@aa_properties')]))
+        self.canvas.add_tools(
+            HoverTool(renderers=[self.sspred_e], tooltips=[('Position', '@x'), ('Residue Name', '@aa_name'),
+                                                           ('Properties', '@aa_properties')]))
 
     def add_dispred_layer(self, dispred):
 
         self.dispred = dispred
 
-        #by default plot of 'ordered'
+        # by default plot of 'ordered'
         x_nd = [i for i in range(1, self.conpred.sequence.seq_len + 1)]
         y_nd = [i for i in range(-2, self.conpred.sequence.seq_len - 2)]
         self.dispred_o = self.canvas.circle(x_nd, y_nd, color='grey', size=5)
 
-        #overwirites 'ordered' residues with disordered residues
+        # overwirites 'ordered' residues with disordered residues
         x_d = [residue.id for residue in self.dispred.search(0.5)]
-        y_d = [(int(residue.id) -3) for residue in self.dispred.search(0.5)]
+        y_d = [(int(residue.id) - 3) for residue in self.dispred.search(0.5)]
         self.dispred_dis = self.canvas.circle(x_d, y_d, size=5, color='lime')
-
 
     def add_conservpred_layer(self, conservpred):
         self.conservpred = conservpred
@@ -266,10 +272,8 @@ class ContactPlotPlusFigure(Figure):
             x_dct[score] = [residue.id for residue in self.conservpred.search(score)]
             y_dct[score] = [int(x) + 3 for x in x_dct[score]]
 
-
         for x in self.spectrum:
             self.canvas.triangle(x_dct[x], y_dct[x], size=5, color=self.spectrum[x])
-
 
     def plot(self, fname):
         self.add_contact_layer()
@@ -277,8 +281,8 @@ class ContactPlotPlusFigure(Figure):
         output_file(fname)
         show(self.canvas)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     import conkit.io
 
     conpred = conkit.io.read('/Users/shahrammesdaghi/Downloads/w9dy28_meta_respre.evfold', 'evfold').top
@@ -288,7 +292,6 @@ if __name__ == '__main__':
     mempred = conkit.io.read('/Users/shahrammesdaghi/Downloads/query.result.txt', 'topcons')
     dispred = conkit.io.read('/Users/shahrammesdaghi/Downloads/iupred2a.txt', 'iupred2a')
 
-
     test_plot_2 = conkit.plot.ContactPlotPlusFigure(seq=seq, conpred=conpred)
 
     test_plot_2.add_conservpred_layer(conservpred)
@@ -296,4 +299,3 @@ if __name__ == '__main__':
     test_plot_2.add_mempred_layer(mempred)
     test_plot_2.add_sspred_layer(sspred)
     test_plot_2.plot(fname='/Users/shahrammesdaghi/Downloads/test.html')
-
