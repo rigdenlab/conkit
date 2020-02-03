@@ -657,7 +657,7 @@ class ContactMap(Entity):
            Both residues of :obj:`~conkit.core.contact.Contact` in register [default: False]
         invert_match : bool
            Select non-matching residues [default: False]
-           
+
         Returns
         -------
         :obj:`~conkit.core.contactmap.ContactMap`
