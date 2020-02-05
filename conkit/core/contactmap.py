@@ -644,7 +644,7 @@ class ContactMap(Entity):
         for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
 
-    def find(self, register, altloc=False, strict=False, invert_match=False):
+    def find(self, register, altloc=False, strict=False, invert=False):
         """Find all contacts with one or both residues in ``register``
 
         Parameters
@@ -655,7 +655,7 @@ class ContactMap(Entity):
            Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
         strict : bool
            Both residues of :obj:`~conkit.core.contact.Contact` in register [default: False]
-        invert_match : bool
+        invert : bool
            Select non-matching residues [default: False]
 
         Returns
@@ -671,9 +671,9 @@ class ContactMap(Entity):
         comparison_operator = operator.and_ if strict else operator.or_
         contact_map = self.deepcopy()
         for contactid in self.as_list(altloc=altloc):
-            if not comparison_operator(contactid[0] in register, contactid[1] in register) and not invert_match:
+            if not comparison_operator(contactid[0] in register, contactid[1] in register) and not invert:
                 contact_map.remove(tuple(contactid))
-            elif comparison_operator(contactid[0] in register, contactid[1] in register) and invert_match:
+            elif comparison_operator(contactid[0] in register, contactid[1] in register) and invert:
                 contact_map.remove(tuple(contactid))
         return contact_map
 
