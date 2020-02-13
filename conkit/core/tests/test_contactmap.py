@@ -385,6 +385,24 @@ class TestContactMap(unittest.TestCase):
         self.assertEqual([1, 2], [c.res1_seq for c in found])
         self.assertEqual([5, 5], [c.res2_seq for c in found])
 
+    def test_find_inverse(self):
+        contact_map1 = ContactMap("1")
+        for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
+            contact_map1.add(Contact(*comb))
+        found = contact_map1.find([1, 2, 5], strict=False, inverse=True)
+        self.assertEqual(1, len(found))
+        self.assertEqual([3], [c.res1_seq for c in found])
+        self.assertEqual([6], [c.res2_seq for c in found])
+
+    def test_find_strict_inverse(self):
+        contact_map1 = ContactMap("1")
+        for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
+            contact_map1.add(Contact(*comb))
+        found = contact_map1.find([1, 2, 5], strict=True, inverse=True)
+        self.assertEqual(3, len(found))
+        self.assertEqual([2, 1, 3], [c.res1_seq for c in found])
+        self.assertEqual([6, 4, 6], [c.res2_seq for c in found])
+
     def test_set_sequence_register_1(self):
         contact_map1 = ContactMap("1")
         for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
