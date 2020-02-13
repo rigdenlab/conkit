@@ -669,15 +669,14 @@ class ContactMap(Entity):
             register = [register]
         register = set(register)
 
-        def keep(*args,**kwargs):
+        def discard(*args,**kwargs):
             output = (operator.and_ if strict else operator.or_)(*args, **kwargs)
-            return output if not inverse else not output
+            return output if inverse else not output
 
         contact_map = self.deepcopy()
         for contactid in self.as_list(altloc=altloc):
-            if keep(contactid[0] in register, contactid[1] in register):
-                continue
-            contact_map.remove(tuple(contactid))
+            if discard(contactid[0] in register, contactid[1] in register):
+                contact_map.remove(tuple(contactid))
 
         return contact_map
 
