@@ -669,7 +669,7 @@ class ContactMap(Entity):
             register = [register]
         register = set(register)
 
-        def discard(*args,**kwargs):
+        def discard(*args, **kwargs):
             output = (operator.and_ if strict else operator.or_)(*args, **kwargs)
             return output if inverse else not output
 
