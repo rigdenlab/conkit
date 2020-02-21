@@ -17,9 +17,7 @@ class PsipredParser(PredictionFileParser):
                 residue = ResiduePrediction(line[0])
                 residue.prediction = line[2]
                 hierarchy.add(residue)
-
         return hierarchy
-
 
     @staticmethod
     def write(fname):
