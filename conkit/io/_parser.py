@@ -90,3 +90,9 @@ class SequenceFileParser(Parser):
     """General purpose class for all sequence file parsers"""
 
     pass
+
+
+class PredictionFileParser(Parser):
+    """General purpose class for all sequence prediction file parsers"""
+
+    pass

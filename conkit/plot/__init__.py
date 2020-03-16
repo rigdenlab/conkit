@@ -78,3 +78,10 @@ def SequenceCoverageFigure(*args, **kwargs):
     from conkit.plot.sequencecoverage import SequenceCoverageFigure
 
     return SequenceCoverageFigure(*args, **kwargs)
+
+
+def ContactPlotPlusFigure(*args, **kwargs):
+    """:obj:`~conkit.plot.contactplotplus.ContactPlotPlusFigure` instance"""
+    from conkit.plot.contactplotplus import ContactPlotPlusFigure
+
+    return ContactPlotPlusFigure(*args, **kwargs)
