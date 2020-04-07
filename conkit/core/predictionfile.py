@@ -6,12 +6,11 @@ class PredictionFile(Entity):
 
     def __init__(self, id, predtype):
 
-        self._predtype=predtype
+        self._predtype = predtype
         super(PredictionFile, self).__init__(id)
 
     def __repr__(self):
         return '{}(id="{}" nres={})'.format(self.__class__.__name__, self.id, len(self))
-
 
     @property
     def predtype(self):
@@ -25,7 +24,6 @@ class PredictionFile(Entity):
 
         self._predtype = value
 
-
     @property
     def allowed_symbols(self):
 
@@ -35,7 +33,6 @@ class PredictionFile(Entity):
                 'dispred': float
                 }
 
-
     def add(self, entity):
         """Overwrites conkit.core.entity add method"""
 
@@ -43,7 +40,6 @@ class PredictionFile(Entity):
             raise ValueError('Residue prediction symbol {} is not supported for {}'.format(entity.prediction,
                                                                                            self.predtype))
         super(PredictionFile, self).add(entity)
-
 
     def _is_allowed_prediction_symbol(self, symbol):
         if isinstance(self.allowed_symbols[self.predtype], list):
@@ -57,12 +53,11 @@ class PredictionFile(Entity):
             else:
                 return False
 
-
     def search(self, value=None):
         if len(self) == 0:
             return None
 
-        if self.predtype in ['mempred', 'sspred','conservationpred']:
+        if self.predtype in ['mempred', 'sspred', 'conservationpred']:
             rslt = [residue for residue in self if residue.prediction == value]
             return rslt
         elif self.predtype == 'dispred':
@@ -70,5 +65,3 @@ class PredictionFile(Entity):
             return rslt
         else:
             raise ValueError('Unsupported format {}'.format(self.predtype))
-
-

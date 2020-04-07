@@ -2,6 +2,7 @@ import argparse
 import conkit.plot
 import conkit.io
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='ConKit: Interactive contact plot with prediction data visualisation',
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -61,7 +62,6 @@ def main():
 
     test_plot.plot(fname='/Users/shahrammesdaghi/Downloads/test.html')
 
+
 if __name__ == "__main__":
-
     main()
-
