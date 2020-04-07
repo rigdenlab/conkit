@@ -231,10 +231,16 @@ class ContactMapFigure(Figure):
                 min_max_data = np.append(min_max_data, other_data[:, 0])
                 min_max_data = np.append(min_max_data, other_data[:, 1])
 
-        self.ax.set_xlim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
-        self.ax.set_ylim(min_max_data.min() - 0.5, min_max_data.max() + 0.5)
-        gap = int(10 * (min_max_data.max() - min_max_data.min()) / 100)
-        tick_range = np.arange(min_max_data.min(), min_max_data.max(), gap, dtype=np.int64)
+        min_v, max_v = min_max_data.min(), min_max_data.max()
+        if abs(max_v - min_v) < 10:
+            min_v = max(0, (max_v + min_v) // 2 - 5)
+            max_v = min_v + 10
+
+        self.ax.set_xlim(min_v - 0.5, max_v + 0.5)
+        self.ax.set_ylim(min_v - 0.5, max_v + 0.5)
+
+        gap = 10 * (max_v - min_v) // 100
+        tick_range = np.arange(min_v, max_v + 1, gap, dtype=np.int64)
 
         self.ax.set_xticks(tick_range)
         self.ax.set_yticks(tick_range)

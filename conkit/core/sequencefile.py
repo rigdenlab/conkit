@@ -40,9 +40,6 @@ __version__ = "1.0"
 import numpy as np
 import sys
 
-if sys.version_info.major < 3:
-    from itertools import izip as zip
-
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidMapping, SequenceAlignmentState
 from conkit.misc import deprecate

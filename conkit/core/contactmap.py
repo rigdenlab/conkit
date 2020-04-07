@@ -42,9 +42,6 @@ import numpy as np
 import operator
 import sys
 
-if sys.version_info.major < 3:
-    from itertools import izip as zip
-
 from conkit.core.entity import Entity
 from conkit.core.struct import Gap, Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
@@ -647,7 +644,7 @@ class ContactMap(Entity):
         for contact, sca_score in zip(self, sca_scores):
             contact.scalar_score = sca_score
 
-    def find(self, register, altloc=False, strict=False):
+    def find(self, register, altloc=False, strict=False, inverse=False):
         """Find all contacts with one or both residues in ``register``
 
         Parameters
@@ -658,6 +655,8 @@ class ContactMap(Entity):
            Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
         strict : bool
            Both residues of :obj:`~conkit.core.contact.Contact` in register [default: False]
+        inverse : bool
+           Select non-matching residues [default: False]
 
         Returns
         -------
@@ -669,11 +668,16 @@ class ContactMap(Entity):
         if isinstance(register, int):
             register = [register]
         register = set(register)
-        comparison_operator = operator.and_ if strict else operator.or_
+
+        def discard(*args, **kwargs):
+            output = (operator.and_ if strict else operator.or_)(*args, **kwargs)
+            return output if inverse else not output
+
         contact_map = self.deepcopy()
         for contactid in self.as_list(altloc=altloc):
-            if not comparison_operator(contactid[0] in register, contactid[1] in register):
+            if discard(contactid[0] in register, contactid[1] in register):
                 contact_map.remove(tuple(contactid))
+
         return contact_map
 
     def match(
