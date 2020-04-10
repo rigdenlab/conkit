@@ -4,4 +4,3 @@ matplotlib
 numpy
 biopython
 scikit-learn
-enum34 >=1.1.6; python_version < '3.4'
