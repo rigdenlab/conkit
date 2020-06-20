@@ -371,6 +371,10 @@ def run_apidoc(_):
 
 
 def run_figgen(_):
+    try:
+        import conkit.core.ext.c_sequencefile
+    except ImportError:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '..'])
     import figures
     figures.generate_all()
 
