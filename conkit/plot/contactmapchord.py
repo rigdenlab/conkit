@@ -152,7 +152,7 @@ class ContactMapChordFigure(Figure):
         residue_data = np.append(self_data[:, [1, 0]], self_data[:, [3, 2]])
         residue_data = residue_data.reshape(self_data[:, 0].shape[0] * 2, 2)
         color_codes = dict([(k, ColorDefinitions.AA_ENCODING["X"]) for k in self_data_range])
-        for k, v in np.vstack({tuple(row) for row in residue_data}):
+        for k, v in np.vstack([tuple(row) for row in residue_data]):
             color_codes[int(k)] = ColorDefinitions.AA_ENCODING[v]
         colors = [color_codes[k] for k in sorted(color_codes.keys())]
 
