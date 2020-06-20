@@ -4,3 +4,4 @@ include CONTRIB.rst
 include CHANGELOG.rst
 include requirements.txt
 include setup.cfg
+include pyproject.toml

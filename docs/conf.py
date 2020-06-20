@@ -82,7 +82,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ConKit'
-copyright = '2016-{}, University of Liverpool'.format(datetime.datetime.now().year)
+copyright = '2016-{}, University of Liverpool'.format(datetime.date.today().year)
 author = 'Felix Simkovic'
 
 # The short X.Y version.
@@ -371,9 +371,11 @@ def run_apidoc(_):
 
 
 def run_figgen(_):
-    # Basic way of generating all associated figures
-    # TODO: refactor this and the command in Makefile into a little extension
-    subprocess.check_call(['make', 'figures'])
+    import figures
+    try:
+        figures.generate_all()
+    except:
+        pass
 
 
 # -- Options for intersphinx extension ---------------------------------------

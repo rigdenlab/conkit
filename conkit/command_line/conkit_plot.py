@@ -244,7 +244,7 @@ This command will plot a coverage plot for every position in your alignment.
     subparser.set_defaults(which="sequence_coverage")
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     subparsers = parser.add_subparsers()
 
@@ -264,7 +264,7 @@ def main():
     for f_name in functions:
         globals()[f_name](subparsers)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args=argv)
 
     global logger
     logger = conkit.command_line.setup_logging(level="info")
