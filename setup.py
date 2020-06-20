@@ -3,10 +3,10 @@ import os
 import subprocess
 import sys
 
-from Cython.Build import cythonize
 from distutils.command.build import build
 from distutils.util import convert_path
 from setuptools import setup
+from Cython.Build import cythonize
 
 
 # ==============================================================
