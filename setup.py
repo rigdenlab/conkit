@@ -6,6 +6,12 @@ import sys
 from distutils.command.build import build
 from distutils.util import convert_path
 from setuptools import setup, Extension
+
+SETUPREQUIRES = ["cython", "scipy", "numpy", "pytest-runner"]
+subprocess.check_call([sys.executable, "-m", "pip", "install"] + SETUPREQUIRES, stdout=open(os.devnull, "wb"))
+
+SETUPREQUIRES = []
+
 from Cython.Build import cythonize
 import numpy as np
 
