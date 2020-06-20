@@ -185,7 +185,6 @@ TEST_REQUIREMENTS = [
     'pytest-pep8',
     'pytest-helpers-namespace',
 ]
-SETUP_REQUIREMENTS = ['scipy', 'pytest-runner']
 
 setup(
     cmdclass={
@@ -206,7 +205,6 @@ setup(
     scripts=SCRIPTS,
     platforms=PLATFORMS,
     classifiers=CLASSIFIERS,
-    setup_requires=SETUP_REQUIREMENTS,
     install_requires=DEPENDENCIES,
     tests_require=TEST_REQUIREMENTS,
     include_package_data=True,
