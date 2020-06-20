@@ -18,7 +18,7 @@ from setuptools import setup
 # Credits to http://stackoverflow.com/a/33181352
 class BuildCommand(build):
     user_options = build.user_options + [
-        ('script-python-path=', None, 'Path to Python interpreter to be included in the scripts')
+        ("script-python-path=", None, "Path to Python interpreter to be included in the scripts")
     ]
 
     def initialize_options(self):
@@ -40,47 +40,45 @@ class BuildCommand(build):
 
 
 def dependencies():
-    with open('requirements.txt', 'r') as f_in:
+    with open("requirements.txt", "r") as f_in:
         deps = f_in.read().splitlines()
     return deps
 
 
 def extensions():
-    ext_files = [
-        "conkit/core/ext/c_contactmap.pyx",
-        "conkit/core/ext/c_sequencefile.pyx",
-        "conkit/misc/ext/c_bandwidth.pyx",
-    ]
-    return [cythonize(ext) for ext in ext_files]
+    return cythonize(
+        ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx",],
+        compiler_directives={"language_level": sys.version_info[0]},
+    )
 
 
 def readme():
-    with open('README.rst', 'r') as f_in:
+    with open("README.rst", "r") as f_in:
         return f_in.read()
 
 
 def scripts():
-    extension = '.bat' if sys.platform.startswith('win') else ''
-    header = '' if sys.platform.startswith('win') else '#!/bin/sh'
-    bin_dir = 'bin'
-    command_dir = convert_path('conkit/command_line')
+    extension = ".bat" if sys.platform.startswith("win") else ""
+    header = "" if sys.platform.startswith("win") else "#!/bin/sh"
+    bin_dir = "bin"
+    command_dir = convert_path("conkit/command_line")
     scripts = []
     for file in os.listdir(command_dir):
-        if not file.startswith('_') and file.endswith('.py'):
+        if not file.startswith("_") and file.endswith(".py"):
             # Make sure we have a workable name
-            f_name = os.path.basename(file).rsplit('.', 1)[0]
-            for c in ['.', '_']:
-                new_f_name = f_name.replace(c, '-')
+            f_name = os.path.basename(file).rsplit(".", 1)[0]
+            for c in [".", "_"]:
+                new_f_name = f_name.replace(c, "-")
             # Write the content of the script
             script = os.path.join(bin_dir, new_f_name + extension)
             with open(script, "w") as f_out:
                 f_out.write(header + os.linesep)
                 # BATCH file
-                if sys.platform.startswith('win'):
+                if sys.platform.startswith("win"):
                     string = "@{0} -m conkit.command_line.{1} %*"
                 # BASH file
                 else:
-                    string = "{0} -m conkit.command_line.{1} \"$@\""
+                    string = '{0} -m conkit.command_line.{1} "$@"'
                 f_out.write(string.format(PYTHON_EXE, f_name) + os.linesep)
             os.chmod(script, 0o777)
             scripts.append(script)
@@ -90,10 +88,10 @@ def scripts():
 def version():
     # Credits to http://stackoverflow.com/a/24517154
     main_ns = {}
-    ver_path = convert_path('conkit/version.py')
+    ver_path = convert_path("conkit/version.py")
     with open(ver_path) as f_in:
-        exec (f_in.read(), main_ns)
-    return main_ns['__version__']
+        exec(f_in.read(), main_ns)
+    return main_ns["__version__"]
 
 
 # ==============================================================
@@ -123,21 +121,21 @@ LICENSE = "BSD License"
 LONG_DESCRIPTION = readme()
 PACKAGE_DIR = "conkit"
 PACKAGE_NAME = "conkit"
-PLATFORMS = ['POSIX', 'Mac OS', 'Windows', 'Unix']
+PLATFORMS = ["POSIX", "Mac OS", "Windows", "Unix"]
 SCRIPTS = scripts()
 URL = "http://www.conkit.org/en/latest/"
 VERSION = version()
 
 PACKAGES = [
-    'conkit',
-    'conkit/applications',
-    'conkit/command_line',
-    'conkit/core',
-    'conkit/core/ext',
-    'conkit/io',
-    'conkit/misc',
-    'conkit/misc/ext',
-    'conkit/plot',
+    "conkit",
+    "conkit/applications",
+    "conkit/command_line",
+    "conkit/core",
+    "conkit/core/ext",
+    "conkit/io",
+    "conkit/misc",
+    "conkit/misc/ext",
+    "conkit/plot",
 ]
 
 CLASSIFIERS = [
@@ -153,19 +151,16 @@ CLASSIFIERS = [
 ]
 
 TEST_REQUIREMENTS = [
-    'codecov',
-    'coverage',
-    'pytest',
-    'pytest-cov',
-    'pytest-pep8',
-    'pytest-helpers-namespace',
+    "codecov",
+    "coverage",
+    "pytest",
+    "pytest-cov",
+    "pytest-pep8",
+    "pytest-helpers-namespace",
 ]
 
 setup(
-    cmdclass={
-        'build': BuildCommand,
-        'build_ext': build_ext,
-    },
+    cmdclass={"build": BuildCommand, "build_ext": build_ext,},
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     name=PACKAGE_NAME,
