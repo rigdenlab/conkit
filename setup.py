@@ -4,7 +4,6 @@ import subprocess
 import sys
 
 from Cython.Build import cythonize
-from Cython.Distutils import build_ext
 from distutils.command.build import build
 from distutils.util import convert_path
 from setuptools import setup
@@ -47,8 +46,8 @@ def dependencies():
 
 def extensions():
     return cythonize(
-        ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx",],
-        compiler_directives={"language_level": sys.version_info[0]},
+        ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx"],
+        language_level=sys.version_info[0],
     )
 
 
@@ -160,7 +159,7 @@ TEST_REQUIREMENTS = [
 ]
 
 setup(
-    cmdclass={"build": BuildCommand, "build_ext": build_ext,},
+    cmdclass={"build": BuildCommand},
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     name=PACKAGE_NAME,
