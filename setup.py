@@ -183,6 +183,7 @@ setup(
     classifiers=CLASSIFIERS,
     install_requires=DEPENDENCIES,
     tests_require=TEST_REQUIREMENTS,
+    setup_requires=['pytest-runner'],
     include_package_data=True,
     zip_safe=False,
 )
