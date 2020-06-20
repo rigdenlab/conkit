@@ -15,7 +15,7 @@ Contact Prediction ToolKit
    :alt: Python Versions
 
 .. image:: https://readthedocs.org/projects/conkit/badge/?version=latest
-   :target: http://www.conkit.org/en/latest/?badge=latest
+   :target: https://conkit.readthedocs.io/en/latest/
    :alt: Documentation Status
 
 .. image:: https://codecov.io/gh/rigdenlab/conkit/branch/master/graph/badge.svg
