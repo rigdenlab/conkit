@@ -371,9 +371,8 @@ def run_apidoc(_):
 
 
 def run_figgen(_):
-    # Basic way of generating all associated figures
-    # TODO: refactor this and the command in Makefile into a little extension
-    subprocess.check_call(['make', 'figures'])
+    import figures
+    figures.generate_all()
 
 
 # -- Options for intersphinx extension ---------------------------------------
