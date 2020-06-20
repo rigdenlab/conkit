@@ -5,8 +5,9 @@ import sys
 
 from distutils.command.build import build
 from distutils.util import convert_path
-from setuptools import setup
+from setuptools import setup, Extension
 from Cython.Build import cythonize
+import numpy as np
 
 
 # ==============================================================
@@ -46,7 +47,11 @@ def dependencies():
 
 def extensions():
     return cythonize(
-        ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx"],
+        [
+            Extension("conkit.core.ext.c_contactmap", ["conkit/core/ext/c_contactmap.pyx"]),
+            Extension("conkit.core.ext.c_sequencefile", ["conkit/core/ext/c_sequencefile.pyx"]),
+            Extension("conkit.misc.ext.c_bandwidth", ["conkit/misc/ext/c_bandwidth.pyx"]),
+        ],
         language_level=sys.version_info[0],
     )
 
@@ -164,13 +169,14 @@ setup(
     author_email=AUTHOR_EMAIL,
     name=PACKAGE_NAME,
     description=DESCRIPTION,
+    ext_modules=EXT_MODULES,
+    include_dirs=[np.get_include()],
     long_description=LONG_DESCRIPTION,
     license=LICENSE,
     version=VERSION,
     url=URL,
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
-    ext_modules=EXT_MODULES,
     scripts=SCRIPTS,
     platforms=PLATFORMS,
     classifiers=CLASSIFIERS,
