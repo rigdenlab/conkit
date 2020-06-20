@@ -1,6 +1,6 @@
 scipy
 cython
-matplotlib
 numpy
+matplotlib
 biopython
 scikit-learn

@@ -1,26 +1,18 @@
 """Python Interface for Residue-Residue Contact Predictions"""
-
-from distutils.command.build import build
-from distutils.util import convert_path
-from setuptools import setup, Extension
-
 import os
 import subprocess
 import sys
 
-# Ensure we have these dependencies before we proceed
-SETUPREQUIRES = ['cython', 'scipy', 'numpy', 'pytest-runner']
-subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + SETUPREQUIRES, stdout=open(os.devnull, 'wb'))
-
-SETUPREQUIRES = []
-
 from Cython.Distutils import build_ext
-import numpy
+from distutils.command.build import build
+from distutils.util import convert_path
+from setuptools import setup, Extension
 
-USE_OPENMP = True
-# Disable OpenMP support on OS X --- compiler problems require separate GCC installation via Homebrew
-if sys.platform.startswith('darwin'):
-    USE_OPENMP = False
+import numpy as np
+
+# Disable OpenMP support on OS X --- compiler problems require 
+# separate GCC installation via Homebrew
+USE_OPENMP = not sys.platform.startswith('darwin')
 
 if sys.platform.startswith('win'):
     EXTRA_COMPILE_ARGS = ['/O2', '/openmp']
@@ -69,7 +61,11 @@ def dependencies():
 
 
 def extensions():
-    exts = ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx"]
+    exts = [
+        "conkit/core/ext/c_contactmap.pyx",
+        "conkit/core/ext/c_sequencefile.pyx",
+        "conkit/misc/ext/c_bandwidth.pyx",
+    ]
     extensions = []
     for ext in exts:
         extensions.append(
@@ -78,7 +74,7 @@ def extensions():
                 [ext],
                 extra_compile_args=EXTRA_COMPILE_ARGS,
                 extra_link_args=EXTRA_LINK_ARGS,
-                include_dirs=[numpy.get_include()],
+                include_dirs=[np.get_include()],
             ))
     return extensions
 
@@ -189,6 +185,7 @@ TEST_REQUIREMENTS = [
     'pytest-pep8',
     'pytest-helpers-namespace',
 ]
+SETUP_REQUIREMENTS = ['scipy', 'pytest-runner']
 
 setup(
     cmdclass={
@@ -209,7 +206,7 @@ setup(
     scripts=SCRIPTS,
     platforms=PLATFORMS,
     classifiers=CLASSIFIERS,
-    setup_requires=SETUPREQUIRES,
+    setup_requires=SETUP_REQUIREMENTS,
     install_requires=DEPENDENCIES,
     tests_require=TEST_REQUIREMENTS,
     include_package_data=True,
