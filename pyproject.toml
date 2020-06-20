@@ -1,2 +1,13 @@
 [build-system]
-requires = ["cython", "numpy", "pytest-runner", "scipy", "setuptools"]
+requires = ["cython", "pytest-runner", "scipy", "setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 120
+target-version = ['py37']
+
+[tool.pytest.ini_options]
+minversion = "2.0"
+addopts = "-vv --pep8 --cov=conkit --cov-report=xml --pyargs conkit"
+pep8maxlinelength = "120"
+pep8ignore = "E203 E402 E501 W503"

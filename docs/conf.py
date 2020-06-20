@@ -82,7 +82,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ConKit'
-copyright = '2016-{}, University of Liverpool'.format(datetime.datetime.now().year)
+copyright = '2016-{}, University of Liverpool'.format(datetime.date.today().year)
 author = 'Felix Simkovic'
 
 # The short X.Y version.

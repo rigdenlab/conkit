@@ -155,6 +155,7 @@ def prepare():
 
     subprocess.call(["git", "clone", "https://github.com/rigdenlab/conkit-examples.git", DATA_DIR])
 
+
 def generate_all():
     prepare()
     logging.disable(level=logging.CRITICAL)

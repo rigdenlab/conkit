@@ -3,27 +3,12 @@ import os
 import subprocess
 import sys
 
+from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 from distutils.command.build import build
 from distutils.util import convert_path
-from setuptools import setup, Extension
+from setuptools import setup
 
-import numpy as np
-
-# Disable OpenMP support on OS X --- compiler problems require 
-# separate GCC installation via Homebrew
-USE_OPENMP = not sys.platform.startswith('darwin')
-
-if sys.platform.startswith('win'):
-    EXTRA_COMPILE_ARGS = ['/O2', '/openmp']
-    EXTRA_LINK_ARGS = []
-else:
-    EXTRA_COMPILE_ARGS = ['-O3', '-ffast-math', '-march=native', '-pipe']
-    EXTRA_LINK_ARGS = EXTRA_COMPILE_ARGS[:]
-
-    if USE_OPENMP:
-        EXTRA_COMPILE_ARGS.append('-fopenmp')
-        EXTRA_LINK_ARGS.append('-fopenmp')
 
 # ==============================================================
 # Setup.py command extensions
@@ -61,22 +46,12 @@ def dependencies():
 
 
 def extensions():
-    exts = [
+    ext_files = [
         "conkit/core/ext/c_contactmap.pyx",
         "conkit/core/ext/c_sequencefile.pyx",
         "conkit/misc/ext/c_bandwidth.pyx",
     ]
-    extensions = []
-    for ext in exts:
-        extensions.append(
-            Extension(
-                ext.replace('/', '.').rsplit('.', 1)[0],
-                [ext],
-                extra_compile_args=EXTRA_COMPILE_ARGS,
-                extra_link_args=EXTRA_LINK_ARGS,
-                include_dirs=[np.get_include()],
-            ))
-    return extensions
+    return [cythonize(ext) for ext in ext_files]
 
 
 def readme():
