@@ -26,7 +26,8 @@ install:
   - conda create -q -n test-environment python=%PYTHON_VERSION%
     msinttypes freetype=2.6 "libpng>=1.6.21,<1.7" zlib=1.2 tk=8.5
   - activate test-environment
-  - python setup.py install
+  - pip install .
 
 test_script:
+  - pip install .
   - python setup.py test
