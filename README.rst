@@ -18,10 +18,9 @@ Contact Prediction ToolKit
    :target: https://conkit.readthedocs.io/en/latest/
    :alt: Documentation Status
 
-.. image:: https://codecov.io/gh/rigdenlab/conkit/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/rigdenlab/conkit
-   :alt: Codecov Status
- 
+.. image:: https://github.com/rigdenlab/conkit/workflows/Build/badge.svg
+   :alt: Build Status
+
 .. image:: https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtx148-blue.svg
    :target: https://doi.org/10.1093/bioinformatics/btx148
    :alt: DOI Status

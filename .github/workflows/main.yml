@@ -1,4 +1,4 @@
-name: Integration Pipeline
+name: Build
 
 on: [push]
 
