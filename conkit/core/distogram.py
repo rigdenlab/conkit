@@ -106,7 +106,7 @@ class Distogram(ContactMap):
             :obj:`~conkit.core.contactmap.ContactMap` instance, regardless of inplace
         """
         distogram = self._inplace(inplace)
-        unique_pairs = {tuple(sorted(el.id)): el for el in self}.values()
+        unique_pairs = {tuple(sorted(el.id)): el for el in self}
         distogram.child_list = list(unique_pairs.values())
         distogram.child_dict = unique_pairs
         return distogram
@@ -137,7 +137,7 @@ class Distogram(ContactMap):
 
         absent_residues = []
         for residue in range(1, seq_len + 1):
-            if not any([c for c in self if residue in c.id]):
+            if not any([c.id for c in self if residue in c.id]):
                 absent_residues.append(residue)
         return absent_residues
 
@@ -157,7 +157,7 @@ class Distogram(ContactMap):
         Returns
         -------
         :obj:`numpy.array`
-           :obj:`numpy.array` instance that represents the distogram
+           :obj:`numpy.array` instance that represents the distogram. Note: change of residue indexing, now starts in 0
 
         Raises
         ------
@@ -176,8 +176,8 @@ class Distogram(ContactMap):
 
         array = np.full((seq_len + 1, seq_len + 1), np.nan)
         for distance in self:
-            array[distance[0], distance[1]] = getter(distance)
-            array[distance[1], distance[0]] = getter(distance)
+            array[distance.res1_seq, distance.res2_seq] = getter(distance)
+            array[distance.res2_seq, distance.res1_seq] = getter(distance)
         array = np.delete(array, 0, axis=0)
         array = np.delete(array, 0, axis=1)
 

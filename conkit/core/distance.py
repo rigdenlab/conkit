@@ -110,7 +110,7 @@ class Distance(Contact):
     def __repr__(self):
         text = (
             "{name}(id={id} res1={_res1} res1_chain={res1_chain} res1_seq={_res1_seq} "
-            "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score}"
+            "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score} "
             "distance_bins={distance_bins} distance_scores={distance_scores})"
         )
         return text.format(name=self.__class__.__name__, id=self._id, **{k: getattr(self, k) for k in self.__slots__})
