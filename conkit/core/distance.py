@@ -61,23 +61,7 @@ class Distance(Contact):
 
     """
 
-    __slots__ = [
-        "_distance_bound",
-        "raw_score",
-        "_res1",
-        "_res2",
-        "res1_chain",
-        "res2_chain",
-        "_res1_seq",
-        "_res2_seq",
-        "_res1_altseq",
-        "_res2_altseq",
-        "scalar_score",
-        "_status",
-        "weight",
-        "distance_bins",
-        "distance_scores"
-    ]
+    __slots__ = ["distance_bins", "distance_scores"]
 
     def __init__(self, res1_seq, res2_seq, distance_scores, distance_bins, raw_score=None, distance_bound=(0, 8)):
         """Initialize a generic distance residue pair
@@ -113,7 +97,7 @@ class Distance(Contact):
             "res2={_res2} res2_chain={res2_chain} res2_seq={_res2_seq} raw_score={raw_score} "
             "distance_bins={distance_bins} distance_scores={distance_scores})"
         )
-        return text.format(name=self.__class__.__name__, id=self._id, **{k: getattr(self, k) for k in self.__slots__})
+        return text.format(name=self.__class__.__name__, **{k: getattr(self, k) for k in self.__dir__()})
 
     @property
     def max_score(self):

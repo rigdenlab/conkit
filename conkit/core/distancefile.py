@@ -65,12 +65,11 @@ class DistanceFile(ContactFile):
 
     """
 
-    __slots__ = ["author", "target", "_method", "_remark", "_original_file_format"]
+    __slots__ = ["_original_file_format"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, id):
         """Initialise a new distance file"""
-        self._original_file_format = None
-        super(ContactFile, self).__init__(*args, **kwargs)
+        super(DistanceFile, self).__init__(id)
 
     def __repr__(self):
         return '{}(id="{}" ndistograms={})'.format(self.__class__.__name__, self.id, len(self))

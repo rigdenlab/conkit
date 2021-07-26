@@ -62,11 +62,11 @@ class Distogram(ContactMap):
 
     """
 
-    __slots__ = ["_sequence", "_original_file_format"]
+    __slots__ = ["_original_file_format"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, id):
         self._original_file_format = None
-        super(ContactMap, self).__init__(*args, **kwargs)
+        super(Distogram, self).__init__(id)
 
     def __repr__(self):
         return '{}(id="{}", ndistances={})'.format(self.__class__.__name__, self.id, self.ndistances)
