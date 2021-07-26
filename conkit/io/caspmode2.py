@@ -44,6 +44,21 @@ class CaspMode2Parser(ContactFileParser):
     """Parser class for CASP RR MODE 2 distance prediction file"""
 
     def read(self, f_handle, f_id="casp2"):
+        """Read a distance prediction file
+
+        Parameters
+        ----------
+        f_handle
+           Open file handle [read permissions]
+        f_id : str, optional
+           Unique contact file identifier
+
+        Returns
+        -------
+        :obj:`~conkit.core.distancefile.DistanceFile`
+
+        """
+
         hierarchy = DistanceFile(f_id)
         hierarchy.original_file_format = "CASPRR_MODE_2"
         _map = Distogram("distogram_1")
