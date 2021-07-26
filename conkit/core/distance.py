@@ -32,6 +32,7 @@
 """Residue distance prediction container used throughout ConKit"""
 
 import statistics
+
 from conkit.core.contact import Contact
 
 
@@ -142,19 +143,22 @@ class Distance(Contact):
         None, int, float
            The probability that the residue pair is within the specified distance
 
+        Raises
+        ------
+        :exc:`ValueError`
+           distance is not a positive number
         """
-
         if not self.distance_bins:
             return None
         elif len(self.distance_bins) == 1:
             if self.distance_bins[0][-1] < distance:
                 return 0
             return 1
-        elif self.distance_bins[-1][1] <= distance:
-            return 1
+        elif distance <= 0:
+            raise ValueError('Distance must be a positive value')
 
-        for bin_index, upper_limit in enumerate((d_bin[-1] for d_bin in self.distance_bins)):
-            if upper_limit > distance:
+        for bin_index, distance_bin in enumerate(self.distance_bins):
+            if distance_bin[0] < distance <= distance_bin[1]:
                 break
 
-        return sum(self.distance_scores[:bin_index])
+        return sum(self.distance_scores[:bin_index + 1])
