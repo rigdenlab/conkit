@@ -55,7 +55,7 @@ class ContactFile(Entity):
     >>> contact_file.add(ContactMap("foo"))
     >>> contact_file.add(ContactMap("bar"))
     >>> print(contact_file)
-    ContactFile(id="example" nseq=2)
+    ContactFile(id="example" nmaps=2)
 
     Attributes
     ----------

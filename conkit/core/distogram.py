@@ -55,7 +55,7 @@ class Distogram(ContactMap):
     ----------
     id : str
        A unique identifier
-    original_file_format : int
+    original_file_format : str
        The original file format used to create the :obj:`~conkit.core.distogram.Distogram` instance
     ndistances : int
        The number of :obj:`~conkit.core.distance.Distance` instances in the :obj:`~conkit.core.distogram.Distogram`

@@ -38,17 +38,24 @@ __version__ = "1.0"
 
 
 def Contact(*args, **kwargs):
-    """:obj:`Contact <conkit.core.Contact.Contact>` instance"""
+    """:obj:`Contact <conkit.core.contact.Contact>` instance"""
     from conkit.core.contact import Contact
 
     return Contact(*args, **kwargs)
 
 
 def Distance(*args, **kwargs):
-    """:obj:`Contact <conkit.core.Distance.Distance>` instance"""
+    """:obj:`Contact <conkit.core.distance.Distance>` instance"""
     from conkit.core.distance import Distance
 
     return Distance(*args, **kwargs)
+
+
+def DistanceFile(*args, **kwargs):
+    """:obj:`Contact <conkit.core.distancefile.DistanceFile>` instance"""
+    from conkit.core.distancefile import DistanceFile
+
+    return DistanceFile(*args, **kwargs)
 
 
 def Distogram(*args, **kwargs):
