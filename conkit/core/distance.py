@@ -50,7 +50,8 @@ import numpy as np    >>> from conkit.core import Distance
     Attributes
     ----------
     distance_bins : tuple
-       The distance boundaries of the bins associated to this residue pair in Ångstrom [upper boundaries are inclusive]
+       The distance boundaries of the bins associated to this residue pair in Ångstrom.
+       Intervals are open on the left, i.e. a < d ≤ b
     distance_scores: tuple
         The prediction scores associated to each distance bin for this residue pair
     raw_score : float
@@ -147,6 +148,8 @@ import numpy as np    >>> from conkit.core import Distance
         elif len(self.distance_bins) == 1:
             if self.distance_bins[0][-1] < distance:
                 return 0
+            return 1
+        elif self.distance_bins[-1][1] <= distance:
             return 1
 
         for bin_index, upper_limit in enumerate((d_bin[-1] for d_bin in self.distance_bins)):

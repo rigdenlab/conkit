@@ -39,16 +39,15 @@ __version__ = "0.1"
 
 import collections
 import itertools
-import sys
 import warnings
 
 from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 
 from conkit.io._parser import ContactFileParser
-from conkit.core.contact import Contact
-from conkit.core.contactmap import ContactMap
-from conkit.core.contactfile import ContactFile
+from conkit.core.distance import Distance
+from conkit.core.distogram import Distogram
+from conkit.core.distancefile import DistanceFile
 from conkit.core.sequence import Sequence
 from conkit.core.mappings import AminoAcidThreeToOne
 
@@ -134,12 +133,14 @@ class GenericStructureParser(ContactFileParser):
 
         Returns
         -------
-        :obj:`~conkit.core.contactfile.ContactFile~`
+        :obj:`~conkit.core.distancefile.DistanceFile~`
 
         """
         hierarchies = []
+        distance_bound = (0.0, float(distance_cutoff))
         for model in structure:
-            hierarchy = ContactFile(f_id + "_" + str(model.id))
+            hierarchy = DistanceFile(f_id + "_" + str(model.id))
+            hierarchy.original_file_format = "PDB"
             chains = list(chain for chain in model)
 
             for chain in chains:
@@ -148,41 +149,37 @@ class GenericStructureParser(ContactFileParser):
 
             for chain1, chain2 in itertools.product(chains, chains):
                 if chain1.id == chain2.id:  # intra
-                    contact_map = ContactMap(chain1.id)
+                    distogram = Distogram(chain1.id)
                 else:  # inter
-                    contact_map = ContactMap(chain1.id + chain2.id)
+                    distogram = Distogram(chain1.id + chain2.id)
 
                 for (atom1, atom2, distance) in self._chain_contacts(chain1, chain2):
-                    contact = Contact(
-                        atom1.resseq,
-                        atom2.resseq,
-                        round(1.0 - (distance / 100), 6),
-                        distance_bound=(0.0, float(distance_cutoff)),
-                    )
+                    score = round(1.0 - (distance / 100), 6)
+                    dist = Distance(atom1.resseq, atom2.resseq, (1,), ((distance,),), score, distance_bound)
 
-                    contact.res1_altseq = atom1.resseq_alt
-                    contact.res2_altseq = atom2.resseq_alt
-                    contact.res1 = atom1.resname
-                    contact.res2 = atom2.resname
-                    contact.res1_chain = atom1.reschain
-                    contact.res2_chain = atom2.reschain
-
+                    dist.res1_altseq = atom1.resseq_alt
+                    dist.res2_altseq = atom2.resseq_alt
+                    dist.res1 = atom1.resname
+                    dist.res2 = atom2.resname
+                    dist.res1_chain = atom1.reschain
+                    dist.res2_chain = atom2.reschain
                     if distance_cutoff == 0 or distance < distance_cutoff:
-                        contact.true_positive = True
-                        contact_map.add(contact)
+                        dist.true_positive = True
 
-                if contact_map.empty:
-                    del contact_map
+                    distogram.add(dist)
+
+                if distogram.empty:
+                    del distogram
                 else:
-                    if len(contact_map.id) == 1:
-                        contact_map.sequence = self._build_sequence(chain1)
-                        assert len(contact_map.sequence.seq) == len(chain1)
+                    if len(distogram.id) == 1:
+                        distogram.sequence = self._build_sequence(chain1)
+                        assert len(distogram.sequence.seq) == len(chain1)
                     else:
-                        contact_map.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
-                        assert len(contact_map.sequence.seq) == len(chain1) + len(chain2)
-                    hierarchy.add(contact_map)
+                        distogram.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
+                        assert len(distogram.sequence.seq) == len(chain1) + len(chain2)
+                    hierarchy.add(distogram)
 
-            hierarchy.method = "Contact map extracted from PDB " + str(model.id)
+            hierarchy.method = "Distogram extracted from PDB " + str(model.id)
             hierarchy.remark = [
                 "The model id is the chain identifier, i.e XY equates to chain X and chain Y.",
                 "Residue numbers in column 1 are chain X, and numbers in column 2 are chain Y.",
@@ -195,7 +192,7 @@ class GenericStructureParser(ContactFileParser):
         return hierarchies[0]
 
     def _write(self, f_handle, hierarchy):
-        """Write a contact file instance to to file
+        """Write a contact file instance to a file
 
         Raises
         ------
