@@ -44,6 +44,20 @@ def Contact(*args, **kwargs):
     return Contact(*args, **kwargs)
 
 
+def Distance(*args, **kwargs):
+    """:obj:`Contact <conkit.core.Distance.Distance>` instance"""
+    from conkit.core.distance import Distance
+
+    return Distance(*args, **kwargs)
+
+
+def Distogram(*args, **kwargs):
+    """:obj:`Contact <conkit.core.distogram.Distogram>` instance"""
+    from conkit.core.distogram import Distogram
+
+    return Distogram(*args, **kwargs)
+
+
 def ContactMap(*args, **kwargs):
     """:obj:`ContactMap <conkit.core.ContactMap.ContactMap>` instance"""
     from conkit.core.contactmap import ContactMap
