@@ -32,7 +32,7 @@ Parser module specific to CASP-RR MODE 2 distance predictions
 """
 
 import numpy as np
-from conkit.io._parser import ContactFileParser
+from conkit.io._parser import DistanceFileParser
 from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
@@ -40,7 +40,7 @@ from conkit.core.distancefile import DistanceFile
 DISNTACE_BINS = ((0, 4), (4, 6), (6, 8), (8, 10), (10, 12), (12, 14), (14, 16), (16, 18), (18, 20), (20, np.inf))
 
 
-class CaspMode2Parser(ContactFileParser):
+class CaspMode2Parser(DistanceFileParser):
     """Parser class for CASP RR MODE 2 distance prediction file"""
 
     def read(self, f_handle, f_id="casp2"):

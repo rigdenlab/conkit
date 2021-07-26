@@ -69,7 +69,7 @@ class ParserCache(object):
         "psicov": ["psicov", "metapsicov", "nebcon"],
     }
 
-    BLINDFOLD = set(["ContactFileParser", "GenericStructureParser", "SequenceFileParser"])
+    BLINDFOLD = {"ContactFileParser", "GenericStructureParser", "DistanceFileParser", "SequenceFileParser"}
 
     def __init__(self):
         self._parsers = []
@@ -88,7 +88,11 @@ class ParserCache(object):
 
     @property
     def contact_file_parsers(self):
-        return {c.id: c for c in self._parsers if c.group in ["ContactFileParser", "GenericStructureParser"]}
+        return {c.id: c for c in self._parsers if c.group in ["ContactFileParser"]}
+
+    @property
+    def distance_file_parsers(self):
+        return {c.id: c for c in self._parsers if c.group in ["DistanceFileParser", "GenericStructureParser"]}
 
     @property
     def sequence_file_parsers(self):

@@ -86,6 +86,12 @@ class ContactFileParser(Parser):
     pass
 
 
+class DistanceFileParser(Parser):
+    """General purpose class for all distance prediction file parsers"""
+
+    pass
+
+
 class SequenceFileParser(Parser):
     """General purpose class for all sequence file parsers"""
 

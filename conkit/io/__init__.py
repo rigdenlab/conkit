@@ -40,6 +40,7 @@ from conkit.io._iotools import open_f_handle
 
 # Accessed by some modules - might be deprecated in the future
 CONTACT_FILE_PARSERS = PARSER_CACHE.contact_file_parsers
+DISTANCE_FILE_PARSERS = PARSER_CACHE.distance_file_parsers
 SEQUENCE_FILE_PARSERS = PARSER_CACHE.sequence_file_parsers
 
 
@@ -79,6 +80,8 @@ def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_o
     """
     if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
+    elif format_in in CONTACT_FILE_PARSERS and format_out in DISTANCE_FILE_PARSERS:
+        raise ValueError("Cannot convert contact file to distance file")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
     else:
