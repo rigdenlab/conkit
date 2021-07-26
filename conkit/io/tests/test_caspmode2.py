@@ -1,16 +1,9 @@
 """Testing facility for conkit.io.CaspMode2"""
 
-
-import os
-import unittest
-
-from conkit.core.contact import Contact
-from conkit.core.contactfile import ContactFile
-from conkit.core.contactmap import ContactMap
-from conkit.core.sequence import Sequence
+from conkit.core.distancefile import DistanceFile
+from conkit.core.distogram import Distogram
 from conkit.io.caspmode2 import CaspMode2Parser
 from conkit.io.tests.helpers import ParserTestCase
-
 
 
 class TestCaspMode2Parser(ParserTestCase):
@@ -37,19 +30,25 @@ MODEL 1
 5 15 .35 0 .15 .2 .1 .1 .15 .05 .05 .1 .1
 7 14 .2 0 0 .2 .3 .1 .1 .05 .05 .1 .1
 END"""
-        expected_res1 = [8, 10, 38, 20, 37, 29, 9, 37, 15, 14, 15, 14]
-        expected_res2 = [1, 1, 31, 10, 30, 11, 1, 21, 8, 3, 5, 7]
+        expected_res1 = [1, 1, 31, 10, 30, 11, 1, 21, 8, 3, 5, 7]
+        expected_res2 = [8, 10, 38, 20, 37, 29, 9, 37, 15, 14, 15, 14]
         expected_raw_score = [0.72, 0.715, 0.71, 0.69, 0.67, 0.65, 0.63, 0.505, 0.4, 0.4, 0.35, 0.2]
-        expected_bin_distance = [0, 0, 1, 0, 0, 0, 1, 2, 2, 1, 2, 3]
+        expected_bin_distance = [(0, 4), (0, 4), (4, 6), (0, 4), (0, 4), (0, 4),
+                                 (4, 6), (6, 8), (6, 8), (4, 6), (6, 8), (8, 10)]
         expected_bin_score = [0.345, 0.34, 0.56, 0.34, 0.33, 0.33, 0.51, 0.305, 0.3, 0.2, 0.2, 0.3]
 
-        output = CaspMode2Parser(content)
+        f_name = self.tempfile(content=content)
+        with open(f_name, "r") as f_in:
+            distancefile = CaspMode2Parser().read(f_in)
 
-        self.assertEquals('DISTO', output.pop(-1))
-        self.assertEqual(12, len(output))
-        self.assertListEqual(expected_res1, [contact[0] for contact in output])
-        self.assertListEqual(expected_res2, [contact[1] for contact in output])
-        self.assertListEqual(expected_raw_score, [contact[2] for contact in output])
-        self.assertListEqual(expected_bin_distance, [contact[3] for contact in output])
-        self.assertListEqual(expected_bin_score, [contact[4] for contact in output])
-
+        self.assertIsInstance(distancefile, DistanceFile)
+        self.assertEqual(1, len(distancefile))
+        distogram = distancefile.top
+        self.assertEqual('CASPRR_MODE_2', distogram.original_file_format)
+        self.assertIsInstance(distogram, Distogram)
+        self.assertEqual(12, distogram.ndistances)
+        self.assertListEqual(expected_res1, [distance.res1_seq for distance in distogram])
+        self.assertListEqual(expected_res2, [distance.res2_seq for distance in distogram])
+        self.assertListEqual(expected_raw_score, [contact.raw_score for contact in distogram])
+        self.assertListEqual(expected_bin_score, [distance.max_score for distance in distogram])
+        self.assertListEqual(expected_bin_distance, [distance.predicted_distance_bin for distance in distogram])
