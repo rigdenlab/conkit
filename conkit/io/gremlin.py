@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
