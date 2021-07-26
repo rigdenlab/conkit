@@ -154,15 +154,19 @@ class GenericStructureParser(ContactFileParser):
                     distogram = Distogram(chain1.id + chain2.id)
 
                 for (atom1, atom2, distance) in self._chain_contacts(chain1, chain2):
-                    score = round(1.0 - (distance / 100), 6)
-                    dist = Distance(atom1.resseq, atom2.resseq, (1,), ((distance,),), score, distance_bound)
+                    if distance < distance_cutoff:
+                        score = round(1.0 - (distance / 100), 6)
+                    else:
+                        score = 0
 
+                    dist = Distance(atom1.resseq, atom2.resseq, (1,), ((distance, distance),), score, distance_bound)
                     dist.res1_altseq = atom1.resseq_alt
                     dist.res2_altseq = atom2.resseq_alt
                     dist.res1 = atom1.resname
                     dist.res2 = atom2.resname
                     dist.res1_chain = atom1.reschain
                     dist.res2_chain = atom2.reschain
+
                     if distance_cutoff == 0 or distance < distance_cutoff:
                         dist.true_positive = True
 
