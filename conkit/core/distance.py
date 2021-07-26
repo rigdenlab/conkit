@@ -41,11 +41,12 @@ class Distance(Contact):
 
     Examples
     --------
-import numpy as np    >>> from conkit.core import Distance
-    >>> distance = Distance(1, 25, (0.25, 0.45, 0.25, 0.05), ((0, 4), (4, 6), (6, 8), (8, 10)))
+    >>> import numpy as np
+    >>> from conkit.core import Distance
+    >>> distance = Distance(1, 25, (0.25, 0.45, 0.25, 0.05), ((0, 4), (4, 6), (6, 8), (8, np.inf)))
     >>> print(distance)
     Distance(id="(1, 25)" res1="A" res1_seq=1 res2="A" res2_seq=25 raw_score=0.95,
-    distance_scores=(0.25, 0.45, 0.25, 0.05), distance_bins=((0, 4), (4, 6), (6, 8), (8, 10)))
+    distance_scores=(0.25, 0.45, 0.25, 0.05), distance_bins=((0, 4), (4, 6), (6, 8), (8, inf)))
 
     Attributes
     ----------
