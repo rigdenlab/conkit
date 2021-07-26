@@ -1259,6 +1259,28 @@ class TestContactMap(unittest.TestCase):
         contact_map.remove_false_negatives(inplace=True)
         self.assertListEqual([[1, 5], [1, 6], [2, 7], [3, 5], [2, 8]], contact_map.as_list())
 
+    def test_slice_1(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            contact_map.add(c)
+        contact_map.sequence = Sequence("TEST", "AAAAAA")
+        contact_map.slice_map(0.5, inplace=True)
+        self.assertListEqual([[1, 5], [3, 3], [5, 1]], contact_map.as_list())
+
+    def test_slice_2(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            contact_map.add(c)
+        contact_map.slice_map(0.25, seq_len=12, inplace=True)
+        self.assertListEqual([[1, 5], [3, 3], [5, 1]], contact_map.as_list())
+
+    def test_slice_3(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            contact_map.add(c)
+        with self.assertRaises(ValueError):
+            contact_map.slice_map(0.5, inplace=True)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
