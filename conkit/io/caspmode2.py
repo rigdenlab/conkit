@@ -79,13 +79,30 @@ class CaspMode2Parser(DistanceFileParser):
         return hierarchy
 
     def write(self, f_handle, hierarchy):
-        """Write a distance file instance to a file
+        """Write a distance prediction file instance to a file
+
+        Parameters
+        ----------
+        f_handle
+           Open file handle [write permissions]
+        hierarchy : :obj:`~conkit.core.distancefile.DistanceFile`, :obj:`~conkit.core.distogram.Distogram`
+                    or :obj:`~conkit.core.distance.Distance`
 
         Raises
         ------
-        :exc:`NotImplementedError`
-           Write function not available
+        :exc:`RuntimeError`
+           More than one contact map in the hierarchy
 
         """
-        raise NotImplementedError("Write function not available yet")
+        distancefile = self._reconstruct(hierarchy)
+        if len(distancefile) > 1:
+            raise RuntimeError("More than one distogram provided")
+        distogram = distancefile.top_map
 
+        content = "PFRMAT RR\nRMODE 2\n"
+        line_template = "{} {} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f}\n"
+        for distance in distogram:
+            distance.reshape_bins(DISNTACE_BINS)
+            content += line_template.format(distance.res1_seq, distance.res2_seq,
+                                            distance.raw_score, *distance.distance_scores)
+        f_handle.write(content)

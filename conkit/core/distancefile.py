@@ -69,6 +69,7 @@ class DistanceFile(ContactFile):
 
     def __init__(self, id):
         """Initialise a new distance file"""
+        self._original_file_format = None
         super(DistanceFile, self).__init__(id)
 
     def __repr__(self):

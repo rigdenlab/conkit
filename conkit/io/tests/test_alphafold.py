@@ -32,7 +32,7 @@ class TestAlphaFold2Parser(ParserTestCase):
         self.assertIsInstance(distancefile, DistanceFile)
         self.assertEqual(1, len(distancefile))
         distogram = distancefile.top
-        self.assertEqual('CASPRR_MODE_2', distogram.original_file_format)
+        self.assertEqual('ALPHAFOLD2', distogram.original_file_format)
         self.assertIsInstance(distogram, Distogram)
         self.assertEqual(15, len(distogram))
 
