@@ -68,7 +68,7 @@ def main():
     if args.outformat == "rosetta":
         raise NotImplementedError("This conversion is not yet supported")
 
-    msg = "Convertin file{nline}{tab}{infile} of format {informat}{nline}"
+    msg = "Converting file{nline}{tab}{infile} of format {informat}{nline}"
     msg += "to file{nline}{tab}{outfile} of format {outformat}"
     msg = msg.format(
         infile=args.infile, informat=args.informat, outfile=args.outfile, outformat=args.outformat, nline="\n", tab="\t"
