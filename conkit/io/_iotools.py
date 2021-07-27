@@ -96,7 +96,7 @@ def open_f_handle(f_handle, mode):
     f_handle : file_handle, file_name
        A file handle or a file name
     mode : str
-       read, write or append
+       r, rb, w, wb or a
 
     Returns
     -------
@@ -111,15 +111,16 @@ def open_f_handle(f_handle, mode):
        Mode needs to be one of: append, read, write
 
     """
-    if mode not in ["append", "read", "write"]:
-        raise ValueError("Mode needs to be one of: append, read, write")
+
+    if mode not in {"a", "r", "w", "rb", "wb"}:
+        raise ValueError("Mode needs to be one of: a, r, w, rb, wb")
 
     try:
-        if is_str_like(f_handle) and sys.version_info.major >= 3:
-            return io.open(f_handle, mode[0], encoding="utf-8")
+        if is_str_like(f_handle) and sys.version_info.major >= 3 and mode not in {"rb", "wb"}:
+            return io.open(f_handle, mode, encoding="utf-8")
         elif is_str_like(f_handle):
-            return open(f_handle, mode[0])
-        elif f_handle.mode == mode[0]:
+            return open(f_handle, mode)
+        elif f_handle.mode == mode:
             return f_handle
         else:
             raise TypeError("f_handle must be str or filehandle")

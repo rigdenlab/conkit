@@ -92,11 +92,16 @@ class ParserCache(object):
 
     @property
     def distance_file_parsers(self):
-        return {c.id: c for c in self._parsers if c.group in ["DistanceFileParser", "GenericStructureParser"]}
+        return {c.id: c for c in self._parsers if c.group in
+                ["DistanceFileParser", "GenericStructureParser", "BinaryDistanceFileParser"]}
 
     @property
     def sequence_file_parsers(self):
         return {c.id: c for c in self._parsers if c.group in ["SequenceFileParser"]}
+
+    @property
+    def binary_file_formats(self):
+        return {c.id: c for c in self._parsers if c.group in ["BinaryDistanceFileParser"]}
 
     @property
     def file_parsers(self):

@@ -43,45 +43,45 @@ class Test(ParserTestCase):
 
     def test_open_f_handle_1(self):
         fname = self.tempfile()
-        with _iotools.open_f_handle(fname, "append") as fhandle:
+        with _iotools.open_f_handle(fname, "a") as fhandle:
             self.assertEqual("a", fhandle.mode)
-        f_in_handle = _iotools.open_f_handle(fname, "append")
-        with _iotools.open_f_handle(f_in_handle, "append") as fhandle:
+        f_in_handle = _iotools.open_f_handle(fname, "a")
+        with _iotools.open_f_handle(f_in_handle, "a") as fhandle:
             self.assertEqual("a", fhandle.mode)
         f_in_handle.close()
 
     def test_open_f_handle_2(self):
         fname = self.tempfile()
-        with _iotools.open_f_handle(fname, "read") as fhandle:
+        with _iotools.open_f_handle(fname, "r") as fhandle:
             self.assertEqual("r", fhandle.mode)
-        f_in_handle = _iotools.open_f_handle(fname, "read")
-        with _iotools.open_f_handle(f_in_handle, "read") as fhandle:
+        f_in_handle = _iotools.open_f_handle(fname, "r")
+        with _iotools.open_f_handle(f_in_handle, "r") as fhandle:
             self.assertEqual("r", fhandle.mode)
         f_in_handle.close()
 
     def test_open_f_handle_3(self):
         fname = self.tempfile()
-        with _iotools.open_f_handle(fname, "write") as fhandle:
+        with _iotools.open_f_handle(fname, "w") as fhandle:
             self.assertEqual("w", fhandle.mode)
-        f_in_handle = _iotools.open_f_handle(fname, "write")
-        with _iotools.open_f_handle(f_in_handle, "write") as fhandle:
+        f_in_handle = _iotools.open_f_handle(fname, "w")
+        with _iotools.open_f_handle(f_in_handle, "w") as fhandle:
             self.assertEqual("w", fhandle.mode)
         f_in_handle.close()
 
     def test_open_f_handle_4(self):
         fname = self.tempfile()
-        with _iotools.open_f_handle(fname, "write") as fhandle:
+        with _iotools.open_f_handle(fname, "w") as fhandle:
             self.assertEqual("w", fhandle.mode)
             fhandle.write("hello world!")
-        with _iotools.open_f_handle(fname, "read") as fhandle:
+        with _iotools.open_f_handle(fname, "r") as fhandle:
             self.assertEqual("r", fhandle.mode)
             self.assertEqual("hello world!", fhandle.read().strip())
 
     def test_open_f_handle_5(self):
         with self.assertRaises(TypeError):
-            _iotools.open_f_handle(1, "read")
+            _iotools.open_f_handle(1, "r")
         with self.assertRaises(TypeError):
-            _iotools.open_f_handle(1.0, "write")
+            _iotools.open_f_handle(1.0, "w")
 
     def test_open_f_handle_6(self):
         fname = self.tempfile()

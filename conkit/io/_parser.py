@@ -92,6 +92,12 @@ class DistanceFileParser(Parser):
     pass
 
 
+class BinaryDistanceFileParser(Parser):
+    """General purpose class for all binary distance prediction file parsers"""
+
+    pass
+
+
 class SequenceFileParser(Parser):
     """General purpose class for all sequence file parsers"""
 
