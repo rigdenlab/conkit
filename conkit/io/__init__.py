@@ -80,8 +80,8 @@ def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_o
     """
     if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
-    elif format_in in CONTACT_FILE_PARSERS and format_out in DISTANCE_FILE_PARSERS:
-        raise ValueError("Cannot convert contact file to distance file")
+    elif format_out in DISTANCE_FILE_PARSERS:
+        raise ValueError("Conversion into distance files is not supported yet")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
     else:

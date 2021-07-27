@@ -31,8 +31,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Residue distance prediction container used throughout ConKit"""
 
+import math
+import numpy as np
 import statistics
-
 from conkit.core.contact import Contact
 
 
@@ -141,8 +142,20 @@ class Distance(Contact):
         elif distance <= 0:
             raise ValueError('Distance must be a positive value')
 
-        for bin_index, distance_bin in enumerate(self.distance_bins):
-            if distance_bin[0] < distance <= distance_bin[1]:
+        probability = 0
+        for distance_score, distance_bin in zip(self.distance_scores, self.distance_bins):
+            # Last bin is special case because interval goes to Inf
+            if np.isinf(distance_bin[1]):
+                factor = math.e ** (-distance) / math.e ** (-distance_bin[0])
+                probability += distance_score * (1 - factor)
                 break
+            # Assume other bins have continuous probability
+            elif distance_bin[0] < distance <= distance_bin[1]:
+                bin_diff = distance_bin[1] - distance_bin[0]
+                distance_diff = distance - distance_bin[0]
+                probability += distance_score / bin_diff * distance_diff
+                break
+            probability += distance_score
 
-        return sum(self.distance_scores[:bin_index + 1])
+        return probability
+
