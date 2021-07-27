@@ -87,6 +87,7 @@ class Distance(Contact):
         """
         self.distance_bins = distance_bins
         self.distance_scores = distance_scores
+        self.parent = None
         if raw_score is None:
             raw_score = self.get_probability_within_distance(distance_bound[-1])
 
@@ -125,7 +126,7 @@ class Distance(Contact):
 
         Returns
         -------
-        None, int, float
+        None, float
            The probability that the residue pair is within the specified distance
 
         Raises
@@ -134,12 +135,14 @@ class Distance(Contact):
            distance is not a positive number
         """
         if not self.distance_bins:
-            return None
-        elif len(self.distance_bins) == 1:
+            raise ValueError('No distance bins have been defined')
+        elif self.parent is not None and self.parent.original_file_format == 'PDB':
             if self.distance_bins[0][-1] < distance:
-                return 0
-            return 1
-        elif distance <= 0:
+                return 1.0
+            return 0.0
+        elif distance == 0:
+            return 0.0
+        elif distance < 0:
             raise ValueError('Distance must be a positive value')
 
         probability = 0
@@ -159,3 +162,65 @@ class Distance(Contact):
 
         return probability
 
+    def reshape_bins(self, new_bins):
+        """Reshape the predicted distance bins and update :attr:`~conkit.core.distance.Distance.distance_scores` and
+        :attr:`~conkit.core.distance.Distance.distance_bins` accordingly
+
+        Parameters
+        ----------
+        new_bins : tuple
+           A tuple of tuples, where each element corresponds with the upper and lower edges of the intervals for
+           the new distance bins
+
+        Raises
+        ------
+        :exc:`ValueError`
+           The new distance bins are not valid
+        """
+        if self.parent is not None and self.parent.original_file_format == 'PDB':
+            raise ValueError('Cannot re-shape bins obtained from a PDB structure file')
+        try:
+            self._assert_valid_bins(new_bins)
+        except AssertionError:
+            raise ValueError('New distance bins are invalid')
+
+        new_distance_scores = []
+        for current_new_bin in new_bins:
+            probability_lower_bound = self.get_probability_within_distance(current_new_bin[0])
+            probability_upper_bound = self.get_probability_within_distance(current_new_bin[1])
+            new_probability = probability_upper_bound - probability_lower_bound
+            new_distance_scores.append(new_probability)
+
+        self.distance_bins = tuple(new_bins)
+        self.distance_scores = tuple(new_distance_scores)
+
+    @staticmethod
+    def _assert_valid_bins(distance_bins):
+        """Determine whether a set of distance bins is valid. Valid distance bins must follow these rules:
+            - Lower limit of first bin is 0
+            - Upper limit of last bin is Inf
+            - Only Inf value is the upper limit of last bin
+            - Upper and lower limits of bins are different
+            - Upper limit is higher than lower limit across all bins
+
+        Parameters
+        ----------
+        distance_bins : tuple
+           The tuple with the distance bins to be tested
+
+        Raises
+        ------
+        :exc:`AssertionError`
+           The distance bins are not valid
+        """
+
+        assert not any([x for x in distance_bins if len(x) != 2])
+        assert not any([x for x in distance_bins if x[0] >= x[1]])
+        assert np.isinf(distance_bins[-1][1])
+        assert 0 == distance_bins[0][0]
+        assert len([x for x in distance_bins if any(np.isinf(x))]) == 1
+
+        temp_list = []
+        for dbin in distance_bins:
+            temp_list += list(dbin)
+        assert len(np.unique(temp_list[1:-1])) == len(distance_bins) - 1
