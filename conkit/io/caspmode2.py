@@ -37,7 +37,7 @@ from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 
-DISNTACE_BINS = ((0, 4), (4, 6), (6, 8), (8, 10), (10, 12), (12, 14), (14, 16), (16, 18), (18, 20), (20, np.inf))
+DISTANCE_BINS = ((0, 4), (4, 6), (6, 8), (8, 10), (10, 12), (12, 14), (14, 16), (16, 18), (18, 20), (20, np.inf))
 
 
 class CaspMode2Parser(DistanceFileParser):
@@ -73,7 +73,7 @@ class CaspMode2Parser(DistanceFileParser):
             res2_seq = int(line[1])
             raw_score = float(line[2])
             distance_scores = tuple([float(p) for p in line[3:]])
-            _distance = Distance(res1_seq, res2_seq, distance_scores, DISNTACE_BINS, raw_score=raw_score)
+            _distance = Distance(res1_seq, res2_seq, distance_scores, DISTANCE_BINS, raw_score=raw_score)
             _map.add(_distance)
 
         return hierarchy
@@ -102,7 +102,7 @@ class CaspMode2Parser(DistanceFileParser):
         content = "PFRMAT RR\nRMODE 2\n"
         line_template = "{} {} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f}\n"
         for distance in distogram:
-            distance.reshape_bins(DISNTACE_BINS)
+            distance.reshape_bins(DISTANCE_BINS)
             content += line_template.format(distance.res1_seq, distance.res2_seq,
                                             distance.raw_score, *distance.distance_scores)
         f_handle.write(content)

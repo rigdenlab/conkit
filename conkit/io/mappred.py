@@ -37,7 +37,7 @@ from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 
-DISNTACE_BINS = ((0, 4), (4, 4.5), (4.5, 5), (5, 5.5), (5.5, 6), (6, 6.5), (6.5, 7), (7, 7.5), (7.5, 8), (8, 8.5),
+DISTANCE_BINS = ((0, 4), (4, 4.5), (4.5, 5), (5, 5.5), (5.5, 6), (6, 6.5), (6.5, 7), (7, 7.5), (7.5, 8), (8, 8.5),
                  (8.5, 9), (9, 9.5), (9.5, 10), (10, 10.5), (10.5, 11), (11, 11.5), (11.5, 12), (12, 12.5), (12.5, 13),
                  (13, 13.5), (13.5, 14), (14, 14.5), (14.5, 15), (15, 15.5), (15.5, 16), (16, 16.5), (16.5, 17),
                  (17, 17.5), (17.5, 18), (18, 18.5), (18.5, 19), (19, 19.5), (19.5, 20), (20, np.inf))
@@ -75,7 +75,7 @@ class MapPredParser(DistanceFileParser):
             res1_seq = int(line[0])
             res2_seq = int(line[1])
             distance_scores = tuple([float(p) for p in line[2:]])
-            _distance = Distance(res1_seq, res2_seq, distance_scores, DISNTACE_BINS)
+            _distance = Distance(res1_seq, res2_seq, distance_scores, DISTANCE_BINS)
             _map.add(_distance)
 
         return hierarchy
@@ -107,6 +107,6 @@ class MapPredParser(DistanceFileParser):
                   "15.5,16,16.5,17,17.5,18,18.5,19,19.5,20,inf]\n"
         line_template = "{} {}" + " {:.6f}" * 34 + "\n"
         for distance in distogram:
-            distance.reshape_bins(DISNTACE_BINS)
+            distance.reshape_bins(DISTANCE_BINS)
             content += line_template.format(distance.res1_seq, distance.res2_seq, *distance.distance_scores)
         f_handle.write(content)
