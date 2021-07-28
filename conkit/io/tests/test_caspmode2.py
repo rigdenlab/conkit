@@ -106,7 +106,7 @@ RMODE 2
         with open(f_name, "r") as f_in:
             output = f_in.read().splitlines()
 
-        self.assertEqual(expected_output.split('\n'), output)
+        self.assertListEqual(expected_output.split('\n'), output)
 
     def test_read_and_write_1(self):
         content = """PFRMAT RR
