@@ -46,7 +46,7 @@ DISTANCE_BINS = ((0, 4), (4, 4.5), (4.5, 5), (5, 5.5), (5.5, 6), (6, 6.5), (6.5,
 class MapPredParser(DistanceFileParser):
     """Parser class for MapPred distance prediction file"""
 
-    def read(self, f_handle, f_id="casp2"):
+    def read(self, f_handle, f_id="mappred"):
         """Read a distance prediction file
 
         Parameters
@@ -67,7 +67,7 @@ class MapPredParser(DistanceFileParser):
         _map = Distogram("distogram_1")
         hierarchy.add(_map)
 
-        for idx, line in enumerate(f_handle.readlines()):
+        for line in f_handle.readlines():
             line = line.lstrip().rstrip().split()
             if not line or len(line) != 36 or not line[0].isdigit() or not line[1].isdigit():
                 continue
