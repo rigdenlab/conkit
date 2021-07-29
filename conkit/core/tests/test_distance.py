@@ -60,33 +60,38 @@ class TestDistance(unittest.TestCase):
 
     def test__assert_valid_bins_1(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             distance._assert_valid_bins(((0, 1), (np.inf, 10), (10, np.inf)))
 
     def test__assert_valid_bins_2(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             distance._assert_valid_bins(((0, 1), (1, 10), (10, 20)))
 
     def test__assert_valid_bins_3(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             distance._assert_valid_bins(((0, 1), (5, 10, 15), (15, np.inf)))
 
     def test__assert_valid_bins_4(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             distance._assert_valid_bins(((0, 1), (5, 10), (10, np.inf)))
 
     def test__assert_valid_bins_5(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             distance._assert_valid_bins(((0, 1), (1, 10), (10, 20), (25, 30), (30, 31), (45, np.inf)))
 
     def test__assert_valid_bins_6(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             distance._assert_valid_bins(((0, 1), (10, 10), (10, np.inf)))
+
+    def test__assert_valid_bins_7(self):
+        distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
+        with self.assertRaises(ValueError):
+            distance._assert_valid_bins(((0, np.inf),))
 
 
 if __name__ == "__main__":

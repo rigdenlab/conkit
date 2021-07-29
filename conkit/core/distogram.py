@@ -174,7 +174,6 @@ class Distogram(ContactMap):
         if seq_len < self.highest_residue_number:
             raise ValueError('Sequence length does not match contact map')
 
-
         if get_weigths:
             getter = attrgetter('max_score')
         else:
@@ -205,12 +204,9 @@ class Distogram(ContactMap):
         :exc:`ValueError`
            The new distance bins are not valid
         """
-        if self.parent is not None and self.original_file_format == 'PDB':
+        if self.original_file_format == 'PDB':
             raise ValueError('Cannot re-shape bins obtained from a PDB structure file')
-        try:
-            Distance._assert_valid_bins(new_bins)
-        except AssertionError:
-            raise ValueError('New distance bins are invalid')
+        Distance._assert_valid_bins(new_bins)
 
         for distance in self:
             distance._reshape_bins(new_bins)

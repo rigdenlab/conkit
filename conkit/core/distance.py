@@ -179,11 +179,7 @@ class Distance(Contact):
         """
         if self.parent is not None and self.parent.original_file_format == 'PDB':
             raise ValueError('Cannot re-shape bins obtained from a PDB structure file')
-        try:
-            self._assert_valid_bins(new_bins)
-        except AssertionError:
-            raise ValueError('New distance bins are invalid')
-
+        self._assert_valid_bins(new_bins)
         self._reshape_bins(new_bins)
 
     def _reshape_bins(self, new_bins):
@@ -209,6 +205,7 @@ class Distance(Contact):
     @staticmethod
     def _assert_valid_bins(distance_bins):
         """Determine whether a set of distance bins is valid. Valid distance bins must follow these rules:
+            - There is more than one bin
             - Lower limit of first bin is 0
             - Upper limit of last bin is Inf
             - Only Inf value is the upper limit of last bin
@@ -222,17 +219,21 @@ class Distance(Contact):
 
         Raises
         ------
-        :exc:`AssertionError`
+        :exc:`ValueError`
            The distance bins are not valid
         """
-
-        assert np.isinf(distance_bins[-1][1])
-        assert 0 == distance_bins[0][0]
+        if len(distance_bins) <= 1:
+            raise ValueError('New distance bins are invalid')
+        elif not np.isinf(distance_bins[-1][1]):
+            raise ValueError('New distance bins are invalid')
+        elif distance_bins[0][0] != 0:
+            raise ValueError('New distance bins are invalid')
 
         temp_list = []
         for dbin in distance_bins:
-            assert len(dbin) == 2
-            assert dbin[0] < dbin[1]
+            if len(dbin) != 2 or dbin[0] >= dbin[1]:
+                raise ValueError('New distance bins are invalid')
             temp_list += list(dbin)
-        assert len(np.unique(temp_list[1:-1])) == len(distance_bins) - 1
-        assert temp_list.count(np.inf) == 1
+
+        if len(np.unique(temp_list[1:-1])) != len(distance_bins) - 1 or temp_list.count(np.inf) != 1:
+            raise ValueError('New distance bins are invalid')
