@@ -42,7 +42,7 @@ from conkit.core.distancefile import DistanceFile
 class AlphaFold2Parser(BinaryDistanceFileParser):
     """Parser class for AF2 distance prediction file"""
 
-    def read(self, f_handle, f_id="casp2"):
+    def read(self, f_handle, f_id="alphafold2"):
         """Read a distance prediction file
 
         Parameters

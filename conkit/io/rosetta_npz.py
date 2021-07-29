@@ -47,7 +47,7 @@ DISTANCE_BINS = ((0, 2), (2, 2.5), (2.5, 3), (3, 4), (4, 4.5), (4.5, 5), (5, 5.5
 class RosettaNpzParser(BinaryDistanceFileParser):
     """Parser class for rosetta NPZ distance prediction file"""
 
-    def read(self, f_handle, f_id="casp2"):
+    def read(self, f_handle, f_id="rosettanpz"):
         """Read a distance prediction file
 
         Parameters
