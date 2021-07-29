@@ -53,6 +53,8 @@ class TestAlphaFold2Parser(ParserTestCase):
 
         self.assertListEqual(expected_res1, [distance.res1_seq for distance in distogram])
         self.assertListEqual(expected_res2, [distance.res2_seq for distance in distogram])
-        self.assertListEqual(expected_raw_score, [contact.raw_score for contact in distogram])
-        self.assertListEqual(expected_bin_score, [distance.max_score for distance in distogram])
+        self.assertListEqual([round(score, 2) for score in expected_raw_score],
+                             [round(contact.raw_score, 2) for contact in distogram])
+        self.assertListEqual([round(score, 2) for score in expected_bin_score],
+                             [round(distance.max_score, 2) for distance in distogram])
         self.assertListEqual(expected_bin_distance, [distance.predicted_distance_bin for distance in distogram])
