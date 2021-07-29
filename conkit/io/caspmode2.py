@@ -64,7 +64,7 @@ class CaspMode2Parser(DistanceFileParser):
         _map = Distogram("distogram_1")
         hierarchy.add(_map)
 
-        for idx, line in enumerate(f_handle.readlines()):
+        for line in f_handle.readlines():
             line = line.lstrip().rstrip().split()
             if not line or len(line) != 13 or not line[0].isdigit() or not line[1].isdigit():
                 continue
