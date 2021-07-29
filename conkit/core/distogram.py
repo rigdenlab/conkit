@@ -34,6 +34,7 @@
 import numpy as np
 from operator import attrgetter
 from conkit.core.distance import Distance
+from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
 
 
@@ -210,3 +211,24 @@ class Distogram(ContactMap):
         for distance in self:
             distance._reshape_bins(new_bins)
 
+    def get_contactmap(self, distance_cutoff=8):
+        """Create a :obj:`~conkit.core.contactmap.ContactMap` instance with the contacts present in this
+        :obj:`~conkit.core.distogram.Distogram` instance.
+
+        Parameters
+        ----------
+        distance_cutoff : int, float
+           The distance cutoff used to consider a residue pair within contact of each other
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+            A contactmap with the contacts present in this distogram instance.
+        """
+        contactmap = ContactMap("map_1")
+        for dist in self:
+            if dist.predicted_distance <= distance_cutoff:
+                contact = Contact(dist.res1_seq, dist.res2_seq, dist.raw_score, distance_bound=(0, distance_cutoff))
+                contactmap.add(contact)
+
+        return contactmap

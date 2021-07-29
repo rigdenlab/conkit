@@ -114,8 +114,22 @@ class TestDistogram(unittest.TestCase):
         expected_raw_scores = [0.95, 0.8999999999999999, 1.0, 0.95]
         expected_distance_scores = [(0.125, 0.825, 0.050000000000000044), (0.075, 0.825, 0.09999999999999998),
                                     (0.025, 0.975, 0.0), (0.25, 0.7, 0.050000000000000044)]
+        expected_predicted_distances = [5.0, 5.0, 5.0, 5.0]
+        self.assertListEqual(expected_predicted_distances, [dist.predicted_distance for dist in distogram])
         self.assertListEqual([dist.distance_bins for dist in distogram], [new_bins for dist in distogram])
         self.assertListEqual([dist.get_probability_within_distance(8) for dist in distogram], expected_raw_scores)
         self.assertListEqual([dist.distance_scores for dist in distogram], expected_distance_scores)
 
-
+    def test_get_contactmap_1(self):
+        distogram = Distogram("test")
+        distogram.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        contactmap = distogram.get_contactmap()
+        expected_res1 = [1, 2, 3]
+        expected_res2 = [5, 3, 5]
+        expected_raw_score = [0.75, 0.8999999999999999, 0.85]
+        self.assertListEqual([contact.res1_seq for contact in contactmap], expected_res1)
+        self.assertListEqual([contact.res2_seq for contact in contactmap], expected_res2)
+        self.assertListEqual([contact.raw_score for contact in contactmap], expected_raw_score)
