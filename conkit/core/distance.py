@@ -184,6 +184,18 @@ class Distance(Contact):
         except AssertionError:
             raise ValueError('New distance bins are invalid')
 
+        self._reshape_bins(new_bins)
+
+    def _reshape_bins(self, new_bins):
+        """Reshape the predicted distance bins and update :attr:`~conkit.core.distance.Distance.distance_scores` and
+        :attr:`~conkit.core.distance.Distance.distance_bins` accordingly
+
+        Parameters
+        ----------
+        new_bins : tuple
+           A tuple of tuples, where each element corresponds with the upper and lower edges of the intervals for
+           the new distance bins
+        """
         new_distance_scores = []
         for current_new_bin in new_bins:
             probability_lower_bound = self.get_probability_within_distance(current_new_bin[0])

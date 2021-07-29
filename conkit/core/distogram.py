@@ -33,6 +33,7 @@
 
 import numpy as np
 from operator import attrgetter
+from conkit.core.distance import Distance
 from conkit.core.contactmap import ContactMap
 
 
@@ -182,3 +183,30 @@ class Distogram(ContactMap):
         array = np.delete(array, 0, axis=1)
 
         return array
+
+    def reshape_bins(self, new_bins):
+        """Reshape the predicted distance bins for all :obj:`~conkit.core.distance.Distance` instances. This will
+        update :attr:`~conkit.core.distance.Distance.distance_scores` and
+        :attr:`~conkit.core.distance.Distance.distance_bins` to fit the new bins.
+
+        Parameters
+        ----------
+        new_bins : tuple
+           A tuple of tuples, where each element corresponds with the upper and lower edges of the intervals for
+           the new distance bins
+
+        Raises
+        ------
+        :exc:`ValueError`
+           The new distance bins are not valid
+        """
+        if self.parent is not None and self.original_file_format == 'PDB':
+            raise ValueError('Cannot re-shape bins obtained from a PDB structure file')
+        try:
+            Distance._assert_valid_bins(new_bins)
+        except AssertionError:
+            raise ValueError('New distance bins are invalid')
+
+        for distance in self:
+            distance._reshape_bins(new_bins)
+
