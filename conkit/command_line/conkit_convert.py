@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ def main():
     if args.outformat == "rosetta":
         raise NotImplementedError("This conversion is not yet supported")
 
-    msg = "Convertin file{nline}{tab}{infile} of format {informat}{nline}"
+    msg = "Converting file{nline}{tab}{infile} of format {informat}{nline}"
     msg += "to file{nline}{tab}{outfile} of format {outformat}"
     msg = msg.format(
         infile=args.infile, informat=args.informat, outfile=args.outfile, outformat=args.outformat, nline="\n", tab="\t"

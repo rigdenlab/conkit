@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -492,7 +492,14 @@ class ContactMap(Entity):
         altloc : bool
            Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
 
+        Raises
+        ------
+        :exc:`ValueError`
+           Undefined sequence
         """
+        if self.sequence is None:
+            raise ValueError("No sequence defined")
+
         for c in self:
             if altloc:
                 res1_index = c.res1_altseq
@@ -912,6 +919,44 @@ class ContactMap(Entity):
                 continue
             else:
                 contact_map.remove(tuple(contactid))
+        return contact_map
+
+    def slice_map(self, l_factor, seq_len=None, inplace=False):
+        """Slice the contact map using a L * factor
+
+        Parameters
+        ----------
+        l_factor : float
+           L/N factor to be applied
+        seq_len : int
+            Sequence length.
+        inplace : bool, optional
+           Replace the saved order of contacts [default: False]
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+           The reference to the :obj:`~conkit.core.contactmap.ContactMap`, regardless of inplace
+
+        Raises
+        ------
+        :exc:`ValueError`
+           Either seq_len must be provided or :attr:`~conkit.core.contactmap.ContactMap.sequence` defined
+
+        """
+
+        if seq_len is None:
+            if self.sequence is None:
+                raise ValueError('Need to define a sequence or provide seq_len')
+            seq_len = self.sequence.seq_len
+
+        contact_map = self._inplace(inplace)
+        ncontacts = int(seq_len * l_factor)
+        contact_map.sort('raw_score', reverse=True, inplace=True)
+        new_contacts = {c.id: c for c in contact_map[:ncontacts]}
+        contact_map.child_list = list(new_contacts.values())
+        contact_map.child_dict = new_contacts
+
         return contact_map
 
     def filter(self, threshold, filter_by='raw_score', inplace=False):

@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ class ContactFile(Entity):
     >>> contact_file.add(ContactMap("foo"))
     >>> contact_file.add(ContactMap("bar"))
     >>> print(contact_file)
-    ContactFile(id="example" nseq=2)
+    ContactFile(id="example" nmaps=2)
 
     Attributes
     ----------

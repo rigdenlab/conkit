@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -82,6 +82,18 @@ class Parser(ABC):
 
 class ContactFileParser(Parser):
     """General purpose class for all contact file parsers"""
+
+    pass
+
+
+class DistanceFileParser(Parser):
+    """General purpose class for all distance prediction file parsers"""
+
+    pass
+
+
+class BinaryDistanceFileParser(Parser):
+    """General purpose class for all binary distance prediction file parsers"""
 
     pass
 

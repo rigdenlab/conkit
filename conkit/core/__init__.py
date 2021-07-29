@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,10 +38,31 @@ __version__ = "1.0"
 
 
 def Contact(*args, **kwargs):
-    """:obj:`Contact <conkit.core.Contact.Contact>` instance"""
+    """:obj:`Contact <conkit.core.contact.Contact>` instance"""
     from conkit.core.contact import Contact
 
     return Contact(*args, **kwargs)
+
+
+def Distance(*args, **kwargs):
+    """:obj:`Contact <conkit.core.distance.Distance>` instance"""
+    from conkit.core.distance import Distance
+
+    return Distance(*args, **kwargs)
+
+
+def DistanceFile(*args, **kwargs):
+    """:obj:`Contact <conkit.core.distancefile.DistanceFile>` instance"""
+    from conkit.core.distancefile import DistanceFile
+
+    return DistanceFile(*args, **kwargs)
+
+
+def Distogram(*args, **kwargs):
+    """:obj:`Contact <conkit.core.distogram.Distogram>` instance"""
+    from conkit.core.distogram import Distogram
+
+    return Distogram(*args, **kwargs)
 
 
 def ContactMap(*args, **kwargs):

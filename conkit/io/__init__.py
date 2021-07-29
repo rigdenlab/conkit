@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,9 @@ from conkit.io._iotools import open_f_handle
 
 # Accessed by some modules - might be deprecated in the future
 CONTACT_FILE_PARSERS = PARSER_CACHE.contact_file_parsers
+DISTANCE_FILE_PARSERS = PARSER_CACHE.distance_file_parsers
 SEQUENCE_FILE_PARSERS = PARSER_CACHE.sequence_file_parsers
+BINARY_FILE_FORMATS = PARSER_CACHE.binary_file_formats
 
 
 def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_out=None):
@@ -79,6 +81,12 @@ def convert(fname_in, format_in, fname_out, format_out, kwargs_in=None, kwargs_o
     """
     if format_in in CONTACT_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
         raise ValueError("Cannot convert contact file to sequence file")
+    elif format_in in CONTACT_FILE_PARSERS and format_out in DISTANCE_FILE_PARSERS:
+        raise ValueError("Cannot convert contact file to distance prediction file")
+    elif format_in in DISTANCE_FILE_PARSERS and format_out in SEQUENCE_FILE_PARSERS:
+        raise ValueError("Cannot convert distance prediction file to sequence file")
+    elif format_in in SEQUENCE_FILE_PARSERS and format_out in DISTANCE_FILE_PARSERS:
+        raise ValueError("Cannot convert sequence file to distance prediction")
     elif format_in in SEQUENCE_FILE_PARSERS and format_out in CONTACT_FILE_PARSERS:
         raise ValueError("Cannot convert sequence file to contact file")
     else:
@@ -127,7 +135,12 @@ def read(fname, format, f_id="conkit", **kwargs):
     if format == "a3m-inserts":
         kwargs["remove_inserts"] = False
 
-    with open_f_handle(fname, "read") as f_in:
+    if format in BINARY_FILE_FORMATS:
+        mode = "rb"
+    else:
+        mode = "r"
+
+    with open_f_handle(fname, mode) as f_in:
         hierarchy = parser_in.read(f_in, **kwargs)
 
     return hierarchy
@@ -170,5 +183,5 @@ def write(fname, format, hierarchy, **kwargs):
     if format in ["flib", "pconsc", "pconsc2", "saint2"]:
         kwargs["write_header_footer"] = False
 
-    with open_f_handle(fname, "write") as f_out:
+    with open_f_handle(fname, "w") as f_out:
         parser_out.write(f_out, hierarchy, **kwargs)

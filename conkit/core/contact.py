@@ -2,7 +2,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2016-19, University of Liverpool
+# Copyright (c) 2016-21, University of Liverpool
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "1.0"
 
-from enum import Enum, unique
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState
 from conkit.misc import deprecate
