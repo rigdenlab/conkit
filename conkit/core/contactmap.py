@@ -493,6 +493,9 @@ class ContactMap(Entity):
            Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
 
         """
+        if self.highest_residue_number is not None and len(self.sequence) < self.highest_residue_number:
+            raise ValueError('Sequence length does not match contact map')
+
         for c in self:
             if altloc:
                 res1_index = c.res1_altseq
