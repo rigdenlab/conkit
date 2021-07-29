@@ -171,6 +171,10 @@ class Distogram(ContactMap):
                 raise ValueError('Need to define a sequence or provide seq_len')
             seq_len = self.sequence.seq_len
 
+        if seq_len < self.highest_residue_number:
+            raise ValueError('Sequence length does not match contact map')
+
+
         if get_weigths:
             getter = attrgetter('max_score')
         else:
@@ -232,3 +236,42 @@ class Distogram(ContactMap):
                 contactmap.add(contact)
 
         return contactmap
+
+    def get_rmsd(self, other, seq_len=None, calculate_wrmsd=False):
+        """
+        Calculate the RMSD with another :obj:`~conkit.core.distogram.Distogram` instance.
+
+        Parameters
+        ----------
+        other: :obj:`~conkit.core.distogram.Distogram`
+           A ConKit :obj:`~conkit.core.distogram.Distogram`
+        seq_len: int, optional
+           Sequence length. If not provided, it will be pulled from :attr:`~conkit.core.contactmap.ContactMap.sequence`
+           [default: None]
+        calculate_wrmsd: bool
+           If set to True wRMSD is calculated using distance confidence scores [default: False]
+
+        Returns
+        -------
+        list
+            A list of floats with the RMSD values along the sequence
+
+        Raises
+        ------
+        :exc:`ValueError`
+           other is not a  :obj:`~conkit.core.distogram.Distogram` instance.
+        """
+        if not isinstance(other, Distogram):
+            raise ValueError('Need to provide a conkit.core.distogram.Distogram instance')
+
+        difference = self.as_array(seq_len=seq_len) - other.as_array(seq_len=seq_len)
+        squared_difference = difference ** 2
+
+        if calculate_wrmsd:
+            observed_weights = self.as_array(seq_len=seq_len, get_weigths=True)
+            squared_difference *= observed_weights
+
+        n_observations_array = np.sum(~np.isnan(squared_difference), axis=0)
+        sum_squared_differences = np.nansum(squared_difference, axis=0)
+        rmsd = np.sqrt(sum_squared_differences / n_observations_array)
+        return rmsd
