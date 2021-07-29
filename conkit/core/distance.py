@@ -39,7 +39,7 @@ from conkit.core.contact import Contact
 
 class Distance(Contact):
     """A residue pair distance template to store all associated information. This class inherits methods and attributes
-    from :obj:`~conkit.core.distance.Distance`
+    from :obj:`~conkit.core.contact.Contact`
 
     Examples
     --------
