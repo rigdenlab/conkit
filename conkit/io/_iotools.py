@@ -116,7 +116,7 @@ def open_f_handle(f_handle, mode):
         raise ValueError("Mode needs to be one of: a, r, w, rb, wb")
 
     try:
-        if is_str_like(f_handle) and sys.version_info.major >= 3 and mode not in {"rb", "wb"}:
+        if is_str_like(f_handle) and mode not in {"rb", "wb"}:
             return io.open(f_handle, mode, encoding="utf-8")
         elif is_str_like(f_handle):
             return open(f_handle, mode)
