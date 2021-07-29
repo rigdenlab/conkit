@@ -226,13 +226,13 @@ class Distance(Contact):
            The distance bins are not valid
         """
 
-        assert not any([x for x in distance_bins if len(x) != 2])
-        assert not any([x for x in distance_bins if x[0] >= x[1]])
         assert np.isinf(distance_bins[-1][1])
         assert 0 == distance_bins[0][0]
-        assert len([x for x in distance_bins if any(np.isinf(x))]) == 1
 
         temp_list = []
         for dbin in distance_bins:
+            assert len(dbin) == 2
+            assert dbin[0] < dbin[1]
             temp_list += list(dbin)
         assert len(np.unique(temp_list[1:-1])) == len(distance_bins) - 1
+        assert temp_list.count(np.inf) == 1
