@@ -271,3 +271,45 @@ class Distogram(ContactMap):
         sum_squared_differences = np.nansum(squared_difference, axis=0)
         rmsd = np.sqrt(sum_squared_differences / n_observations_array)
         return rmsd
+
+    @staticmethod
+    def merge_arrays(distogram_1, distogram_2):
+        """Take two :obj:`~conkit.core.distogram.Distogram` instances and merge them together into the same
+        :obj:`numpy.array` instance. Each half square in this array will correspond with the predicted distances
+        at each hierarchy
+
+        Parameters
+        ----------
+        distogram_1: :obj:`~conkit.core.distogram.Distogram`
+           First :obj:`~conkit.core.distogram.Distogram` instance, used to populate top half square of the array
+        distogram_2: :obj:`~conkit.core.distogram.Distogram`
+           Second :obj:`~conkit.core.distogram.Distogram` instance, used to populate lower half square of the array
+
+        Returns
+        -------
+        :obj:`numpy.array`
+           :obj:`numpy.array` instance that represents the combined distograms.
+
+        Raises
+        ------
+        :exc:`ValueError`
+           No sequence has been registered for one of the :obj:`~conkit.core.distogram.Distogram` instances
+        :exc:`ValueError`
+            The sequence length associated to the :obj:`~conkit.core.distogram.Distogram` instances is incompatible
+        """
+
+        if distogram_1.sequence is None or distogram_2.sequence is None:
+            raise ValueError("All hierarchies must have a sequence registered")
+        if distogram_1.sequence.seq_len != distogram_2.sequence.seq_len:
+            raise ValueError("Sequence lengths are incompatible")
+
+        array = np.full((distogram_1.sequence.seq_len + 1, distogram_1.sequence.seq_len + 1), np.nan)
+
+        for distance in distogram_1:
+            array[distance.res1_seq, distance.res2_seq] = distance.predicted_distance
+        for distance in distogram_2:
+            array[distance.res2_seq, distance.res1_seq] = distance.predicted_distance
+
+        array = np.delete(array, 0, axis=0)
+        array = np.delete(array, 0, axis=1)
+        return array

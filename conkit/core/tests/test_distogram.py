@@ -1,6 +1,8 @@
 """Testing facility for conkit.core.Distogram"""
 
 import unittest
+
+import conkit.core
 import numpy as np
 from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
@@ -133,3 +135,31 @@ class TestDistogram(unittest.TestCase):
         self.assertListEqual([contact.res1_seq for contact in contactmap], expected_res1)
         self.assertListEqual([contact.res2_seq for contact in contactmap], expected_res2)
         self.assertListEqual([contact.raw_score for contact in contactmap], expected_raw_score)
+
+    def test_merge_arrays(self):
+        distogram_1 = Distogram("test_1")
+        distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        distogram_2 = Distogram("test_2")
+        distogram_2.add(Distance(1, 5, (0.45, 0.05, 0.25, 0.25), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(2, 3, (0.1, 0.15, 0.15, 0.6), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(1, 4, (0.75, 0.20, 0.05, 0.0), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(3, 5, (0.05, 0.1, 0.35, 0.5), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        output = Distogram.merge_arrays(distogram_1, distogram_2)
+        output[np.isinf(output)] = 99999
+        output = np.nan_to_num(output).tolist()
+
+        expected = [
+            [0.0, 0.0, 0.0, 9.0, 5.0],
+            [0.0, 0.0, 7.0, 0.0, 0.0],
+            [0.0, 99999, 0.0, 0.0, 2.0],
+            [2.0, 0.0, 0.0, 0.0, 0.0],
+            [2.0, 0.0, 99999, 0.0, 0.0]]
+
+        self.assertListEqual(output, expected)
