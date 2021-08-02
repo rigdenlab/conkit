@@ -266,9 +266,9 @@ class Distogram(ContactMap):
         max_distance = prediction.top.distance_bins[-1][0]
 
         model_array = model.as_array(seq_len=seq_len)
-        model_array[np.isinf(model_array)] = max_distance
+        model_array[model_array > max_distance] = max_distance
         prediction_array = prediction.as_array(seq_len=seq_len)
-        prediction_array[np.isinf(prediction_array)] = max_distance
+        prediction_array[prediction_array > max_distance] = max_distance
 
         difference = prediction_array - model_array
         squared_difference = difference ** 2
@@ -277,10 +277,11 @@ class Distogram(ContactMap):
             prediction_weights = prediction.as_array(seq_len=seq_len, get_weigths=True)
             squared_difference *= prediction_weights
 
-        n_observations_array = np.sum(~np.isnan(squared_difference), axis=0)
         sum_squared_differences = np.nansum(squared_difference, axis=0)
+        n_observations_array = np.sum(~np.isnan(squared_difference), axis=0)
         rmsd = np.sqrt(sum_squared_differences / n_observations_array)
         return rmsd
+
 
     @staticmethod
     def merge_arrays(distogram_1, distogram_2):
