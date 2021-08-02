@@ -57,6 +57,8 @@ class DistogramHeatmapFigure(ContactMapMatrixFigure):
     --------
     >>> import conkit
     >>> distogram = conkit.io.read('toxd/toxd.npz', 'rosettanpz').top_map
+    >>> sequence  = conkit.io.read('toxd/toxd.fasta', 'fasta').top
+    >>> distogram.sequence = sequence
     >>> conkit.plot.DistogramHeatmapFigure(distogram)
 
     """
