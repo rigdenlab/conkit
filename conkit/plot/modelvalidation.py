@@ -169,8 +169,10 @@ class ModelValidationFigure(Figure):
         distogram.get_unique_distances(inplace=True)
         distogram.sequence = self.sequence
         distogram.set_sequence_register()
+
         if distogram.original_file_format != "PDB":
             distogram.reshape_bins(self.distance_bins)
+
         return distogram
 
     def _prepare_contactmap(self, distogram):
@@ -188,6 +190,20 @@ class ModelValidationFigure(Figure):
         for resn in range(1, len(self.sequence) + 1):
             result[resn] = {(c.res1_seq, c.res2_seq) for c in contactmap if resn in (c.res1_seq, c.res2_seq)}
         return result
+
+    def _get_fn_profile(self, model, prediction):
+        predicted_set = self._get_contact_set(prediction)
+        observed_set = self._get_contact_set(model)
+        missing_residues = self._get_absent_residues()
+
+        fn = []
+        for resn in predicted_set.keys():
+            if missing_residues and resn in missing_residues:
+                fn.append(0)
+                continue
+            fn.append(len(predicted_set[resn] - observed_set[resn]))
+
+        return fn
 
     def draw(self):
 
@@ -224,17 +240,3 @@ class ModelValidationFigure(Figure):
         # TODO: deprecate this in 0.10
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
-
-    def get_fn_profile(self, model, prediction):
-        predicted_set = self._get_contact_set(prediction)
-        observed_set = self._get_contact_set(model)
-        missing_residues = self._get_absent_residues()
-
-        fn = []
-        for resn in predicted_set.keys():
-            if missing_residues and resn in missing_residues:
-                fn.append(0)
-                continue
-            fn.append(len(predicted_set[resn] - observed_set[resn]))
-
-        return fn
