@@ -78,3 +78,10 @@ def SequenceCoverageFigure(*args, **kwargs):
     from conkit.plot.sequencecoverage import SequenceCoverageFigure
 
     return SequenceCoverageFigure(*args, **kwargs)
+
+
+def DistogramHeatmapFigure(*args, **kwargs):
+    """:obj:`~conkit.plot.distogramheatmap.DistogramHeatmapFigure` instance"""
+    from conkit.plot.distogramheatmap import DistogramHeatmapFigure
+
+    return DistogramHeatmapFigure(*args, **kwargs)
