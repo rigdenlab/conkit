@@ -223,8 +223,8 @@ def convolution_smooth_values(x, window=5):
     return x_smooth
 
 
-def find_validation_peaks(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
-    """Use :func:`scipy.signal.find_peaks` to find validation peaks for a given rmsd and fn profile
+def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
+    """Use :func:`scipy.signal.find_peaks` to find model validation outliers for a given rmsd and fn profile
         Parameters
     ----------
     rmsd_raw : list, tuple

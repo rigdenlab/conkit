@@ -38,7 +38,7 @@ from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
-from conkit.plot.tools import _isinstance, convolution_smooth_values, find_validation_peaks
+from conkit.plot.tools import _isinstance, convolution_smooth_values, find_validation_outliers
 
 
 class ModelValidationFigure(Figure):
@@ -203,10 +203,10 @@ class ModelValidationFigure(Figure):
         fn_smooth = convolution_smooth_values(fn_raw, 5)
         fn_profile = np.nan_to_num(fn_smooth)
 
-        peaks = find_validation_peaks(rmsd_raw, rmsd_profile, fn_raw, fn_profile)
+        outliers = find_validation_outliers(rmsd_raw, rmsd_profile, fn_raw, fn_profile)
         line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
-        for peak in peaks:
-            self.ax.axvline(peak, **line_kwargs)
+        for outlier in outliers:
+            self.ax.axvline(outlier, **line_kwargs)
         outlier_plot = [self.ax.axvline(0, ymin=0, ymax=0, label="Outlier", **line_kwargs)]
 
         self.ax.set_xlabel('Residue Number')
