@@ -207,7 +207,7 @@ class ModelValidationFigure(Figure):
         line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
         for peak in peaks:
             self.ax.axvline(peak, **line_kwargs)
-
+        outlier_plot = [self.ax.axvline(0, ymin=0, ymax=0, label="Outlier", **line_kwargs)]
 
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('wRMSD' if self.use_weights else 'RMSD')
@@ -216,7 +216,7 @@ class ModelValidationFigure(Figure):
         ax2.set_ylabel('FN count')
         fn_plot = ax2.plot(fn_profile, color='#325da8', label='FN count')
         if self.legend:
-            plots = fn_plot + rmsd_plot
+            plots = fn_plot + rmsd_plot + outlier_plot
             labels = [l.get_label() for l in plots]
             self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
                            ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
