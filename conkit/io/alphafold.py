@@ -74,7 +74,7 @@ class AlphaFold2Parser(BinaryDistanceFileParser):
         distance_bins = tuple(distance_bins)
         L = probs.shape[0]
         for i in range(L):
-            for j in range(i + 5, L):
+            for j in range(i, L):
                 _distance = Distance(i + 1, j + 1, tuple(probs[i, j, :].tolist()), distance_bins)
                 _map.add(_distance)
 
