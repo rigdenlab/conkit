@@ -234,6 +234,55 @@ class Distogram(ContactMap):
         return contactmap
 
     @staticmethod
+    def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False):
+        """
+        Calculate the RMSD with between two :obj:`~conkit.core.distogram.Distogram` instances.
+
+        Parameters
+        ----------
+        prediction: :obj:`~conkit.core.distogram.Distogram`
+           A ConKit :obj:`~conkit.core.distogram.Distogram` used as the prediction for the RMSD
+        model: :obj:`~conkit.core.distogram.Distogram`
+           A ConKit :obj:`~conkit.core.distogram.Distogram` used as the model to calculate the RMSD
+        seq_len: int, optional
+           Sequence length. If not provided, it will be pulled from :attr:`~conkit.core.contactmap.ContactMap.sequence`
+           [default: None]
+        calculate_wrmsd: bool
+           If set to True wRMSD is calculated using distance confidence scores [default: False]
+
+        Returns
+        -------
+        list
+            A list of floats with the RMSD values along the sequence
+
+        Raises
+        ------
+        :exc:`ValueError`
+           other is not a  :obj:`~conkit.core.distogram.Distogram` instance.
+        """
+        if not isinstance(model, Distogram) or not isinstance(prediction, Distogram):
+            raise ValueError('Need to provide a conkit.core.distogram.Distogram instance')
+
+        max_distance = prediction.top.distance_bins[-1][0]
+
+        model_array = model.as_array(seq_len=seq_len)
+        model_array[np.isinf(model_array)] = max_distance
+        prediction_array = prediction.as_array(seq_len=seq_len)
+        prediction_array[np.isinf(prediction_array)] = max_distance
+
+        difference = prediction_array - model_array
+        squared_difference = difference ** 2
+
+        if calculate_wrmsd:
+            prediction_weights = prediction.as_array(seq_len=seq_len, get_weigths=True)
+            squared_difference *= prediction_weights
+
+        n_observations_array = np.sum(~np.isnan(squared_difference), axis=0)
+        sum_squared_differences = np.nansum(squared_difference, axis=0)
+        rmsd = np.sqrt(sum_squared_differences / n_observations_array)
+        return rmsd
+
+    @staticmethod
     def merge_arrays(distogram_1, distogram_2):
         """Take two :obj:`~conkit.core.distogram.Distogram` instances and merge them together into the same
         :obj:`numpy.array` instance. Each half square in this array will correspond with the predicted distances
