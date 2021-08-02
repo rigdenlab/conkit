@@ -41,6 +41,7 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 from conkit.misc import deprecate
+import scipy.signal
 
 HierarchyIndex = {
     "Contact": Contact,
@@ -126,7 +127,7 @@ def find_minima(data, order=1):
     for i in np.arange(1, nelements - 1):
         start = 0 if i - order < 0 else i - order
         end = nelements if i + order + 1 > nelements else i + order + 1
-        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1 : end])
+        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1: end])
     return np.where(results)[0].tolist()
 
 
@@ -213,3 +214,41 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
     else:
         return isinstance(hierarchy, hierarchy_type)
+
+
+def convolution_smooth_values(x, window=5):
+    """Use convolutions to smooth a list with numeric values"""
+    box = np.ones(window) / window
+    x_smooth = np.convolve(x, box, mode='same')
+    return x_smooth
+
+
+def find_validation_peaks(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
+    """Use :func:`scipy.signal.find_peaks` to find validation peaks for a given rmsd and fn profile
+        Parameters
+    ----------
+    rmsd_raw : list, tuple
+       A list with the raw RMSD values along the sequence
+    rmsd_smooth : list, tuple
+       A list with the smoothed RMSD values along the sequence
+    fn_raw : list, tuple
+       A list with the raw FN values along the sequence
+    fn_smooth : list, tuple
+       A list with the smoothed FN values along the sequence
+
+    Returns
+    -------
+    list
+       A list with the residue numbers where a validation peak has been found
+    """
+    _tmp_fn_peaks, _tmp_fn_peaks_properties = scipy.signal.find_peaks(fn_raw, height=1, width=0)
+    allowed_rmsd_peaks = set([x for y in _tmp_fn_peaks for x in range(y - 20, y + 20)])
+    height_threshold = np.array([1.5 if x in allowed_rmsd_peaks else 100000 for x in range(len(rmsd_raw))])
+
+    rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(rmsd_smooth, prominence=1, width=0, height=height_threshold)
+
+    allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 30, y + 30)])
+    height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
+    fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth), height=height_threshold, distance=30)
+
+    return rmsd_peaks.tolist() + fn_peaks.tolist()
