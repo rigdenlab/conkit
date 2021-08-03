@@ -50,7 +50,7 @@ class ModelValidationFigure(Figure):
     ----------
     model: :obj:`~conkit.core.distogram.Distogram`
        The PDB model that will be validated
-    distogram: :obj:`~conkit.core.distogram.Distogram`
+    prediction: :obj:`~conkit.core.distogram.Distogram`
        The distogram with the residue distance predictions
     sequence: :obj:`~conkit.core.sequence.Sequence`
        The sequence of the structure
@@ -66,19 +66,19 @@ class ModelValidationFigure(Figure):
     >>> import conkit
     >>> sequence = conkit.io.read('toxd/toxd.fasta', 'fasta').top
     >>> model = conkit.io.read('toxd/toxd.pdb', 'pdb').top_map
-    >>> distogram = conkit.io.read('toxd/toxd.npz', 'rosettanpz').top_map
-    >>> conkit.plot.ModelValidationFigure(model, distogram, sequence)
+    >>> prediction = conkit.io.read('toxd/toxd.npz', 'rosettanpz').top_map
+    >>> conkit.plot.ModelValidationFigure(model, prediction, sequence)
 
     """
 
-    def __init__(self, model, distogram, sequence, distance_bins=None, use_weights=False, l_factor=0.5, **kwargs):
+    def __init__(self, model, prediction, sequence, distance_bins=None, use_weights=False, l_factor=0.5, **kwargs):
         """A new model validation plot
 
         Parameters
         ----------
         model: :obj:`~conkit.core.distogram.Distogram`
             The PDB model that will be validated
-        distogram: :obj:`~conkit.core.distogram.Distogram`
+        prediction: :obj:`~conkit.core.distogram.Distogram`
             The distogram with the residue distance predictions
         sequence: :obj:`~conkit.core.sequence.Sequence`
             The sequence of the structure
@@ -95,7 +95,7 @@ class ModelValidationFigure(Figure):
         """
         super(ModelValidationFigure, self).__init__(**kwargs)
         self._model = None
-        self._distogram = None
+        self._prediction = None
         self._sequence = None
         self._distance_bins = None
 
@@ -103,7 +103,7 @@ class ModelValidationFigure(Figure):
         self.l_factor = l_factor
         self.distance_bins = distance_bins
         self.model = model
-        self.distogram = distogram
+        self.prediction = prediction
         self.sequence = sequence
 
         self.draw()
@@ -136,15 +136,15 @@ class ModelValidationFigure(Figure):
             raise TypeError("Invalid hierarchy type: %s" % sequence.__class__.__name__)
 
     @property
-    def distogram(self):
-        return self._distogram
+    def prediction(self):
+        return self._prediction
 
-    @distogram.setter
-    def distogram(self, distogram):
-        if distogram and _isinstance(distogram, "Distogram"):
-            self._distogram = distogram
+    @prediction.setter
+    def prediction(self, prediction):
+        if prediction and _isinstance(prediction, "Distogram"):
+            self._prediction = prediction
         else:
-            raise TypeError("Invalid hierarchy type: %s" % distogram.__class__.__name__)
+            raise TypeError("Invalid hierarchy type: %s" % prediction.__class__.__name__)
 
     @property
     def model(self):
@@ -158,14 +158,19 @@ class ModelValidationFigure(Figure):
             raise TypeError("Invalid hierarchy type: %s" % model.__class__.__name__)
 
     def _get_absent_residues(self):
+        """Get a list of the residues absent from the :attr:`~conkit.plot.ModelValidationFigure.model` and
+        :attr:`~conkit.plot.ModelValidationFigure.prediction`. Only distograms originating from PDB files
+        are considered."""
+
         absent_residues = []
         if self.model.original_file_format == "PDB":
             absent_residues += self.model.get_absent_residues(len(self.sequence))
-        if self.distogram.original_file_format == "PDB":
-            absent_residues += self.distogram.get_absent_residues(len(self.sequence))
+        if self.prediction.original_file_format == "PDB":
+            absent_residues += self.prediction.get_absent_residues(len(self.sequence))
         return tuple(absent_residues)
 
     def _prepare_distogram(self, distogram):
+        """General operations to prepare a :obj:`~conkit.core.distogram.Distogram` instance before plotting."""
         distogram.get_unique_distances(inplace=True)
         distogram.sequence = self.sequence
         distogram.set_sequence_register()
@@ -176,7 +181,10 @@ class ModelValidationFigure(Figure):
         return distogram
 
     def _prepare_contactmap(self, distogram):
+        """General operations to prepare a :obj:`~conkit.core.contactmap.ContactMap` instance before plotting."""
         contactmap = distogram.get_contactmap()
+        contactmap.sequence = self.sequence
+        contactmap.set_sequence_register()
         contactmap.remove_neighbors(inplace=True)
 
         if distogram.original_file_format != "PDB":
@@ -185,15 +193,23 @@ class ModelValidationFigure(Figure):
 
         return contactmap
 
-    def _get_contact_set(self, contactmap):
-        result = {}
-        for resn in range(1, len(self.sequence) + 1):
-            result[resn] = {(c.res1_seq, c.res2_seq) for c in contactmap if resn in (c.res1_seq, c.res2_seq)}
-        return result
-
     def _get_fn_profile(self, model, prediction):
-        predicted_set = self._get_contact_set(prediction)
-        observed_set = self._get_contact_set(model)
+        """Get the count of false negatives along the sequence for a given model and residue contact prediction.
+
+        Parameters
+        ----------
+        model: :obj:`~conkit.core.contactmap.ContactMap`
+           A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the contacts observed at the model
+        prediction: :obj:`~conkit.core.contactmap.ContactMap`
+           A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the predicted contacts
+
+        Returns
+        -------
+        tuple
+            A tuple of integers with the FN count along the sequence
+        """
+        predicted_set = prediction.as_dit()
+        observed_set = model.as_dict()
         missing_residues = self._get_absent_residues()
 
         fn = []
@@ -203,19 +219,19 @@ class ModelValidationFigure(Figure):
                 continue
             fn.append(len(predicted_set[resn] - observed_set[resn]))
 
-        return fn
+        return tuple(fn)
 
     def draw(self):
 
         model_distogram = self._prepare_distogram(self.model.copy())
-        prediction_distogram = self._prepare_distogram(self.distogram.copy())
+        prediction_distogram = self._prepare_distogram(self.prediction.copy())
         rmsd_raw = Distogram.calculate_rmsd(prediction_distogram, model_distogram, calculate_wrmsd=self.use_weights)
         rmsd_smooth = convolution_smooth_values(rmsd_raw, 10)
         rmsd_profile = np.nan_to_num(rmsd_smooth)
 
         model_contactmap = self._prepare_contactmap(self.model.copy())
-        prediction_contactmap = self._prepare_contactmap(self.distogram.copy())
-        fn_raw = self.get_fn_profile(model_contactmap, prediction_contactmap)
+        prediction_contactmap = self._prepare_contactmap(self.prediction.copy())
+        fn_raw = self._get_fn_profile(model_contactmap, prediction_contactmap)
         fn_smooth = convolution_smooth_values(fn_raw, 5)
         fn_profile = np.nan_to_num(fn_smooth)
 
