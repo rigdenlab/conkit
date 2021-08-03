@@ -208,7 +208,7 @@ class ModelValidationFigure(Figure):
         tuple
             A tuple of integers with the FN count along the sequence
         """
-        predicted_set = prediction.as_dit()
+        predicted_set = prediction.as_dict()
         observed_set = model.as_dict()
         missing_residues = self._get_absent_residues()
 
