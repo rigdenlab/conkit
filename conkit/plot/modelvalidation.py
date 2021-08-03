@@ -208,16 +208,16 @@ class ModelValidationFigure(Figure):
         tuple
             A tuple of integers with the FN count along the sequence
         """
-        predicted_set = prediction.as_dict()
-        observed_set = model.as_dict()
+        predicted_dict = prediction.as_dict()
+        observed_dict = model.as_dict()
         missing_residues = self._get_absent_residues()
 
         fn = []
-        for resn in predicted_set.keys():
+        for resn in predicted_dict.keys():
             if missing_residues and resn in missing_residues:
                 fn.append(0)
                 continue
-            fn.append(len(predicted_set[resn] - observed_set[resn]))
+            fn.append(len(predicted_dict[resn] - observed_dict[resn]))
 
         return tuple(fn)
 
