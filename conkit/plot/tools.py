@@ -217,7 +217,20 @@ def _isinstance(hierarchy, hierarchy_type):
 
 
 def convolution_smooth_values(x, window=5):
-    """Use convolutions to smooth a list with numeric values"""
+    """Use convolutions to smooth a list of numeric values
+
+    Parameters
+    ----------
+    x : list, tuple
+       A list with the numeric values to be smoothed
+    window : int
+       The residue window to be used to smooth values [default: 5]
+
+    Returns
+    -------
+    list
+       A list with the smoothed numeric values
+"""
     box = np.ones(window) / window
     x_smooth = np.convolve(x, box, mode='same')
     return x_smooth
@@ -225,7 +238,8 @@ def convolution_smooth_values(x, window=5):
 
 def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
     """Use :func:`scipy.signal.find_peaks` to find model validation outliers for a given rmsd and fn profile
-        Parameters
+
+    Parameters
     ----------
     rmsd_raw : list, tuple
        A list with the raw RMSD values along the sequence
