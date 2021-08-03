@@ -235,8 +235,7 @@ class Distogram(ContactMap):
 
     @staticmethod
     def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False):
-        """
-        Calculate the RMSD with between two :obj:`~conkit.core.distogram.Distogram` instances.
+        """Calculate the RMSD with between two :obj:`~conkit.core.distogram.Distogram` instances.
 
         Parameters
         ----------

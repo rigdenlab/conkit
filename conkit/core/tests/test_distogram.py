@@ -163,3 +163,43 @@ class TestDistogram(unittest.TestCase):
             [2.0, 0.0, 99999, 0.0, 0.0]]
 
         self.assertListEqual(output, expected)
+
+    def test_calculate_rmsd_1(self):
+        distogram_1 = Distogram("test_1")
+        distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        distogram_2 = Distogram("test_2")
+        distogram_2.add(Distance(1, 5, (0.45, 0.05, 0.25, 0.25), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(2, 3, (0.1, 0.15, 0.15, 0.6), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(1, 4, (0.75, 0.20, 0.05, 0.0), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(3, 5, (0.05, 0.1, 0.35, 0.5), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        output = Distogram.calculate_rmsd(distogram_1, distogram_2, seq_len=5)
+        expected = [5.385, 3.0, 6.042, 7.0, 6.042]
+
+        self.assertListEqual(expected, [round(x, 3) for x in output])
+
+    def test_calculate_rmsd_2(self):
+        distogram_1 = Distogram("test_1")
+        distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        distogram_2 = Distogram("test_2")
+        distogram_2.add(Distance(1, 5, (0.45, 0.05, 0.25, 0.25), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(2, 3, (0.1, 0.15, 0.15, 0.6), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(1, 4, (0.75, 0.20, 0.05, 0.0), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(3, 5, (0.05, 0.1, 0.35, 0.5), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        output = Distogram.calculate_rmsd(distogram_1, distogram_2, seq_len=5, calculate_wrmsd=True)
+        expected = [4.09, 2.324, 3.937, 5.422, 3.85]
+
+        self.assertListEqual(expected, [round(x, 3) for x in output])
