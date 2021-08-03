@@ -464,6 +464,36 @@ class ContactMap(Entity):
                 representative_sequence += "-"
         return Sequence(self.sequence.id + "_repr", representative_sequence)
 
+    def as_dict(self, altloc=False):
+        """The :obj:`~conkit.core.contactmap.ContactMap` as a dictionary where each key corresponds with the residue
+        number and the values are sets of tuples with the :attr:`~conkit.core.contact.Contact.id`
+
+        Parameters
+        ----------
+        altloc : bool
+           Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
+
+        Returns
+        -------
+        dict
+            A dictionary represnetation of the :obj:`~conkit.core.contactmap.ContactMap` instance
+        """
+        if self.sequence is None:
+            seq_len = self.highest_residue_number
+        else:
+            seq_len = len(self.sequence)
+
+        result = {}
+
+        if altloc:
+            for resn in range(1, seq_len + 1):
+                result[resn] = {(c.res2_altseq, c.res2_altseq) for c in self if resn in (c.res1_altseq, c.res2_altseq)}
+        else:
+            for resn in range(1, seq_len + 1):
+                result[resn] = {(c.res1_seq, c.res2_seq) for c in self if resn in (c.res1_seq, c.res2_seq)}
+
+        return result
+
     def as_list(self, altloc=False):
         """The :obj:`~conkit.core.contactmap.ContactMap` as a 2D-list containing contact-pair residue indexes
 
