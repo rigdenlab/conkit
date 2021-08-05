@@ -263,6 +263,37 @@ def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
 
     allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 30, y + 30)])
     height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
-    fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth), height=height_threshold, distance=30)
+    fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth),
+                                                            height=height_threshold, distance=30)
 
     return rmsd_peaks.tolist() + fn_peaks.tolist()
+
+
+def get_fn_profile(model, prediction, ignore_residues=None):
+    """Get the count of false negatives along the sequence for a given model and residue contact prediction.
+
+    Parameters
+    ----------
+    model: :obj:`~conkit.core.contactmap.ContactMap`
+       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the contacts observed at the model
+    prediction: :obj:`~conkit.core.contactmap.ContactMap`
+       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the predicted contacts
+    ignore_residues: list, tuple
+       A list of integers that indicate residue indices that should be ignored
+
+    Returns
+    -------
+    tuple
+        A tuple of integers with the FN count along the sequence
+    """
+    predicted_dict = prediction.as_dict()
+    observed_dict = model.as_dict()
+
+    fn = []
+    for resn in predicted_dict.keys():
+        if ignore_residues and resn in ignore_residues:
+            fn.append(0)
+            continue
+        fn.append(len(predicted_dict[resn] - observed_dict[resn]))
+
+    return tuple(fn)

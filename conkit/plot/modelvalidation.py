@@ -38,7 +38,7 @@ from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
-from conkit.plot.tools import _isinstance, convolution_smooth_values, find_validation_outliers
+from conkit.plot.tools import _isinstance, convolution_smooth_values, find_validation_outliers, get_fn_profile
 
 
 class ModelValidationFigure(Figure):
@@ -182,7 +182,7 @@ class ModelValidationFigure(Figure):
 
     def _prepare_contactmap(self, distogram):
         """General operations to prepare a :obj:`~conkit.core.contactmap.ContactMap` instance before plotting."""
-        contactmap = distogram.get_contactmap()
+        contactmap = distogram.as_contactmap()
         contactmap.sequence = self.sequence
         contactmap.set_sequence_register()
         contactmap.remove_neighbors(inplace=True)
@@ -192,34 +192,6 @@ class ModelValidationFigure(Figure):
             contactmap.slice_map(seq_len=len(self.sequence), l_factor=self.l_factor, inplace=True)
 
         return contactmap
-
-    def _get_fn_profile(self, model, prediction):
-        """Get the count of false negatives along the sequence for a given model and residue contact prediction.
-
-        Parameters
-        ----------
-        model: :obj:`~conkit.core.contactmap.ContactMap`
-           A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the contacts observed at the model
-        prediction: :obj:`~conkit.core.contactmap.ContactMap`
-           A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the predicted contacts
-
-        Returns
-        -------
-        tuple
-            A tuple of integers with the FN count along the sequence
-        """
-        predicted_dict = prediction.as_dict()
-        observed_dict = model.as_dict()
-        missing_residues = self._get_absent_residues()
-
-        fn = []
-        for resn in predicted_dict.keys():
-            if missing_residues and resn in missing_residues:
-                fn.append(0)
-                continue
-            fn.append(len(predicted_dict[resn] - observed_dict[resn]))
-
-        return tuple(fn)
 
     def draw(self):
 
@@ -231,7 +203,7 @@ class ModelValidationFigure(Figure):
 
         model_contactmap = self._prepare_contactmap(self.model.copy())
         prediction_contactmap = self._prepare_contactmap(self.prediction.copy())
-        fn_raw = self._get_fn_profile(model_contactmap, prediction_contactmap)
+        fn_raw = get_fn_profile(model_contactmap, prediction_contactmap, ignore_residues=self._get_absent_residues())
         fn_smooth = convolution_smooth_values(fn_raw, 5)
         fn_profile = np.nan_to_num(fn_smooth)
 
