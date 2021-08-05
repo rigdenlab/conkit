@@ -1290,5 +1290,6 @@ class TestContactMap(unittest.TestCase):
         output = contact_map.as_dict()
         self.assertDictEqual(expected, output)
 
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
