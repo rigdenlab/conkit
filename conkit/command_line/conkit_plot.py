@@ -80,6 +80,11 @@ def _add_structure_default_args(parser):
     parser.add_argument("pdbformat", help="Format of structure file")
 
 
+def _add_distance_default_args(parser):
+    parser.add_argument("distfile", help="Path to distance prediction file")
+    parser.add_argument("distformat", help="Format of distance prediction file")
+
+
 def add_contact_map_args(subparsers):
     description = u"""
 This command will plot a contact map using the provided contacts
@@ -105,8 +110,8 @@ reference structure, they will not be plotted.
         dest="refid",
         default=None,
         help="Reference identifier to use [default: first in file]. "
-        "Inter-molecular predictions use two letter convention, "
-        "i.e AD for contacts between A and D.",
+             "Inter-molecular predictions use two letter convention, "
+             "i.e AD for contacts between A and D.",
     )
     subparser.add_argument("-d", dest="dtn", default=5, type=int, help="Minimum sequence separation")
     subparser.add_argument("-e", dest="otherfile", default=None, help="a second contact map to plot for comparison")
@@ -165,6 +170,44 @@ alongside any additional information.
     _add_sequence_default_args(subparser)
     _add_contact_default_args(subparser)
     subparser.set_defaults(which="contact_map_matrix")
+
+
+def add_covariance_validation_args(subparsers):
+    description = u"""
+    This command will plot a covariance validation sequence profile using the provided 
+    distance predictions alongside a model.
+    """
+    subparser = subparsers.add_parser(
+        "coval",
+        help="Plot a covariance validation profile",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    subparser.add_argument("-e", dest="otherfile", default=None, help="a second contact map to plot for comparison")
+    subparser.add_argument("-ef", dest="otherformat", default=None, help="the format of the second contact map")
+    _add_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_distance_default_args(subparser)
+    _add_structure_default_args(subparser)
+    subparser.set_defaults(which="covariance_validation")
+
+
+def add_distorgam_heatmap_args(subparsers):
+    description = u"""
+    This command will plot a distogram heatmap using the provided distance predictions.
+    """
+    subparser = subparsers.add_parser(
+        "distheat",
+        help="Plot a distance prediction heatmap",
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    subparser.add_argument("-e", dest="otherfile", default=None, help="a second contact map to plot for comparison")
+    subparser.add_argument("-ef", dest="otherformat", default=None, help="the format of the second contact map")
+    _add_default_args(subparser)
+    _add_sequence_default_args(subparser)
+    _add_distance_default_args(subparser)
+    subparser.set_defaults(which="distogram_heatmap")
 
 
 def add_contact_density_args(subparsers):
@@ -357,6 +400,31 @@ def main(argv=None):
         figure = conkit.plot.ContactMapChordFigure(con_sliced, use_conf=args.confidence, legend=True)
         figure_aspect_ratio = 1.0
 
+    elif args.which == "covariance_validation":
+        sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
+        prediction = conkit.io.read(args.distfile, args.distformat)[0]
+        model = conkit.io.read(args.pdbfile, "pdb")[0]
+
+        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, use_weights=True)
+        figure_aspect_ratio = None
+
+    elif args.which == "distogram_heatmap":
+        sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
+        distogram = conkit.io.read(args.distfile, args.distformat)[0]
+        distogram.sequence = sequence
+        distogram.set_sequence_register()
+
+        if args.otherfile:
+            other = conkit.io.read(args.otherfile, args.otherformat)[0]
+            other.sequence = sequence
+            other.set_sequence_register()
+            figure = conkit.plot.DistogramHeatmapFigure(distogram, other=other)
+        else:
+            figure = conkit.plot.DistogramHeatmapFigure(distogram)
+
+        figure_aspect_ratio = 1.0
+
+
     elif args.which == "contact_map_matrix":
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
@@ -432,7 +500,8 @@ def main(argv=None):
 
     if not args.output:
         args.output = "conkit.png"
-    figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, figure_aspect_ratio))
+    if figure_aspect_ratio is not None:
+        figure.ax.set_aspect(conkit.plot.tools.get_adjusted_aspect(figure.ax, figure_aspect_ratio))
     figure.savefig(args.output, dpi=args.dpi, overwrite=args.overwrite)
     logger.info("Final plot written to %s", args.output)
 
