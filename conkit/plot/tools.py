@@ -287,13 +287,16 @@ def get_fn_profile(model, prediction, ignore_residues=None):
         A tuple of integers with the FN count along the sequence
     """
     predicted_dict = prediction.as_dict()
-    observed_dict = model.as_dict()
+    model_dict = model.as_dict()
+
+    if max(predicted_dict.keys()) != max(model_dict.keys()):
+        raise ValueError("The contact map sequences do not match")
 
     fn = []
     for resn in predicted_dict.keys():
         if ignore_residues and resn in ignore_residues:
             fn.append(0)
             continue
-        fn.append(len(predicted_dict[resn] - observed_dict[resn]))
+        fn.append(len(predicted_dict[resn] - model_dict[resn]))
 
     return tuple(fn)

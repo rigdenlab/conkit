@@ -152,10 +152,43 @@ class Test(unittest.TestCase):
         cmap_2.add(Contact(2, 3, 0.6))
         cmap_2.add(Contact(1, 4, 0.05))
         cmap_2.add(Contact(3, 5, 0.35))
-        cmap_2.add(Contact(1, 6, 0.1))
 
         expected = (1, 1, 1, 0, 1)
         output = tools.get_fn_profile(cmap_1, cmap_2)
+        self.assertTupleEqual(expected, output)
+
+    def test_get_fn_profile_2(self):
+        cmap_1 = ContactMap("test_1")
+        cmap_1.add(Contact(1, 5, 0.45))
+        cmap_1.add(Contact(1, 4, 0.05))
+        cmap_1.add(Contact(3, 5, 0.35))
+        cmap_1.add(Contact(4, 5, 0.5))
+
+        cmap_2 = Distogram("test_2")
+        cmap_2.add(Contact(1, 5, 0.45))
+        cmap_2.add(Contact(2, 3, 0.6))
+        cmap_2.add(Contact(1, 4, 0.05))
+        cmap_2.add(Contact(3, 5, 0.35))
+        cmap_2.add(Contact(1, 6, 0.1))
+
+        with self.assertRaises(ValueError):
+            tools.get_fn_profile(cmap_1, cmap_2)
+
+    def test_get_fn_profile_3(self):
+        cmap_1 = ContactMap("test_1")
+        cmap_1.add(Contact(1, 5, 0.45))
+        cmap_1.add(Contact(1, 4, 0.05))
+        cmap_1.add(Contact(3, 5, 0.35))
+        cmap_1.add(Contact(4, 5, 0.5))
+
+        cmap_2 = Distogram("test_2")
+        cmap_2.add(Contact(1, 5, 0.45))
+        cmap_2.add(Contact(2, 3, 0.6))
+        cmap_2.add(Contact(1, 4, 0.05))
+        cmap_2.add(Contact(3, 5, 0.35))
+
+        expected = (1, 1, 1, 0, 0)
+        output = tools.get_fn_profile(cmap_1, cmap_2, ignore_residues=(5,))
         self.assertTupleEqual(expected, output)
 
 
