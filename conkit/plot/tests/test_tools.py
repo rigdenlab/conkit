@@ -153,7 +153,7 @@ class Test(unittest.TestCase):
         cmap_2.add(Contact(1, 4, 0.05))
         cmap_2.add(Contact(3, 5, 0.35))
 
-        expected = (1, 1, 1, 0, 1)
+        expected = (0, 1, 1, 0, 0)
         output = tools.get_fn_profile(cmap_1, cmap_2)
         self.assertTupleEqual(expected, output)
 
@@ -187,8 +187,8 @@ class Test(unittest.TestCase):
         cmap_2.add(Contact(1, 4, 0.05))
         cmap_2.add(Contact(3, 5, 0.35))
 
-        expected = (1, 1, 1, 0, 0)
-        output = tools.get_fn_profile(cmap_1, cmap_2, ignore_residues=(5,))
+        expected = (0, 0, 1, 0, 0)
+        output = tools.get_fn_profile(cmap_1, cmap_2, ignore_residues=(2,))
         self.assertTupleEqual(expected, output)
 
 
