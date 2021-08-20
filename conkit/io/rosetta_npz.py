@@ -75,7 +75,7 @@ class RosettaNpzParser(BinaryDistanceFileParser):
 
         L = probs.shape[0]
         for i in range(L):
-            for j in range(i + 5, L):
+            for j in range(i, L):
                 _distance = Distance(i + 1, j + 1, tuple(probs[i, j, :].tolist()), DISTANCE_BINS)
                 _map.add(_distance)
 

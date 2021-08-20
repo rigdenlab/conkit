@@ -116,6 +116,81 @@ class Test(unittest.TestCase):
     def test__isinstance_7(self):
         self.assertFalse(tools._isinstance(5, str))
 
+    def test_convolution_smooth_values(self):
+        output = tools.convolution_smooth_values([3, 10, 8, 8, 10, 5]).tolist()
+        expected = [4.2, 5.8, 7.8, 8.2, 6.2, 4.6]
+        self.assertListEqual(expected, [round(x, 2) for x in output])
+
+    def test_find_validation_outliers_1(self):
+        rmsd = [1, 1, 5, 3, 1, 1, 1, 1, 1, 2]
+        rmsd_smooth = [1.4, 2.0, 2.2, 2.2, 2.2, 1.4, 1.0, 1.2, 1.0, 0.8]
+        fn_raw = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        fn_smooth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        output = tools.find_validation_outliers(rmsd, rmsd_smooth, fn_raw, fn_smooth)
+
+        self.assertEqual(0, len(output))
+
+    def test_find_validation_outliers_2(self):
+        rmsd = [1, 1, 5, 3, 1, 1, 1, 1, 1, 2]
+        rmsd_smooth = [1.4, 2.0, 2.2, 2.2, 2.2, 1.4, 1.0, 1.2, 1.0, 0.8]
+        fn_raw = [0, 0, 1, 2, 3, 2, 1, 0, 0, 0]
+        fn_smooth = [0.2, 0.6, 1.2, 1.6, 1.8, 1.6, 1.2, 0.6, 0.2, 0.0]
+        output = tools.find_validation_outliers(rmsd, rmsd_smooth, fn_raw, fn_smooth)
+
+        expected = [4]
+        self.assertListEqual(expected, output)
+
+    def test_get_fn_profile_1(self):
+        cmap_1 = ContactMap("test_1")
+        cmap_1.add(Contact(1, 5, 0.45))
+        cmap_1.add(Contact(1, 4, 0.05))
+        cmap_1.add(Contact(3, 5, 0.35))
+        cmap_1.add(Contact(4, 5, 0.5))
+
+        cmap_2 = Distogram("test_2")
+        cmap_2.add(Contact(1, 5, 0.45))
+        cmap_2.add(Contact(2, 3, 0.6))
+        cmap_2.add(Contact(1, 4, 0.05))
+        cmap_2.add(Contact(3, 5, 0.35))
+
+        expected = (0, 1, 1, 0, 0)
+        output = tools.get_fn_profile(cmap_1, cmap_2)
+        self.assertTupleEqual(expected, output)
+
+    def test_get_fn_profile_2(self):
+        cmap_1 = ContactMap("test_1")
+        cmap_1.add(Contact(1, 5, 0.45))
+        cmap_1.add(Contact(1, 4, 0.05))
+        cmap_1.add(Contact(3, 5, 0.35))
+        cmap_1.add(Contact(4, 5, 0.5))
+
+        cmap_2 = Distogram("test_2")
+        cmap_2.add(Contact(1, 5, 0.45))
+        cmap_2.add(Contact(2, 3, 0.6))
+        cmap_2.add(Contact(1, 4, 0.05))
+        cmap_2.add(Contact(3, 5, 0.35))
+        cmap_2.add(Contact(1, 6, 0.1))
+
+        with self.assertRaises(ValueError):
+            tools.get_fn_profile(cmap_1, cmap_2)
+
+    def test_get_fn_profile_3(self):
+        cmap_1 = ContactMap("test_1")
+        cmap_1.add(Contact(1, 5, 0.45))
+        cmap_1.add(Contact(1, 4, 0.05))
+        cmap_1.add(Contact(3, 5, 0.35))
+        cmap_1.add(Contact(4, 5, 0.5))
+
+        cmap_2 = Distogram("test_2")
+        cmap_2.add(Contact(1, 5, 0.45))
+        cmap_2.add(Contact(2, 3, 0.6))
+        cmap_2.add(Contact(1, 4, 0.05))
+        cmap_2.add(Contact(3, 5, 0.35))
+
+        expected = (0, 0, 1, 0, 0)
+        output = tools.get_fn_profile(cmap_1, cmap_2, ignore_residues=(2,))
+        self.assertTupleEqual(expected, output)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

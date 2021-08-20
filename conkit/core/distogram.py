@@ -211,7 +211,7 @@ class Distogram(ContactMap):
         for distance in self:
             distance._reshape_bins(new_bins)
 
-    def get_contactmap(self, distance_cutoff=8):
+    def as_contactmap(self, distance_cutoff=8):
         """Create a :obj:`~conkit.core.contactmap.ContactMap` instance with the contacts present in this
         :obj:`~conkit.core.distogram.Distogram` instance.
 
@@ -233,14 +233,16 @@ class Distogram(ContactMap):
 
         return contactmap
 
-    def get_rmsd(self, other, seq_len=None, calculate_wrmsd=False):
-        """
-        Calculate the RMSD with another :obj:`~conkit.core.distogram.Distogram` instance.
+    @staticmethod
+    def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False):
+        """Calculate the RMSD between two :obj:`~conkit.core.distogram.Distogram` instances.
 
         Parameters
         ----------
-        other: :obj:`~conkit.core.distogram.Distogram`
-           A ConKit :obj:`~conkit.core.distogram.Distogram`
+        prediction: :obj:`~conkit.core.distogram.Distogram`
+           A ConKit :obj:`~conkit.core.distogram.Distogram` used as the prediction for the RMSD
+        model: :obj:`~conkit.core.distogram.Distogram`
+           A ConKit :obj:`~conkit.core.distogram.Distogram` used as the model to calculate the RMSD
         seq_len: int, optional
            Sequence length. If not provided, it will be pulled from :attr:`~conkit.core.contactmap.ContactMap.sequence`
            [default: None]
@@ -257,17 +259,70 @@ class Distogram(ContactMap):
         :exc:`ValueError`
            other is not a  :obj:`~conkit.core.distogram.Distogram` instance.
         """
-        if not isinstance(other, Distogram):
+        if not isinstance(model, Distogram) or not isinstance(prediction, Distogram):
             raise ValueError('Need to provide a conkit.core.distogram.Distogram instance')
 
-        difference = self.as_array(seq_len=seq_len) - other.as_array(seq_len=seq_len)
+        max_distance = prediction.top.distance_bins[-1][0]
+
+        model_array = model.as_array(seq_len=seq_len)
+        model_array[model_array > max_distance] = max_distance
+        prediction_array = prediction.as_array(seq_len=seq_len)
+        prediction_array[prediction_array > max_distance] = max_distance
+
+        if prediction_array.shape != model_array.shape:
+            raise ValueError('Distograms cannot be matched')
+
+        difference = prediction_array - model_array
         squared_difference = difference ** 2
 
         if calculate_wrmsd:
-            observed_weights = self.as_array(seq_len=seq_len, get_weigths=True)
-            squared_difference *= observed_weights
+            prediction_weights = prediction.as_array(seq_len=seq_len, get_weigths=True)
+            squared_difference *= prediction_weights
 
-        n_observations_array = np.sum(~np.isnan(squared_difference), axis=0)
         sum_squared_differences = np.nansum(squared_difference, axis=0)
+        n_observations_array = np.sum(~np.isnan(squared_difference), axis=0)
         rmsd = np.sqrt(sum_squared_differences / n_observations_array)
         return rmsd
+
+
+    @staticmethod
+    def merge_arrays(distogram_1, distogram_2):
+        """Take two :obj:`~conkit.core.distogram.Distogram` instances and merge them together into the same
+        :obj:`numpy.array` instance. Each half square in this array will correspond with the predicted distances
+        at each hierarchy
+
+        Parameters
+        ----------
+        distogram_1: :obj:`~conkit.core.distogram.Distogram`
+           First :obj:`~conkit.core.distogram.Distogram` instance, used to populate top half square of the array
+        distogram_2: :obj:`~conkit.core.distogram.Distogram`
+           Second :obj:`~conkit.core.distogram.Distogram` instance, used to populate lower half square of the array
+
+        Returns
+        -------
+        :obj:`numpy.array`
+           :obj:`numpy.array` instance that represents the combined distograms.
+
+        Raises
+        ------
+        :exc:`ValueError`
+           No sequence has been registered for one of the :obj:`~conkit.core.distogram.Distogram` instances
+        :exc:`ValueError`
+            The sequence length associated to the :obj:`~conkit.core.distogram.Distogram` instances is incompatible
+        """
+
+        if distogram_1.sequence is None or distogram_2.sequence is None:
+            raise ValueError("All hierarchies must have a sequence registered")
+        if distogram_1.sequence.seq_len != distogram_2.sequence.seq_len:
+            raise ValueError("Sequence lengths are incompatible")
+
+        array = np.full((distogram_1.sequence.seq_len + 1, distogram_1.sequence.seq_len + 1), np.nan)
+
+        for distance in distogram_1:
+            array[distance.res1_seq, distance.res2_seq] = distance.predicted_distance
+        for distance in distogram_2:
+            array[distance.res2_seq, distance.res1_seq] = distance.predicted_distance
+
+        array = np.delete(array, 0, axis=0)
+        array = np.delete(array, 0, axis=1)
+        return array

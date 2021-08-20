@@ -1281,6 +1281,15 @@ class TestContactMap(unittest.TestCase):
         with self.assertRaises(ValueError):
             contact_map.slice_map(0.5, inplace=True)
 
+    def test_as_dict(self):
+        contact_map = ContactMap("test")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            contact_map.add(c)
+
+        expected = {1: {(1, 1), (5, 1), (1, 5)}, 2: {(2, 4)}, 3: {(3, 3)}, 4: {(2, 4)}, 5: {(5, 1), (1, 5)}}
+        output = contact_map.as_dict()
+        self.assertDictEqual(expected, output)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

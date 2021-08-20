@@ -21,6 +21,12 @@ class TestDistance(unittest.TestCase):
         distogram.add(distance)
         self.assertEqual(6.589181, distance.predicted_distance)
 
+    def test_predicted_distance_3(self):
+        distance = Distance(2, 3, (0.2, 0.3, 0.3, 0.2), ((0, 4), (4, 6), (6, 8), (8, np.inf)))
+        self.assertEqual(distance.max_score, 0.3)
+        self.assertTupleEqual(distance.predicted_distance_bin, (4, 6))
+        self.assertEqual(distance.predicted_distance, 5)
+
     def test_get_probability_within_distance_1(self):
         distance = Distance(1, 25, (0.15, 0.45, 0.25, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf)))
         self.assertEqual(distance.raw_score, 0.85)

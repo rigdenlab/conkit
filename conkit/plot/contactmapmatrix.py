@@ -171,14 +171,21 @@ class ContactMapMatrixFigure(Figure):
             other_data[:, 0], other_data[:, 1], symbol="s", facecolor=other_colors, radius=1.0, linewidth=0
         )
 
+        self.define_axis_settings(self_data, other_data)
+
+        # TODO: deprecate this in 0.10
+        if self._file_name:
+            self.savefig(self._file_name, dpi=self._dpi)
+
+    def define_axis_settings(self, data_1, data_2):
         if self.lim:
             min_max_data = np.arange(self.lim[0], self.lim[1] + 1)
             self.ax.set_xlim(self.lim[0] - 0.5, self.lim[1] + 0.5)
             self.ax.set_ylim(self.lim[0] - 0.5, self.lim[1] + 0.5)
         else:
-            min_max_data = np.append(self_data[:, 0], self_data[:, 1])
-            min_max_data = np.append(min_max_data, other_data[:, 0])
-            min_max_data = np.append(min_max_data, other_data[:, 1])
+            min_max_data = np.append(data_1[:, 0], data_1[:, 1])
+            min_max_data = np.append(min_max_data, data_2[:, 0])
+            min_max_data = np.append(min_max_data, data_2[:, 1])
 
         self.ax.set_xlim(min_max_data.min(), min_max_data.max() + 1.0)
         self.ax.set_ylim(min_max_data.min(), min_max_data.max() + 1.0)
@@ -194,10 +201,6 @@ class ContactMapMatrixFigure(Figure):
 
         self.ax.set_xlabel("Residue number")
         self.ax.set_ylabel("Residue number")
-
-        # TODO: deprecate this in 0.10
-        if self._file_name:
-            self.savefig(self._file_name, dpi=self._dpi)
 
     @staticmethod
     def _determine_color(h):

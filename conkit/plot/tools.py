@@ -41,6 +41,7 @@ from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 from conkit.misc import deprecate
+import scipy.signal
 
 HierarchyIndex = {
     "Contact": Contact,
@@ -126,7 +127,7 @@ def find_minima(data, order=1):
     for i in np.arange(1, nelements - 1):
         start = 0 if i - order < 0 else i - order
         end = nelements if i + order + 1 > nelements else i + order + 1
-        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1 : end])
+        results[i] = np.all(data[start:i] > data[i]) and np.all(data[i] < data[i + 1: end])
     return np.where(results)[0].tolist()
 
 
@@ -213,3 +214,89 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
     else:
         return isinstance(hierarchy, hierarchy_type)
+
+
+def convolution_smooth_values(x, window=5):
+    """Use convolutions to smooth a list of numeric values
+
+    Parameters
+    ----------
+    x : list, tuple
+       A list with the numeric values to be smoothed
+    window : int
+       The residue window to be used to smooth values [default: 5]
+
+    Returns
+    -------
+    list
+       A list with the smoothed numeric values
+"""
+    box = np.ones(window) / window
+    x_smooth = np.convolve(x, box, mode='same')
+    return x_smooth
+
+
+def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
+    """Use :func:`scipy.signal.find_peaks` to find model validation outliers for a given rmsd and fn profile
+
+    Parameters
+    ----------
+    rmsd_raw : list, tuple
+       A list with the raw RMSD values along the sequence
+    rmsd_smooth : list, tuple
+       A list with the smoothed RMSD values along the sequence
+    fn_raw : list, tuple
+       A list with the raw FN values along the sequence
+    fn_smooth : list, tuple
+       A list with the smoothed FN values along the sequence
+
+    Returns
+    -------
+    list
+       A list with the residue numbers where a validation peak has been found
+    """
+    _tmp_fn_peaks, _tmp_fn_peaks_properties = scipy.signal.find_peaks(fn_raw, height=1, width=0)
+    allowed_rmsd_peaks = set([x for y in _tmp_fn_peaks for x in range(y - 20, y + 20)])
+    height_threshold = np.array([1.5 if x in allowed_rmsd_peaks else 100000 for x in range(len(rmsd_raw))])
+
+    rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(rmsd_smooth, prominence=1, width=0, height=height_threshold)
+
+    allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 30, y + 30)])
+    height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
+    fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth),
+                                                            height=height_threshold, distance=30)
+
+    return rmsd_peaks.tolist() + fn_peaks.tolist()
+
+
+def get_fn_profile(model, prediction, ignore_residues=None):
+    """Get the count of false negatives along the sequence for a given model and residue contact prediction.
+
+    Parameters
+    ----------
+    model: :obj:`~conkit.core.contactmap.ContactMap`
+       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the contacts observed at the model
+    prediction: :obj:`~conkit.core.contactmap.ContactMap`
+       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the predicted contacts
+    ignore_residues: list, tuple
+       A list of integers that indicate residue indices that should be ignored
+
+    Returns
+    -------
+    tuple
+        A tuple of integers with the FN count along the sequence
+    """
+    predicted_dict = prediction.as_dict()
+    model_dict = model.as_dict()
+
+    if max(predicted_dict.keys()) != max(model_dict.keys()):
+        raise ValueError("The contact map sequences do not match")
+
+    fn = []
+    for resn in predicted_dict.keys():
+        if ignore_residues and resn in ignore_residues:
+            fn.append(0)
+            continue
+        fn.append(len(predicted_dict[resn] - model_dict[resn]))
+
+    return tuple(fn)
