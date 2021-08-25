@@ -105,6 +105,9 @@ class ModelValidationFigure(Figure):
         self.model = model
         self.prediction = prediction
         self.sequence = sequence
+        self.outliers = None
+        self.rmsd_profile = None
+        self.fn_profile = None
 
         self.draw()
 
@@ -130,7 +133,8 @@ class ModelValidationFigure(Figure):
 
     @sequence.setter
     def sequence(self, sequence):
-        if sequence and _isinstance(sequence, "Sequence"):
+        # if sequence and _isinstance(sequence, "Sequence"):
+        if sequence:
             self._sequence = sequence
         else:
             raise TypeError("Invalid hierarchy type: %s" % sequence.__class__.__name__)
@@ -141,7 +145,8 @@ class ModelValidationFigure(Figure):
 
     @prediction.setter
     def prediction(self, prediction):
-        if prediction and _isinstance(prediction, "Distogram"):
+        # if prediction and _isinstance(prediction, "Distogram"):
+        if prediction:
             self._prediction = prediction
         else:
             raise TypeError("Invalid hierarchy type: %s" % prediction.__class__.__name__)
@@ -152,7 +157,8 @@ class ModelValidationFigure(Figure):
 
     @model.setter
     def model(self, model):
-        if model and _isinstance(model, "Distogram"):
+        # if model and _isinstance(model, "Distogram"):
+        if model:
             self._model = model
         else:
             raise TypeError("Invalid hierarchy type: %s" % model.__class__.__name__)
@@ -199,26 +205,28 @@ class ModelValidationFigure(Figure):
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
         rmsd_raw = Distogram.calculate_rmsd(prediction_distogram, model_distogram, calculate_wrmsd=self.use_weights)
         rmsd_smooth = convolution_smooth_values(rmsd_raw, 10)
-        rmsd_profile = np.nan_to_num(rmsd_smooth)
+        self.rmsd_profile = np.nan_to_num(rmsd_smooth)
 
         model_contactmap = self._prepare_contactmap(self.model.copy())
         prediction_contactmap = self._prepare_contactmap(self.prediction.copy())
         fn_raw = get_fn_profile(model_contactmap, prediction_contactmap, ignore_residues=self._get_absent_residues())
         fn_smooth = convolution_smooth_values(fn_raw, 5)
-        fn_profile = np.nan_to_num(fn_smooth)
+        self.fn_profile = np.nan_to_num(fn_smooth)
 
-        outliers = find_validation_outliers(rmsd_raw, rmsd_profile, fn_raw, fn_profile)
+        self.outliers = find_validation_outliers(rmsd_raw, self.rmsd_profile, fn_raw, self.fn_profile)
         line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
-        for outlier in outliers:
-            self.ax.axvline(outlier, **line_kwargs)
-        outlier_plot = [self.ax.axvline(0, ymin=0, ymax=0, label="Outlier", **line_kwargs)]
+        for outlier in self.outliers:
+            start_outlier = outlier - 10 if outlier > 10 else 0
+            stop_outlier = outlier + 10 if outlier + 10 < len(self.sequence) else len(self.sequence)
+            self.ax.axvspan(start_outlier, stop_outlier, **line_kwargs)
+        outlier_plot = [self.ax.axvspan(0, 0, 0, 0, label="Outlier", **line_kwargs)]
 
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('wRMSD' if self.use_weights else 'RMSD')
-        rmsd_plot = self.ax.plot(rmsd_profile, color='#3299a8', label='wRMSD' if self.use_weights else 'RMSD')
+        rmsd_plot = self.ax.plot(self.rmsd_profile, color='#3299a8', label='wRMSD' if self.use_weights else 'RMSD')
         ax2 = self.ax.twinx()
         ax2.set_ylabel('FN count')
-        fn_plot = ax2.plot(fn_profile, color='#325da8', label='FN count')
+        fn_plot = ax2.plot(self.fn_profile, color='#325da8', label='FN count')
         if self.legend:
             plots = fn_plot + rmsd_plot + outlier_plot
             labels = [l.get_label() for l in plots]
