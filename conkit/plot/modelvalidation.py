@@ -133,8 +133,7 @@ class ModelValidationFigure(Figure):
 
     @sequence.setter
     def sequence(self, sequence):
-        # if sequence and _isinstance(sequence, "Sequence"):
-        if sequence:
+        if sequence and _isinstance(sequence, "Sequence"):
             self._sequence = sequence
         else:
             raise TypeError("Invalid hierarchy type: %s" % sequence.__class__.__name__)
@@ -145,8 +144,7 @@ class ModelValidationFigure(Figure):
 
     @prediction.setter
     def prediction(self, prediction):
-        # if prediction and _isinstance(prediction, "Distogram"):
-        if prediction:
+        if prediction and _isinstance(prediction, "Distogram"):
             self._prediction = prediction
         else:
             raise TypeError("Invalid hierarchy type: %s" % prediction.__class__.__name__)
@@ -157,8 +155,7 @@ class ModelValidationFigure(Figure):
 
     @model.setter
     def model(self, model):
-        # if model and _isinstance(model, "Distogram"):
-        if model:
+        if model and _isinstance(model, "Distogram"):
             self._model = model
         else:
             raise TypeError("Invalid hierarchy type: %s" % model.__class__.__name__)
