@@ -403,7 +403,7 @@ def main(argv=None):
     elif args.which == "covariance_validation":
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
         prediction = conkit.io.read(args.distfile, args.distformat)[0]
-        model = conkit.io.read(args.pdbfile, "pdb")[0]
+        model = conkit.io.read(args.pdbfile, args.pdbformat)[0]
 
         figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, use_weights=True)
         figure_aspect_ratio = None
