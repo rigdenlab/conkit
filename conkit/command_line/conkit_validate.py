@@ -233,7 +233,6 @@ def main():
                 logger.info("\nList of proposed changes to fix outlier no. {}:".format(idx))
                 logger.info(table)
 
-
     else:
         logger.info("No outliers were detected, finishing now.")
 
