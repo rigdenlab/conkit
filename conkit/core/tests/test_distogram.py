@@ -222,3 +222,16 @@ class TestDistogram(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Distogram.calculate_rmsd(distogram_1, distogram_2, seq_len=5, calculate_wrmsd=True)
+
+    def test_find_residues_within_1(self):
+        distogram_1 = Distogram("test_1")
+        distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.sequence = conkit.core.Sequence("test_seq", "AAAAA")
+
+        output = distogram_1.find_residues_within(3, 7)
+        expected = {2, 3, 5}
+
+        self.assertSetEqual(expected, output)
