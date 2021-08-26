@@ -284,6 +284,28 @@ class Distogram(ContactMap):
         rmsd = np.sqrt(sum_squared_differences / n_observations_array)
         return rmsd
 
+    def find_residues_within(self, resnum, distance_cutoff):
+        """Find all residues within a given distance of a given residue
+
+        Parameters
+        ----------
+        resnum: int
+           The residue number of the residue of interest
+        distance_cutoff: int, float
+           The distance cutoff used to find residues
+
+        Returns
+        -------
+        set
+           A set with the residue numbers of residues within the given distance
+        """
+        result = []
+
+        for distance in self:
+            if distance.predicted_distance <= distance_cutoff and resnum in distance.id:
+                result += list(distance.id)
+
+        return set(result)
 
     @staticmethod
     def merge_arrays(distogram_1, distogram_2):
