@@ -261,7 +261,7 @@ def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
 
     rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(rmsd_smooth, prominence=1, width=0, height=height_threshold)
 
-    allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 30, y + 30)])
+    allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 20, y + 20)])
     height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
     fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth),
                                                             height=height_threshold, distance=30)
