@@ -162,14 +162,7 @@ def parse_map_align_stdout(stdout):
 
 
 def main():
-    """The main routine for conkit-validate functionality
-
-    Parameters
-    ----------
-    argv : dict, optional
-       A list containing the command line flags
-
-    """
+    """The main routine for conkit-validate functionality"""
     parser = create_argument_parser()
     args = parser.parse_args()
 
