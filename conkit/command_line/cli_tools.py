@@ -72,7 +72,11 @@ def parse_map_align_stdout(stdout):
         if line and line.split()[0] == "MAX":
             line = line.rstrip().lstrip().split()
             for residue in line[8:]:
-                resnum = residue.split(":")
-                alignment[int(resnum[1])] = int(resnum[0])
+                if residue.count(':') == 1:
+                    resnum = residue.split(":")
+                    alignment[int(resnum[1])] = int(resnum[0])
+                else:
+                    print(residue)
+
 
     return alignment
