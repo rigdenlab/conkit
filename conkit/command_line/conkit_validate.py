@@ -231,7 +231,7 @@ def main():
                 logger.info("\nList of proposed changes to fix outlier no. {}:".format(idx))
                 logger.info(table)
             else:
-                logger.info("Cannot find optimal re-alignment for outlier no. {}:".format(idx))
+                logger.info("\nCannot find optimal re-alignment for outlier no. {}:".format(idx))
 
     else:
         logger.info("No outliers were detected, finishing now.")
