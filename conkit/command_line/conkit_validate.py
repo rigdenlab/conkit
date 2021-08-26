@@ -40,7 +40,7 @@ It uses one external programs to perform this task:
 
    map_align for contact map alignment
 
-*** This program needs to be installed separately ***
+*** This program needs to be installed separately from https://github.com/sokrypton/map_align***
 
 """
 
