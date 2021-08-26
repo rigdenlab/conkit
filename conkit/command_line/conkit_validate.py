@@ -210,7 +210,6 @@ def main():
             gap_extension_penalty=args.gap_extension_penalty,
             seq_separation_cutoff=args.seq_separation_cutoff,
             n_iterations=args.n_iterations
-
         )
 
         logger.info("\nExecuting: %s", map_align_cline)
