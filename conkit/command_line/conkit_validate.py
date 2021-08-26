@@ -223,15 +223,15 @@ def main():
             table.field_names = ["Current Residue", "New Residue"]
             start_outlier = outlier - 20 if outlier > 20 else 0
             stop_outlier = outlier + 20 if outlier + 20 < len(sequence) else len(sequence)
-            found_fix = False
             for resnum in range(start_outlier, stop_outlier + 1):
                 if resnum in alignment.keys() and alignment[resnum] != resnum:
-                    found_fix = True
                     table.add_row(['{} ({})'.format(sequence.seq[resnum - 1], resnum),
                                    '{} ({})'.format(sequence.seq[alignment[resnum] - 1], alignment[resnum])])
-            if found_fix:
+            if table._rows:
                 logger.info("\nList of proposed changes to fix outlier no. {}:".format(idx))
                 logger.info(table)
+            else:
+                logger.info("Cannot find optimal re-alignment for outlier no. {}:".format(idx))
 
     else:
         logger.info("No outliers were detected, finishing now.")
