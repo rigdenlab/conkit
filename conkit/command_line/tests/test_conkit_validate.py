@@ -1,6 +1,6 @@
-"""Testing facility for conkit.command_line.tools"""
+"""Testing facility for conkit.conkit_validate"""
 
-from conkit.command_line import cli_tools
+from conkit.command_line import conkit_validate
 
 import unittest
 
@@ -39,5 +39,5 @@ MAX 2_2_2	/home/filo/opt/map_align_v1/map_align/3u97_A.gremlin.map	/home/filo/op
                     147: 65, 148: 66, 149: 67, 150: 68, 151: 69, 152: 70, 153: 71,
                     154: 72, 155: 73, 156: 74, 157: 75}
 
-        output = cli_tools.parse_map_align_stdout(stdout_contents)
+        output = conkit_validate.parse_map_align_stdout(stdout_contents)
         self.assertDictEqual(output, expected)

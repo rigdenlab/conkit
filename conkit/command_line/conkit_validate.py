@@ -46,11 +46,11 @@ It uses one external programs to perform this task:
 
 import argparse
 import os
+import shutil
 from prettytable import PrettyTable
 
 import conkit.applications
 import conkit.command_line
-import conkit.command_line.cli_tools
 import conkit.io
 import conkit.plot
 
@@ -61,21 +61,18 @@ def create_argument_parser():
     """Create a parser for the command line arguments used in conkit-validate"""
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("seqfile", type=conkit.command_line.cli_tools.check_file_exists, help="Path to sequence file")
+    parser.add_argument("seqfile", type=check_file_exists, help="Path to sequence file")
     parser.add_argument("seqformat", type=str, help="Sequence format")
-    parser.add_argument("distfile", type=conkit.command_line.cli_tools.check_file_exists,
-                        help="Path to distance prediction file")
+    parser.add_argument("distfile", type=check_file_exists, help="Path to distance prediction file")
     parser.add_argument("distformat", type=str, help="Format of distance prediction file")
-    parser.add_argument("pdbfile", type=conkit.command_line.cli_tools.check_file_exists,
-                        help="Path to structure file")
+    parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file")
     parser.add_argument("--outdir", dest="outdir", type=str, help="Output directory",
                         default=os.path.join(os.getcwd(), 'conkit-validate'))
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output directory if exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default="map_align",
-                        type=conkit.command_line.cli_tools.check_file_exists,
-                        help="Path to the map_align executable")
+                        type=check_file_exists, help="Path to the map_align executable")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -86,6 +83,82 @@ def create_argument_parser():
                         help="Number of iterations")
 
     return parser
+
+
+def check_file_exists(input_path):
+    """Check if a given path exists
+
+    Parameters
+    ----------
+    input_path : str, None
+       Location of the file to be tested
+
+    Returns
+    -------
+    abspath : str, None
+       The absolute path of the file if it exists, None if the input is None
+
+    Raises
+    ------
+    :exc:`FileNotFoundError`
+        The file doesn't exist
+    """
+
+    if input_path is None:
+        return None
+    if os.path.isfile(os.path.abspath(input_path)):
+        return os.path.abspath(input_path)
+    else:
+        raise FileNotFoundError("{} cannot be found".format(input_path))
+
+
+def prepare_output_directory(outdir, overwrite=False):
+    """Prepare the output directory for conkit-validate.
+
+    Parameters
+    ----------
+    outdir : str
+       Path to the output directory
+    overwrite : bool
+       Whether the output directory should be overwritten or not [default: False]
+
+    Raises
+    ------
+    :exc:`ValueError`
+        The output directory already exists and overwrite is False
+    """
+
+    if os.path.isdir(outdir):
+        if not overwrite:
+            raise ValueError('Output directory already exists')
+        else:
+            shutil.rmtree(outdir)
+    os.mkdir(outdir)
+
+
+def parse_map_align_stdout(stdout):
+    """Parse the stdout of map_align and extract the alignment of residues.
+
+    Parameters
+    ----------
+    stdout : str
+       Starndard output created with map_align
+
+    Returns
+    ------
+    alignment: dict
+        A dictionary where the aligned residue numbers of map_b are the keys and the residue numbers of map_a the values
+    """
+
+    alignment = {}
+    for line in stdout.split('\n'):
+        if line and line.split()[0] == "MAX":
+            line = line.rstrip().lstrip().split()
+            for residue in line[8:]:
+                resnum = residue.split(":")
+                alignment[int(resnum[1])] = int(resnum[0])
+
+    return alignment
 
 
 def main():
@@ -105,7 +178,7 @@ def main():
 
     logger.info("Output directory:                           %s", args.outdir)
 
-    conkit.command_line.cli_tools.prepare_output_directory(args.outdir, args.overwrite)
+    prepare_output_directory(args.outdir, args.overwrite)
 
     sequence = conkit.io.read(args.seqfile, args.seqformat).top
     prediction = conkit.io.read(args.distfile, args.distformat).top
@@ -152,7 +225,7 @@ def main():
         map_align_log = os.path.join(args.outdir, 'map_align.log')
         with open(map_align_log, 'w') as fhandle:
             fhandle.write(stdout)
-        alignment = conkit.command_line.cli_tools.parse_map_align_stdout(stdout)
+        alignment = parse_map_align_stdout(stdout)
         for idx, outlier in enumerate(figure.outliers, 1):
             table = PrettyTable()
             table.field_names = ["Current Residue", "New Residue"]
@@ -162,8 +235,8 @@ def main():
             for resnum in range(start_outlier, stop_outlier + 1):
                 if resnum in alignment.keys() and alignment[resnum] != resnum:
                     found_fix = True
-                    table.add_row(['{} ({})'.format(sequence.seq[resnum-1], resnum),
-                                   '{} ({})'.format(sequence.seq[alignment[resnum]-1], alignment[resnum])])
+                    table.add_row(['{} ({})'.format(sequence.seq[resnum - 1], resnum),
+                                   '{} ({})'.format(sequence.seq[alignment[resnum] - 1], alignment[resnum])])
             if found_fix:
                 logger.info("\nList of proposed changes to fix outlier no. {}:".format(idx))
                 logger.info(table)
