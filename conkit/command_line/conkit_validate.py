@@ -38,7 +38,7 @@ register errors.
 
 It uses one external programs to perform this task:
 
-   - map_align for contact map alignment
+   map_align for contact map alignment
 
 *** This program needs to be installed separately ***
 
@@ -69,21 +69,21 @@ def create_argument_parser():
     parser.add_argument("pdbfile", type=conkit.command_line.cli_tools.check_file_exists,
                         help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file")
-    parser.add_argument("--outdir", dest="outdir", type=str, help="Output directory [default: ./conkit-validate]",
+    parser.add_argument("--outdir", dest="outdir", type=str, help="Output directory",
                         default=os.path.join(os.getcwd(), 'conkit-validate'))
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
-                        help="overwrite output directory if exists [default: False]")
+                        help="overwrite output directory if exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default="map_align",
                         type=conkit.command_line.cli_tools.check_file_exists,
-                        help="Path to the map_align executable [default: map_align]")
+                        help="Path to the map_align executable")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
-                        help="Gap opening penalty [default: -1]")
+                        help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
-                        help="Gap extension penalty [default: -0.01]")
+                        help="Gap extension penalty")
     parser.add_argument("--seq_separation_cutoff", dest="seq_separation_cutoff", default=3, type=int,
-                        help="Sequence separation cutoff [default: 3]"),
+                        help="Sequence separation cutoff"),
     parser.add_argument("--n_iterations", dest="n_iterations", default=20, type=int,
-                        help="Number of iterations [default=20]")
+                        help="Number of iterations")
 
     return parser
 
@@ -156,8 +156,8 @@ def main():
         for idx, outlier in enumerate(figure.outliers, 1):
             table = PrettyTable()
             table.field_names = ["Current Residue", "New Residue"]
-            start_outlier = outlier - 10 if outlier > 10 else 0
-            stop_outlier = outlier + 10 if outlier + 10 < len(sequence) else len(sequence)
+            start_outlier = outlier - 20 if outlier > 20 else 0
+            stop_outlier = outlier + 20 if outlier + 20 < len(sequence) else len(sequence)
             found_fix = False
             for resnum in range(start_outlier, stop_outlier + 1):
                 if resnum in alignment.keys() and alignment[resnum] != resnum:

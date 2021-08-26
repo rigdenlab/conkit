@@ -266,7 +266,7 @@ def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
     fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth),
                                                             height=height_threshold, distance=30)
 
-    return rmsd_peaks.tolist() + fn_peaks.tolist()
+    return sorted(rmsd_peaks.tolist() + fn_peaks.tolist())
 
 
 def get_fn_profile(model, prediction, ignore_residues=None):
