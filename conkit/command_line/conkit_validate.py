@@ -71,6 +71,8 @@ def create_argument_parser():
                         default=os.path.join(os.getcwd(), 'conkit-validate'))
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output directory if exists")
+    parser.add_argument("--skip_alignment", dest="skip_alignment", default=False, action="store_true",
+                        help="skip contact map alignment step")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default="map_align",
                         type=check_file_exists, help="Path to the map_align executable")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
@@ -185,7 +187,10 @@ def main():
     figure.savefig(fig_fname, overwrite=args.overwrite)
     logger.info("Validation plot written to %s", fig_fname)
 
-    if any(figure.outliers):
+    if args.skip_alignment:
+        logger.info("Skipping contact map alignment, no changes suggested.")
+
+    elif any(figure.outliers):
         table = PrettyTable()
         table.field_names = ["Outlier no.", "Residue no.", "wRMSD", "FN Count"]
         for idx, outlier in enumerate(figure.outliers, 1):
