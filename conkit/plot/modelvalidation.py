@@ -213,10 +213,8 @@ class ModelValidationFigure(Figure):
         self.outliers = find_validation_outliers(rmsd_raw, self.rmsd_profile, fn_raw, self.fn_profile)
         line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
         for outlier in self.outliers:
-            start_outlier = outlier - 10 if outlier > 10 else 0
-            stop_outlier = outlier + 10 if outlier + 10 < len(self.sequence) else len(self.sequence)
-            self.ax.axvspan(start_outlier, stop_outlier, **line_kwargs)
-        outlier_plot = [self.ax.axvspan(0, 0, 0, 0, label="Outlier", **line_kwargs)]
+            self.ax.axvline(outlier, **line_kwargs)
+        outlier_plot = [self.ax.axvline(0, ymin=0, ymax=0, label="Outlier", **line_kwargs)]
 
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('wRMSD' if self.use_weights else 'RMSD')
