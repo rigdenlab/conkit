@@ -187,12 +187,9 @@ def main():
 
     if any(figure.outliers):
         table = PrettyTable()
-        table.field_names = ["Outlier no.", "Residue Range", "wRMSD", "FN Count"]
+        table.field_names = ["Outlier no.", "Residue no.", "wRMSD", "FN Count"]
         for idx, outlier in enumerate(figure.outliers, 1):
-            start_outlier = outlier - 10 if outlier > 10 else 0
-            stop_outlier = outlier + 10 if outlier + 10 < len(sequence) else len(sequence)
-            table.add_row([idx, '{} - {}'.format(start_outlier, stop_outlier),
-                           '{0:.2f}'.format(figure.rmsd_profile[outlier]),
+            table.add_row([idx, str(outlier), '{0:.2f}'.format(figure.rmsd_profile[outlier]),
                            '{0:.2f}'.format(figure.fn_profile[outlier])])
         logger.info("\nList of detected outliers:")
         logger.info(table)
