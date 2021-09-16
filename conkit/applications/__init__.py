@@ -76,3 +76,9 @@ def PsicovCommandline(*args, **kwargs):
     from conkit.applications.psicov import PsicovCommandline
 
     return PsicovCommandline(*args, **kwargs)
+
+
+def MapAlignCommandline(*args, **kwargs):
+    from conkit.applications.map_align import MapAlignCommandline
+
+    return MapAlignCommandline(*args, **kwargs)
