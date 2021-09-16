@@ -196,7 +196,7 @@ def main():
         for idx, outlier in enumerate(figure.outliers, 1):
             table.add_row([idx, str(outlier), '{0:.2f}'.format(figure.rmsd_profile[outlier]),
                            '{0:.2f}'.format(figure.fn_profile[outlier])])
-        logger.info("\nList of detected outliers:")
+        logger.info(os.linesep + "List of detected outliers:")
         logger.info(table)
 
         contact_map_a = os.path.join(args.outdir, 'contact_map_a.mapalign')
@@ -214,7 +214,7 @@ def main():
             n_iterations=args.n_iterations
         )
 
-        logger.info("\nExecuting: %s", map_align_cline)
+        logger.info(os.linesep + "Executing: %s", map_align_cline)
         stdout, stderr = map_align_cline()
         map_align_log = os.path.join(args.outdir, 'map_align.log')
         with open(map_align_log, 'w') as fhandle:
@@ -230,10 +230,10 @@ def main():
                     table.add_row(['{} ({})'.format(sequence.seq[resnum - 1], resnum),
                                    '{} ({})'.format(sequence.seq[alignment[resnum] - 1], alignment[resnum])])
             if table._rows:
-                logger.info("\nList of proposed changes to fix outlier no. {}:".format(idx))
+                logger.info(os.linesep + "List of proposed changes to fix outlier no. {}:".format(idx))
                 logger.info(table)
             else:
-                logger.info("\nCannot find optimal re-alignment for outlier no. {}:".format(idx))
+                logger.info(os.linesep + "Cannot find optimal re-alignment for outlier no. {}:".format(idx))
 
     else:
         logger.info("No outliers were detected, finishing now.")
