@@ -40,6 +40,8 @@ from conkit.core.contactmap import ContactMap
 from conkit.core.contactfile import ContactFile
 from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
+from conkit.core.distogram import Distogram
+from conkit.core.distancefile import DistanceFile
 from conkit.misc import deprecate
 import scipy.signal
 
@@ -49,6 +51,8 @@ HierarchyIndex = {
     "ContactFile": ContactFile,
     "Sequence": Sequence,
     "SequenceFile": SequenceFile,
+    "Distogram": Distogram,
+    "DistanceFile": DistanceFile
 }
 
 
