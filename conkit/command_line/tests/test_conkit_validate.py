@@ -41,3 +41,10 @@ MAX 2_2_2	/home/filo/opt/map_align_v1/map_align/3u97_A.gremlin.map	/home/filo/op
 
         output = conkit_validate.parse_map_align_stdout(stdout_contents)
         self.assertDictEqual(output, expected)
+
+    def test_get_residue_ranges(self):
+        residues = [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 19, 25, 26, 30, 31, 32, 33, 34, 35]
+        expected = [(0, 12), (19, 19), (25, 26), (30, 35)]
+
+        output = conkit_validate.get_residue_ranges(residues)
+        self.assertListEqual(output, expected)
