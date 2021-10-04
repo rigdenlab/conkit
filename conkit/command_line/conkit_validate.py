@@ -46,15 +46,17 @@ It uses one external programs to perform this task:
 
 import argparse
 import os
+from collections import namedtuple
 import shutil
 from prettytable import PrettyTable
-
 import conkit.applications
 import conkit.command_line
 import conkit.io
 import conkit.plot
 
 logger = None
+
+Outlier = namedtuple('Outlier', ("resnum", "wrmsd", "fn_count", "misalignment"))
 
 
 def create_argument_parser():
@@ -73,7 +75,7 @@ def create_argument_parser():
                         help="overwrite output directory if exists")
     parser.add_argument("--skip_alignment", dest="skip_alignment", default=False, action="store_true",
                         help="skip contact map alignment step")
-    parser.add_argument("--map_align_exe", dest="map_align_exe", default="map_align",
+    parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
                         type=check_file_exists, help="Path to the map_align executable")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
@@ -138,6 +140,13 @@ def prepare_output_directory(outdir, overwrite=False):
     os.mkdir(outdir)
 
 
+def get_residue_ranges(resnums):
+    nums = sorted(set(resnums))
+    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s + 3 < e]
+    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
+    return list(zip(edges, edges))
+
+
 def parse_map_align_stdout(stdout):
     """Parse the stdout of map_align and extract the alignment of residues.
 
@@ -152,15 +161,34 @@ def parse_map_align_stdout(stdout):
         A dictionary where the aligned residue numbers of map_b are the keys and the residue numbers of map_a the values
     """
 
-    alignment = {}
+    misalignments = {}
+    residues_map_a = []
+    residues_map_b = []
+    resnum = 0
+    misalinged_residues = []
+
     for line in stdout.split('\n'):
         if line and line.split()[0] == "MAX":
             line = line.rstrip().lstrip().split()
-            for residue in line[8:]:
-                resnum = residue.split(":")
-                alignment[int(resnum[1])] = int(resnum[0])
+            for residue_pair in line[8:]:
+                resnum += 1
+                residue_pair = residue_pair.split(":")
+                residues_map_a.append(int(residue_pair[0]))
+                residues_map_b.append(int(residue_pair[1]))
+                if residue_pair[0] != residue_pair[1]:
+                    misalinged_residues.append(resnum)
 
-    return alignment
+    for residue_ranges in get_residue_ranges(misalinged_residues):
+        misalingment_slice = slice(residue_ranges[0], residue_ranges[1])
+        misalingment_range = range(residues_map_a[residue_ranges[0]], residues_map_a[residue_ranges[1] - 1] + 1)
+
+        if len(misalingment_range) < 5:
+            continue
+        misalignments[misalingment_range] = []
+        for res_a, res_b in zip(residues_map_a[misalingment_slice], residues_map_b[misalingment_slice]):
+            misalignments[misalingment_range].append((res_a, res_b))
+
+    return misalignments
 
 
 def main():
@@ -187,18 +215,15 @@ def main():
     figure.savefig(fig_fname, overwrite=args.overwrite)
     logger.info("Validation plot written to %s", fig_fname)
 
-    if args.skip_alignment:
-        logger.info("Skipping contact map alignment, no changes suggested.")
+    outliers = []
 
-    elif any(figure.outliers):
-        table = PrettyTable()
-        table.field_names = ["Outlier no.", "Residue no.", "wRMSD", "FN Count"]
-        for idx, outlier in enumerate(figure.outliers, 1):
-            table.add_row([idx, str(outlier), '{0:.2f}'.format(figure.rmsd_profile[outlier]),
-                           '{0:.2f}'.format(figure.fn_profile[outlier])])
-        logger.info(os.linesep + "List of detected outliers:")
-        logger.info(table)
-
+    if args.skip_alignment or args.map_align_exe is None:
+        logger.info("Skipping contact map alignment, no fixes will be suggested.")
+        for idx, resnum in enumerate(figure.outliers, 1):
+            outlier = Outlier(resnum=resnum, wrmsd=figure.rmsd_profile[resnum],
+                              fn_count=figure.fn_profile[resnum], misalignment=None)
+            outliers.append(outlier)
+    else:
         contact_map_a = os.path.join(args.outdir, 'contact_map_a.mapalign')
         contact_map_b = os.path.join(args.outdir, 'contact_map_b.mapalign')
         conkit.io.write(contact_map_a, 'mapalign', prediction)
@@ -219,21 +244,44 @@ def main():
         map_align_log = os.path.join(args.outdir, 'map_align.log')
         with open(map_align_log, 'w') as fhandle:
             fhandle.write(stdout)
-        alignment = parse_map_align_stdout(stdout)
-        for idx, outlier in enumerate(figure.outliers, 1):
+        misalignments = parse_map_align_stdout(stdout)
+        used_misalignments = []
+        for idx, resnum in enumerate(figure.outliers, 1):
+            outlier_misalignment = None
+            for misalignment in misalignments.keys():
+                if resnum in misalignment or resnum + 10 in misalignment or resnum - 10 in misalignment:
+                    outlier_misalignment = misalignments[misalignment]
+                    used_misalignments.append(misalignment)
+            outlier = Outlier(resnum=resnum, wrmsd=figure.rmsd_profile[resnum],
+                              fn_count=figure.fn_profile[resnum], misalignment=outlier_misalignment)
+            outliers.append(outlier)
+        for misalignment in misalignments.keys():
+            if misalignment not in used_misalignments:
+                resnum = misalignments[misalignment][0],
+                outlier = Outlier(resnum=resnum, wrmsd=figure.rmsd_profile[resnum],
+                                  fn_count=figure.fn_profile[resnum], misalignment=misalignments[misalignment])
+                outliers.append(outlier)
+
+    if any(outliers):
+        table = PrettyTable()
+        table.field_names = ["Outlier no.", "Residue no.", "wRMSD", "FN Count", "Misalignment"]
+        for idx, outlier in enumerate(outliers, 1):
+            table.add_row([idx, outlier.resnum, '{0:.2f}'.format(outlier.wrmsd),
+                           '{0:.2f}'.format(outlier.fn_count), 'Yes' if outlier.misalignment is not None else 'No'])
+        logger.info(os.linesep + "List of detected outliers:")
+        logger.info(table)
+
+        for idx, outlier in enumerate(outliers, 1):
             table = PrettyTable()
             table.field_names = ["Current Residue", "New Residue"]
-            start_outlier = outlier - 20 if outlier > 20 else 0
-            stop_outlier = outlier + 20 if outlier + 20 < len(sequence) else len(sequence)
-            for resnum in range(start_outlier, stop_outlier + 1):
-                if resnum in alignment.keys() and alignment[resnum] != resnum:
-                    table.add_row(['{} ({})'.format(sequence.seq[resnum - 1], resnum),
-                                   '{} ({})'.format(sequence.seq[alignment[resnum] - 1], alignment[resnum])])
-            if table._rows:
-                logger.info(os.linesep + "List of proposed changes to fix outlier no. {}:".format(idx))
-                logger.info(table)
-            else:
-                logger.info(os.linesep + "Cannot find optimal re-alignment for outlier no. {}:".format(idx))
+            if outlier.misalignment is None:
+                logger.info(os.linesep + "Cannot find optimal re-alignment for outlier no. {}.".format(idx))
+                continue
+            for residue_pairs in outlier.misalignment:
+                table.add_row(['{} ({})'.format(sequence.seq[residue_pairs[1] - 1], residue_pairs[1]),
+                               '{} ({})'.format(sequence.seq[residue_pairs[0] - 1], residue_pairs[0])])
+            logger.info(os.linesep + "List of proposed changes to fix outlier no. {}:".format(idx))
+            logger.info(table)
 
     else:
         logger.info("No outliers were detected, finishing now.")
