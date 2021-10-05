@@ -161,7 +161,7 @@ class ModelValidationFigure(Figure):
             raise TypeError("Invalid hierarchy type: %s" % model.__class__.__name__)
 
     def _get_absent_residues(self):
-        """Get a list of the residues absent from the :attr:`~conkit.plot.ModelValidationFigure.model` and
+        """Get a set of residues absent from the :attr:`~conkit.plot.ModelValidationFigure.model` and
         :attr:`~conkit.plot.ModelValidationFigure.prediction`. Only distograms originating from PDB files
         are considered."""
 
@@ -170,7 +170,7 @@ class ModelValidationFigure(Figure):
             absent_residues += self.model.get_absent_residues(len(self.sequence))
         if self.prediction.original_file_format == "PDB":
             absent_residues += self.prediction.get_absent_residues(len(self.sequence))
-        return tuple(absent_residues)
+        return set(absent_residues)
 
     def _prepare_distogram(self, distogram):
         """General operations to prepare a :obj:`~conkit.core.distogram.Distogram` instance before plotting."""
