@@ -199,7 +199,10 @@ def parse_map_align_stdout(stdout):
 
 def get_outliers(figure_outliers, rmsd_profile, fn_profile, alignment_list=None):
     outliers = []
-    _copy_alignment_list = alignment_list.copy()
+    if alignment_list is not None:
+        _copy_alignment_list = alignment_list.copy()
+    else:
+        _copy_alignment_list = alignment_list = []
 
     for idx, resnum in enumerate(figure_outliers, 1):
         outlier_alignment = []
