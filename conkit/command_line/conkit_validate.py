@@ -45,10 +45,12 @@ It uses one external programs to perform this task:
 """
 
 import argparse
-import os
 from collections import namedtuple
-import shutil
+import os
+from operator import attrgetter
 from prettytable import PrettyTable
+import shutil
+
 import conkit.applications
 import conkit.command_line
 import conkit.io
@@ -219,7 +221,7 @@ def get_outliers(figure_outliers, rmsd_profile, fn_profile, alignment_list=None)
         outlier = Outlier(resnum, rmsd_profile[resnum], fn_profile[resnum], alignment.residue_pairs)
         outliers.append(outlier)
 
-    return outliers
+    return sorted(outliers, key=attrgetter('resnum'))
 
 
 def main():
