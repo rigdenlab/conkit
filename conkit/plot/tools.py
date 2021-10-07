@@ -259,11 +259,12 @@ def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
     list
        A list with the residue numbers where a validation peak has been found
     """
-    _tmp_fn_peaks, _tmp_fn_peaks_properties = scipy.signal.find_peaks(fn_raw, height=1, width=0)
+    _tmp_fn_peaks, _tmp_fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_raw), height=1, width=0)
     allowed_rmsd_peaks = set([x for y in _tmp_fn_peaks for x in range(y - 20, y + 20)])
     height_threshold = np.array([1.5 if x in allowed_rmsd_peaks else 100000 for x in range(len(rmsd_raw))])
 
-    rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(rmsd_smooth, prominence=1, width=0, height=height_threshold)
+    rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(np.nan_to_num(rmsd_smooth), prominence=1,
+                                                          width=0, height=height_threshold)
 
     allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 20, y + 20)])
     height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
