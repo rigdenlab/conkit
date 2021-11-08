@@ -39,7 +39,7 @@ from conkit.core.contactmap import ContactMap
 
 
 class Distogram(ContactMap):
-    """A distogram objecte to store all associated information. This class inherits methods and attributes
+    """A distogram object to store all associated information. This class inherits methods and attributes
     from :obj:`~conkit.core.contactmap.ContactMap`
 
     Examples
