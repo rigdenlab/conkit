@@ -32,19 +32,21 @@
 from __future__ import division
 from __future__ import print_function
 
+from Bio.PDB.DSSP import DSSP
 import numpy as np
+import pandas as pd
 
 from conkit.core.distance import Distance
-from conkit.core.distogram import Distogram
+from conkit.misc import load_validation_model, SELECTED_VALIDATION_FEATURES, ALL_VALIDATION_FEATURES
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
-from conkit.plot.tools import _isinstance, convolution_smooth_values, find_validation_outliers, get_fn_profile
+from conkit.plot.tools import _isinstance, get_rmsd, get_cmap_validation_metrics, get_zscores
 
 
 class ModelValidationFigure(Figure):
-    """A Figure object specifically for a model validation illustration. This figure represents the
-    RMSD profile along the sequence between the predicted distances at the distogram and the observed
-    distances at the PDB model.
+    """A Figure object specifc for a model validation. This figure represents the proabbility that each given residue
+    in the model is involved in a model error. This is donw by feeding a trained classfier the differences observed
+    between the predicted distogram and the observed inter-residue contacts and distances at the PDB model.
 
     Attributes
     ----------
@@ -54,24 +56,29 @@ class ModelValidationFigure(Figure):
        The distogram with the residue distance predictions
     sequence: :obj:`~conkit.core.sequence.Sequence`
        The sequence of the structure
+    dssp: :obj:`Bio.PDB.DSSP.DSSP`
+        The DSSP output for the PDB model that will be validated
     distance_bins: list, tuple
         A list of tuples with the boundaries of the distance bins to use in the calculation [default: CASP2 bins]
-    use_weights: bool
-        If set then the wRMSD is calculated using the confidence scores for predicted distances [default: True]
     l_factor: float
-            The L/N factor used to filter the contacts before finding the False Negatives [default: 0.5]
+        The L/N factor used to filter the contacts before finding the False Negatives [default: 0.5]
 
     Examples
     --------
+    >>> from Bio.PDB import PDBParser
+    >>> from Bio.PDB.DSSP import DSSP
+    >>> p = PDBParser()
+    >>> structure = p.get_structure('TOXD', 'toxd/toxd.pdb')[0]
+    >>> dssp = DSSP(structure, 'toxd/toxd.pdb', dssp='mkdssp', acc_array='Wilke')
     >>> import conkit
     >>> sequence = conkit.io.read('toxd/toxd.fasta', 'fasta').top
     >>> model = conkit.io.read('toxd/toxd.pdb', 'pdb').top_map
     >>> prediction = conkit.io.read('toxd/toxd.npz', 'rosettanpz').top_map
-    >>> conkit.plot.ModelValidationFigure(model, prediction, sequence)
+    >>> conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp)
 
     """
 
-    def __init__(self, model, prediction, sequence, distance_bins=None, use_weights=False, l_factor=0.5, **kwargs):
+    def __init__(self, model, prediction, sequence, dssp, distance_bins=None, l_factor=0.5, **kwargs):
         """A new model validation plot
 
         Parameters
@@ -82,10 +89,10 @@ class ModelValidationFigure(Figure):
             The distogram with the residue distance predictions
         sequence: :obj:`~conkit.core.sequence.Sequence`
             The sequence of the structure
+        dssp: :obj:`Bio.PDB.DSSP.DSSP`
+            The DSSP output for the PDB model that will be validated
         distance_bins: list, tuple
             A list of tuples with the boundaries of the distance bins to use in the calculation [default: CASP2 bins]
-        use_weights: bool
-            If set then the wRMSD is calculated using the confidence scores for predicted distances [default: True]
         l_factor: float
             The L/N factor used to filter the contacts before finding the False Negatives [default: 0.5]
 
@@ -97,17 +104,17 @@ class ModelValidationFigure(Figure):
         self._model = None
         self._prediction = None
         self._sequence = None
+        self._dssp = None
         self._distance_bins = None
 
-        self.use_weights = use_weights
         self.l_factor = l_factor
         self.distance_bins = distance_bins
         self.model = model
         self.prediction = prediction
         self.sequence = sequence
-        self.outliers = None
-        self.rmsd_profile = None
-        self.fn_profile = None
+        self.dssp = dssp
+        self.classifier, self.scaler = load_validation_model()
+        self.absent_residues = self._get_absent_residues()
 
         self.draw()
 
@@ -136,7 +143,18 @@ class ModelValidationFigure(Figure):
         if sequence and _isinstance(sequence, "Sequence"):
             self._sequence = sequence
         else:
-            raise TypeError("Invalid hierarchy type: %s" % sequence.__class__.__name__)
+            raise TypeError("Invalid hierarchy type for sequence: %s" % sequence.__class__.__name__)
+
+    @property
+    def dssp(self):
+        return self._dssp
+
+    @dssp.setter
+    def dssp(self, dssp):
+        if dssp and _isinstance(dssp, DSSP):
+            self._dssp = dssp
+        else:
+            raise TypeError("Invalid hierarchy type for dssp: %s" % dssp.__class__.__name__)
 
     @property
     def prediction(self):
@@ -147,7 +165,7 @@ class ModelValidationFigure(Figure):
         if prediction and _isinstance(prediction, "Distogram"):
             self._prediction = prediction
         else:
-            raise TypeError("Invalid hierarchy type: %s" % prediction.__class__.__name__)
+            raise TypeError("Invalid hierarchy type for prediction: %s" % prediction.__class__.__name__)
 
     @property
     def model(self):
@@ -158,7 +176,7 @@ class ModelValidationFigure(Figure):
         if model and _isinstance(model, "Distogram"):
             self._model = model
         else:
-            raise TypeError("Invalid hierarchy type: %s" % model.__class__.__name__)
+            raise TypeError("Invalid hierarchy type for model: %s" % model.__class__.__name__)
 
     def _get_absent_residues(self):
         """Get a set of residues absent from the :attr:`~conkit.plot.ModelValidationFigure.model` and
@@ -196,34 +214,71 @@ class ModelValidationFigure(Figure):
 
         return contactmap
 
+    def _parse_dssp(self):
+        dssp = []
+        for residue in sorted(self.dssp.keys(), key=lambda x: x[1][1]):
+            resnum = residue[1][1]
+            if resnum in self.absent_residues:
+                dssp.append((resnum, np.nan, np.nan, np.nan, np.nan))
+            acc = self.dssp[residue][3]
+            ss2 = (1, 0, 0) if self.dssp[residue][2] in ('-', 'T', 'S') else (0, 1, 0) if self.dssp[residue][2] in ('H', 'G', 'I') else (0, 0, 1)
+            dssp.append((resnum, *ss2, acc))
+
+        dssp = pd.DataFrame(dssp)
+        dssp.columns = ['RESNUM', 'COIL', 'HELIX', 'SHEET', 'ACC']
+
+        return dssp
+
+    @staticmethod
+    def get_feature_df(predicted_dict, dssp, *metrics):
+        features = []
+        for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
+            features.append((*residue_features,))
+
+        features = pd.DataFrame(features)
+        features.columns = ALL_VALIDATION_FEATURES
+        features = features.merge(dssp, how='inner', on=['RESNUM'])
+
+        return features
+
     def draw(self):
 
         model_distogram = self._prepare_distogram(self.model.copy())
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
-        rmsd_raw = Distogram.calculate_rmsd(prediction_distogram, model_distogram, calculate_wrmsd=self.use_weights)
-        rmsd_smooth = convolution_smooth_values(rmsd_raw, 10)
-        self.rmsd_profile = np.nan_to_num(rmsd_smooth)
+        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_cmap_dict = model_cmap.as_dict()
+        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
+        predicted_cmap_dict = prediction_cmap.as_dict()
 
-        model_contactmap = self._prepare_contactmap(self.model.copy())
-        prediction_contactmap = self._prepare_contactmap(self.prediction.copy())
-        fn_raw = get_fn_profile(model_contactmap, prediction_contactmap, ignore_residues=self._get_absent_residues())
-        fn_smooth = convolution_smooth_values(fn_raw, 5)
-        self.fn_profile = np.nan_to_num(fn_smooth)
+        dssp = self._parse_dssp()
+        rmsd, rmsd_smooth = get_rmsd(prediction_distogram, model_distogram)
+        cmap_metrics, cmap_metrics_smooth = get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, self.absent_residues, len(self.sequence))
+        zscore_metrics = get_zscores(model_distogram, predicted_cmap_dict, self.absent_residues, rmsd, *cmap_metrics)
+        features_df = self.get_feature_df(predicted_cmap_dict, dssp, rmsd_smooth, *cmap_metrics_smooth, *zscore_metrics)
 
-        self.outliers = find_validation_outliers(rmsd_raw, self.rmsd_profile, fn_raw, self.fn_profile)
+        y_pred = []
+        y_pred_proba = []
+        for resnum in sorted(predicted_cmap_dict.keys()):
+            print(resnum)
+            if self.absent_residues and resnum in self.absent_residues:
+                y_pred.append(np.nan)
+                y_pred_proba.append(np.nan)
+                continue
+            residue_features = features_df.loc[features_df.RESNUM == resnum][SELECTED_VALIDATION_FEATURES].values
+            scaled_features = self.scaler.transform(residue_features)
+            y_pred.append(self.classifier.predict(scaled_features)[0])
+            y_pred_proba.append(self.classifier.predict_proba(scaled_features)[0, 1])
+
         line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
-        for outlier in self.outliers:
-            self.ax.axvline(outlier, **line_kwargs)
+        self.ax.axhline(0.5, **line_kwargs)
         outlier_plot = [self.ax.axvline(0, ymin=0, ymax=0, label="Outlier", **line_kwargs)]
 
         self.ax.set_xlabel('Residue Number')
-        self.ax.set_ylabel('wRMSD' if self.use_weights else 'RMSD')
-        rmsd_plot = self.ax.plot(self.rmsd_profile, color='#3299a8', label='wRMSD' if self.use_weights else 'RMSD')
-        ax2 = self.ax.twinx()
-        ax2.set_ylabel('FN count')
-        fn_plot = ax2.plot(self.fn_profile, color='#325da8', label='FN count')
+        self.ax.set_ylabel('Score')
+
+        score_plot = self.ax.plot(y_pred_proba, color='#3299a8', label='Score')
         if self.legend:
-            plots = fn_plot + rmsd_plot + outlier_plot
+            plots = score_plot + outlier_plot
             labels = [l.get_label() for l in plots]
             self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
                            ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)

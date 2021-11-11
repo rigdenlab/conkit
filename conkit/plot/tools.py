@@ -43,7 +43,7 @@ from conkit.core.sequencefile import SequenceFile
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 from conkit.misc import deprecate
-import scipy.signal
+
 
 HierarchyIndex = {
     "Contact": Contact,
@@ -234,74 +234,118 @@ def convolution_smooth_values(x, window=5):
     -------
     list
        A list with the smoothed numeric values
-"""
+    """
     box = np.ones(window) / window
     x_smooth = np.convolve(x, box, mode='same')
     return x_smooth
 
 
-def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
-    """Use :func:`scipy.signal.find_peaks` to find model validation outliers for a given rmsd and fn profile
-
-    Parameters
-    ----------
-    rmsd_raw : list, tuple
-       A list with the raw RMSD values along the sequence
-    rmsd_smooth : list, tuple
-       A list with the smoothed RMSD values along the sequence
-    fn_raw : list, tuple
-       A list with the raw FN values along the sequence
-    fn_smooth : list, tuple
-       A list with the smoothed FN values along the sequence
-
-    Returns
-    -------
-    list
-       A list with the residue numbers where a validation peak has been found
-    """
-    _tmp_fn_peaks, _tmp_fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_raw), height=1, width=0)
-    allowed_rmsd_peaks = set([x for y in _tmp_fn_peaks for x in range(y - 20, y + 20)])
-    height_threshold = np.array([1.5 if x in allowed_rmsd_peaks else 100000 for x in range(len(rmsd_raw))])
-
-    rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(np.nan_to_num(rmsd_smooth), prominence=1,
-                                                          width=0, height=height_threshold)
-
-    allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 20, y + 20)])
-    height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
-    fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth),
-                                                            height=height_threshold, distance=30)
-
-    return sorted(rmsd_peaks.tolist() + fn_peaks.tolist())
+def get_rmsd(prediction_distogram, model_distogram):
+    rmsd_raw = Distogram.calculate_rmsd(prediction_distogram, model_distogram, calculate_wrmsd=True)
+    rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), 10)
+    return rmsd_raw, rmsd_smooth
 
 
-def get_fn_profile(model, prediction, ignore_residues=None):
-    """Get the count of false negatives along the sequence for a given model and residue contact prediction.
+def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, absent_residues, seq_len):
+    
+    def accuracy(tp, fp, tn, fn):
+        if (tp + fp + tn + fn) > 0:
+            return (tp + tn) / (tp + fp + tn + fn)
+        return 0
+    
+    def fn(*kwargs):
+        return kwargs[-1]
+    
+    def fn_rate(tp, fp, tn, fn):
+        if (fn + tn) > 0:
+            return fn / (fn + tn)
+        return 0
+    
+    def fp(*kwargs):
+        return kwargs[1]
+    
+    def fp_rate(tp, fp, tn, fn):
+        if (fp + tp) > 0:
+            return fp / (fp + tp)
+        return 0
+    
+    def sensitivity(tp, fp, tn, fn):
+        if (fn + tp) > 0:
+            return tp / (fn+tp)
+        return 0
+    
+    def specificity(tp, fp, tn, fn):
+        if (fp + tn) > 0:
+            return tn / (fp + tn)
+        return 0
+    
+    nresidues = seq_len - len(absent_residues)
+    # Accuracy, FN, FNR, FP, FPR, Sensitivity, Specificity
+    cmap_metrics = [[] for i in range(7)]
+    calculations = (accuracy, fn, fn_rate, fp, fp_rate, sensitivity, specificity)
 
-    Parameters
-    ----------
-    model: :obj:`~conkit.core.contactmap.ContactMap`
-       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the contacts observed at the model
-    prediction: :obj:`~conkit.core.contactmap.ContactMap`
-       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the predicted contacts
-    ignore_residues: list, tuple
-       A list of integers that indicate residue indices that should be ignored
-
-    Returns
-    -------
-    tuple
-        A tuple of integers with the FN count along the sequence
-    """
-    predicted_dict = prediction.as_dict()
-    model_dict = model.as_dict()
-
-    if max(predicted_dict.keys()) != max(model_dict.keys()):
-        raise ValueError("The contact map sequences do not match")
-
-    fn = []
-    for resn in predicted_dict.keys():
-        if ignore_residues and resn in ignore_residues:
-            fn.append(0)
+    for resnum in sorted(predicted_cmap_dict.keys()):
+        if absent_residues and resnum in absent_residues:
+            for metric in cmap_metrics:
+                metric.append(np.nan)
             continue
-        fn.append(len(predicted_dict[resn] - model_dict[resn]))
 
-    return tuple(fn)
+        predicted_contact_set = {c for c in predicted_cmap_dict[resnum] if c[0] not in absent_residues and c[1] not in absent_residues}
+        model_contact_set = {c for c in model_cmap_dict[resnum] if c[0] not in absent_residues and c[1] not in absent_residues}
+
+        _fn = len(predicted_contact_set - model_contact_set)
+        _tp = len(predicted_contact_set & model_contact_set)
+        _fp = len(model_contact_set - predicted_contact_set)
+        _tn = nresidues - _fn - _tp - _fp
+        
+        for idx, metric in enumerate(calculations):
+            cmap_metrics[idx].append(metric(_tp, _fp, _tn, _fn))
+
+    smooth_cmap_metrics = []
+    for metric in cmap_metrics:
+        smooth_cmap_metrics.append(convolution_smooth_values(np.nan_to_num(metric), 5))
+
+    return cmap_metrics, smooth_cmap_metrics
+
+
+def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics):
+    zscore_cmap_metrics = [[] for i in metrics]
+
+    for resnum in sorted(predicted_cmap_dict.keys()):
+        if absent_residues and resnum in absent_residues:
+            for zscore_metric in zscore_cmap_metrics:
+                zscore_metric.append(np.nan)
+
+        neighbour_residues = model_distogram.find_residues_within(resnum, 10)
+        for cmap_metric, zscore_metric in zip(metrics, zscore_cmap_metrics):
+            population_scores = [cmap_metric[resid - 1] for resid in neighbour_residues]
+            observed_score = cmap_metric[resnum - 1]
+            zscore_metric.append(calculate_zscore(observed_score, population_scores))
+
+    return zscore_cmap_metrics
+
+
+def calculate_zscore(observed_score, population_scores):
+    """Calculate the Z-Score for a given population of values. Z-Score = (score - mean) / stdev
+
+    Parameters
+    ----------
+    observed_score : float
+       The observed score used to calculate the Z-Score
+    population_scores : list
+       A list containing the scores observed across the samples in the population
+
+    Returns
+    -------
+    float
+       The calculated Z-Score
+    """
+
+    if len(population_scores) < 2:
+        return 0
+    stdev = np.std(population_scores).astype(float)
+    if stdev == 0:
+        return 0
+    mean = np.mean(population_scores).astype(float)
+    zscore = (observed_score - mean) / stdev
+    return zscore

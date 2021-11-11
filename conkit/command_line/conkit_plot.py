@@ -42,6 +42,8 @@ __date__ = "08 Feb 2017"
 __version__ = "0.1"
 
 import argparse
+from Bio.PDB import PDBParser
+from Bio.PDB.DSSP import DSSP
 import inspect
 
 import conkit.command_line
@@ -185,6 +187,7 @@ def add_covariance_validation_args(subparsers):
     )
     subparser.add_argument("-e", dest="otherfile", default=None, help="a second contact map to plot for comparison")
     subparser.add_argument("-ef", dest="otherformat", default=None, help="the format of the second contact map")
+    subparser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable")
     _add_default_args(subparser)
     _add_sequence_default_args(subparser)
     _add_distance_default_args(subparser)
@@ -401,11 +404,16 @@ def main(argv=None):
         figure_aspect_ratio = 1.0
 
     elif args.which == "covariance_validation":
+        if args.pdbformat != 'pdb':
+            raise ValueError('Model file format can only be PDB')
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
         prediction = conkit.io.read(args.distfile, args.distformat)[0]
         model = conkit.io.read(args.pdbfile, args.pdbformat)[0]
+        p = PDBParser()
+        structure = p.get_structure('structure', args.pdbfile)[0]
+        dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
 
-        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, use_weights=True)
+        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp)
         figure_aspect_ratio = None
 
     elif args.which == "distogram_heatmap":
