@@ -263,7 +263,7 @@ def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
     tuple
        Two lists with the raw/smoothed RMSD values at each residue position
     """
-    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=True)
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd)
     rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), 10)
     return rmsd_raw, rmsd_smooth
 
