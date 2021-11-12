@@ -36,7 +36,7 @@ It will then report regions in the model where an outlier was
 detected, and use map_align to provide a solution for potential
 register errors.
 
-It uses one external programs to perform this task:
+It uses one external program to perform this task:
 
    map_align for contact map alignment
 
