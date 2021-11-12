@@ -121,75 +121,43 @@ class Test(unittest.TestCase):
         expected = [4.2, 5.8, 7.8, 8.2, 6.2, 4.6]
         self.assertListEqual(expected, [round(x, 2) for x in output])
 
-    def test_find_validation_outliers_1(self):
-        rmsd = [1, 1, 5, 3, 1, 1, 1, 1, 1, 2]
-        rmsd_smooth = [1.4, 2.0, 2.2, 2.2, 2.2, 1.4, 1.0, 1.2, 1.0, 0.8]
-        fn_raw = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        fn_smooth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        output = tools.find_validation_outliers(rmsd, rmsd_smooth, fn_raw, fn_smooth)
+    def test_parse_map_align_stdout(self):
+        stdout_contents = """OPT -------------------------------------------------------------------
+    OPT                           MAP_ALIGN                                
+    OPT -------------------------------------------------------------------
+    OPT   -a          /home/filo/opt/map_align_v1/map_align/3u97_A.gremlin.map
+    OPT   -b          /home/filo/opt/map_align_v1/map_align/2pd0_A.pdb.map
+    OPT   -gap_o      -1
+    OPT   -gap_e      -0.01
+    OPT   -sep_cut    3
+    OPT   -iter       20
+    OPT   -silent     0
+    OPT -------------------------------------------------------------------
+    OPT   -use_gap_ss  0
+    OPT   -use_prf     0
+    OPT -------------------------------------------------------------------
+    TMP	0_1_0	21.7832	-1.06	20.7233
+    TMP	0_1_1	21.7832	-1.06	20.7233
+    TMP	0_1_2	24.8138	-2.525	22.2888
+    TMP	2_32_2	31.8905	-4.39	27.5005
+    TMP	2_32_3	31.8905	-4.39	27.5005
+    MAX 2_2_2	/home/filo/opt/map_align_v1/map_align/3u97_A.gremlin.map	/home/filo/opt/map_align_v1/map_align/2pd0_A.pdb.map	44.5272	-4.38	40.1472	74	1:1 2:2 3:3 4:4 5:6 6:7 7:8 8:9 10:10 11:11 12:13 13:14 14:15 16:16 17:17 18:18 19:19 20:20 21:23 22:24 23:25 24:26 25:27
+    """
 
-        self.assertEqual(0, len(output))
+        expected = {
+            range(5, 15): [(5, 6), (6, 7), (7, 8), (8, 9), (10, 10), (11, 11), (12, 13), (13, 14), (14, 15)],
+            range(21, 26): [(21, 23), (22, 24), (23, 25), (24, 26), (25, 27)]
+        }
 
-    def test_find_validation_outliers_2(self):
-        rmsd = [1, 1, 5, 3, 1, 1, 1, 1, 1, 2]
-        rmsd_smooth = [1.4, 2.0, 2.2, 2.2, 2.2, 1.4, 1.0, 1.2, 1.0, 0.8]
-        fn_raw = [0, 0, 1, 2, 3, 2, 1, 0, 0, 0]
-        fn_smooth = [0.2, 0.6, 1.2, 1.6, 1.8, 1.6, 1.2, 0.6, 0.2, 0.0]
-        output = tools.find_validation_outliers(rmsd, rmsd_smooth, fn_raw, fn_smooth)
+        output = {i.residue_range: i.residue_pairs for i in tools.parse_map_align_stdout(stdout_contents)}
+        self.assertDictEqual(output, expected)
 
-        expected = [4]
-        self.assertListEqual(expected, output)
+    def test_get_residue_ranges(self):
+        residues = [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 19, 25, 26, 30, 31, 32, 33, 34, 35]
+        expected = [(0, 12), (19, 19), (25, 26), (30, 35)]
 
-    def test_get_fn_profile_1(self):
-        cmap_1 = ContactMap("test_1")
-        cmap_1.add(Contact(1, 5, 0.45))
-        cmap_1.add(Contact(1, 4, 0.05))
-        cmap_1.add(Contact(3, 5, 0.35))
-        cmap_1.add(Contact(4, 5, 0.5))
-
-        cmap_2 = Distogram("test_2")
-        cmap_2.add(Contact(1, 5, 0.45))
-        cmap_2.add(Contact(2, 3, 0.6))
-        cmap_2.add(Contact(1, 4, 0.05))
-        cmap_2.add(Contact(3, 5, 0.35))
-
-        expected = (0, 1, 1, 0, 0)
-        output = tools.get_fn_profile(cmap_1, cmap_2)
-        self.assertTupleEqual(expected, output)
-
-    def test_get_fn_profile_2(self):
-        cmap_1 = ContactMap("test_1")
-        cmap_1.add(Contact(1, 5, 0.45))
-        cmap_1.add(Contact(1, 4, 0.05))
-        cmap_1.add(Contact(3, 5, 0.35))
-        cmap_1.add(Contact(4, 5, 0.5))
-
-        cmap_2 = Distogram("test_2")
-        cmap_2.add(Contact(1, 5, 0.45))
-        cmap_2.add(Contact(2, 3, 0.6))
-        cmap_2.add(Contact(1, 4, 0.05))
-        cmap_2.add(Contact(3, 5, 0.35))
-        cmap_2.add(Contact(1, 6, 0.1))
-
-        with self.assertRaises(ValueError):
-            tools.get_fn_profile(cmap_1, cmap_2)
-
-    def test_get_fn_profile_3(self):
-        cmap_1 = ContactMap("test_1")
-        cmap_1.add(Contact(1, 5, 0.45))
-        cmap_1.add(Contact(1, 4, 0.05))
-        cmap_1.add(Contact(3, 5, 0.35))
-        cmap_1.add(Contact(4, 5, 0.5))
-
-        cmap_2 = Distogram("test_2")
-        cmap_2.add(Contact(1, 5, 0.45))
-        cmap_2.add(Contact(2, 3, 0.6))
-        cmap_2.add(Contact(1, 4, 0.05))
-        cmap_2.add(Contact(3, 5, 0.35))
-
-        expected = (0, 0, 1, 0, 0)
-        output = tools.get_fn_profile(cmap_1, cmap_2, ignore_residues=(2,))
-        self.assertTupleEqual(expected, output)
+        output = tools.get_residue_ranges(residues)
+        self.assertListEqual(output, expected)
 
 
 if __name__ == "__main__":

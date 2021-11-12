@@ -185,9 +185,8 @@ def add_covariance_validation_args(subparsers):
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    subparser.add_argument("-e", dest="otherfile", default=None, help="a second contact map to plot for comparison")
-    subparser.add_argument("-ef", dest="otherformat", default=None, help="the format of the second contact map")
     subparser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable")
+    subparser.add_argument("-map_align_exe", dest="map_align_exe", default=None, help="path to map_align executable")
     _add_default_args(subparser)
     _add_sequence_default_args(subparser)
     _add_distance_default_args(subparser)
@@ -413,7 +412,7 @@ def main(argv=None):
         structure = p.get_structure('structure', args.pdbfile)[0]
         dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
 
-        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp)
+        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
         figure_aspect_ratio = None
 
     elif args.which == "distogram_heatmap":

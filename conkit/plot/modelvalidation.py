@@ -32,15 +32,23 @@
 from __future__ import division
 from __future__ import print_function
 
+import os
 from Bio.PDB.DSSP import DSSP
 import numpy as np
 import pandas as pd
+import tempfile
 
+from conkit.applications import MapAlignCommandline
 from conkit.core.distance import Distance
+import conkit.io
 from conkit.misc import load_validation_model, SELECTED_VALIDATION_FEATURES, ALL_VALIDATION_FEATURES
 from conkit.plot.figure import Figure
-from conkit.plot.tools import ColorDefinitions
-from conkit.plot.tools import _isinstance, get_rmsd, get_cmap_validation_metrics, get_zscores
+import conkit.plot.tools as tools
+
+LINEKWARGS = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=tools.ColorDefinitions.MISMATCH, zorder=1)
+MARKERKWARGS = dict(marker='|', linestyle='None')
+_MARKERKWARGS = dict(marker='s', linestyle='None')
+
 
 
 class ModelValidationFigure(Figure):
@@ -58,10 +66,14 @@ class ModelValidationFigure(Figure):
        The sequence of the structure
     dssp: :obj:`Bio.PDB.DSSP.DSSP`
         The DSSP output for the PDB model that will be validated
-    distance_bins: list, tuple
+    map_align_exe: str
+        The path to map_align executable [default: None]
+    dist_bins: list, tuple
         A list of tuples with the boundaries of the distance bins to use in the calculation [default: CASP2 bins]
     l_factor: float
         The L/N factor used to filter the contacts before finding the False Negatives [default: 0.5]
+    absent_residues: set
+        The residues not observed in the model that will be validated (only if in PDB format)
 
     Examples
     --------
@@ -78,7 +90,7 @@ class ModelValidationFigure(Figure):
 
     """
 
-    def __init__(self, model, prediction, sequence, dssp, distance_bins=None, l_factor=0.5, **kwargs):
+    def __init__(self, model, prediction, sequence, dssp, map_align_exe=None, dist_bins=None, l_factor=0.5, **kwargs):
         """A new model validation plot
 
         Parameters
@@ -91,7 +103,9 @@ class ModelValidationFigure(Figure):
             The sequence of the structure
         dssp: :obj:`Bio.PDB.DSSP.DSSP`
             The DSSP output for the PDB model that will be validated
-        distance_bins: list, tuple
+        map_align_exe: str
+            The path to map_align executable [default: None]
+        dist_bins: list, tuple
             A list of tuples with the boundaries of the distance bins to use in the calculation [default: CASP2 bins]
         l_factor: float
             The L/N factor used to filter the contacts before finding the False Negatives [default: 0.5]
@@ -106,9 +120,11 @@ class ModelValidationFigure(Figure):
         self._sequence = None
         self._dssp = None
         self._distance_bins = None
+        self.features = None
 
+        self.map_align_exe = map_align_exe
         self.l_factor = l_factor
-        self.distance_bins = distance_bins
+        self.dist_bins = dist_bins
         self.model = model
         self.prediction = prediction
         self.sequence = sequence
@@ -122,17 +138,17 @@ class ModelValidationFigure(Figure):
         return self.__class__.__name__
 
     @property
-    def distance_bins(self):
-        return self._distance_bins
+    def dist_bins(self):
+        return self._dist_bins
 
-    @distance_bins.setter
-    def distance_bins(self, distance_bins):
-        if distance_bins is None:
-            self._distance_bins = ((0, 4), (4, 6), (6, 8), (8, 10), (10, 12), (12, 14),
-                                   (14, 16), (16, 18), (18, 20), (20, np.inf))
+    @dist_bins.setter
+    def dist_bins(self, dist_bins):
+        if dist_bins is None:
+            self._dist_bins = ((0, 4), (4, 6), (6, 8), (8, 10), (10, 12), (12, 14),
+                               (14, 16), (16, 18), (18, 20), (20, np.inf))
         else:
-            Distance._assert_valid_bins(distance_bins)
-            self._distance_bins = distance_bins
+            Distance._assert_valid_bins(dist_bins)
+            self._dist_bins = dist_bins
 
     @property
     def sequence(self):
@@ -140,7 +156,7 @@ class ModelValidationFigure(Figure):
 
     @sequence.setter
     def sequence(self, sequence):
-        if sequence and _isinstance(sequence, "Sequence"):
+        if sequence and tools._isinstance(sequence, "Sequence"):
             self._sequence = sequence
         else:
             raise TypeError("Invalid hierarchy type for sequence: %s" % sequence.__class__.__name__)
@@ -151,7 +167,7 @@ class ModelValidationFigure(Figure):
 
     @dssp.setter
     def dssp(self, dssp):
-        if dssp and _isinstance(dssp, DSSP):
+        if dssp and tools._isinstance(dssp, DSSP):
             self._dssp = dssp
         else:
             raise TypeError("Invalid hierarchy type for dssp: %s" % dssp.__class__.__name__)
@@ -162,7 +178,7 @@ class ModelValidationFigure(Figure):
 
     @prediction.setter
     def prediction(self, prediction):
-        if prediction and _isinstance(prediction, "Distogram"):
+        if prediction and tools._isinstance(prediction, "Distogram"):
             self._prediction = prediction
         else:
             raise TypeError("Invalid hierarchy type for prediction: %s" % prediction.__class__.__name__)
@@ -173,7 +189,7 @@ class ModelValidationFigure(Figure):
 
     @model.setter
     def model(self, model):
-        if model and _isinstance(model, "Distogram"):
+        if model and tools._isinstance(model, "Distogram"):
             self._model = model
         else:
             raise TypeError("Invalid hierarchy type for model: %s" % model.__class__.__name__)
@@ -197,7 +213,7 @@ class ModelValidationFigure(Figure):
         distogram.set_sequence_register()
 
         if distogram.original_file_format != "PDB":
-            distogram.reshape_bins(self.distance_bins)
+            distogram.reshape_bins(self.dist_bins)
 
         return distogram
 
@@ -215,13 +231,21 @@ class ModelValidationFigure(Figure):
         return contactmap
 
     def _parse_dssp(self):
+        """Parse :obj:`Bio.PDB.DSSP.DSSP` into a :obj:`pandas.DataFrame` with secondary structure information
+        about the model"""
         dssp = []
         for residue in sorted(self.dssp.keys(), key=lambda x: x[1][1]):
             resnum = residue[1][1]
             if resnum in self.absent_residues:
                 dssp.append((resnum, np.nan, np.nan, np.nan, np.nan))
+                continue
             acc = self.dssp[residue][3]
-            ss2 = (1, 0, 0) if self.dssp[residue][2] in ('-', 'T', 'S') else (0, 1, 0) if self.dssp[residue][2] in ('H', 'G', 'I') else (0, 0, 1)
+            if self.dssp[residue][2] in ('-', 'T', 'S'):
+                ss2 = (1, 0, 0)
+            elif self.dssp[residue][2] in ('H', 'G', 'I'):
+                ss2 = (0, 1, 0)
+            else:
+                ss2 = (0, 0, 1)
             dssp.append((resnum, *ss2, acc))
 
         dssp = pd.DataFrame(dssp)
@@ -229,8 +253,27 @@ class ModelValidationFigure(Figure):
 
         return dssp
 
-    @staticmethod
-    def get_feature_df(predicted_dict, dssp, *metrics):
+    def get_cmap_alignment(self):
+        """Obtain a contact map alignment between :attr:`~conkit.plot.ModelValidationFigure.model` and
+        :attr:`~conkit.plot.ModelValidationFigure.prediction` and get the misaligned residues"""
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            contact_map_a = os.path.join(tmpdirname, 'contact_map_a.mapalign')
+            contact_map_b = os.path.join(tmpdirname, 'contact_map_b.mapalign')
+            conkit.io.write(contact_map_a, 'mapalign', self.prediction)
+            conkit.io.write(contact_map_b, 'mapalign', self.model)
+
+            map_align_cline = MapAlignCommandline(
+                cmd=self.map_align_exe,
+                contact_map_a=contact_map_a,
+                contact_map_b=contact_map_b)
+
+            stdout, stderr = map_align_cline()
+            alignments = tools.parse_map_align_stdout(stdout)
+            misaligned_resnums = {res for misalignment in alignments for res in misalignment.residue_range}
+            return misaligned_resnums
+
+    def get_feature_df(self, predicted_dict, dssp, *metrics):
+        """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
         features = []
         for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
             features.append((*residue_features,))
@@ -239,49 +282,90 @@ class ModelValidationFigure(Figure):
         features.columns = ALL_VALIDATION_FEATURES
         features = features.merge(dssp, how='inner', on=['RESNUM'])
 
+        if self.map_align_exe is not None:
+            misaligned_residues = self.get_cmap_alignment()
+            features['MISALIGNED'] = features.RESNUM.isin(misaligned_residues)
+        else:
+            features['MISALIGNED'] = False
+
         return features
 
-    def draw(self):
+    def _add_legend(self):
+        """Adds legend to the :obj:`~conkit.plot.ModelValidationFigure`"""
+        _error = self.ax.plot([], [], c=tools.ColorDefinitions.VALIDATION_ERROR, label='Error', **_MARKERKWARGS)
+        _correct = self.ax.plot([], [], c=tools.ColorDefinitions.VALIDATION_CORRECT, label='Correct', **_MARKERKWARGS)
+        _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Threshold", **LINEKWARGS)]
+        _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.VALIDATION_SCORE, label='Smoothed Score')
+        plots = _score_plot + _threshold_line + _correct + _error
 
+        if self.map_align_exe is not None:
+            _misaligned = self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
+            _aligned = self.ax.plot([], [], c=tools.ColorDefinitions.ALIGNED, label='Aligned', **_MARKERKWARGS)
+            plots += _misaligned + _aligned
+
+        labels = [l.get_label() for l in plots]
+        self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
+                       ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
+
+    def _predict_score(self, resnum):
+        """Predict whether a given residue is part of a model error or not.
+
+        Parameters
+        ----------
+        resnum : int
+           The residue number of the residue that will be validated
+
+        Returns
+        -------
+        score: float
+           The predicted probability that the residue of interest is part of a model error
+        """
+        residue_features = self.features.loc[self.features.RESNUM == resnum][SELECTED_VALIDATION_FEATURES]
+        if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
+            return np.nan
+        scaled_features = self.scaler.transform(residue_features.values)
+        return self.classifier.predict_proba(scaled_features)[0, 1]
+
+    def draw(self):
         model_distogram = self._prepare_distogram(self.model.copy())
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
         model_cmap = self._prepare_contactmap(self.model.copy())
-        model_cmap_dict = model_cmap.as_dict()
+        model_dict = model_cmap.as_dict()
         prediction_cmap = self._prepare_contactmap(self.prediction.copy())
-        predicted_cmap_dict = prediction_cmap.as_dict()
+        predicted_dict = prediction_cmap.as_dict()
 
         dssp = self._parse_dssp()
-        rmsd, rmsd_smooth = get_rmsd(prediction_distogram, model_distogram)
-        cmap_metrics, cmap_metrics_smooth = get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, self.absent_residues, len(self.sequence))
-        zscore_metrics = get_zscores(model_distogram, predicted_cmap_dict, self.absent_residues, rmsd, *cmap_metrics)
-        features_df = self.get_feature_df(predicted_cmap_dict, dssp, rmsd_smooth, *cmap_metrics_smooth, *zscore_metrics)
+        cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict, self.sequence, self.absent_residues)
+        rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
+        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics)
+        self.features = self.get_feature_df(predicted_dict, dssp, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
-        y_pred = []
-        y_pred_proba = []
-        for resnum in sorted(predicted_cmap_dict.keys()):
-            print(resnum)
-            if self.absent_residues and resnum in self.absent_residues:
-                y_pred.append(np.nan)
-                y_pred_proba.append(np.nan)
-                continue
-            residue_features = features_df.loc[features_df.RESNUM == resnum][SELECTED_VALIDATION_FEATURES].values
-            scaled_features = self.scaler.transform(residue_features)
-            y_pred.append(self.classifier.predict(scaled_features)[0])
-            y_pred_proba.append(self.classifier.predict_proba(scaled_features)[0, 1])
+        misaligned_residues = set(self.features.loc[self.features.MISALIGNED, 'RESNUM'])
+        residue_scores = []
 
-        line_kwargs = dict(linestyle="--", linewidth=1.0, alpha=0.5, color=ColorDefinitions.MISMATCH, zorder=1)
-        self.ax.axhline(0.5, **line_kwargs)
-        outlier_plot = [self.ax.axvline(0, ymin=0, ymax=0, label="Outlier", **line_kwargs)]
+        for resnum in sorted(predicted_dict.keys()):
+            _score = self._predict_score(resnum)
+            residue_scores.append(_score)
+            if _score > 0.5:
+                color = tools.ColorDefinitions.VALIDATION_ERROR
+            else:
+                color = tools.ColorDefinitions.VALIDATION_CORRECT
+            self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
+            if self.map_align_exe is not None:
+                if resnum in misaligned_residues:
+                    color = tools.ColorDefinitions.MISALIGNED
+                else:
+                    color = tools.ColorDefinitions.ALIGNED
+                self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
 
+        residue_scores_smooth = tools.convolution_smooth_values(np.nan_to_num(residue_scores))
+        self.ax.axhline(0.5, **LINEKWARGS)
+        self.ax.plot(residue_scores_smooth, color=tools.ColorDefinitions.VALIDATION_SCORE)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Score')
 
-        score_plot = self.ax.plot(y_pred_proba, color='#3299a8', label='Score')
         if self.legend:
-            plots = score_plot + outlier_plot
-            labels = [l.get_label() for l in plots]
-            self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
-                           ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
+            self._add_legend()
 
         # TODO: deprecate this in 0.10
         if self._file_name:

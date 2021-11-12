@@ -162,7 +162,7 @@ def parse_map_align_stdout(stdout):
     ------
     alignments: list
         A list of :obj:`~conkit.command_line.conkit_validate.Alignment` that described regions of at
-        least 5 misaligned residues
+        least 3 misaligned residues
     """
 
     residues_map_a = []
@@ -188,7 +188,7 @@ def parse_map_align_stdout(stdout):
         alingment_range = range(residues_map_a[start - 1], residues_map_a[stop - 1] + 1)
         residue_pairs = []
 
-        if len(alingment_range) < 5:
+        if len(alingment_range) < 3:
             continue
         for res_a, res_b in zip(residues_map_a[alingment_slice], residues_map_b[alingment_slice]):
             residue_pairs.append((res_a, res_b))

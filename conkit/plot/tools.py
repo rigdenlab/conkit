@@ -33,6 +33,7 @@ __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
 __version__ = "0.1"
 
+from collections import namedtuple
 import numpy as np
 
 from conkit.core.contact import Contact
@@ -44,7 +45,6 @@ from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 from conkit.misc import deprecate
 
-
 HierarchyIndex = {
     "Contact": Contact,
     "ContactMap": ContactMap,
@@ -54,6 +54,8 @@ HierarchyIndex = {
     "Distogram": Distogram,
     "DistanceFile": DistanceFile
 }
+
+Alignment = namedtuple('Alignment', ("residue_range", "residue_pairs"))
 
 
 class ColorDefinitions(object):
@@ -69,6 +71,11 @@ class ColorDefinitions(object):
     L20CUTOFF = "#B5DD2B"
     PRECISION50 = L5CUTOFF
     FACTOR1 = L20CUTOFF
+    VALIDATION_SCORE = '#3299a8'
+    VALIDATION_ERROR = '#f54242'
+    VALIDATION_CORRECT = '#40eef7'
+    ALIGNED = '#3d8beb'
+    MISALIGNED = '#f7ba40'
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",
@@ -206,7 +213,6 @@ def get_radius_around_circle(p1, p2):
     -------
     float
        The radius for points so p1 and p2 do not intersect
-
     """
     dist = np.linalg.norm(np.array(p1) - np.array(p2))
     return dist / 2.0 - dist * 0.1
@@ -240,47 +246,79 @@ def convolution_smooth_values(x, window=5):
     return x_smooth
 
 
-def get_rmsd(prediction_distogram, model_distogram):
-    rmsd_raw = Distogram.calculate_rmsd(prediction_distogram, model_distogram, calculate_wrmsd=True)
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
+    """Calculate the RMSD between two different distograms
+
+    Parameters
+    ----------
+    distogram_1 : :obj:`~conkit.core.distogram.Distogram`
+       Distogram 1
+    distogram_2 : :obj:`~conkit.core.distogram.Distogram`
+       Distogram 2
+    calculate_wrmsd: bool
+        If True then the WRMSD is calculated using the confidence scores from distogram 1
+
+    Returns
+    -------
+    tuple
+       Two lists with the raw/smoothed RMSD values at each residue position
+    """
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=True)
     rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), 10)
     return rmsd_raw, rmsd_smooth
 
 
-def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, absent_residues, seq_len):
-    
+def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, absent_residues):
+    """For a given observed contact map and predicted contact map calculate a series of validation metrics at each
+    residue position (Accuracy, FN, FNR, FP, FPR, Sensitivity, Specificity)
+
+    Parameters
+    ----------
+    model_cmap_dict : dict
+       Dictionary representation of the contact map observed in the model
+    predicted_cmap_dict : dict
+       Dictionary representation of the predicted contact map
+    sequence: :obj:`~conkit.core.sequence.Sequence`
+        The sequence of the model to be validated
+    absent_residues: list, tuple, set
+        The residues that are missing from the model
+    Returns
+    -------
+    tuple
+        Two lists with the raw/smoothed values of each validation metric at each residue position
+    """
     def accuracy(tp, fp, tn, fn):
         if (tp + fp + tn + fn) > 0:
             return (tp + tn) / (tp + fp + tn + fn)
         return 0
-    
+
     def fn(*kwargs):
         return kwargs[-1]
-    
+
     def fn_rate(tp, fp, tn, fn):
         if (fn + tn) > 0:
             return fn / (fn + tn)
         return 0
-    
+
     def fp(*kwargs):
         return kwargs[1]
-    
+
     def fp_rate(tp, fp, tn, fn):
         if (fp + tp) > 0:
             return fp / (fp + tp)
         return 0
-    
+
     def sensitivity(tp, fp, tn, fn):
         if (fn + tp) > 0:
-            return tp / (fn+tp)
+            return tp / (fn + tp)
         return 0
-    
+
     def specificity(tp, fp, tn, fn):
         if (fp + tn) > 0:
             return tn / (fp + tn)
         return 0
-    
-    nresidues = seq_len - len(absent_residues)
-    # Accuracy, FN, FNR, FP, FPR, Sensitivity, Specificity
+
+    nresidues = len(sequence) - len(absent_residues)
     cmap_metrics = [[] for i in range(7)]
     calculations = (accuracy, fn, fn_rate, fp, fp_rate, sensitivity, specificity)
 
@@ -290,14 +328,16 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, absent_res
                 metric.append(np.nan)
             continue
 
-        predicted_contact_set = {c for c in predicted_cmap_dict[resnum] if c[0] not in absent_residues and c[1] not in absent_residues}
-        model_contact_set = {c for c in model_cmap_dict[resnum] if c[0] not in absent_residues and c[1] not in absent_residues}
+        predicted_contact_set = {c for c in predicted_cmap_dict[resnum] if
+                                 c[0] not in absent_residues and c[1] not in absent_residues}
+        model_contact_set = {c for c in model_cmap_dict[resnum] if
+                             c[0] not in absent_residues and c[1] not in absent_residues}
 
         _fn = len(predicted_contact_set - model_contact_set)
         _tp = len(predicted_contact_set & model_contact_set)
         _fp = len(model_contact_set - predicted_contact_set)
         _tn = nresidues - _fn - _tp - _fp
-        
+
         for idx, metric in enumerate(calculations):
             cmap_metrics[idx].append(metric(_tp, _fp, _tn, _fn))
 
@@ -309,6 +349,26 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, absent_res
 
 
 def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics):
+    """Calculate the Z-Scores for a series of metrics at each residue position
+    using the population of residues within 10A
+
+    Parameters
+    ----------
+    model_distogram : :obj:`~conkit.core.distogram.Distogram`
+       Distogram of the model that will be validated
+    predicted_cmap_dict : dict
+       Dictionary representation of the predicted contact map
+    absent_residues: list, tuple, set
+        The residues that are missing from the model
+    *metrics: list
+        The mertics for which the Z-Scores will be calculated
+
+    Returns
+    -------
+    list
+       A list of lists where each sublist contains the Z-Scores for the input metrics across all the residues. The
+       sublists containing the Z-Scores are ordered in the same original order as in the input *metrics
+    """
     zscore_cmap_metrics = [[] for i in metrics]
 
     for resnum in sorted(predicted_cmap_dict.keys()):
@@ -349,3 +409,72 @@ def calculate_zscore(observed_score, population_scores):
     mean = np.mean(population_scores).astype(float)
     zscore = (observed_score - mean) / stdev
     return zscore
+
+
+def get_residue_ranges(numbers):
+    """Given a list of integers, creates a list of ranges with the consecutive numbers found in the list.
+
+    Parameters
+    ----------
+    numbers: list
+       A list of integers
+
+    Returns
+    ------
+    list
+        A list with the ranges of consecutive numbers found in the list
+    """
+    nums = sorted(set(numbers))
+    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s + 3 < e]
+    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
+    return list(zip(edges, edges))
+
+
+def parse_map_align_stdout(stdout, nresidues_threshold=3):
+    """Parse the stdout of map_align and extract the alignment of residues.
+
+    Parameters
+    ----------
+    stdout : str
+       Standard output created with map_align
+    nresidues_threshold: int
+        Number of minimum consecutive misaligned residues to to store the alignment
+
+    Returns
+    ------
+    list
+        A list of :obj:`~conkit.command_line.conkit_validate.Alignment` that describes regions of misaligned residues
+    """
+
+    residues_map_a = []
+    residues_map_b = []
+    resnum = 0
+    misalinged_residues = []
+
+    for line in stdout.split('\n'):
+        if line and line.split()[0] == "MAX":
+            line = line.rstrip().lstrip().split()
+            for residue_pair in line[8:]:
+                resnum += 1
+                residue_pair = residue_pair.split(":")
+                residues_map_a.append(int(residue_pair[0]))
+                residues_map_b.append(int(residue_pair[1]))
+                if residue_pair[0] != residue_pair[1]:
+                    misalinged_residues.append(resnum)
+
+    alignments = []
+
+    for start, stop in get_residue_ranges(misalinged_residues):
+        alingment_slice = slice(start - 1, stop)
+        alingment_range = range(residues_map_a[start - 1], residues_map_a[stop - 1] + 1)
+        residue_pairs = []
+
+        if len(alingment_range) < nresidues_threshold:
+            continue
+        for res_a, res_b in zip(residues_map_a[alingment_slice], residues_map_b[alingment_slice]):
+            residue_pairs.append((res_a, res_b))
+
+        new_alignment = Alignment(alingment_range, residue_pairs)
+        alignments.append(new_alignment)
+
+    return alignments

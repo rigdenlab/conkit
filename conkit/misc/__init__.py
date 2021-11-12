@@ -41,10 +41,10 @@ TRAINED_CLASSIFIER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file_
 STANDARD_SCALER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'standard_scaler.joblib')
 SELECTED_VALIDATION_FEATURES = ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY']
-ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD_SMOOTH', 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'FP_SMOOTH',
-                           'FPR_SMOOTH', 'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY',
-                           'ZSCORE_FN', 'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY',
-                           'ZSCORE_SPECIFICITY']
+ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
+                           'SPECIFICITY', 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH',
+                           'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN',
+                           'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY']
 
 
 def load_validation_model():
