@@ -121,7 +121,7 @@ class Test(unittest.TestCase):
         expected = [4.2, 5.8, 7.8, 8.2, 6.2, 4.6]
         self.assertListEqual(expected, [round(x, 2) for x in output])
 
-    def test_parse_map_align_stdout(self):
+    def test_parse_map_align_stdout_1(self):
         stdout_contents = """OPT -------------------------------------------------------------------
     OPT                           MAP_ALIGN                                
     OPT -------------------------------------------------------------------
@@ -152,12 +152,36 @@ class Test(unittest.TestCase):
         output = {i.residue_range: i.residue_pairs for i in tools.parse_map_align_stdout(stdout_contents)}
         self.assertDictEqual(output, expected)
 
-    def test_get_residue_ranges(self):
+    def test_get_residue_ranges_1(self):
         residues = [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 19, 25, 26, 30, 31, 32, 33, 34, 35]
         expected = [(0, 12), (19, 19), (25, 26), (30, 35)]
 
         output = tools.get_residue_ranges(residues)
         self.assertListEqual(output, expected)
+
+    def test_calculate_zscore_1(self):
+        observed_score = 1
+        population = [0, 0, 5, 0, 0, 2, 3, 4, 5, 2, 0, 0, 1, 9, 3, 0, 0, 5]
+        expected = -0.46
+
+        output = tools.calculate_zscore(observed_score, population)
+        self.assertEqual(round(output, 2), expected)
+
+    def test_calculate_zscore_2(self):
+        observed_score = 1
+        population = [1, ]
+        expected = 0
+
+        output = tools.calculate_zscore(observed_score, population)
+        self.assertEqual(output, expected)
+
+    def test_calculate_zscore_3(self):
+        observed_score = 1
+        population = [0, 0, 0, 0, 0, 0, 0]
+        expected = 0
+
+        output = tools.calculate_zscore(observed_score, population)
+        self.assertEqual(output, expected)
 
 
 if __name__ == "__main__":

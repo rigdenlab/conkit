@@ -50,7 +50,6 @@ MARKERKWARGS = dict(marker='|', linestyle='None')
 _MARKERKWARGS = dict(marker='s', linestyle='None')
 
 
-
 class ModelValidationFigure(Figure):
     """A Figure object specifc for a model validation. This figure represents the proabbility that each given residue
     in the model is involved in a model error. This is donw by feeding a trained classfier the differences observed
@@ -308,18 +307,7 @@ class ModelValidationFigure(Figure):
                        ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
 
     def _predict_score(self, resnum):
-        """Predict whether a given residue is part of a model error or not.
-
-        Parameters
-        ----------
-        resnum : int
-           The residue number of the residue that will be validated
-
-        Returns
-        -------
-        score: float
-           The predicted probability that the residue of interest is part of a model error
-        """
+        """Predict whether a given residue is part of a model error or not"""
         residue_features = self.features.loc[self.features.RESNUM == resnum][SELECTED_VALIDATION_FEATURES]
         if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
             return np.nan
