@@ -335,10 +335,12 @@ class ModelValidationFigure(Figure):
         predicted_dict = prediction_cmap.as_dict()
 
         dssp = self._parse_dssp()
-        cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict, self.sequence, self.absent_residues)
+        cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict,
+                                                                              self.sequence, self.absent_residues)
         rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
         zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics)
-        self.features = self.get_feature_df(predicted_dict, dssp, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
+        self.features = self.get_feature_df(predicted_dict, dssp, rmsd_smooth, *cmap_metrics,
+                                            *cmap_metrics_smooth, *zscore_metrics)
 
         misaligned_residues = set(self.features.loc[self.features.MISALIGNED, 'RESNUM'])
         residue_scores = []
