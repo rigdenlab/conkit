@@ -45,11 +45,11 @@ It uses one external program to perform this task:
 """
 
 import argparse
+from Bio.PDB import PDBParser
+from Bio.PDB.DSSP import DSSP
 from collections import namedtuple
 import os
-from operator import attrgetter
 from prettytable import PrettyTable
-import shutil
 
 import conkit.applications
 import conkit.command_line
@@ -72,14 +72,12 @@ def create_argument_parser():
     parser.add_argument("distformat", type=str, help="Format of distance prediction file")
     parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file")
-    parser.add_argument("--outdir", dest="outdir", type=str, help="Output directory",
-                        default=os.path.join(os.getcwd(), 'conkit-validate'))
+    parser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_exe)
+    parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
-                        help="overwrite output directory if exists")
-    parser.add_argument("--skip_alignment", dest="skip_alignment", default=False, action="store_true",
-                        help="skip contact map alignment step")
+                        help="overwrite output figure png file if it already exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
-                        type=check_file_exists, help="Path to the map_align executable")
+                        type=is_exe, help="Path to the map_align executable")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -90,6 +88,43 @@ def create_argument_parser():
                         help="Number of iterations")
 
     return parser
+
+
+def is_exe(executable):
+    """Check if a given program can be executed
+
+    Parameters
+    ----------
+    executable : str
+       The path or name for an executable
+
+    Returns
+    -------
+    str
+       The absolute path to the executable
+
+    Raises
+    ------
+    ValueError
+        The executable cannot be accessed
+
+    Credits
+    -------
+    https://stackoverflow.com/a/377028/3046533
+    """
+    fpath, fname = os.path.split(executable)
+
+    if fpath:
+        if os.path.isfile(executable) and os.access(executable, os.X_OK):
+            return executable
+
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, executable)
+            if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
+                return exe_file
+
+    raise ValueError('Executable {} cannot be accessed'.format(executable))
 
 
 def check_file_exists(input_path):
@@ -119,111 +154,6 @@ def check_file_exists(input_path):
         raise FileNotFoundError("{} cannot be found".format(input_path))
 
 
-def prepare_output_directory(outdir, overwrite=False):
-    """Prepare the output directory for conkit-validate.
-
-    Parameters
-    ----------
-    outdir : str
-       Path to the output directory
-    overwrite : bool
-       Whether the output directory should be overwritten or not [default: False]
-
-    Raises
-    ------
-    :exc:`ValueError`
-        The output directory already exists and overwrite is False
-    """
-
-    if os.path.isdir(outdir):
-        if not overwrite:
-            raise ValueError('Output directory already exists')
-        else:
-            shutil.rmtree(outdir)
-    os.mkdir(outdir)
-
-
-def get_residue_ranges(resnums):
-    nums = sorted(set(resnums))
-    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s + 3 < e]
-    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
-    return list(zip(edges, edges))
-
-
-def parse_map_align_stdout(stdout):
-    """Parse the stdout of map_align and extract the alignment of residues.
-
-    Parameters
-    ----------
-    stdout : str
-       Standard output created with map_align
-
-    Returns
-    ------
-    alignments: list
-        A list of :obj:`~conkit.command_line.conkit_validate.Alignment` that described regions of at
-        least 3 misaligned residues
-    """
-
-    residues_map_a = []
-    residues_map_b = []
-    resnum = 0
-    misalinged_residues = []
-
-    for line in stdout.split('\n'):
-        if line and line.split()[0] == "MAX":
-            line = line.rstrip().lstrip().split()
-            for residue_pair in line[8:]:
-                resnum += 1
-                residue_pair = residue_pair.split(":")
-                residues_map_a.append(int(residue_pair[0]))
-                residues_map_b.append(int(residue_pair[1]))
-                if residue_pair[0] != residue_pair[1]:
-                    misalinged_residues.append(resnum)
-
-    alignments = []
-
-    for start, stop in get_residue_ranges(misalinged_residues):
-        alingment_slice = slice(start - 1, stop)
-        alingment_range = range(residues_map_a[start - 1], residues_map_a[stop - 1] + 1)
-        residue_pairs = []
-
-        if len(alingment_range) < 3:
-            continue
-        for res_a, res_b in zip(residues_map_a[alingment_slice], residues_map_b[alingment_slice]):
-            residue_pairs.append((res_a, res_b))
-
-        new_alignment = Alignment(alingment_range, residue_pairs)
-        alignments.append(new_alignment)
-
-    return alignments
-
-
-def get_outliers(figure_outliers, rmsd_profile, fn_profile, alignment_list=None):
-    outliers = []
-    if alignment_list is not None:
-        _copy_alignment_list = alignment_list.copy()
-    else:
-        _copy_alignment_list = alignment_list = []
-
-    for idx, resnum in enumerate(figure_outliers, 1):
-        outlier_alignment = []
-        for alignment in alignment_list:
-            if any([x in alignment.residue_range for x in (resnum, resnum + 10, resnum - 10)]):
-                outlier_alignment += alignment.residue_pairs
-                if alignment in _copy_alignment_list:
-                    _copy_alignment_list.remove(alignment)
-        outlier = Outlier(resnum, rmsd_profile[resnum], fn_profile[resnum], outlier_alignment)
-        outliers.append(outlier)
-
-    for alignment in _copy_alignment_list:
-        resnum = alignment.residue_range[0]
-        outlier = Outlier(resnum, rmsd_profile[resnum], fn_profile[resnum], alignment.residue_pairs)
-        outliers.append(outlier)
-
-    return sorted(outliers, key=attrgetter('resnum'))
-
-
 def main():
     """The main routine for conkit-validate functionality"""
     parser = create_argument_parser()
@@ -232,73 +162,48 @@ def main():
     global logger
     logger = conkit.command_line.setup_logging(level="info")
 
-    logger.info("Output directory:                           %s", args.outdir)
+    if os.path.isfile(args.output) and not args.overwrite:
+        raise FileExistsError('The output file {} already exists!'.format(args.output))
+    if args.pdbformat != 'pdb':
+        raise ValueError('Model file format can only be PDB')
 
-    prepare_output_directory(args.outdir, args.overwrite)
-
+    logger.info("Working directory:                           %s", os.getcwd())
+    logger.info("Reading input sequence:                      %s", args.seqfile)
     sequence = conkit.io.read(args.seqfile, args.seqformat).top
+    logger.info("Length of the sequence:                      %d", len(sequence))
+    logger.info("Reading input distance prediction:           %s", args.distfile)
     prediction = conkit.io.read(args.distfile, args.distformat).top
+    logger.info("Reading input PDB model:                     %s", args.pdbfile)
     model = conkit.io.read(args.pdbfile, args.pdbformat).top
-    logger.info("Input PDB model:                            %s", args.pdbfile)
-    logger.info("Input distance prediction:                  %s", args.distfile)
-    logger.info("Length of the sequence:                     %d", len(sequence))
+    p = PDBParser()
+    structure = p.get_structure('structure', args.pdbfile)[0]
+    dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
 
-    fig_fname = os.path.join(args.outdir, 'conkit.png')
-    figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, use_weights=True)
-    figure.savefig(fig_fname, overwrite=args.overwrite)
-    logger.info("Validation plot written to %s", fig_fname)
+    logger.info("Validating model.")
+    if len(sequence) > 500:
+        logger.info("Input model has more than 500 residues, this might take a while...")
+    figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
+    figure.savefig(args.output, overwrite=args.overwrite)
+    logger.info("Validation plot written to %s", args.output)
 
-    if args.skip_alignment or args.map_align_exe is None:
-        logger.info("Skipping contact map alignment, no fixes will be suggested.")
-        outliers = get_outliers(figure.outliers, figure.rmsd_profile, figure.fn_profile)
-    else:
-        contact_map_a = os.path.join(args.outdir, 'contact_map_a.mapalign')
-        contact_map_b = os.path.join(args.outdir, 'contact_map_b.mapalign')
-        conkit.io.write(contact_map_a, 'mapalign', prediction)
-        conkit.io.write(contact_map_b, 'mapalign', model)
+    residue_info = figure.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
+    alignment_dict = {residues[1]: residues[0] for a in figure.alignments for residues in a.residue_pairs}
+    table = PrettyTable()
+    table.field_names = ["Residue", "Outlier", "Score", "Misalignment", "New Residue"]
+    for residue in residue_info.values:
+        resnum, score, misalignment = residue
+        current_residue = '{} ({})'.format(sequence.seq[resnum - 1], resnum)
+        is_outlier = '*****' if score > 0.5 else '     '
+        if misalignment and resnum in alignment_dict.keys():
+            new_residue = '{} ({})'.format(sequence.seq[alignment_dict[resnum] - 1], alignment_dict[resnum])
+            is_misalignment = '*****'
+        else:
+            new_residue = '     '
+            is_misalignment = '     '
 
-        map_align_cline = conkit.applications.MapAlignCommandline(
-            cmd=args.map_align_exe,
-            contact_map_a=contact_map_a,
-            contact_map_b=contact_map_b,
-            gap_opening_penalty=args.gap_opening_penalty,
-            gap_extension_penalty=args.gap_extension_penalty,
-            seq_separation_cutoff=args.seq_separation_cutoff,
-            n_iterations=args.n_iterations
-        )
+        table.add_row([current_residue, is_outlier, '{0:.2f}'.format(score), is_misalignment, new_residue])
 
-        logger.info(os.linesep + "Executing: %s", map_align_cline)
-        stdout, stderr = map_align_cline()
-        map_align_log = os.path.join(args.outdir, 'map_align.log')
-        with open(map_align_log, 'w') as fhandle:
-            fhandle.write(stdout)
-
-        alignments = parse_map_align_stdout(stdout)
-        outliers = get_outliers(figure.outliers, figure.rmsd_profile, figure.fn_profile, alignments)
-
-    if any(outliers):
-        table = PrettyTable()
-        table.field_names = ["Outlier no.", "Residue no.", "wRMSD", "FN Count", "Misalignment"]
-        for idx, outlier in enumerate(outliers, 1):
-            table.add_row([idx, outlier.resnum, '{0:.2f}'.format(outlier.wrmsd),
-                           '{0:.2f}'.format(outlier.fn_count), 'Yes' if outlier.misalignment else 'No'])
-        logger.info(os.linesep + "List of detected outliers:")
-        logger.info(table)
-
-        for idx, outlier in enumerate(outliers, 1):
-            if not outlier.misalignment:
-                logger.info(os.linesep + "Cannot find optimal re-alignment for outlier no. {}.".format(idx))
-                continue
-            table = PrettyTable()
-            table.field_names = ["Current Residue", "New Residue"]
-            for residue_pairs in outlier.misalignment:
-                table.add_row(['{} ({})'.format(sequence.seq[residue_pairs[1] - 1], residue_pairs[1]),
-                               '{} ({})'.format(sequence.seq[residue_pairs[0] - 1], residue_pairs[0])])
-            logger.info(os.linesep + "List of proposed changes to fix outlier no. {}:".format(idx))
-            logger.info(table)
-
-    else:
-        logger.info("No outliers were detected, finishing now.")
+    logger.info(table)
 
 
 if __name__ == "__main__":
