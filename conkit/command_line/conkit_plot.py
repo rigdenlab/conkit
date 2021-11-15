@@ -186,7 +186,7 @@ def add_covariance_validation_args(subparsers):
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     subparser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable")
-    subparser.add_argument("-map_align_exe", dest="map_align_exe", default=None, help="path to map_align executable")
+    subparser.add_argument("--map_align_exe", dest="map_align_exe", default=None, help="path to map_align executable")
     _add_default_args(subparser)
     _add_sequence_default_args(subparser)
     _add_distance_default_args(subparser)
@@ -430,7 +430,6 @@ def main(argv=None):
             figure = conkit.plot.DistogramHeatmapFigure(distogram)
 
         figure_aspect_ratio = 1.0
-
 
     elif args.which == "contact_map_matrix":
 
