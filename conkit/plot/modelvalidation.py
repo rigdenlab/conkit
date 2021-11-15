@@ -27,7 +27,14 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""A module to produce a model validation plot"""
+"""A module to produce a model validation plot
+
+It uses one external program:
+
+   map_align for contact map alignment
+
+*** This program needs to be installed separately from https://github.com/sokrypton/map_align***
+"""
 
 from __future__ import division
 from __future__ import print_function
