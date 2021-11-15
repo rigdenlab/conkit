@@ -6,9 +6,26 @@ __date__ = "10 Jan 2018"
 import unittest
 
 from conkit.misc import *
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
 
 
-class Test1(unittest.TestCase):
+class TestMiscInit(unittest.TestCase):
+    def test_load_validation_model_1(self):
+        classifier, scaler = load_validation_model()
+        self.assertIsInstance(classifier, SVC)
+        self.assertIsInstance(scaler, StandardScaler)
+
+    def test_load_validation_model_2(self):
+        classifier, scaler = load_validation_model()
+        self.assertEqual(classifier.n_features_in_, len(SELECTED_VALIDATION_FEATURES))
+        self.assertEqual(scaler.n_features_in_, len(SELECTED_VALIDATION_FEATURES))
+
+    def test_load_validation_model_3(self):
+        classifier, scaler = load_validation_model()
+        self.assertTrue(hasattr(classifier, 'predict_proba'))
+        self.assertTrue(hasattr(scaler, 'transform'))
+
     def test_normalize_1(self):
         self.assertListEqual([0.0, 0.5, 1.0], normalize([1, 2, 3]))
 
@@ -42,8 +59,6 @@ class Test1(unittest.TestCase):
     def test_normalize_11(self):
         self.assertListEqual([0.8, 0.8, 0.8], normalize([2, 2, 2], vmin=0.2, vmax=0.8))
 
-
-class Test2(unittest.TestCase):
     def test_deprecated_1(self):
         @deprecate("0.0.0")
         def f():
