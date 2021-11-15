@@ -6,6 +6,7 @@ __date__ = "16 Feb 2017"
 from conkit.core import *
 from conkit.plot import tools
 
+import numpy as np
 import unittest
 
 
@@ -183,6 +184,124 @@ class Test(unittest.TestCase):
         output = tools.calculate_zscore(observed_score, population)
         self.assertEqual(output, expected)
 
+    def test_get_rmsd_1(self):
+        distogram_1 = Distogram("test_1")
+        distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.sequence = Sequence("test_seq", "AAAAA")
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
+        distogram_2 = Distogram("test_2")
+        distogram_2.add(Distance(1, 5, (0.45, 0.05, 0.25, 0.25), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(2, 3, (0.1, 0.15, 0.15, 0.6), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(1, 4, (0.75, 0.20, 0.05, 0.0), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(3, 5, (0.05, 0.1, 0.35, 0.5), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.sequence = Sequence("test_seq", "AAAAA")
+
+        output = tools.get_rmsd(distogram_1, distogram_2, calculate_wrmsd=False)
+        expected_0 = [5.385, 3.0, 6.042, 7.0, 6.042]
+        expected_1 = [1.442, 2.142, 2.746, 2.746, 2.746, 2.746, 2.746, 2.746, 2.208, 1.908]
+        self.assertListEqual(expected_0, [round(x, 3) for x in output[0]])
+        self.assertListEqual(expected_1, [round(x, 3) for x in output[1]])
+
+    def test_get_rmsd_2(self):
+        distogram_1 = Distogram("test_1")
+        distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(1, 4, (0.05, 0.2, 0.0, 0.6, 0.15), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.add(Distance(3, 5, (0.4, 0.1, 0.35, 0.05, 0.1), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
+        distogram_1.sequence = Sequence("test_seq", "AAAAA")
+
+        distogram_2 = Distogram("test_2")
+        distogram_2.add(Distance(1, 5, (0.45, 0.05, 0.25, 0.25), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(2, 3, (0.1, 0.15, 0.15, 0.6), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(1, 4, (0.75, 0.20, 0.05, 0.0), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.add(Distance(3, 5, (0.05, 0.1, 0.35, 0.5), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram_2.sequence = Sequence("test_seq", "AAAAA")
+
+        output = tools.get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True)
+        expected_0 = [4.09, 2.324, 3.937, 5.422, 3.850]
+        expected_1 = [1.035, 1.577, 1.962, 1.962, 1.962, 1.962, 1.962, 1.962, 1.553, 1.321]
+        self.assertListEqual(expected_0, [round(x, 3) for x in output[0]])
+        self.assertListEqual(expected_1, [round(x, 3) for x in output[1]])
+
+    def test_get_cmap_validation_metrics_1(self):
+        cmap_1 = ContactMap("cmap_1")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            cmap_1.add(c)
+
+        cmap_2 = ContactMap("cmap_2")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(3, 4, 0.1), Contact(2, 1, 0.2), Contact(1, 1, 0)]:
+            cmap_2.add(c)
+
+        cmap_1.add(Contact(6, 1, 0))
+        sequence = Sequence('seq', 'AAAAAAA')
+        absent_residues = {6, 7}
+
+        output = tools.get_cmap_validation_metrics(cmap_1.as_dict(), cmap_2.as_dict(), sequence, absent_residues)
+        expected_accuracy = [0.6, 0.6, 0.8, 0.6, 0.8]
+        expected_fn = [1, 1, 1, 1, 0]
+        expected_fnr = [0.5, 0.25, 0.25, 0.25, 0.0]
+        expected_fp = [1, 1, 0, 1, 1]
+        expected_fpr = [0.33, 1.0, 0.0, 1.0, 0.5]
+        expected_sensitivity = [0.67, 0.0, 0.5, 0.0, 1.0]
+        expected_specificity = [0.5, 0.75, 1.0, 0.75, 0.75]
+        expected = [expected_accuracy, expected_fn, expected_fnr, expected_fp,
+                    expected_fpr, expected_sensitivity, expected_specificity]
+        self.assertListEqual([round(x, 2) for l in expected for x in l], [round(x, 2) for l in output[0] for x in l])
+
+    def test_get_cmap_validation_metrics_2(self):
+        cmap_1 = ContactMap("cmap_1")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            cmap_1.add(c)
+
+        cmap_2 = ContactMap("cmap_2")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(3, 4, 0.1), Contact(2, 1, 0.2), Contact(1, 1, 0)]:
+            cmap_2.add(c)
+
+        cmap_1.add(Contact(6, 1, 0))
+        sequence = Sequence('seq', 'AAAAAAA')
+        absent_residues = {6, 7}
+
+        output = tools.get_cmap_validation_metrics(cmap_1.as_dict(), cmap_2.as_dict(), sequence, absent_residues)
+        expected_accuracy = [0.4, 0.52, 0.68, 0.56, 0.44]
+        expected_fn = [0.6, 0.8, 0.8, 0.6, 0.4]
+        expected_fnr = [0.2, 0.25, 0.25, 0.15, 0.1]
+        expected_fp = [0.4, 0.6, 0.8, 0.6, 0.4]
+        expected_fpr = [0.27, 0.47, 0.57, 0.5, 0.3]
+        expected_sensitivity = [0.23, 0.23, 0.43, 0.3, 0.3]
+        expected_specificity = [0.45, 0.6, 0.75, 0.65, 0.5]
+        expected = [expected_accuracy, expected_fn, expected_fnr, expected_fp,
+                    expected_fpr, expected_sensitivity, expected_specificity]
+
+        self.assertListEqual([round(x, 2) for l in expected for x in l], [round(x, 2) for l in output[1] for x in l])
+
+    def test_get_cmap_validation_metrics_3(self):
+        cmap_1 = ContactMap("cmap_1")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2), Contact(1, 1, 0)]:
+            cmap_1.add(c)
+
+        cmap_2 = ContactMap("cmap_2")
+        for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(3, 4, 0.1), Contact(2, 1, 0.2), Contact(1, 1, 0)]:
+            cmap_2.add(c)
+
+        sequence = Sequence('seq', 'AAAAAAA')
+        absent_residues = {2}
+
+        output = tools.get_cmap_validation_metrics(cmap_1.as_dict(), cmap_2.as_dict(), sequence, absent_residues)
+
+        expected_accuracy = [0.8333333333333334, np.nan, 0.8333333333333334, 0.8333333333333334, 0.8333333333333334]
+        expected_fn = [0, np.nan, 1, 1, 0]
+        expected_fnr = [0.0, np.nan, 0.2, 0.16666666666666666, 0.0]
+        expected_fp = [1, np.nan, 0, 0, 1]
+        expected_fpr = [0.3333333333333333, np.nan, 0.0, 0, 0.5]
+        expected_sensitivity = [1.0, np.nan, 0.5, 0.0, 1.0]
+        expected_specificity = [0.75, np.nan, 1.0, 1.0, 0.8]
+        expected = np.array([expected_accuracy, expected_fn, expected_fnr, expected_fp,
+                             expected_fpr, expected_sensitivity, expected_specificity])
+
+        self.assertIsNone(np.testing.assert_allclose(expected, np.array(output[0])))
+
+    if __name__ == "__main__":
+        unittest.main(verbosity=2)
