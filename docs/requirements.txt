@@ -6,3 +6,4 @@ numpy
 biopython
 scikit-learn
 scipy
+docutils<0.18
