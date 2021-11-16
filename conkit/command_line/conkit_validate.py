@@ -59,9 +59,6 @@ from conkit.plot.tools import is_exe
 
 logger = None
 
-Outlier = namedtuple('Outlier', ("resnum", "wrmsd", "fn_count", "misalignment"))
-Alignment = namedtuple('Alignment', ("residue_range", "residue_pairs"))
-
 
 def create_argument_parser():
     """Create a parser for the command line arguments used in conkit-validate"""
