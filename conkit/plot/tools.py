@@ -227,7 +227,7 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, hierarchy_type)
 
 
-def is_exe(executable):
+def is_executable(executable):
     """Check if a given program can be executed
 
     Parameters

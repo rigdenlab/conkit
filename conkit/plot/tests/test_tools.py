@@ -306,15 +306,15 @@ class Test(unittest.TestCase):
 
         self.assertIsNone(np.testing.assert_allclose(expected, np.array(output[0])))
 
-    def test_is_exe_1(self):
-        self.assertEqual(sys.executable, tools.is_exe(sys.executable))
+    def test_is_executable_1(self):
+        self.assertEqual(sys.executable, tools.is_executable(sys.executable))
 
-    def test_is_exe_2(self):
-        self.assertEqual(sys.executable, tools.is_exe(os.path.basename(sys.executable)))
+    def test_is_executable_2(self):
+        self.assertEqual(sys.executable, tools.is_executable(os.path.basename(sys.executable)))
 
-    def test_is_exe_3(self):
+    def test_is_executable_3(self):
         with self.assertRaises(ValueError):
-            tools.is_exe('qweasdzxcpoilkjmnb')
+            tools.is_executable('qweasdzxcpoilkjmnb')
 
     if __name__ == "__main__":
         unittest.main(verbosity=2)

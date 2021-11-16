@@ -55,7 +55,7 @@ import conkit.applications
 import conkit.command_line
 import conkit.io
 import conkit.plot
-from conkit.plot.tools import is_exe
+from conkit.plot.tools import is_executable
 
 logger = None
 
@@ -70,12 +70,12 @@ def create_argument_parser():
     parser.add_argument("distformat", type=str, help="Format of distance prediction file")
     parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file")
-    parser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_exe)
+    parser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
-                        type=is_exe, help="Path to the map_align executable")
+                        type=is_executable, help="Path to the map_align executable")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
