@@ -167,7 +167,7 @@ def main():
     if args.pdbformat != 'pdb':
         raise ValueError('Model file format can only be PDB')
 
-    logger.info("Working directory:                           %s", os.getcwd())
+    logger.info(os.linesep + "Working directory:                           %s", os.getcwd())
     logger.info("Reading input sequence:                      %s", args.seqfile)
     sequence = conkit.io.read(args.seqfile, args.seqformat).top
 
