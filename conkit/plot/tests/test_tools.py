@@ -221,7 +221,7 @@ class Test(unittest.TestCase):
         distogram_2.sequence = Sequence("test_seq", "AAAAA")
 
         output = tools.get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True)
-        expected_0 = [4.09, 2.33, 3.94, 5.42, 3.85]
+        expected_0 = [4.09, 2.32, 3.94, 5.42, 3.85]
         expected_1 = [1.04, 1.58, 1.96, 1.96, 1.96, 1.96, 1.96, 1.96, 1.55, 1.32]
         self.assertListEqual(expected_0, [round(x, 2) for x in output[0]])
         self.assertListEqual(expected_1, [round(x, 2) for x in output[1]])
