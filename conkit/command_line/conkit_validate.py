@@ -55,6 +55,7 @@ import conkit.applications
 import conkit.command_line
 import conkit.io
 import conkit.plot
+from conkit.plot.tools import is_exe
 
 logger = None
 
@@ -88,43 +89,6 @@ def create_argument_parser():
                         help="Number of iterations")
 
     return parser
-
-
-def is_exe(executable):
-    """Check if a given program can be executed
-
-    Parameters
-    ----------
-    executable : str
-       The path or name for an executable
-
-    Returns
-    -------
-    str
-       The absolute path to the executable
-
-    Raises
-    ------
-    ValueError
-        The executable cannot be accessed
-
-    Credits
-    -------
-    https://stackoverflow.com/a/377028/3046533
-    """
-    fpath, fname = os.path.split(executable)
-
-    if fpath:
-        if os.path.isfile(executable) and os.access(executable, os.X_OK):
-            return executable
-
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, executable)
-            if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
-                return exe_file
-
-    raise ValueError('Executable {} cannot be accessed'.format(executable))
 
 
 def check_file_exists(input_path):
