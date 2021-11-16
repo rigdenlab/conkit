@@ -316,5 +316,6 @@ class Test(unittest.TestCase):
         with self.assertRaises(ValueError):
             tools.is_executable('qweasdzxcpoilkjmnb')
 
-    if __name__ == "__main__":
-        unittest.main(verbosity=2)
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
