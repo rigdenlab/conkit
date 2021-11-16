@@ -183,14 +183,14 @@ def main():
     structure = p.get_structure('structure', args.pdbfile)[0]
     dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
 
-    logger.info("Validating model.")
+    logger.info(os.linesep + "Validating model.")
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
 
     figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
     figure.savefig(args.output, overwrite=args.overwrite)
-    logger.info("Validation plot written to %s", args.output)
+    logger.info(os.linesep + "Validation plot written to %s", args.output)
 
     residue_info = figure.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
     alignment_dict = {residues[1]: residues[0] for a in figure.alignments for residues in a.residue_pairs}
@@ -212,7 +212,7 @@ def main():
 
         table.add_row([current_residue, is_outlier, '{0:.2f}'.format(score), is_misalignment, new_residue])
 
-    logger.info(table)
+    logger.info(os.linesep + table)
 
 
 if __name__ == "__main__":
