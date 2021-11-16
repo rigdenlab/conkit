@@ -3,6 +3,9 @@
 __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
 
+import os.path
+import sys
+
 from conkit.core import *
 from conkit.plot import tools
 
@@ -302,6 +305,16 @@ class Test(unittest.TestCase):
                              expected_fpr, expected_sensitivity, expected_specificity])
 
         self.assertIsNone(np.testing.assert_allclose(expected, np.array(output[0])))
+
+    def test_is_exe_1(self):
+        self.assertEqual(sys.executable, tools.is_exe(sys.executable))
+
+    def test_is_exe_2(self):
+        self.assertEqual(sys.executable, tools.is_exe(os.path.basename(sys.executable)))
+
+    def test_is_exe_3(self):
+        with self.assertRaises(ValueError):
+            tools.is_exe('qweasdzxcpoilkjmnb')
 
     if __name__ == "__main__":
         unittest.main(verbosity=2)

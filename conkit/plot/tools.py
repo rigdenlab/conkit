@@ -35,6 +35,7 @@ __version__ = "0.1"
 
 from collections import namedtuple
 import numpy as np
+import os
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -226,6 +227,46 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, hierarchy_type)
 
 
+def is_exe(executable):
+    """Check if a given program can be executed
+
+    Parameters
+    ----------
+    executable : str
+       The path or name for an executable
+
+    Returns
+    -------
+    str
+       The absolute path to the executable
+
+    Raises
+    ------
+    ValueError
+        The executable cannot be accessed
+
+    Credits
+    -------
+    https://stackoverflow.com/a/377028/3046533
+    """
+    if executable is None:
+        return
+
+    fpath, fname = os.path.split(executable)
+
+    if fpath:
+        if os.path.isfile(executable) and os.access(executable, os.X_OK):
+            return executable
+
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, executable)
+            if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
+                return exe_file
+
+    raise ValueError('Executable {} cannot be accessed'.format(executable))
+
+
 def convolution_smooth_values(x, window=5):
     """Use convolutions to smooth a list of numeric values
 
@@ -287,6 +328,7 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
     tuple
         Two lists with the raw/smoothed values of each validation metric at each residue position
     """
+
     def accuracy(tp, fp, tn, fn):
         if (tp + fp + tn + fn) > 0:
             return (tp + tn) / (tp + fp + tn + fn)
