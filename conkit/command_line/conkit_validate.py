@@ -170,6 +170,10 @@ def main():
     logger.info("Working directory:                           %s", os.getcwd())
     logger.info("Reading input sequence:                      %s", args.seqfile)
     sequence = conkit.io.read(args.seqfile, args.seqformat).top
+
+    if len(sequence) < 5:
+        raise ValueError('Cannot validate model with less than 5 residues')
+
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
     prediction = conkit.io.read(args.distfile, args.distformat).top
@@ -180,8 +184,10 @@ def main():
     dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
 
     logger.info("Validating model.")
+
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
+
     figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
     figure.savefig(args.output, overwrite=args.overwrite)
     logger.info("Validation plot written to %s", args.output)
@@ -190,13 +196,16 @@ def main():
     alignment_dict = {residues[1]: residues[0] for a in figure.alignments for residues in a.residue_pairs}
     table = PrettyTable()
     table.field_names = ["Residue", "Outlier", "Score", "Misalignment", "New Residue"]
+
     for residue in residue_info.values:
         resnum, score, misalignment = residue
         current_residue = '{} ({})'.format(sequence.seq[resnum - 1], resnum)
         is_outlier = '*****' if score > 0.5 else '     '
+
         if misalignment and resnum in alignment_dict.keys():
             new_residue = '{} ({})'.format(sequence.seq[alignment_dict[resnum] - 1], alignment_dict[resnum])
             is_misalignment = '*****'
+
         else:
             new_residue = '     '
             is_misalignment = '     '

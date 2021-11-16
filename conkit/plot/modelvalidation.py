@@ -127,6 +127,10 @@ class ModelValidationFigure(Figure):
         self._distance_bins = None
         self.data = None
         self.alignments = None
+
+        if len(sequence) < 5:
+            raise ValueError('Cannot validate a model with less than 5 residues')
+
         self.map_align_exe = map_align_exe
         self.l_factor = l_factor
         self.dist_bins = dist_bins

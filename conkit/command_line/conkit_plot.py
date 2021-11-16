@@ -406,6 +406,8 @@ def main(argv=None):
         if args.pdbformat != 'pdb':
             raise ValueError('Model file format can only be PDB')
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
+        if len(sequence) < 5:
+            raise ValueError('Cannot validate a model with less than 5 residues')
         prediction = conkit.io.read(args.distfile, args.distformat)[0]
         model = conkit.io.read(args.pdbfile, args.pdbformat)[0]
         p = PDBParser()
