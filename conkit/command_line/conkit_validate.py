@@ -212,7 +212,8 @@ def main():
 
         table.add_row([current_residue, is_outlier, '{0:.2f}'.format(score), is_misalignment, new_residue])
 
-    logger.info(os.linesep + table)
+    logger.info(os.linesep)
+    logger.info(table)
 
 
 if __name__ == "__main__":
