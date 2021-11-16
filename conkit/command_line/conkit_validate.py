@@ -195,22 +195,19 @@ def main():
     residue_info = figure.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
     alignment_dict = {residues[1]: residues[0] for a in figure.alignments for residues in a.residue_pairs}
     table = PrettyTable()
-    table.field_names = ["Residue", "Outlier", "Score", "Misalignment", "New Residue"]
+    table.field_names = ["Residue", "Predicted score", "Suggested register"]
 
     for residue in residue_info.values:
         resnum, score, misalignment = residue
         current_residue = '{} ({})'.format(sequence.seq[resnum - 1], resnum)
-        is_outlier = '*****' if score > 0.5 else '     '
+        score = '*** {0:.2f} ***'.format(score) if score > 0.5 else '    {0:.2f}    '.format(score)
 
         if misalignment and resnum in alignment_dict.keys():
-            new_residue = '{} ({})'.format(sequence.seq[alignment_dict[resnum] - 1], alignment_dict[resnum])
-            is_misalignment = '*****'
-
+            alignment = '*** {} ({}) ***'.format(sequence.seq[alignment_dict[resnum] - 1], alignment_dict[resnum])
         else:
-            new_residue = '     '
-            is_misalignment = '     '
+            alignment = '               '
 
-        table.add_row([current_residue, is_outlier, '{0:.2f}'.format(score), is_misalignment, new_residue])
+        table.add_row([current_residue, score, alignment])
 
     logger.info(os.linesep)
     logger.info(table)

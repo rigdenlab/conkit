@@ -71,9 +71,9 @@ class ColorDefinitions(object):
     L20CUTOFF = "#B5DD2B"
     PRECISION50 = L5CUTOFF
     FACTOR1 = L20CUTOFF
-    VALIDATION_SCORE = '#3299a8'
-    VALIDATION_ERROR = '#f54242'
-    VALIDATION_CORRECT = '#40eef7'
+    SCORE = '#3299a8'
+    ERROR = '#f54242'
+    CORRECT = '#40eef7'
     ALIGNED = '#3d8beb'
     MISALIGNED = '#f7ba40'
     AA_ENCODING = {

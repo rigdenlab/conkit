@@ -291,10 +291,10 @@ class ModelValidationFigure(Figure):
 
     def _add_legend(self):
         """Adds legend to the :obj:`~conkit.plot.ModelValidationFigure`"""
-        _error = self.ax.plot([], [], c=tools.ColorDefinitions.VALIDATION_ERROR, label='Error', **_MARKERKWARGS)
-        _correct = self.ax.plot([], [], c=tools.ColorDefinitions.VALIDATION_CORRECT, label='Correct', **_MARKERKWARGS)
-        _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Threshold", **LINEKWARGS)]
-        _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.VALIDATION_SCORE, label='Smoothed Score')
+        _error = self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
+        _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
+        _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
+        _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
         plots = _score_plot + _threshold_line + _correct + _error
 
         if self.map_align_exe is not None:
@@ -334,10 +334,7 @@ class ModelValidationFigure(Figure):
         for resnum in sorted(predicted_dict.keys()):
             _score = self._predict_score(resnum)
             scores[resnum] = _score
-            if _score > 0.5:
-                color = tools.ColorDefinitions.VALIDATION_ERROR
-            else:
-                color = tools.ColorDefinitions.VALIDATION_CORRECT
+            color = tools.ColorDefinitions.ERROR if _score > 0.5 else tools.ColorDefinitions.CORRECT
             self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
             if self.map_align_exe is not None:
                 if resnum in misaligned_residues:
@@ -350,7 +347,7 @@ class ModelValidationFigure(Figure):
         sorted_scores = [scores[resnum] for resnum in sorted(scores.keys())]
         smooth_scores = tools.convolution_smooth_values(np.nan_to_num(sorted_scores))
         self.ax.axhline(0.5, **LINEKWARGS)
-        self.ax.plot(smooth_scores, color=tools.ColorDefinitions.VALIDATION_SCORE)
+        self.ax.plot(smooth_scores, color=tools.ColorDefinitions.SCORE)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
 
