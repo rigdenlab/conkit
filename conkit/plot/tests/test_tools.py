@@ -200,10 +200,10 @@ class Test(unittest.TestCase):
         distogram_2.sequence = Sequence("test_seq", "AAAAA")
 
         output = tools.get_rmsd(distogram_1, distogram_2, calculate_wrmsd=False)
-        expected_0 = [5.385, 3.0, 6.042, 7.0, 6.042]
-        expected_1 = [1.442, 2.142, 2.746, 2.746, 2.746, 2.746, 2.746, 2.746, 2.208, 1.908]
-        self.assertListEqual(expected_0, [round(x, 3) for x in output[0]])
-        self.assertListEqual(expected_1, [round(x, 3) for x in output[1]])
+        expected_0 = [5.39, 3.0, 6.04, 7.0, 6.04]
+        expected_1 = [1.44, 2.14, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.21, 1.91]
+        self.assertListEqual(expected_0, [round(x, 2) for x in output[0]])
+        self.assertListEqual(expected_1, [round(x, 2) for x in output[1]])
 
     def test_get_rmsd_2(self):
         distogram_1 = Distogram("test_1")
@@ -221,10 +221,10 @@ class Test(unittest.TestCase):
         distogram_2.sequence = Sequence("test_seq", "AAAAA")
 
         output = tools.get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True)
-        expected_0 = [4.09, 2.324, 3.937, 5.422, 3.850]
-        expected_1 = [1.035, 1.577, 1.962, 1.962, 1.962, 1.962, 1.962, 1.962, 1.553, 1.321]
-        self.assertListEqual(expected_0, [round(x, 3) for x in output[0]])
-        self.assertListEqual(expected_1, [round(x, 3) for x in output[1]])
+        expected_0 = [4.09, 2.33, 3.94, 5.42, 3.85]
+        expected_1 = [1.04, 1.58, 1.96, 1.96, 1.96, 1.96, 1.96, 1.96, 1.55, 1.32]
+        self.assertListEqual(expected_0, [round(x, 2) for x in output[0]])
+        self.assertListEqual(expected_1, [round(x, 2) for x in output[1]])
 
     def test_get_cmap_validation_metrics_1(self):
         cmap_1 = ContactMap("cmap_1")
