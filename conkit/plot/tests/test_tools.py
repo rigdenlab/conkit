@@ -148,12 +148,8 @@ class Test(unittest.TestCase):
     MAX 2_2_2	/home/filo/opt/map_align_v1/map_align/3u97_A.gremlin.map	/home/filo/opt/map_align_v1/map_align/2pd0_A.pdb.map	44.5272	-4.38	40.1472	74	1:1 2:2 3:3 4:4 5:6 6:7 7:8 8:9 10:10 11:11 12:13 13:14 14:15 16:16 17:17 18:18 19:19 20:20 21:23 22:24 23:25 24:26 25:27
 """
 
-        expected = {
-            range(5, 15): [(5, 6), (6, 7), (7, 8), (8, 9), (10, 10), (11, 11), (12, 13), (13, 14), (14, 15)],
-            range(21, 26): [(21, 23), (22, 24), (23, 25), (24, 26), (25, 27)]
-        }
-
-        output = {i.residue_range: i.residue_pairs for i in tools.parse_map_align_stdout(stdout_contents)}
+        expected = {6: 5, 7: 6, 8: 7, 9: 8, 13: 12, 14: 13, 15: 14, 23: 21, 24: 22, 25: 23, 26: 24, 27: 25}
+        output = tools.parse_map_align_stdout(stdout_contents)
         self.assertDictEqual(output, expected)
 
     def test_get_residue_ranges_1(self):

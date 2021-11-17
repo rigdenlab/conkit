@@ -472,51 +472,29 @@ def get_residue_ranges(numbers):
     return list(zip(edges, edges))
 
 
-def parse_map_align_stdout(stdout, nresidues_threshold=3):
+def parse_map_align_stdout(stdout):
     """Parse the stdout of map_align and extract the alignment of residues.
 
     Parameters
     ----------
     stdout : str
        Standard output created with map_align
-    nresidues_threshold: int
-        Number of minimum consecutive misaligned residues to to store the alignment
 
     Returns
     ------
-    list
-        A list of :obj:`~conkit.command_line.conkit_validate.Alignment` that describes regions of misaligned residues
+    dict
+        A dictionary where aligned residue numbers in map_b are the keys and residue numbers in map_a values. Only
+        misaligned regions are included.
     """
 
-    residues_map_a = []
-    residues_map_b = []
-    resnum = 0
-    misalinged_residues = []
+    alignment_dict = {}
 
     for line in stdout.split('\n'):
         if line and line.split()[0] == "MAX":
             line = line.rstrip().lstrip().split()
             for residue_pair in line[8:]:
-                resnum += 1
                 residue_pair = residue_pair.split(":")
-                residues_map_a.append(int(residue_pair[0]))
-                residues_map_b.append(int(residue_pair[1]))
                 if residue_pair[0] != residue_pair[1]:
-                    misalinged_residues.append(resnum)
+                    alignment_dict[int(residue_pair[1])] = int(residue_pair[0])
 
-    alignments = []
-
-    for start, stop in get_residue_ranges(misalinged_residues):
-        alingment_slice = slice(start - 1, stop)
-        alingment_range = range(residues_map_a[start - 1], residues_map_a[stop - 1] + 1)
-        residue_pairs = []
-
-        if len(alingment_range) < nresidues_threshold:
-            continue
-        for res_a, res_b in zip(residues_map_a[alingment_slice], residues_map_b[alingment_slice]):
-            residue_pairs.append((res_a, res_b))
-
-        new_alignment = Alignment(alingment_range, residue_pairs)
-        alignments.append(new_alignment)
-
-    return alignments
+    return alignment_dict

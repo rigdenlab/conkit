@@ -126,7 +126,7 @@ class ModelValidationFigure(Figure):
         self._sequence = None
         self._distance_bins = None
         self.data = None
-        self.alignments = None
+        self.alignment = {}
         self.sorted_scores = None
         self.smooth_scores = None
 
@@ -271,9 +271,7 @@ class ModelValidationFigure(Figure):
                 contact_map_b=contact_map_b)
 
             stdout, stderr = map_align_cline()
-            self.alignments = tools.parse_map_align_stdout(stdout)
-            misaligned_residues = {res for misalignment in self.alignments for res in misalignment.residue_range}
-            return misaligned_residues
+            self.alignment = tools.parse_map_align_stdout(stdout)
 
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
@@ -286,8 +284,8 @@ class ModelValidationFigure(Figure):
         self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
 
         if self.map_align_exe is not None:
-            misaligned_resnums = self._get_cmap_alignment()
-            self.data['MISALIGNED'] = self.data.RESNUM.isin(misaligned_resnums)
+            self._get_cmap_alignment()
+            self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
         else:
             self.data['MISALIGNED'] = False
 
@@ -331,7 +329,7 @@ class ModelValidationFigure(Figure):
         self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
         scores = {}
-        misaligned_residues = set(self.data.loc[self.data.MISALIGNED, 'RESNUM'])
+        misaligned_residues = set(self.alignment.keys())
 
         for resnum in sorted(predicted_dict.keys()):
             _score = self._predict_score(resnum)

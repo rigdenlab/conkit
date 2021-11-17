@@ -154,7 +154,6 @@ def main():
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
     residue_info = figure.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
-    alignment_dict = {residues[1]: residues[0] for a in figure.alignments for residues in a.residue_pairs}
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register"]
 
@@ -163,12 +162,12 @@ def main():
         current_residue = '{} ({})'.format(sequence.seq[resnum - 1], resnum)
         score = '*** {0:.2f} ***'.format(score) if score > 0.5 else '    {0:.2f}    '.format(score)
 
-        if misalignment and resnum in alignment_dict.keys():
-            alignment = '*** {} ({}) ***'.format(sequence.seq[alignment_dict[resnum] - 1], alignment_dict[resnum])
+        if misalignment and resnum in figure.alignment.keys():
+            register = '*** {} ({}) ***'.format(sequence.seq[figure.alignment[resnum] - 1], figure.alignment[resnum])
         else:
-            alignment = '               '
+            register = '               '
 
-        table.add_row([current_residue, score, alignment])
+        table.add_row([current_residue, score, register])
 
     logger.info(os.linesep)
     logger.info(table)
