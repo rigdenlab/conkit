@@ -127,6 +127,8 @@ class ModelValidationFigure(Figure):
         self._distance_bins = None
         self.data = None
         self.alignments = None
+        self.sorted_scores = None
+        self.smooth_scores = None
 
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
@@ -344,10 +346,10 @@ class ModelValidationFigure(Figure):
                 self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
 
         self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: scores.get(x))
-        sorted_scores = [scores[resnum] for resnum in sorted(scores.keys())]
-        smooth_scores = tools.convolution_smooth_values(np.nan_to_num(sorted_scores))
+        self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
+        self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
         self.ax.axhline(0.5, **LINEKWARGS)
-        self.ax.plot(smooth_scores, color=tools.ColorDefinitions.SCORE)
+        self.ax.plot(self.smooth_scores, color=tools.ColorDefinitions.SCORE)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
 
