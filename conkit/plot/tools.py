@@ -33,7 +33,6 @@ __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
 __version__ = "0.1"
 
-from collections import namedtuple
 import numpy as np
 import os
 
@@ -55,8 +54,6 @@ HierarchyIndex = {
     "Distogram": Distogram,
     "DistanceFile": DistanceFile
 }
-
-Alignment = namedtuple('Alignment', ("residue_range", "residue_pairs"))
 
 
 class ColorDefinitions(object):
@@ -362,7 +359,7 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
 
     nresidues = len(sequence) - len(absent_residues)
     cmap_metrics = [[] for i in range(7)]
-    calculations = (accuracy, fn, fn_rate, fp, fp_rate, sensitivity, specificity)
+    metrics_list = (accuracy, fn, fn_rate, fp, fp_rate, sensitivity, specificity)
 
     for resnum in sorted(predicted_cmap_dict.keys()):
         if absent_residues and resnum in absent_residues:
@@ -380,7 +377,7 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
         _fp = len(model_contact_set - predicted_contact_set)
         _tn = nresidues - _fn - _tp - _fp
 
-        for idx, metric in enumerate(calculations):
+        for idx, metric in enumerate(metrics_list):
             cmap_metrics[idx].append(metric(_tp, _fp, _tn, _fn))
 
     smooth_cmap_metrics = []

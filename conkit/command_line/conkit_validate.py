@@ -47,7 +47,6 @@ It uses one external program to perform this task:
 import argparse
 from Bio.PDB import PDBParser
 from Bio.PDB.DSSP import DSSP
-from collections import namedtuple
 import os
 from prettytable import PrettyTable
 
@@ -70,7 +69,7 @@ def create_argument_parser():
     parser.add_argument("distformat", type=str, help="Format of distance prediction file")
     parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file")
-    parser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
+    parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
@@ -157,15 +156,21 @@ def main():
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register"]
 
+    _resnum_template = '{} ({})'
+    _error_score_template = '*** {0:.2f} ***'
+    _correct_score_template = '    {0:.2f}    '
+    _register_template = '*** {} ({}) ***'
+    _empty_register = '               '
+
     for residue in residue_info.values:
         resnum, score, misalignment = residue
-        current_residue = '{} ({})'.format(sequence.seq[resnum - 1], resnum)
-        score = '*** {0:.2f} ***'.format(score) if score > 0.5 else '    {0:.2f}    '.format(score)
+        current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
+        score = _error_score_template.format(score) if score > 0.5 else _correct_score_template.format(score)
 
         if misalignment and resnum in figure.alignment.keys():
-            register = '*** {} ({}) ***'.format(sequence.seq[figure.alignment[resnum] - 1], figure.alignment[resnum])
+            register = _register_template.format(sequence.seq[figure.alignment[resnum] - 1], figure.alignment[resnum])
         else:
-            register = '               '
+            register = _empty_register
 
         table.add_row([current_residue, score, register])
 

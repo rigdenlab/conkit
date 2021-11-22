@@ -185,7 +185,7 @@ def add_covariance_validation_args(subparsers):
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    subparser.add_argument("-dssp", dest="dssp", default='mkdssp', help="path to dssp executable",
+    subparser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable",
                            type=conkit.plot.tools.is_executable)
     subparser.add_argument("--map_align_exe", dest="map_align_exe", default=None, help="path to map_align executable",
                            type=conkit.plot.tools.is_executable)
