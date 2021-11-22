@@ -34,6 +34,7 @@ __date__ = "16 Feb 2017"
 __version__ = "0.1"
 
 import numpy as np
+import os
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -43,7 +44,6 @@ from conkit.core.sequencefile import SequenceFile
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 from conkit.misc import deprecate
-import scipy.signal
 
 HierarchyIndex = {
     "Contact": Contact,
@@ -69,6 +69,11 @@ class ColorDefinitions(object):
     L20CUTOFF = "#B5DD2B"
     PRECISION50 = L5CUTOFF
     FACTOR1 = L20CUTOFF
+    SCORE = '#3299a8'
+    ERROR = '#f54242'
+    CORRECT = '#40eef7'
+    ALIGNED = '#3d8beb'
+    MISALIGNED = '#f7ba40'
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",
@@ -206,7 +211,6 @@ def get_radius_around_circle(p1, p2):
     -------
     float
        The radius for points so p1 and p2 do not intersect
-
     """
     dist = np.linalg.norm(np.array(p1) - np.array(p2))
     return dist / 2.0 - dist * 0.1
@@ -218,6 +222,46 @@ def _isinstance(hierarchy, hierarchy_type):
         return isinstance(hierarchy, HierarchyIndex[hierarchy_type])
     else:
         return isinstance(hierarchy, hierarchy_type)
+
+
+def is_executable(executable):
+    """Check if a given program can be executed
+
+    Parameters
+    ----------
+    executable : str
+       The path or name for an executable
+
+    Returns
+    -------
+    str
+       The absolute path to the executable
+
+    Raises
+    ------
+    ValueError
+        The executable cannot be accessed
+
+    Credits
+    -------
+    https://stackoverflow.com/a/377028/3046533
+    """
+    if executable is None:
+        return
+
+    fpath, fname = os.path.split(executable)
+
+    if fpath:
+        if os.path.isfile(executable) and os.access(executable, os.X_OK):
+            return executable
+
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, executable)
+            if os.path.isfile(exe_file) and os.access(exe_file, os.X_OK):
+                return exe_file
+
+    raise ValueError('Executable {} cannot be accessed'.format(executable))
 
 
 def convolution_smooth_values(x, window=5):
@@ -234,73 +278,220 @@ def convolution_smooth_values(x, window=5):
     -------
     list
        A list with the smoothed numeric values
-"""
+    """
     box = np.ones(window) / window
     x_smooth = np.convolve(x, box, mode='same')
     return x_smooth
 
 
-def find_validation_outliers(rmsd_raw, rmsd_smooth, fn_raw, fn_smooth):
-    """Use :func:`scipy.signal.find_peaks` to find model validation outliers for a given rmsd and fn profile
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
+    """Calculate the RMSD between two different distograms
 
     Parameters
     ----------
-    rmsd_raw : list, tuple
-       A list with the raw RMSD values along the sequence
-    rmsd_smooth : list, tuple
-       A list with the smoothed RMSD values along the sequence
-    fn_raw : list, tuple
-       A list with the raw FN values along the sequence
-    fn_smooth : list, tuple
-       A list with the smoothed FN values along the sequence
-
-    Returns
-    -------
-    list
-       A list with the residue numbers where a validation peak has been found
-    """
-    _tmp_fn_peaks, _tmp_fn_peaks_properties = scipy.signal.find_peaks(fn_raw, height=1, width=0)
-    allowed_rmsd_peaks = set([x for y in _tmp_fn_peaks for x in range(y - 20, y + 20)])
-    height_threshold = np.array([1.5 if x in allowed_rmsd_peaks else 100000 for x in range(len(rmsd_raw))])
-
-    rmsd_peaks, rmsd_properties = scipy.signal.find_peaks(rmsd_smooth, prominence=1, width=0, height=height_threshold)
-
-    allowed_fn_peaks = set([x for y in rmsd_peaks for x in range(y - 20, y + 20)])
-    height_threshold = np.array([1000 if x in allowed_fn_peaks else 1 for x in range(len(fn_raw))])
-    fn_peaks, fn_peaks_properties = scipy.signal.find_peaks(np.nan_to_num(fn_smooth),
-                                                            height=height_threshold, distance=30)
-
-    return sorted(rmsd_peaks.tolist() + fn_peaks.tolist())
-
-
-def get_fn_profile(model, prediction, ignore_residues=None):
-    """Get the count of false negatives along the sequence for a given model and residue contact prediction.
-
-    Parameters
-    ----------
-    model: :obj:`~conkit.core.contactmap.ContactMap`
-       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the contacts observed at the model
-    prediction: :obj:`~conkit.core.contactmap.ContactMap`
-       A ConKit :obj:`~conkit.core.contactmap.ContactMap` with the predicted contacts
-    ignore_residues: list, tuple
-       A list of integers that indicate residue indices that should be ignored
+    distogram_1 : :obj:`~conkit.core.distogram.Distogram`
+       Distogram 1
+    distogram_2 : :obj:`~conkit.core.distogram.Distogram`
+       Distogram 2
+    calculate_wrmsd: bool
+        If True then the WRMSD is calculated using the confidence scores from distogram 1
 
     Returns
     -------
     tuple
-        A tuple of integers with the FN count along the sequence
+       Two lists with the raw/smoothed RMSD values at each residue position
     """
-    predicted_dict = prediction.as_dict()
-    model_dict = model.as_dict()
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd)
+    rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), 10)
+    return rmsd_raw, rmsd_smooth
 
-    if max(predicted_dict.keys()) != max(model_dict.keys()):
-        raise ValueError("The contact map sequences do not match")
 
-    fn = []
-    for resn in predicted_dict.keys():
-        if ignore_residues and resn in ignore_residues:
-            fn.append(0)
+def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, absent_residues):
+    """For a given observed contact map and predicted contact map calculate a series of validation metrics at each
+    residue position (Accuracy, FN, FNR, FP, FPR, Sensitivity, Specificity)
+
+    Parameters
+    ----------
+    model_cmap_dict : dict
+       Dictionary representation of the contact map observed in the model
+    predicted_cmap_dict : dict
+       Dictionary representation of the predicted contact map
+    sequence: :obj:`~conkit.core.sequence.Sequence`
+        The sequence of the model to be validated
+    absent_residues: list, tuple, set
+        The residues that are missing from the model
+    Returns
+    -------
+    tuple
+        Two lists with the raw/smoothed values of each validation metric at each residue position
+    """
+
+    def accuracy(tp, fp, tn, fn):
+        if (tp + fp + tn + fn) > 0:
+            return (tp + tn) / (tp + fp + tn + fn)
+        return 0
+
+    def fn(*args):
+        return args[-1]
+
+    def fn_rate(tp, fp, tn, fn):
+        if (fn + tn) > 0:
+            return fn / (fn + tn)
+        return 0
+
+    def fp(*args):
+        return args[1]
+
+    def fp_rate(tp, fp, tn, fn):
+        if (fp + tp) > 0:
+            return fp / (fp + tp)
+        return 0
+
+    def sensitivity(tp, fp, tn, fn):
+        if (fn + tp) > 0:
+            return tp / (fn + tp)
+        return 0
+
+    def specificity(tp, fp, tn, fn):
+        if (fp + tn) > 0:
+            return tn / (fp + tn)
+        return 0
+
+    nresidues = len(sequence) - len(absent_residues)
+    cmap_metrics = [[] for i in range(7)]
+    metrics_list = (accuracy, fn, fn_rate, fp, fp_rate, sensitivity, specificity)
+
+    for resnum in sorted(predicted_cmap_dict.keys()):
+        if absent_residues and resnum in absent_residues:
+            for metric in cmap_metrics:
+                metric.append(np.nan)
             continue
-        fn.append(len(predicted_dict[resn] - model_dict[resn]))
 
-    return tuple(fn)
+        predicted_contact_set = {c for c in predicted_cmap_dict[resnum] if
+                                 c[0] not in absent_residues and c[1] not in absent_residues}
+        model_contact_set = {c for c in model_cmap_dict[resnum] if
+                             c[0] not in absent_residues and c[1] not in absent_residues}
+
+        _fn = len(predicted_contact_set - model_contact_set)
+        _tp = len(predicted_contact_set & model_contact_set)
+        _fp = len(model_contact_set - predicted_contact_set)
+        _tn = nresidues - _fn - _tp - _fp
+
+        for idx, metric in enumerate(metrics_list):
+            cmap_metrics[idx].append(metric(_tp, _fp, _tn, _fn))
+
+    smooth_cmap_metrics = []
+    for metric in cmap_metrics:
+        smooth_cmap_metrics.append(convolution_smooth_values(np.nan_to_num(metric), 5))
+
+    return cmap_metrics, smooth_cmap_metrics
+
+
+def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics):
+    """Calculate the Z-Scores for a series of metrics at each residue position
+    using the population of residues within 10A
+
+    Parameters
+    ----------
+    model_distogram : :obj:`~conkit.core.distogram.Distogram`
+       Distogram of the model that will be validated
+    predicted_cmap_dict : dict
+       Dictionary representation of the predicted contact map
+    absent_residues: list, tuple, set
+        The residues that are missing from the model
+    *metrics: list
+        The mertics for which the Z-Scores will be calculated
+
+    Returns
+    -------
+    list
+       A list of lists where each sublist contains the Z-Scores for the input metrics across all the residues. The
+       sublists containing the Z-Scores are ordered in the same original order as in the input *metrics
+    """
+    zscore_cmap_metrics = [[] for i in metrics]
+
+    for resnum in sorted(predicted_cmap_dict.keys()):
+        if absent_residues and resnum in absent_residues:
+            for zscore_metric in zscore_cmap_metrics:
+                zscore_metric.append(np.nan)
+
+        neighbour_residues = model_distogram.find_residues_within(resnum, 10)
+        for cmap_metric, zscore_metric in zip(metrics, zscore_cmap_metrics):
+            population_scores = [cmap_metric[resid - 1] for resid in neighbour_residues]
+            observed_score = cmap_metric[resnum - 1]
+            zscore_metric.append(calculate_zscore(observed_score, population_scores))
+
+    return zscore_cmap_metrics
+
+
+def calculate_zscore(observed_score, population_scores):
+    """Calculate the Z-Score for a given population of values. Z-Score = (score - mean) / stdev
+
+    Parameters
+    ----------
+    observed_score : float
+       The observed score used to calculate the Z-Score
+    population_scores : list
+       A list containing the scores observed across the samples in the population
+
+    Returns
+    -------
+    float
+       The calculated Z-Score
+    """
+
+    if len(population_scores) < 2:
+        return 0
+    stdev = np.std(population_scores).astype(float)
+    if stdev == 0:
+        return 0
+    mean = np.mean(population_scores).astype(float)
+    zscore = (observed_score - mean) / stdev
+    return zscore
+
+
+def get_residue_ranges(numbers):
+    """Given a list of integers, creates a list of ranges with the consecutive numbers found in the list.
+
+    Parameters
+    ----------
+    numbers: list
+       A list of integers
+
+    Returns
+    ------
+    list
+        A list with the ranges of consecutive numbers found in the list
+    """
+    nums = sorted(set(numbers))
+    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s + 3 < e]
+    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
+    return list(zip(edges, edges))
+
+
+def parse_map_align_stdout(stdout):
+    """Parse the stdout of map_align and extract the alignment of residues.
+
+    Parameters
+    ----------
+    stdout : str
+       Standard output created with map_align
+
+    Returns
+    ------
+    dict
+        A dictionary where aligned residue numbers in map_b are the keys and residue numbers in map_a values. Only
+        misaligned regions are included.
+    """
+
+    alignment_dict = {}
+
+    for line in stdout.split('\n'):
+        if line and line.split()[0] == "MAX":
+            line = line.rstrip().lstrip().split()
+            for residue_pair in line[8:]:
+                residue_pair = residue_pair.split(":")
+                if residue_pair[0] != residue_pair[1]:
+                    alignment_dict[int(residue_pair[1])] = int(residue_pair[0])
+
+    return alignment_dict

@@ -42,6 +42,8 @@ __date__ = "08 Feb 2017"
 __version__ = "0.1"
 
 import argparse
+from Bio.PDB import PDBParser
+from Bio.PDB.DSSP import DSSP
 import inspect
 
 import conkit.command_line
@@ -183,8 +185,10 @@ def add_covariance_validation_args(subparsers):
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    subparser.add_argument("-e", dest="otherfile", default=None, help="a second contact map to plot for comparison")
-    subparser.add_argument("-ef", dest="otherformat", default=None, help="the format of the second contact map")
+    subparser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable",
+                           type=conkit.plot.tools.is_executable)
+    subparser.add_argument("--map_align_exe", dest="map_align_exe", default=None, help="path to map_align executable",
+                           type=conkit.plot.tools.is_executable)
     _add_default_args(subparser)
     _add_sequence_default_args(subparser)
     _add_distance_default_args(subparser)
@@ -401,11 +405,18 @@ def main(argv=None):
         figure_aspect_ratio = 1.0
 
     elif args.which == "covariance_validation":
+        if args.pdbformat != 'pdb':
+            raise ValueError('Model file format can only be PDB')
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
+        if len(sequence) < 5:
+            raise ValueError('Cannot validate a model with less than 5 residues')
         prediction = conkit.io.read(args.distfile, args.distformat)[0]
         model = conkit.io.read(args.pdbfile, args.pdbformat)[0]
+        p = PDBParser()
+        structure = p.get_structure('structure', args.pdbfile)[0]
+        dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
 
-        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, use_weights=True)
+        figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
         figure_aspect_ratio = None
 
     elif args.which == "distogram_heatmap":
@@ -423,7 +434,6 @@ def main(argv=None):
             figure = conkit.plot.DistogramHeatmapFigure(distogram)
 
         figure_aspect_ratio = 1.0
-
 
     elif args.which == "contact_map_matrix":
 

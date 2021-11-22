@@ -51,7 +51,7 @@ class Distogram(ContactMap):
     >>> distogram.add(Distance(1, 25, (0.25, 0.45, 0.25, 0.05), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
     >>> distogram.add(Distance(7, 19, (0.15, 0.15, 0.60, 0.1), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
     >>> print(distogram)
-    ContactMap(id="example" ndistances=2)
+    Distogram(id="example" ndistances=2)
 
     Attributes
     ----------

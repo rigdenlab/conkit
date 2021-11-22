@@ -32,8 +32,29 @@ __author__ = "Felix Simkovic"
 __date__ = "18 May 2018"
 __version__ = "2.0"
 
+import os
+import joblib
 import numpy as np
 import warnings
+
+TRAINED_CLASSIFIER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'trained_classifier.joblib')
+STANDARD_SCALER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'standard_scaler.joblib')
+SELECTED_VALIDATION_FEATURES = ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
+                                'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY']
+ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
+                           'SPECIFICITY', 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH',
+                           'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN',
+                           'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY']
+
+
+def load_validation_model():
+    if not os.path.isfile(TRAINED_CLASSIFIER_PICKLE):
+        raise FileNotFoundError('Cannot find classifier pickle file {}'.format(TRAINED_CLASSIFIER_PICKLE))
+    if not os.path.isfile(STANDARD_SCALER_PICKLE):
+        raise FileNotFoundError('Cannot find scaler pickle file {}'.format(STANDARD_SCALER_PICKLE))
+    classifier = joblib.load(TRAINED_CLASSIFIER_PICKLE)
+    scaler = joblib.load(STANDARD_SCALER_PICKLE)
+    return classifier, scaler
 
 
 def deprecate(version, msg=None):

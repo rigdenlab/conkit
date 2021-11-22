@@ -136,7 +136,7 @@ class TestDistogram(unittest.TestCase):
         self.assertListEqual([contact.res2_seq for contact in contactmap], expected_res2)
         self.assertListEqual([contact.raw_score for contact in contactmap], expected_raw_score)
 
-    def test_merge_arrays(self):
+    def test_merge_arrays_1(self):
         distogram_1 = Distogram("test_1")
         distogram_1.add(Distance(1, 5, (0.25, 0.45, 0.05, 0.05, 0.2), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
         distogram_1.add(Distance(2, 3, (0.15, 0.15, 0.60, 0.1, 0.0), ((0, 4), (4, 6), (6, 8), (8, 10), (10, np.inf))))
