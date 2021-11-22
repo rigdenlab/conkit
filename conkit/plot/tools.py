@@ -334,16 +334,16 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
             return (tp + tn) / (tp + fp + tn + fn)
         return 0
 
-    def fn(*kwargs):
-        return kwargs[-1]
+    def fn(*args):
+        return args[-1]
 
     def fn_rate(tp, fp, tn, fn):
         if (fn + tn) > 0:
             return fn / (fn + tn)
         return 0
 
-    def fp(*kwargs):
-        return kwargs[1]
+    def fp(*args):
+        return args[1]
 
     def fp_rate(tp, fp, tn, fn):
         if (fp + tp) > 0:
