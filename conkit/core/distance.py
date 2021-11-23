@@ -62,7 +62,23 @@ class Distance(Contact):
 
     """
 
-    __slots__ = ["distance_bins", "distance_scores"]
+    __slots__ = [
+        "_distance_bound",
+        "raw_score",
+        "_res1",
+        "_res2",
+        "res1_chain",
+        "res2_chain",
+        "_res1_seq",
+        "_res2_seq",
+        "_res1_altseq",
+        "_res2_altseq",
+        "scalar_score",
+        "_status",
+        "weight",
+        "distance_bins",
+        "distance_scores"
+    ]
 
     def __init__(self, res1_seq, res2_seq, distance_scores, distance_bins, raw_score=None, distance_bound=(0, 8)):
         """Initialize a generic distance residue pair
@@ -201,6 +217,29 @@ class Distance(Contact):
 
         self.distance_bins = tuple(new_bins)
         self.distance_scores = tuple(new_distance_scores)
+
+    def as_contact(self, distance_cutoff):
+        """Create a :obj:`~conkit.core.contact.Contact` instance with the information in this
+        :obj:`~conkit.core.distance.Distance` instance.
+
+        Parameters
+        ----------
+        distance_cutoff : int, float
+           The distance cutoff used to consider a residue pair within contact of each other
+
+        Returns
+        -------
+        :obj:`~conkit.core.contact.Contact`
+            A contact with the information present in this distance instance.
+        """
+        if self.predicted_distance > distance_cutoff:
+            contact = Contact(self.res1_seq, self.res2_seq, 0, distance_bound=(0, distance_cutoff))
+        else:
+            contact = Contact(self.res1_seq, self.res2_seq, self.raw_score, distance_bound=(0, distance_cutoff))
+        for attr in self.__slots__:
+            if hasattr(contact, attr):
+                setattr(contact, attr, getattr(self, attr))
+        return contact
 
     @staticmethod
     def _assert_valid_bins(distance_bins):

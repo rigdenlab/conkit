@@ -65,7 +65,7 @@ class DistanceFile(ContactFile):
 
     """
 
-    __slots__ = ["_original_file_format"]
+    __slots__ = ["author", "target", "_method", "_remark", "_original_file_format"]
 
     def __init__(self, id):
         """Initialise a new distance file"""
