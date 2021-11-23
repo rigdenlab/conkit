@@ -286,4 +286,4 @@ class ContactMapFigure(Figure):
             else:
                 return ColorDefinitions.GENERAL
 
-        return [color_selector(contact) for contact in h]
+        return [color_selector(contact) for contact in h if Gap.IDENTIFIER not in (contact.res1_seq, contact.res2_seq)]

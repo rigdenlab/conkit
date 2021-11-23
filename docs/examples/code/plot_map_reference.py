@@ -39,6 +39,7 @@ cmap = conpred[:conpred.sequence.seq_len]
 # Now we need to compare it to our reference structure
 pdb_file = "toxd/toxd.pdb"
 pdb = conkit.io.read(pdb_file, "pdb").top
+pdb = pdb.as_contactmap()
 # The two keywords do the following:
 #       - match_other      : renumber the pdb to match gaps in target
 #       - remove_unmatched : remove contacts absent from the pdb_file

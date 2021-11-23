@@ -48,6 +48,7 @@ import inspect
 
 import conkit.command_line
 import conkit.io
+from conkit.io import DISTANCE_FILE_PARSERS
 import conkit.plot
 import conkit.plot.tools
 
@@ -325,6 +326,8 @@ def main(argv=None):
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
+        if args.conformat in DISTANCE_FILE_PARSERS.keys():
+            con = con.as_contactmap()
 
         con.sequence = seq
         con.set_sequence_register()
@@ -335,6 +338,8 @@ def main(argv=None):
 
         if args.otherfile:
             other = conkit.io.read(args.otherfile, args.otherformat)[0]
+            if args.otherformat in DISTANCE_FILE_PARSERS.keys():
+                other = other.as_contactmap()
             other.sequence = seq
             other.set_sequence_register()
             other.remove_neighbors(min_distance=args.dtn, inplace=True)
@@ -344,15 +349,18 @@ def main(argv=None):
             other_sliced = None
 
         if args.reffile:
+            if args.refformat not in ["pdb", "mmcif"]:
+                msg = "The provided format {0} is not yet implemented for the reference flag".format(args.refformat)
+                raise RuntimeError(msg)
+
             if args.refid:
                 reference = conkit.io.read(args.reffile, args.refformat)[args.refid]
             else:
                 reference = conkit.io.read(args.reffile, args.refformat)[0]
 
-            if args.refformat not in ["pdb", "mmcif"]:
-                msg = "The provided format {0} is not yet implemented for the reference flag".format(args.refformat)
-                raise RuntimeError(msg)
-
+            reference = reference.as_contactmap()
+            reference.sequence = seq
+            reference.set_sequence_register()
             con_matched = con_sliced.match(reference, match_other=True, renumber=True, remove_unmatched=True)
             if other_sliced:
                 other_matched = other_sliced.match(reference, renumber=True, remove_unmatched=True)
@@ -393,6 +401,8 @@ def main(argv=None):
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
+        if args.conformat in DISTANCE_FILE_PARSERS:
+            con = con.as_contactmap()
 
         con.sequence = seq
         con.set_sequence_register()
@@ -407,9 +417,13 @@ def main(argv=None):
     elif args.which == "covariance_validation":
         if args.pdbformat != 'pdb':
             raise ValueError('Model file format can only be PDB')
+        elif args.distformat not in DISTANCE_FILE_PARSERS.keys():
+            raise ValueError('Prediction file format can only be a distance file')
+
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
+
         prediction = conkit.io.read(args.distfile, args.distformat)[0]
         model = conkit.io.read(args.pdbfile, args.pdbformat)[0]
         p = PDBParser()
@@ -420,12 +434,17 @@ def main(argv=None):
         figure_aspect_ratio = None
 
     elif args.which == "distogram_heatmap":
+        if args.distformat not in DISTANCE_FILE_PARSERS.keys():
+            raise ValueError('Prediction file format can only be a distance file')
+
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
         distogram = conkit.io.read(args.distfile, args.distformat)[0]
         distogram.sequence = sequence
         distogram.set_sequence_register()
 
         if args.otherfile:
+            if args.otherformat not in DISTANCE_FILE_PARSERS.keys():
+                raise ValueError('Other prediction file format can only be a distance file')
             other = conkit.io.read(args.otherfile, args.otherformat)[0]
             other.sequence = sequence
             other.set_sequence_register()
@@ -439,12 +458,16 @@ def main(argv=None):
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
+        if args.conformat in DISTANCE_FILE_PARSERS:
+            con = con.as_contactmap()
 
         con.sequence = seq
         con.set_sequence_register()
 
         if args.otherfile:
             other = conkit.io.read(args.otherfile, args.otherformat)[0]
+            if args.otherformat in DISTANCE_FILE_PARSERS:
+                other = other.as_contactmap()
             other.sequence = seq
             other.set_sequence_register()
         else:
@@ -460,6 +483,8 @@ def main(argv=None):
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
+        if args.conformat in DISTANCE_FILE_PARSERS:
+            con = con.as_contactmap()
 
         con.sequence = seq
         con.set_sequence_register()
@@ -482,6 +507,8 @@ def main(argv=None):
 
         seq = conkit.io.read(args.seqfile, args.seqformat)[0]
         con = conkit.io.read(args.confile, args.conformat)[0]
+        if args.conformat in DISTANCE_FILE_PARSERS:
+            con = con.as_contactmap()
 
         con.sequence = seq
         con.set_sequence_register()
@@ -492,6 +519,8 @@ def main(argv=None):
             pdb = conkit.io.read(args.pdbfile, "pdb")[args.pdbchain]
         else:
             pdb = conkit.io.read(args.pdbfile, "pdb")[0]
+
+        pdb = pdb.as_contactmap()
         con_matched = con.match(pdb, renumber=True, remove_unmatched=True)
 
         figure = conkit.plot.PrecisionEvaluationFigure(
