@@ -64,7 +64,7 @@ class Distogram(ContactMap):
 
     """
 
-    __slots__ = ["_original_file_format"]
+    __slots__ = ["_original_file_format", "_sequence"]
 
     def __init__(self, id):
         self._original_file_format = None
@@ -228,8 +228,10 @@ class Distogram(ContactMap):
         contactmap = ContactMap("map_1")
         for dist in self:
             if dist.predicted_distance <= distance_cutoff:
-                contact = Contact(dist.res1_seq, dist.res2_seq, dist.raw_score, distance_bound=(0, distance_cutoff))
+                contact = dist.as_contact(distance_cutoff)
                 contactmap.add(contact)
+        if self.sequence is not None:
+            contactmap.sequence = self.sequence._inplace(False)
 
         return contactmap
 
