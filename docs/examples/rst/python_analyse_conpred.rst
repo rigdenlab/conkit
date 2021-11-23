@@ -65,6 +65,7 @@ In ConKit, this functionality is provided via the :attr:`~conkit.core.contactmap
 .. code-block:: python
 
    >>> pdb = conkit.io.read("toxd/toxd.pdb", "pdb").top_map
+   >>> pdb = pdb.as_contactmap()
    >>> conpred.remove_neighbors(inplace=True)
    >>> conpred.sort("raw_score", reverse=True, inplace=True)
    >>> conpred.match(pdb, inplace=True)
