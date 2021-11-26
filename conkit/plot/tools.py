@@ -414,6 +414,7 @@ def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics)
         if absent_residues and resnum in absent_residues:
             for zscore_metric in zscore_cmap_metrics:
                 zscore_metric.append(np.nan)
+            continue
 
         neighbour_residues = model_distogram.find_residues_within(resnum, 10)
         for cmap_metric, zscore_metric in zip(metrics, zscore_cmap_metrics):
