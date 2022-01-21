@@ -79,9 +79,14 @@ def main():
         pdb = conkit.io.read(args.pdbfile, args.pdbformat)[args.pdbchain]
     else:
         pdb = conkit.io.read(args.pdbfile, args.pdbformat)[0]
-    seq = conkit.io.read(args.seqfile, args.seqformat)[0]
-    con = conkit.io.read(args.confile, args.conformat)[0]
 
+    seq = conkit.io.read(args.seqfile, args.seqformat)[0]
+
+    pdb.sequence = seq
+    pdb.set_sequence_register()
+    pdb = pdb.as_contactmap()
+
+    con = conkit.io.read(args.confile, args.conformat)[0]
     con.sequence = seq
     con.set_sequence_register()
 
