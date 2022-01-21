@@ -530,6 +530,8 @@ class ContactMap(Entity):
         if self.sequence is None:
             raise ValueError("No sequence defined")
 
+        seq_len = len(self.sequence)
+
         for c in self:
             if altloc:
                 res1_index = c.res1_altseq
@@ -537,8 +539,11 @@ class ContactMap(Entity):
             else:
                 res1_index = c.res1_seq
                 res2_index = c.res2_seq
-            c.res1 = self.sequence.seq[res1_index - 1]
-            c.res2 = self.sequence.seq[res2_index - 1]
+            if res1_index <= seq_len or res2_index <= seq_len:
+                c.res1 = self.sequence.seq[res1_index - 1]
+                c.res2 = self.sequence.seq[res2_index - 1]
+            else:
+                raise ValueError('Contact {} is out of sequence bounds'.format(c.id))
 
     @deprecate("0.11", msg="Use get_jaccard_index instead.")
     def calculate_jaccard_index(self, other):
