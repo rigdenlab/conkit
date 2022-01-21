@@ -516,10 +516,12 @@ def main(argv=None):
         con.sort("raw_score", reverse=True, inplace=True)
 
         if args.pdbchain:
-            pdb = conkit.io.read(args.pdbfile, "pdb")[args.pdbchain]
+            pdb = conkit.io.read(args.pdbfile, args.pdbformat)[args.pdbchain]
         else:
-            pdb = conkit.io.read(args.pdbfile, "pdb")[0]
+            pdb = conkit.io.read(args.pdbfile, args.pdbformat)[0]
 
+        pdb.sequence = seq
+        pdb.set_sequence_register()
         pdb = pdb.as_contactmap()
         con_matched = con.match(pdb, renumber=True, remove_unmatched=True)
 
