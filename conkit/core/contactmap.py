@@ -539,7 +539,7 @@ class ContactMap(Entity):
             else:
                 res1_index = c.res1_seq
                 res2_index = c.res2_seq
-            if res1_index <= seq_len or res2_index <= seq_len:
+            if res1_index <= seq_len and res2_index <= seq_len:
                 c.res1 = self.sequence.seq[res1_index - 1]
                 c.res2 = self.sequence.seq[res2_index - 1]
             else:
