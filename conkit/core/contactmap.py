@@ -831,7 +831,7 @@ class ContactMap(Entity):
                 else:
                     contact_map1[_id].status = ContactMatchState.false_positive
             else:
-                raise RuntimeError("Error matching two contact maps - this should never happen")
+                raise RuntimeError("Error matching two contact maps - please report this bug")
 
         # ================================================================
         # 3. Add false negatives
@@ -1164,6 +1164,6 @@ class ContactMap(Entity):
                     contact.res2_seq = other_residue.res_seq
                     contact.res2_chain = other_residue.res_chain
                 else:
-                    raise ValueError("Should never get here")
+                    raise ValueError("Error renumbering contact map - please report this bug")
 
         return contact_map
