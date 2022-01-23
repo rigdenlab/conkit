@@ -177,7 +177,7 @@ def main(argl=None):
         conkit.io.convert(a3m_fname, "a3m", jon_fname, "jones")
 
     else:
-        raise RuntimeError("Should never get to here")
+        raise RuntimeError("Error reading cli arguments - please report this bug")
 
     # CCMpred requires alignments to be in the *jones* format - i.e. the format created
     # and used by David Jones in PSICOV

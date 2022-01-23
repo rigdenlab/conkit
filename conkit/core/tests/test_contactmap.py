@@ -432,6 +432,22 @@ class TestContactMap(unittest.TestCase):
             [("A", "E"), ("B", "F"), ("A", "D"), ("C", "F"), ("B", "E")], [(c.res1, c.res2) for c in contact_map1]
         )
 
+    def test_set_sequence_register_3(self):
+        contact_map1 = ContactMap("1")
+        for comb in [(1, 5, 1.0), (2, 6, 1.0), (1, 4, 1.0), (3, 6, 1.0), (2, 5, 1.0)]:
+            contact_map1.add(Contact(*comb))
+        contact_map1.sequence = Sequence("foo", "ABCDE")
+        with self.assertRaises(ValueError):
+            contact_map1.set_sequence_register()
+
+    def test_set_sequence_register_4(self):
+        contact_map1 = ContactMap("1")
+        for comb in [(1, 5, 1.0), (6, 3, 1.0), (1, 4, 1.0), (3, 2, 1.0), (2, 5, 1.0)]:
+            contact_map1.add(Contact(*comb))
+        contact_map1.sequence = Sequence("foo", "ABCDE")
+        with self.assertRaises(ValueError):
+            contact_map1.set_sequence_register()
+
     def test_match_1(self):
         contact_map1 = ContactMap("foo")
         for params in [(1, 5, 1.0), (1, 6, 1.0), (2, 7, 1.0), (3, 5, 1.0), (2, 8, 1.0)]:
