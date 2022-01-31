@@ -120,13 +120,7 @@ class CCMpredParser(ContactFileParser):
         ------
         :exc:`RuntimeError`
            More than one contact map in the hierarchy
-        :exc:`TypeError`
-           Python3 requires f_handle to be in `wb` or `ab` mode
-
         """
-        # Python3 support requires bytes mode
-        if sys.version_info.major == 3 and not (f_handle.mode == "wb" or f_handle.mode == "ab"):
-            raise TypeError("Python3 requires f_handle to be in 'wb' or 'ab' mode")
 
         # Double check the type of hierarchy and reconstruct if necessary
         contact_file = self._reconstruct(hierarchy)

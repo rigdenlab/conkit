@@ -65,7 +65,7 @@ def main():
         help="number of contacts to include relative to sequence length [default: 1.0]",
     )
     parser.add_argument("pdbfile")
-    parser.add_argument("pdbformat")
+    parser.add_argument("pdbformat", choices=['pdb', 'mmcif'])
     parser.add_argument("seqfile")
     parser.add_argument("seqformat")
     parser.add_argument("confile")
@@ -81,7 +81,6 @@ def main():
         pdb = conkit.io.read(args.pdbfile, args.pdbformat)[0]
 
     seq = conkit.io.read(args.seqfile, args.seqformat)[0]
-
     pdb.sequence = seq
     pdb.set_sequence_register()
     pdb = pdb.as_contactmap()
@@ -89,6 +88,9 @@ def main():
     con = conkit.io.read(args.confile, args.conformat)[0]
     con.sequence = seq
     con.set_sequence_register()
+
+    if args.conformat in conkit.io.DISTANCE_FILE_PARSERS:
+        con = con.as_contactmap()
 
     logger.info("Min sequence separation for contacting residues: %d", args.dtn)
     logger.info("Contact list cutoff factor: %f * L", args.dfactor)
