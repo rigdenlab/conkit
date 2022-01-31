@@ -130,23 +130,6 @@ class TestCCMpredParser(ParserTestCase):
             output = f_in.read().splitlines()
         self.assertEqual(content, output)
 
-    def test_write_2(self):
-        contact_file = ContactFile("test")
-        contact_map = ContactMap("1")
-        contact_file.add(contact_map)
-        for c in [(1, 9, 0, 8, 0.7), (1, 10, 0, 8, 0.7), (2, 8, 0, 8, 0.9), (3, 12, 0, 8, 0.4)]:
-            contact = Contact(c[0], c[1], c[4], distance_bound=(c[2], c[3]))
-            contact_map.add(contact)
-        contact_map.sequence = Sequence("1", "HLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSDHLEGSIGILLKKHEIVFDGCHDFGRTYIWQMSD")
-        f_name = self.tempfile()
-        # Not sure if bug in Python3 numpy or intended purpose [Implemented: 21.11.2016]
-        with open(f_name, "w") as f_out:
-            if sys.version_info.major == 3:
-                with self.assertRaises(TypeError):
-                    CCMpredParser().write(f_out, contact_file)
-            else:
-                self.assertTrue(True)
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
