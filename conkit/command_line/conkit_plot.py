@@ -80,12 +80,13 @@ def _add_msa_default_args(parser):
 
 def _add_structure_default_args(parser):
     parser.add_argument("pdbfile", help="Path to structure file")
-    parser.add_argument("pdbformat", help="Format of structure file")
+    parser.add_argument("pdbformat", help="Format of structure file", choices=['pdb', 'mmcif'])
 
 
 def _add_distance_default_args(parser):
     parser.add_argument("distfile", help="Path to distance prediction file")
-    parser.add_argument("distformat", help="Format of distance prediction file")
+    parser.add_argument("distformat", help="Format of distance prediction file",
+                        choices=list(DISTANCE_FILE_PARSERS.keys()))
 
 
 def add_contact_map_args(subparsers):
@@ -415,11 +416,6 @@ def main(argv=None):
         figure_aspect_ratio = 1.0
 
     elif args.which == "covariance_validation":
-        if args.pdbformat != 'pdb':
-            raise ValueError('Model file format can only be PDB')
-        elif args.distformat not in DISTANCE_FILE_PARSERS.keys():
-            raise ValueError('Prediction file format can only be a distance file')
-
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
@@ -434,9 +430,6 @@ def main(argv=None):
         figure_aspect_ratio = None
 
     elif args.which == "distogram_heatmap":
-        if args.distformat not in DISTANCE_FILE_PARSERS.keys():
-            raise ValueError('Prediction file format can only be a distance file')
-
         sequence = conkit.io.read(args.seqfile, args.seqformat)[0]
         distogram = conkit.io.read(args.distfile, args.distformat)[0]
         distogram.sequence = sequence

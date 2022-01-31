@@ -65,7 +65,7 @@ def main():
         help="number of contacts to include relative to sequence length [default: 1.0]",
     )
     parser.add_argument("pdbfile")
-    parser.add_argument("pdbformat")
+    parser.add_argument("pdbformat", choices=['pdb', 'mmcif'])
     parser.add_argument("seqfile")
     parser.add_argument("seqformat")
     parser.add_argument("confile")
