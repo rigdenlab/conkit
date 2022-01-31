@@ -66,9 +66,10 @@ def create_argument_parser():
     parser.add_argument("seqfile", type=check_file_exists, help="Path to sequence file")
     parser.add_argument("seqformat", type=str, help="Sequence format")
     parser.add_argument("distfile", type=check_file_exists, help="Path to distance prediction file")
-    parser.add_argument("distformat", type=str, help="Format of distance prediction file")
+    parser.add_argument("distformat", type=str, help="Format of distance prediction file",
+                        choices=list(conkit.io.DISTANCE_FILE_PARSERS.keys()))
     parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
-    parser.add_argument("pdbformat", type=str, help="Format of structure file")
+    parser.add_argument("pdbformat", type=str, help="Format of structure file", choices=['pdb', 'mmcif'])
     parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
@@ -124,8 +125,6 @@ def main():
 
     if os.path.isfile(args.output) and not args.overwrite:
         raise FileExistsError('The output file {} already exists!'.format(args.output))
-    if args.pdbformat != 'pdb':
-        raise ValueError('Model file format can only be PDB')
 
     logger.info(os.linesep + "Working directory:                           %s", os.getcwd())
     logger.info("Reading input sequence:                      %s", args.seqfile)
