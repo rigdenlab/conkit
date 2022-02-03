@@ -33,7 +33,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "20 Oct 2016"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 
 def BbcontactsCommandline(*args, **kwargs):

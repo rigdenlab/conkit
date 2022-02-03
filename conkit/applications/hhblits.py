@@ -35,7 +35,7 @@ Command line object for HHblits Multiple Sequence Alignment application
 
 __author__ = "Felix Simkovic"
 __date__ = "05 Aug 2016"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 from Bio.Application import _Option
 from Bio.Application import _Switch
