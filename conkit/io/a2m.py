@@ -34,7 +34,7 @@ Parser module specific to HH-suite A2M sequence files
 
 __author__ = "Felix Simkovic"
 __date__ = "30 Jul 2018"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence

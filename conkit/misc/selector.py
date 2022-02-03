@@ -31,7 +31,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Aug 2018"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 from multiprocessing import Pool
 

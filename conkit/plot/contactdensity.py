@@ -34,7 +34,7 @@ from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "23 Feb 2017"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 import matplotlib.pyplot as plt
 import numpy as np

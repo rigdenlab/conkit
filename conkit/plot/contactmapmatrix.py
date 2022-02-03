@@ -34,7 +34,7 @@ from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "10 Jan 2018"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt

@@ -49,9 +49,8 @@ def dependencies():
 def extensions():
     return cythonize(
         [
-            Extension("conkit.core.ext.c_contactmap", ["conkit/core/ext/c_contactmap.pyx"]),
-            Extension("conkit.core.ext.c_sequencefile", ["conkit/core/ext/c_sequencefile.pyx"]),
-            Extension("conkit.misc.ext.c_bandwidth", ["conkit/misc/ext/c_bandwidth.pyx"]),
+            Extension(name="conkit.misc.ext.c_bandwidth", sources=["conkit/misc/ext/c_bandwidth.c"],
+                      include_dirs=["conkit/misc/ext"]),
         ],
         language_level=sys.version_info[0],
     )
@@ -174,7 +173,7 @@ setup(
     include_dirs=[np.get_include()],
     long_description=LONG_DESCRIPTION,
     license=LICENSE,
-    version=VERSION,
+    version=version(),
     url=URL,
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
@@ -186,4 +185,6 @@ setup(
     setup_requires=['pytest-runner'],
     include_package_data=True,
     zip_safe=False,
+    package_data={"conkit.misc.ext.c_bandwidth": ["c_bandwidth.h", "c_bandwidth.pyx", "c_bandwidth.c"]}
+
 )

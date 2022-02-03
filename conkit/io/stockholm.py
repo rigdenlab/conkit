@@ -33,7 +33,7 @@ Parser module specific to Stockholm sequence files
 
 __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 import re
 

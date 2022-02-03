@@ -44,7 +44,7 @@ It uses two external programs to perform this task.
 
 __author__ = "Felix Simkovic"
 __date__ = "01 June 2016"
-__version__ = "0.13"
+__version__ = "0.13.1"
 
 import argparse
 import os

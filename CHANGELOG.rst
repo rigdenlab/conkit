@@ -1,3 +1,9 @@
+**[0.13.1]**
+
+*Fixed*
+
+- Minor fix for pip install and cython extension
+
 **[0.13]**
 
 *Added*
