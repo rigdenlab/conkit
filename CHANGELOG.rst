@@ -1,3 +1,16 @@
+**[0.13]**
+
+*Added*
+
+- Added support for distance prediction files
+- Added new visualisation plots for distance files
+- Added new command line tool for model validation conkit-validate
+
+*Changed*
+
+- Remove support for Python3.6
+- Add support for Python3.9
+
 **[0.12]**
 
 *Fixed*
