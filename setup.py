@@ -49,7 +49,7 @@ def dependencies():
 def extensions():
     return cythonize(
         [
-            Extension(name="conkit.misc.ext.c_bandwidth", sources=["conkit/misc/ext/c_bandwidth.c"],
+            Extension(name="conkit.misc.ext.c_bandwidth", sources=["conkit/misc/ext/c_bandwidth.pyx"],
                       include_dirs=["conkit/misc/ext"]),
         ],
         language_level=sys.version_info[0],
@@ -173,7 +173,7 @@ setup(
     include_dirs=[np.get_include()],
     long_description=LONG_DESCRIPTION,
     license=LICENSE,
-    version=version(),
+    version=VERSION,
     url=URL,
     packages=PACKAGES,
     package_dir={PACKAGE_NAME: PACKAGE_DIR},
