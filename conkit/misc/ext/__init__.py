@@ -33,4 +33,4 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "03 May 2018"
-__version__ = "1.0"
+__version__ = "0.13"

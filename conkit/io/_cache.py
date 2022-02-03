@@ -41,7 +41,7 @@ Thus, we only cache the results to ultimately import the bits we really require.
 
 __author__ = "Felix Simkovic"
 __date__ = "19 Jun 2017"
-__version__ = "1.0"
+__version__ = "0.13"
 
 import collections
 import copy

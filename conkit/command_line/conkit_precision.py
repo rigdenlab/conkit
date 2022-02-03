@@ -36,7 +36,7 @@ when compared against contacts extracted from a protein structure.
 
 __author__ = "Felix Simkovic"
 __date__ = "21 Nov 2016"
-__version__ = "0.1"
+__version__ = "0.13"
 
 import argparse
 

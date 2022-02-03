@@ -39,7 +39,7 @@ For more specific descriptions, call each subcommand's help menu directly.
 
 __author__ = "Felix Simkovic"
 __date__ = "08 Feb 2017"
-__version__ = "0.1"
+__version__ = "0.13"
 
 import argparse
 from Bio.PDB import PDBParser
