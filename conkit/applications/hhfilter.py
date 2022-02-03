@@ -35,7 +35,7 @@ Command line object for HHfilter Multiple Sequence Alignment filtering applicati
 
 __author__ = "Felix Simkovic"
 __date__ = "05 Aug 2016"
-__version__ = "0.1"
+__version__ = "0.13"
 
 from Bio.Application import _Option
 from Bio.Application import AbstractCommandline

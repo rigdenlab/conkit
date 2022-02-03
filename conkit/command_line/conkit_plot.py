@@ -39,7 +39,7 @@ For more specific descriptions, call each subcommand's help menu directly.
 
 __author__ = "Felix Simkovic"
 __date__ = "08 Feb 2017"
-__version__ = "0.1"
+__version__ = "0.13"
 
 import argparse
 from Bio.PDB import PDBParser
@@ -124,7 +124,8 @@ reference structure, they will not be plotted.
         "-f", dest="dfactor", default=1.0, type=float, help="number of contacts to include relative to sequence length"
     )
     subparser.add_argument("-p", dest="reffile", default=None, type=str, help="A reference file")
-    subparser.add_argument("-pf", dest="refformat", default=None, type=str, help="A reference file")
+    subparser.add_argument("-pf", dest="refformat", default=None, type=str, help="A reference file",
+                           choices=["pdb", "mmcif"])
     subparser.add_argument("--confidence", action="store_true", default=False, help="Plot the confidence scores")
     subparser.add_argument("--interchain", action="store_true", default=False, help="Plot inter-chain contacts")
     _add_default_args(subparser)
@@ -350,10 +351,6 @@ def main(argv=None):
             other_sliced = None
 
         if args.reffile:
-            if args.refformat not in ["pdb", "mmcif"]:
-                msg = "The provided format {0} is not yet implemented for the reference flag".format(args.refformat)
-                raise RuntimeError(msg)
-
             if args.refid:
                 reference = conkit.io.read(args.reffile, args.refformat)[args.refid]
             else:

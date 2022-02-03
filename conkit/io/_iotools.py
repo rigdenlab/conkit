@@ -31,7 +31,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "20 Nov 2016"
-__version__ = "0.1"
+__version__ = "0.13"
 
 import io
 import sys

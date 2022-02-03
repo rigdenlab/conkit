@@ -33,7 +33,7 @@ Parser module specific to EVfold predictions
 
 __author__ = "Felix Simkovic"
 __date__ = "12 Oct 2016"
-__version__ = "0.1"
+__version__ = "0.13"
 
 import re
 

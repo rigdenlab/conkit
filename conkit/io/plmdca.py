@@ -33,7 +33,7 @@ Parser module specific to plmDCA predictions
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
-__version__ = "0.1"
+__version__ = "0.13"
 
 from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact
