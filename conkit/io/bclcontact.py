@@ -33,7 +33,7 @@ Parser module specific to BCL::Contact predictions
 
 __author__ = "Felix Simkovic"
 __date__ = "12 Dec 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 import re
 

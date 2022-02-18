@@ -35,7 +35,7 @@ Command line object for CCMpred contact prediction application
 
 __author__ = "Felix Simkovic"
 __date__ = "04 Aug 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 from Bio.Application import _Option
 from Bio.Application import AbstractCommandline

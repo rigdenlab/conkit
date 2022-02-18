@@ -33,7 +33,7 @@ Parser module specific to ncont contact comparison
 
 __author__ = "Felix Simkovic"
 __date__ = "16 Nov 2017"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 import re
 import warnings

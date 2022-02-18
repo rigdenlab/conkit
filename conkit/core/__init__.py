@@ -34,7 +34,7 @@
 __author__ = "Felix Simkovic"
 __contributing_authors__ = "Jens Thomas"
 __date__ = "03 Aug 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 
 def Contact(*args, **kwargs):

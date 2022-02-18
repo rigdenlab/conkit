@@ -44,7 +44,7 @@ to a sequence file format.
 
 __author__ = "Felix Simkovic"
 __date__ = "01 Oct 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 import argparse
 

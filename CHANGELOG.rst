@@ -1,3 +1,9 @@
+**[0.13.2]**
+
+*Fixed*
+
+- Further fixes to pip install package
+
 **[0.13.1]**
 
 *Fixed*
