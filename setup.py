@@ -10,9 +10,6 @@ import sys
 
 # Ensure we have these dependencies before we proceed
 SETUPREQUIRES = ['cython', 'scipy', 'numpy', 'pytest-runner']
-subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + SETUPREQUIRES, stdout=open(os.devnull, 'wb'))
-
-SETUPREQUIRES = []
 
 from Cython.Distutils import build_ext
 import numpy
