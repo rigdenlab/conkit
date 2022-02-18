@@ -31,7 +31,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Aug 2018"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 import inspect
 import numpy as np

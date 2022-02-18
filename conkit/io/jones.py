@@ -33,7 +33,7 @@ Parser module specific to the "Jones" sequence file format
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Sep 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 from conkit.io.a2m import A2mParser
 from conkit.misc import deprecate

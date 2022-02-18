@@ -39,7 +39,7 @@ Stefan Seemayer and his A3MIO project [https://github.com/sseemayer/BioPython-A3
 __author__ = "Felix Simkovic"
 __credits__ = "Stefan Seemayer"
 __date__ = "11 Sep 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 import numpy as np
 import re

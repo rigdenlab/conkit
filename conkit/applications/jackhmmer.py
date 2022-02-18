@@ -35,7 +35,7 @@ Command line object for Jackhmmer Multiple Sequence Alignment generation
 
 __author__ = "Felix Simkovic"
 __date__ = "01 June 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 from Bio.Application import _Argument
 from Bio.Application import _Option

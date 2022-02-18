@@ -33,7 +33,7 @@ Parser module specific to FASTA sequence files
 
 __author__ = "Felix Simkovic"
 __date__ = "09 Sep 2016"
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 
 from conkit.io._parser import SequenceFileParser
 from conkit.core.sequence import Sequence

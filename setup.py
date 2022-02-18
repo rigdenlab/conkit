@@ -1,13 +1,12 @@
 """Python Interface for Residue-Residue Contact Predictions"""
 import os
-import subprocess
 import sys
 
 from distutils.command.build import build
 from distutils.util import convert_path
 from setuptools import setup, Extension
 
-from Cython.Build import cythonize
+from Cython.Distutils import build_ext
 import numpy as np
 
 
@@ -47,14 +46,16 @@ def dependencies():
 
 
 def extensions():
-    return cythonize(
-        [
-            Extension("conkit.core.ext.c_contactmap", ["conkit/core/ext/c_contactmap.pyx"]),
-            Extension("conkit.core.ext.c_sequencefile", ["conkit/core/ext/c_sequencefile.pyx"]),
-            Extension("conkit.misc.ext.c_bandwidth", ["conkit/misc/ext/c_bandwidth.pyx"]),
-        ],
-        language_level=sys.version_info[0],
-    )
+    exts = ["conkit/core/ext/c_contactmap.pyx", "conkit/core/ext/c_sequencefile.pyx", "conkit/misc/ext/c_bandwidth.pyx"]
+    extensions = []
+    for ext in exts:
+        extensions.append(
+            Extension(
+                ext.replace('/', '.').rsplit('.', 1)[0],
+                [ext],
+                include_dirs=[np.get_include()],
+            ))
+    return extensions
 
 
 def readme():
@@ -165,7 +166,10 @@ TEST_REQUIREMENTS = [
 ]
 
 setup(
-    cmdclass={"build": BuildCommand},
+    cmdclass={
+        'build': BuildCommand,
+        'build_ext': build_ext,
+    },
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     name=PACKAGE_NAME,
