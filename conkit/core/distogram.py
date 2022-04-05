@@ -102,7 +102,7 @@ class Distogram(ContactMap):
         Parameters
         ----------
         inplace : bool, optional
-           Replace the saved order of contacts [default: False]
+           Replace stored distances with the unique distances in the current instance [default: False]
 
         Returns
         -------
