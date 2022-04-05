@@ -63,7 +63,7 @@ class MapPredParser(DistanceFileParser):
         """
 
         hierarchy = DistanceFile(f_id)
-        hierarchy.original_file_format = "MAPPRED"
+        hierarchy.original_file_format = "mappred"
         _map = Distogram("distogram_1")
         hierarchy.add(_map)
 

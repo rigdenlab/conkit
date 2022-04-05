@@ -10,6 +10,17 @@ from conkit.core.sequence import Sequence
 
 
 class TestDistogram(unittest.TestCase):
+    def test_original_file_format_setter_1(self):
+        distogram = Distogram("test")
+        distogram.add(Distance(1, 25, (0.25, 0.45, 0.25, 0.05), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        distogram.original_file_format = 'mmcif'
+
+    def test_original_file_format_setter_2(self):
+        distogram = Distogram("test")
+        distogram.add(Distance(1, 25, (0.25, 0.45, 0.25, 0.05), ((0, 4), (4, 6), (6, 8), (8, np.inf))))
+        with self.assertRaises(ValueError):
+            distogram.original_file_format = 'mock_format'
+
     def test_ndistances_1(self):
         distogram = Distogram("test")
         distogram.add(Distance(1, 25, (0.25, 0.45, 0.25, 0.05), ((0, 4), (4, 6), (6, 8), (8, np.inf))))

@@ -16,7 +16,7 @@ class TestDistance(unittest.TestCase):
 
     def test_predicted_distance_2(self):
         distogram = Distogram('test')
-        distogram.original_file_format = 'PDB'
+        distogram.original_file_format = 'pdb'
         distance = Distance(36, 86, (1,), ((6.589181, 6.589181),), 0.934108)
         distogram.add(distance)
         self.assertEqual(6.589181, distance.predicted_distance)
@@ -41,7 +41,7 @@ class TestDistance(unittest.TestCase):
 
     def test_get_probability_within_distance_2(self):
         distogram = Distogram('test')
-        distogram.original_file_format = 'PDB'
+        distogram.original_file_format = 'pdb'
         distance = Distance(36, 86, (1,), ((6.589181, 6.589181),), 0.934108)
         distogram.add(distance)
         self.assertEqual(1, distance.get_probability_within_distance(8))
@@ -58,7 +58,7 @@ class TestDistance(unittest.TestCase):
 
     def test_reshape_bins_2(self):
         distogram = Distogram('test')
-        distogram.original_file_format = 'PDB'
+        distogram.original_file_format = 'pdb'
         distance = Distance(36, 86, (1,), ((6.589181, 6.589181),), 0.934108)
         distogram.add(distance)
         with self.assertRaises(ValueError):

@@ -140,7 +140,7 @@ class GenericStructureParser(ContactFileParser):
         distance_bound = (0.0, float(distance_cutoff))
         for model in structure:
             hierarchy = DistanceFile(f_id + "_" + str(model.id))
-            hierarchy.original_file_format = "PDB"
+            hierarchy.original_file_format = "pdb"
             chains = list(chain for chain in model)
 
             for chain in chains:
