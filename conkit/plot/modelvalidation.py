@@ -200,9 +200,9 @@ class ModelValidationFigure(Figure):
         are considered."""
 
         absent_residues = []
-        if self.model.original_file_format == "PDB":
+        if self.model.original_file_format == "pdb":
             absent_residues += self.model.get_absent_residues(len(self.sequence))
-        if self.prediction.original_file_format == "PDB":
+        if self.prediction.original_file_format == "pdb":
             absent_residues += self.prediction.get_absent_residues(len(self.sequence))
         return set(absent_residues)
 
@@ -212,7 +212,7 @@ class ModelValidationFigure(Figure):
         distogram.sequence = self.sequence
         distogram.set_sequence_register()
 
-        if distogram.original_file_format != "PDB":
+        if distogram.original_file_format != "pdb":
             distogram.reshape_bins(self.dist_bins)
 
         return distogram
@@ -224,7 +224,7 @@ class ModelValidationFigure(Figure):
         contactmap.set_sequence_register()
         contactmap.remove_neighbors(inplace=True)
 
-        if distogram.original_file_format != "PDB":
+        if distogram.original_file_format != "pdb":
             contactmap.sort("raw_score", reverse=True, inplace=True)
             contactmap.slice_map(seq_len=len(self.sequence), l_factor=self.l_factor, inplace=True)
 
@@ -354,6 +354,6 @@ class ModelValidationFigure(Figure):
         if self.legend:
             self._add_legend()
 
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

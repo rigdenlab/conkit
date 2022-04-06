@@ -173,7 +173,7 @@ class ContactMapMatrixFigure(Figure):
 
         self.define_axis_settings(self_data, other_data)
 
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
 

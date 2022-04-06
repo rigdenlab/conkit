@@ -64,7 +64,7 @@ class RosettaNpzParser(BinaryDistanceFileParser):
         """
 
         hierarchy = DistanceFile(f_id)
-        hierarchy.original_file_format = "ROSETTA_NPZ"
+        hierarchy.original_file_format = "rosettanpz"
         _map = Distogram("distogram_1")
         hierarchy.add(_map)
 

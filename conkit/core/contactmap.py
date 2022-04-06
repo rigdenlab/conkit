@@ -46,7 +46,7 @@ from conkit.core.entity import Entity
 from conkit.core.struct import Gap, Residue
 from conkit.core.mappings import AminoAcidMapping, ContactMatchState
 from conkit.core.sequence import Sequence
-from conkit.misc import deprecate, normalize
+from conkit.misc import normalize
 
 
 class ContactMap(Entity):
@@ -140,12 +140,6 @@ class ContactMap(Entity):
         return len(self)
 
     @property
-    @deprecate("0.11", msg="Use short_range instead.")
-    def short_range_contacts(self):
-        """The short range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        return self.short_range
-
-    @property
     def short_range(self):
         """The short range contacts found :obj:`~conkit.core.contactmap.ContactMap`
 
@@ -164,12 +158,6 @@ class ContactMap(Entity):
         return self.remove_neighbors(min_distance=6, max_distance=11)
 
     @property
-    @deprecate("0.11", msg="Use medium_range instead.")
-    def medium_range_contacts(self):
-        """The medium range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        return self.medium_range
-
-    @property
     def medium_range(self):
         """The medium range contacts found :obj:`~conkit.core.contactmap.ContactMap`
 
@@ -186,12 +174,6 @@ class ContactMap(Entity):
 
         """
         return self.remove_neighbors(min_distance=12, max_distance=23)
-
-    @property
-    @deprecate("0.11", msg="Use long_range instead.")
-    def long_range_contacts(self):
-        """The long range contacts found :obj:`ContactMap <conkit.core.contactmap.ContactMap>`"""
-        return self.long_range
 
     @property
     def long_range(self):
@@ -508,12 +490,6 @@ class ContactMap(Entity):
         else:
             return [[c.res1_seq, c.res2_seq] for c in self]
 
-    @deprecate("0.11", msg="Use set_sequence_register instead.")
-    def assign_sequence_register(self, altloc=False):
-        """Assign the amino acids from :obj:`Sequence <conkit.core.sequence.Sequence>` to all :obj:`Contact <conkit.core.contact.Contact>` instances
-        """
-        return self.set_sequence_register(altloc=altloc)
-
     def set_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`~conkit.core.sequence.Sequence` to all :obj:`~conkit.core.contact.Contact` instances
 
@@ -544,11 +520,6 @@ class ContactMap(Entity):
                 c.res2 = self.sequence.seq[res2_index - 1]
             else:
                 raise ValueError('Contact {} is out of sequence bounds'.format(c.id))
-
-    @deprecate("0.11", msg="Use get_jaccard_index instead.")
-    def calculate_jaccard_index(self, other):
-        """Calculate the Jaccard index between two :obj:`ContactMap <conkit.core.contactmap.ContactMap>` instances"""
-        return self.get_jaccard_index(other)
 
     def get_jaccard_index(self, other):
         """Calculate the Jaccard index between two :obj:`~conkit.core.contactmap.ContactMap` instances
@@ -603,11 +574,6 @@ class ContactMap(Entity):
         intersection = np.sum([1 for contact in self if contact.id in other])
         return float(intersection) / union
 
-    @deprecate("0.11", msg="Use get_contact_density instead.")
-    def calculate_kernel_density(self, *args, **kwargs):
-        """Calculate the contact density in the contact map using Gaussian kernels"""
-        return self.get_contact_density(*args, **kwargs)
-
     def get_contact_density(self, bw_method="amise"):
         """Calculate the contact density in the contact map using Gaussian kernels
 
@@ -652,12 +618,6 @@ class ContactMap(Entity):
         bandwidth = bandwidth_factory(bw_method)(x).bw
         kde = sklearn.neighbors.KernelDensity(bandwidth=bandwidth).fit(x)
         return np.exp(kde.score_samples(x_fit)).tolist()
-
-    @deprecate("0.11", msg="Use set_scalar_score instead.")
-    def calculate_scalar_score(self):
-        """Calculate a :attr:`~conkit.core.contact.Contact.scalar_score` for the
-        :obj:`~conkit.core.contactmap.ContactMap`"""
-        return self.set_scalar_score()
 
     def set_scalar_score(self):
         """Calculate and set the :attr:`~conkit.core.contact.Contact.scalar_score` for the

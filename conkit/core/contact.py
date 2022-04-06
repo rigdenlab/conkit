@@ -40,7 +40,6 @@ __version__ = "0.13.2"
 
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState
-from conkit.misc import deprecate
 
 
 class Contact(Entity):
@@ -179,21 +178,6 @@ class Contact(Entity):
             self._distance_bound = list(map(float, distance_bound))
         else:
             raise TypeError("Data of type list or tuple required")
-
-    @property
-    @deprecate("0.11", msg="Use true_positive instead")
-    def is_match(self):
-        return self._status == ContactMatchState.true_positive
-
-    @property
-    @deprecate("0.11", msg="Use false_positive instead")
-    def is_mismatch(self):
-        return self._status == ContactMatchState.false_positive
-
-    @property
-    @deprecate("0.11", msg="Use status_unknown instead")
-    def is_unknown(self):
-        return self._status == ContactMatchState.unknown
 
     @property
     def lower_bound(self):
@@ -449,21 +433,6 @@ class Contact(Entity):
             self._status = ContactMatchState.unknown
         else:
             raise ValueError("Choose one of true_positive, false_positive, true_negative, false_negative instead!")
-
-    @deprecate("0.11", msg="Use true_positive instead")
-    def define_match(self):
-        """Define a contact as matching contact"""
-        self._status = ContactMatchState.true_positive
-
-    @deprecate("0.11", msg="Use false_positive instead")
-    def define_mismatch(self):
-        """Define a contact as mismatching contact"""
-        self._status = ContactMatchState.false_positive
-
-    @deprecate("0.11", msg="Use status_unknown instead")
-    def define_unknown(self):
-        """Define a contact with unknown status"""
-        self._status = ContactMatchState.unknown
 
     def _to_dict(self):
         """Convert the object into a dictionary"""

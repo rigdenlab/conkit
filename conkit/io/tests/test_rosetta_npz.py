@@ -25,7 +25,7 @@ class TestRosettaNpzParser(ParserTestCase):
         self.assertIsInstance(distancefile, DistanceFile)
         self.assertEqual(1, len(distancefile))
         distogram = distancefile.top
-        self.assertEqual('ROSETTA_NPZ', distogram.original_file_format)
+        self.assertEqual('rosettanpz', distogram.original_file_format)
         self.assertIsInstance(distogram, Distogram)
         self.assertEqual(15, len(distogram))
 

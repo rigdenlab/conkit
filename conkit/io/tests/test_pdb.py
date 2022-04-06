@@ -34,8 +34,8 @@ END
         with open(f_name, "r") as f_in:
             contact_file = PdbParser().read(f_in, distance_cutoff=8, atom_type="CB")
         contact_map1 = contact_file.top_map
-        self.assertEqual(contact_file.original_file_format, 'PDB')
-        self.assertEqual(contact_map1.original_file_format, 'PDB')
+        self.assertEqual(contact_file.original_file_format, 'pdb')
+        self.assertEqual(contact_map1.original_file_format, 'pdb')
         self.assertEqual(1, len(contact_file))
         self.assertEqual(6, len(contact_map1))
         self.assertEqual([36, 86], [c.res1_seq for c in contact_map1 if c.true_positive])

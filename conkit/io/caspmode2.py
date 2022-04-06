@@ -60,7 +60,7 @@ class CaspMode2Parser(DistanceFileParser):
         """
 
         hierarchy = DistanceFile(f_id)
-        hierarchy.original_file_format = "CASPRR_MODE_2"
+        hierarchy.original_file_format = "caspmode2"
         _map = Distogram("distogram_1")
         hierarchy.add(_map)
 

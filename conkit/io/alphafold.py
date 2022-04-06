@@ -59,7 +59,7 @@ class AlphaFold2Parser(BinaryDistanceFileParser):
         """
 
         hierarchy = DistanceFile(f_id)
-        hierarchy.original_file_format = "ALPHAFOLD2"
+        hierarchy.original_file_format = "alphafold2"
         _map = Distogram("distogram_1")
         hierarchy.add(_map)
 

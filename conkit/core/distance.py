@@ -152,7 +152,7 @@ class Distance(Contact):
         """
         if not self.distance_bins:
             raise ValueError('No distance bins have been defined')
-        elif self.parent is not None and self.parent.original_file_format == 'PDB':
+        elif self.parent is not None and self.parent.original_file_format == 'pdb':
             if self.distance_bins[0][-1] < distance:
                 return 1.0
             return 0.0
@@ -193,7 +193,7 @@ class Distance(Contact):
         :exc:`ValueError`
            The new distance bins are not valid
         """
-        if self.parent is not None and self.parent.original_file_format == 'PDB':
+        if self.parent is not None and self.parent.original_file_format == 'pdb':
             raise ValueError('Cannot re-shape bins obtained from a PDB structure file')
         self._assert_valid_bins(new_bins)
         self._reshape_bins(new_bins)

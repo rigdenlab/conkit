@@ -34,7 +34,7 @@
 import numpy as np
 from operator import attrgetter
 from conkit.core.distance import Distance
-from conkit.core.contact import Contact
+from conkit.io._cache import PARSER_CACHE
 from conkit.core.contactmap import ContactMap
 
 
@@ -92,6 +92,8 @@ class Distogram(ContactMap):
 
     @original_file_format.setter
     def original_file_format(self, value):
+        if not value in PARSER_CACHE.distance_file_parsers.keys():
+            raise ValueError('Must provide valid distogram format: {}'.format(list(PARSER_CACHE.distance_file_parsers)))
         self._original_file_format = value
 
     def get_unique_distances(self, inplace=False):
@@ -100,7 +102,7 @@ class Distogram(ContactMap):
         Parameters
         ----------
         inplace : bool, optional
-           Replace the saved order of contacts [default: False]
+           Replace stored distances with the unique distances in the current instance [default: False]
 
         Returns
         -------
@@ -204,7 +206,7 @@ class Distogram(ContactMap):
         :exc:`ValueError`
            The new distance bins are not valid
         """
-        if self.original_file_format == 'PDB':
+        if self.original_file_format == 'pdb':
             raise ValueError('Cannot re-shape bins obtained from a PDB structure file')
         Distance._assert_valid_bins(new_bins)
 

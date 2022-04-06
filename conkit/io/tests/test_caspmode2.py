@@ -46,7 +46,7 @@ END"""
         self.assertIsInstance(distancefile, DistanceFile)
         self.assertEqual(1, len(distancefile))
         distogram = distancefile.top
-        self.assertEqual('CASPRR_MODE_2', distogram.original_file_format)
+        self.assertEqual('caspmode2', distogram.original_file_format)
         self.assertIsInstance(distogram, Distogram)
         self.assertEqual(12, distogram.ndistances)
         self.assertListEqual(expected_res1, [distance.res1_seq for distance in distogram])
@@ -75,7 +75,7 @@ RMODE 2
 5 10 0.279782 0.054314 0.114427 0.111042 0.069073 0.083048 0.105829 0.073806 0.119769 0.088666 0.180028"""
 
         distancefile = DistanceFile("test")
-        distancefile.original_file_format = 'ALPHAFOLD2'
+        distancefile.original_file_format = 'alphafold2'
         distogram = Distogram("1")
         distancefile.add(distogram)
 
@@ -144,7 +144,7 @@ END"""
         self.assertIsInstance(output, DistanceFile)
         self.assertEqual(1, len(output))
         distogram = output.top
-        self.assertEqual('CASPRR_MODE_2', distogram.original_file_format)
+        self.assertEqual('caspmode2', distogram.original_file_format)
         self.assertIsInstance(distogram, Distogram)
         self.assertEqual(12, distogram.ndistances)
         self.assertListEqual(expected_res1, [distance.res1_seq for distance in distogram])

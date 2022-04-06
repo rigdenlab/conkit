@@ -34,7 +34,7 @@ class TestMapPredParser(ParserTestCase):
         self.assertIsInstance(distancefile, DistanceFile)
         self.assertEqual(1, len(distancefile))
         distogram = distancefile.top
-        self.assertEqual('MAPPRED', distogram.original_file_format)
+        self.assertEqual('mappred', distogram.original_file_format)
         self.assertIsInstance(distogram, Distogram)
         self.assertEqual(6, distogram.ndistances)
         self.assertListEqual(expected_res1, [distance.res1_seq for distance in distogram])
@@ -54,7 +54,7 @@ class TestMapPredParser(ParserTestCase):
 50 50 0.000490 0.027392 0.001090 0.009625 0.011421 0.002011 0.015100 0.018622 0.008785 0.114531 0.044962 0.019562 0.022973 0.008111 0.042691 0.061367 0.001060 0.032753 0.073944 0.006790 0.002509 0.073759 0.025060 0.031361 0.039123 0.043318 0.032752 0.004280 0.044655 0.000556 0.000111 0.095043 0.028036 0.056157
 18 50 0.002704 0.015000 0.024442 0.105520 0.014259 0.027628 0.002832 0.035063 0.038354 0.055931 0.039683 0.035546 0.004621 0.019932 0.012316 0.087781 0.006637 0.043857 0.008459 0.053482 0.016937 0.083507 0.031733 0.000793 0.004304 0.066937 0.009968 0.006859 0.038950 0.064003 0.003185 0.008042 0.007331 0.023401"""
         distancefile = DistanceFile("test")
-        distancefile.original_file_format = 'MAPPRED'
+        distancefile.original_file_format = 'mappred'
         distogram = Distogram("1")
         distancefile.add(distogram)
 

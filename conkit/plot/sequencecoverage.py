@@ -39,7 +39,6 @@ __version__ = "0.13.2"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.misc import deprecate
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
@@ -105,10 +104,6 @@ class SequenceCoverageFigure(Figure):
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
-    @deprecate("0.11", msg="Use draw instead")
-    def redraw(self):
-        self.draw()
-
     def draw(self):
         residues = np.arange(1, self._hierarchy.top_sequence.seq_len + 1)
         aa_counts = (np.asarray(self._hierarchy.get_frequency("X")) - self._hierarchy.nseq) * (-1)
@@ -145,6 +140,6 @@ class SequenceCoverageFigure(Figure):
 
         if self.legend:
             self.ax.legend(bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3, ncol=3, mode="expand", borderaxespad=0.0)
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

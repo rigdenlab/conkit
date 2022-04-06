@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from conkit.core.struct import Gap
-from conkit.misc import deprecate, normalize
+from conkit.misc import normalize
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions, _isinstance
 
@@ -166,10 +166,6 @@ class ContactMapFigure(Figure):
         else:
             raise TypeError("A list with [min, max] limits is required!")
 
-    @deprecate("0.11", msg="Use draw instead")
-    def redraw(self):
-        self.draw()
-
     def draw(self):
 
         if self._reference:
@@ -270,7 +266,7 @@ class ContactMapFigure(Figure):
                 mode="expand",
                 borderaxespad=0.0,
             )
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
 
