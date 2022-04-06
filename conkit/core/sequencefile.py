@@ -42,7 +42,6 @@ import sys
 
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidMapping, SequenceAlignmentState
-from conkit.misc import deprecate
 
 
 class SequenceFile(Entity):
@@ -148,12 +147,6 @@ class SequenceFile(Entity):
         return len(self) < 1
 
     @property
-    @deprecate("0.11", msg="Use meff instead.")
-    def neff(self):
-        """The number of effective sequences"""
-        return self.meff
-
-    @property
     def meff(self):
         """The number of effective sequences"""
         return int(sum(self.get_weights()))
@@ -220,26 +213,6 @@ class SequenceFile(Entity):
 
         """
         return self.top
-
-    @deprecate("0.11", msg="Use calculate_meff_with_identity instead.")
-    def calculate_meff(self, identity=0.8):
-        """Calculate the number of effective sequences"""
-        return self.calculate_meff_with_identity(identity)
-
-    @deprecate("0.11", msg="Use calculate_meff_with_identity instead.")
-    def calculate_neff_with_identity(self, identity):
-        """Calculate the number of effective sequences with specified sequence identity"""
-        return self.calculate_meff_with_identity(identity)
-
-    @deprecate("0.11", msg="Use get_weights instead.")
-    def calculate_weights(self, identity=0.8):
-        """Calculate the sequence weights"""
-        return self.get_weights(identity=identity)
-
-    @deprecate("0.11", msg="Use get_frequency instead.")
-    def calculate_freq(self):
-        """Calculate the gap frequency in each alignment column"""
-        return self.get_frequency("X")
 
     def get_meff_with_id(self, identity):
         """Calculate the number of effective sequences with specified sequence identity

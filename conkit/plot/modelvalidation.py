@@ -354,6 +354,6 @@ class ModelValidationFigure(Figure):
         if self.legend:
             self._add_legend()
 
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)

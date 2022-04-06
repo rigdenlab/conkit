@@ -116,9 +116,9 @@ def _compute_single(args):
     decoy, decoy_format, cmap = args
     dmap = read(decoy, decoy_format).top_map
     matched = cmap.match(dmap)
-    shortrange = matched.short_range_contacts
-    mediumrange = matched.medium_range_contacts
-    longrange = matched.long_range_contacts
+    shortrange = matched.short_range
+    mediumrange = matched.medium_range
+    longrange = matched.long_range
     sprec, mprec, lprec = float("NaN"), float("NaN"), float("NaN")
     if shortrange.ncontacts > 0:
         sprec = shortrange.precision

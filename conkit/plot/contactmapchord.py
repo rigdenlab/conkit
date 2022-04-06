@@ -40,7 +40,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from conkit.core.mappings import ContactMatchState
-from conkit.misc import deprecate
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
 from conkit.plot.tools import get_points_on_circle
@@ -117,10 +116,6 @@ class ContactMapChordFigure(Figure):
         else:
             raise TypeError("Invalid hierarchy type: %s" % hierarchy.__class__.__name__)
 
-    @deprecate("0.11", msg="Use draw instead")
-    def redraw(self):
-        self.draw()
-
     def draw(self):
         hierarchy = self.hierarchy.rescale()
 
@@ -186,11 +181,6 @@ class ContactMapChordFigure(Figure):
         self.ax.set_ylim(-arrow_x, arrow_x)
         self.ax.axis("off")
 
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
-
-    @staticmethod
-    @deprecate("0.11", msg="Use get_radius_around_circle instead")
-    def get_radius_around_circle(coords, pad=0.01):
-        return get_radius_around_circle(coords[0], coords[1])

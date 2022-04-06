@@ -39,7 +39,6 @@ __version__ = "0.13.2"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from conkit.misc import deprecate
 from conkit.plot.figure import Figure
 from conkit.plot.tools import ColorDefinitions
 from conkit.plot.tools import find_minima
@@ -132,10 +131,6 @@ class ContactDensityFigure(Figure):
         else:
             raise TypeError("The hierarchy is not an contact map")
 
-    @deprecate("0.11", msg="Use draw instead")
-    def redraw(self):
-        self.draw()
-
     def draw(self):
         x, y = self.get_xy_data()
         self.ax.plot(x, y, linestyle="solid", color=ColorDefinitions.GENERAL, label="Contact Density", zorder=2)
@@ -153,7 +148,7 @@ class ContactDensityFigure(Figure):
             self.ax.legend(
                 bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3, ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1
             )
-        # TODO: deprecate this in 0.10
+        # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
 

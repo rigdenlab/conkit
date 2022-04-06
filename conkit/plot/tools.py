@@ -43,7 +43,6 @@ from conkit.core.sequence import Sequence
 from conkit.core.sequencefile import SequenceFile
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
-from conkit.misc import deprecate
 
 HierarchyIndex = {
     "Contact": Contact,
@@ -162,11 +161,6 @@ def get_adjusted_aspect(ax, aspect_ratio):
     """
     default_ratio = (ax.get_xlim()[1] - ax.get_xlim()[0]) / (ax.get_ylim()[1] - ax.get_ylim()[0])
     return float(default_ratio * aspect_ratio)
-
-
-@deprecate("0.11", msg="Use get_points_on_circle instead")
-def points_on_circle(*args, **kwargs):
-    return get_points_on_circle(*args, **kwargs)
 
 
 def get_points_on_circle(radius, h=0, k=0):
