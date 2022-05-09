@@ -857,6 +857,21 @@ class TestContactMap(unittest.TestCase):
         self.assertEqual([TP, FP, TP, FP, UNK, FN, FN], [c.status for c in contact_map1])
         self.assertListEqual([[1, 5], [1, 6], [2, 7], [3, 5], [2, 8], [1, 7], [3, 4]], contact_map1.as_list())
 
+    def test_match_13(self):
+        contact_map1 = ContactMap("foo")
+        contact_map1.sequence = Sequence("foo", "AICDEFGH")
+        contact_map1.set_sequence_register()
+
+        contact_map2 = ContactMap("bar")
+        contact_map2.sequence = Sequence("bar", "AICDEFGH")
+        contact_map2.set_sequence_register()
+
+        with self.assertRaises(ValueError):
+            contact_map1.match(contact_map2, add_false_negatives=True, inplace=True)
+
+        with self.assertRaises(ValueError):
+            contact_map2.match(contact_map1, add_false_negatives=True, inplace=True)
+
     def test_remove_neighbors_1(self):
         contact_map = ContactMap("test")
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:

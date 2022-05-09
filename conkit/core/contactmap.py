@@ -682,9 +682,8 @@ class ContactMap(Entity):
 
         return contact_map
 
-    def match(
-        self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False, inplace=False
-    ):
+    def match(self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False,
+              inplace=False):
         """Modify both hierarchies so residue numbers match one another.
 
         This function is key when plotting contact maps or visualising
@@ -722,7 +721,11 @@ class ContactMap(Entity):
         Raises
         ------
         :exc:`ValueError`
+           At least one of the input maps :obj:`~conkit.core.contactmap.ContactMap` is empty
+        :exc:`ValueError`
            Error creating reliable keymap matching the sequence in :obj:`~conkit.core.contactmap.ContactMap`
+        :exc:`RuntimeError`
+           Error matching the contacts in :obj:`~conkit.core.contactmap.ContactMap`
 
         """
         contact_map1 = self._inplace(inplace)
@@ -730,6 +733,9 @@ class ContactMap(Entity):
             contact_map2 = other._inplace(inplace)
         else:
             contact_map2 = other._inplace(False)
+
+        if contact_map1.empty or contact_map2.empty:
+            raise ValueError('Both input maps must have at least one contact to be able to match them')
 
         # ================================================================
         # 1. Align all sequences
@@ -763,11 +769,11 @@ class ContactMap(Entity):
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
-        msg = "Error creating reliable keymap matching the sequence in ContactMap: "
+        msg = "Error creating reliable keymap matching the sequence in ContactMap: {}"
         if len(contact_map1_keymap) != (encoded_repr[0] != ord("-")).sum():
-            raise ValueError(msg + contact_map1.id)
+            raise ValueError(msg.format(contact_map1.id))
         elif len(contact_map2_keymap) != (encoded_repr[1] != ord("-")).sum():
-            raise ValueError(msg + contact_map2.id)
+            raise ValueError(msg.format(contact_map2.id))
 
         contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
         contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
