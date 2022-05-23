@@ -490,6 +490,20 @@ class ContactMap(Entity):
         else:
             return [[c.res1_seq, c.res2_seq] for c in self]
 
+    def as_set(self, altloc=False):
+        """The :obj:`~conkit.core.contactmap.ContactMap` as a 2D-set containing contact-pair residue indexes
+
+        Parameters
+        ----------
+        altloc : bool
+           Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
+
+        """
+        if altloc:
+            return {(c.res1_altseq, c.res2_altseq) for c in self}
+        else:
+            return {c.id for c in self}
+
     def set_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`~conkit.core.sequence.Sequence` to all :obj:`~conkit.core.contact.Contact` instances
 
@@ -734,8 +748,16 @@ class ContactMap(Entity):
         else:
             contact_map2 = other._inplace(False)
 
-        if contact_map1.empty or contact_map2.empty:
-            raise ValueError('Both input maps must have at least one contact to be able to match them')
+        if contact_map1.empty and add_false_negatives:
+            for contact in contact_map2:
+                contact.false_negative = True
+
+        if contact_map2.empty:
+            for contact in contact_map1:
+                contact.false_positive = True
+
+        if contact_map2.empty or contact_map1.empty:
+            return contact_map1
 
         # ================================================================
         # 1. Align all sequences
