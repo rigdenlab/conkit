@@ -909,7 +909,7 @@ class TestContactMap(unittest.TestCase):
             contact_map2.add(contact)
 
         contact_map1.match_naive(contact_map2, add_false_negatives=True, inplace=True, match_other=True)
-        self.assertEqual([TP, FP, TP, FP, FP], [c.status for c in contact_map1])
+        self.assertEqual([TP, FP, TP, FP, FP, FN, FN], [c.status for c in contact_map1])
         self.assertEqual([TP, FN, TP, FN], [c.status for c in contact_map2])
 
     def test_match_naive_2(self):

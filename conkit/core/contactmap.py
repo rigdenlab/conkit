@@ -744,6 +744,7 @@ class ContactMap(Entity):
         for contact in contact_map2:
             if contact.id not in contact_map1_set:
                 contact.false_negative = True
+                contact_map1.add(contact)
 
         return contact_map1
 
