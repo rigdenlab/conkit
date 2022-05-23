@@ -1407,5 +1407,6 @@ class TestContactMap(unittest.TestCase):
         output = contact_map.as_set()
         self.assertSetEqual(expected, output)
 
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
