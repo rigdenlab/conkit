@@ -930,6 +930,25 @@ class TestContactMap(unittest.TestCase):
         self.assertEqual([FP, FP, FP, FP], [c.status for c in contact_map1])
         self.assertListEqual([[1, 5], [1, 7], [2, 7], [3, 4]], contact_map1.as_list())
 
+    def test_match_naive_3(self):
+        contact_map1 = ContactMap("foo")
+        contact_map1.sequence = Sequence("foo", "AICDEFGH")
+        contact_map1.set_sequence_register()
+
+        contact_map2 = ContactMap("bar")
+        for i, params in enumerate([(1, 5, 1.0), (1, 7, 1.0), (2, 7, 1.0), (3, 4, 1.0)]):
+            contact = Contact(*params)
+            contact.res1_altseq = params[0]
+            contact.res2_altseq = params[1]
+            contact.status = TP
+            contact_map2.add(contact)
+        contact_map2.sequence = Sequence("bar", "AICDEFGH")
+        contact_map2.set_sequence_register()
+
+        contact_map1.match_naive(contact_map2, add_false_negatives=True, inplace=True, match_other=True)
+        self.assertEqual([FN, FN, FN, FN], [c.status for c in contact_map2])
+        self.assertListEqual([[1, 5], [1, 7], [2, 7], [3, 4]], contact_map2.as_list())
+
     def test_remove_neighbors_1(self):
         contact_map = ContactMap("test")
         for c in [Contact(1, 5, 1.0), Contact(3, 3, 0.4), Contact(2, 4, 0.1), Contact(5, 1, 0.2)]:
