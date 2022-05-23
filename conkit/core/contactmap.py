@@ -696,6 +696,57 @@ class ContactMap(Entity):
 
         return contact_map
 
+    def match_naive(self, other, add_false_negatives=False, match_other=False, inplace=False):
+        """Modify both hierarchies so residue numbers match one another
+
+        This function performs a naive match. It assumes the numbering in both
+        contact maps is equivalent and it will not attempt to perform a sequence
+        alignment.
+
+        Parameters
+        ----------
+        other : :obj:`~conkit.core.contactmap.ContactMap`
+           A ConKit :obj:`~conkit.core.contactmap.ContactMap`
+        add_false_negatives : bool
+           Add false negatives to the `self`, which are contacts in `other` but not in `self`
+
+           Required for :meth:`~conkit.core.contactmap.ContactMap.recall` and can be undone
+           with :meth:`~conkit.core.contactmap.ContactMap.remove_false_negatives`
+        match_other: bool, optional
+           Match `other` to `self` [default: False]
+        inplace : bool, optional
+           Replace the original contacts [default: False]
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+            :obj:`~conkit.core.contactmap.ContactMap` instance, regardless of inplace
+
+        """
+        contact_map1 = self._inplace(inplace)
+        if match_other:
+            contact_map2 = other._inplace(inplace)
+        else:
+            contact_map2 = other._inplace(False)
+
+        contact_map1_set = contact_map1.as_set()
+        contact_map2_set = contact_map2.as_set()
+
+        for contact in contact_map1:
+            if contact.id in contact_map2_set:
+                contact.true_positive = True
+            else:
+                contact.false_positive = True
+
+        if not add_false_negatives:
+            return contact_map1
+
+        for contact in contact_map2:
+            if contact.id not in contact_map1_set:
+                contact.false_negative = True
+
+        return contact_map1
+
     def match(self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False,
               inplace=False):
         """Modify both hierarchies so residue numbers match one another.
