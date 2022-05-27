@@ -87,7 +87,7 @@ class BbcontactsParser(ContactFileParser):
                     contact_map.add(contact)
                 previous = current
 
-        if del_one_two and previous == "first" and len(contact_map) > 0:
+        if del_one_two and previous == "first" and not contact_map.empty:
             contact_map.child_list.pop()
 
         contact_file.method = "Contact map predicted using Bbcontacts"

@@ -490,6 +490,20 @@ class ContactMap(Entity):
         else:
             return [[c.res1_seq, c.res2_seq] for c in self]
 
+    def as_set(self, altloc=False):
+        """The :obj:`~conkit.core.contactmap.ContactMap` as a 2D-set containing contact-pair residue indexes
+
+        Parameters
+        ----------
+        altloc : bool
+           Use the :attr:`~conkit.core.contact.Contact.res_altloc` positions [default: False]
+
+        """
+        if altloc:
+            return {(c.res1_altseq, c.res2_altseq) for c in self}
+        else:
+            return {c.id for c in self}
+
     def set_sequence_register(self, altloc=False):
         """Assign the amino acids from :obj:`~conkit.core.sequence.Sequence` to all :obj:`~conkit.core.contact.Contact` instances
 
@@ -682,9 +696,60 @@ class ContactMap(Entity):
 
         return contact_map
 
-    def match(
-        self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False, inplace=False
-    ):
+    def match_naive(self, other, add_false_negatives=False, match_other=False, inplace=False):
+        """Modify both hierarchies so residue numbers match one another
+
+        This function performs a naive match. It assumes the numbering in both
+        contact maps is equivalent and it will not attempt to perform a sequence
+        alignment.
+
+        Parameters
+        ----------
+        other : :obj:`~conkit.core.contactmap.ContactMap`
+           A ConKit :obj:`~conkit.core.contactmap.ContactMap`
+        add_false_negatives : bool
+           Add false negatives to the `self`, which are contacts in `other` but not in `self`
+
+           Required for :meth:`~conkit.core.contactmap.ContactMap.recall` and can be undone
+           with :meth:`~conkit.core.contactmap.ContactMap.remove_false_negatives`
+        match_other: bool, optional
+           Match `other` to `self` [default: False]
+        inplace : bool, optional
+           Replace the original contacts [default: False]
+
+        Returns
+        -------
+        :obj:`~conkit.core.contactmap.ContactMap`
+            :obj:`~conkit.core.contactmap.ContactMap` instance, regardless of inplace
+
+        """
+        contact_map1 = self._inplace(inplace)
+        if match_other:
+            contact_map2 = other._inplace(inplace)
+        else:
+            contact_map2 = other._inplace(False)
+
+        contact_map1_set = contact_map1.as_set()
+        contact_map2_set = contact_map2.as_set()
+
+        for contact in contact_map1:
+            if contact.id in contact_map2_set:
+                contact.true_positive = True
+            else:
+                contact.false_positive = True
+
+        if not add_false_negatives:
+            return contact_map1
+
+        for contact in contact_map2:
+            if contact.id not in contact_map1_set:
+                contact.false_negative = True
+                contact_map1.add(contact)
+
+        return contact_map1
+
+    def match(self, other, add_false_negatives=False, match_other=False, remove_unmatched=False, renumber=False,
+              inplace=False):
         """Modify both hierarchies so residue numbers match one another.
 
         This function is key when plotting contact maps or visualising
@@ -722,7 +787,11 @@ class ContactMap(Entity):
         Raises
         ------
         :exc:`ValueError`
+           At least one of the input maps :obj:`~conkit.core.contactmap.ContactMap` is empty
+        :exc:`ValueError`
            Error creating reliable keymap matching the sequence in :obj:`~conkit.core.contactmap.ContactMap`
+        :exc:`RuntimeError`
+           Error matching the contacts in :obj:`~conkit.core.contactmap.ContactMap`
 
         """
         contact_map1 = self._inplace(inplace)
@@ -730,6 +799,17 @@ class ContactMap(Entity):
             contact_map2 = other._inplace(inplace)
         else:
             contact_map2 = other._inplace(False)
+
+        if contact_map1.empty and add_false_negatives:
+            for contact in contact_map2:
+                contact.false_negative = True
+
+        if contact_map2.empty:
+            for contact in contact_map1:
+                contact.false_positive = True
+
+        if contact_map2.empty or contact_map1.empty:
+            return contact_map1
 
         # ================================================================
         # 1. Align all sequences
@@ -763,11 +843,11 @@ class ContactMap(Entity):
         contact_map1_keymap = ContactMap._create_keymap(contact_map1)
         contact_map2_keymap = ContactMap._create_keymap(contact_map2, altloc=True)
 
-        msg = "Error creating reliable keymap matching the sequence in ContactMap: "
+        msg = "Error creating reliable keymap matching the sequence in ContactMap: {}"
         if len(contact_map1_keymap) != (encoded_repr[0] != ord("-")).sum():
-            raise ValueError(msg + contact_map1.id)
+            raise ValueError(msg.format(contact_map1.id))
         elif len(contact_map2_keymap) != (encoded_repr[1] != ord("-")).sum():
-            raise ValueError(msg + contact_map2.id)
+            raise ValueError(msg.format(contact_map2.id))
 
         contact_map1_keymap = ContactMap._insert_states(encoded_repr[0], contact_map1_keymap)
         contact_map2_keymap = ContactMap._insert_states(encoded_repr[1], contact_map2_keymap)
