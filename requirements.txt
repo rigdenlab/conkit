@@ -3,7 +3,7 @@ cython
 numpy
 pandas
 matplotlib
-biopython==1.79
+biopython==1.74
 scikit-learn==0.24.1
 prettytable
 joblib
