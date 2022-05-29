@@ -11,7 +11,7 @@ Conkit can be used to perform model validation using inter-residue distance pred
 
 The call above uses the AlphaFold 2 distance prediction file ``7l6q.af2`` file, which is in ``alphafold2`` format, and compares the predicted inter-residue distances with those observed in the protein model at ``7l6q_B.pdb``. Note that you need to provide a path to the executables of ``dssp` and ``map_align`` using the keywords ``-dssp_exe`` and ``--map_align_exe`` respectively. This command will create the file ``7l6q.png`` with the following figure:
 
-.. figure:: ../_static/plot_model_validation.png
+.. figure:: ../../_static/plot_model_validation.png
    :alt: 7l6q Model Validation
    :align: center
    :scale: 30

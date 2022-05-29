@@ -11,7 +11,7 @@ If you would like to plot a distogram using ConKit without the overhead of using
 
 The call above uses the AlphaFold 2 distance prediction file ``7l6q.af2`` file, which is in ``alphafold2`` format, and plots the following distogram stored in the file ``7l6q/7l6q.png``
 
-.. figure:: ../_static/plot_distogram_simple.png
+.. figure:: ../../_static/plot_distogram_simple.png
    :alt: 7l6q Distogram Simple
    :align: center
    :scale: 30
