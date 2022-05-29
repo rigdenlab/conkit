@@ -33,7 +33,7 @@ Parser module specific to CLUSTAL sequence files
 
 __author__ = "Felix Simkovic"
 __date__ = "30 Jul 2018"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 import collections
 

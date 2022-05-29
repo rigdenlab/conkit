@@ -10,6 +10,7 @@ ConKit Usage Examples
 .. include:: examples/io.rst
 .. include:: examples/analysis.rst
 .. include:: examples/plot.rst
+.. include:: examples/validation.rst
 .. include:: examples/core.rst
 .. include:: examples/applications.rst
 

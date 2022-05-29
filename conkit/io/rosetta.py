@@ -22,7 +22,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Aug 2018"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 from conkit.io._parser import ContactFileParser
 from conkit.misc.distances import DynamicDistances

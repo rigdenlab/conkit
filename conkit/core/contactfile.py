@@ -36,7 +36,7 @@ from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 from conkit.core.entity import Entity
 

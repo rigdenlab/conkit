@@ -33,7 +33,7 @@ Parser module specific to EPC-Map predictions
 
 __author__ = "Felix Simkovic"
 __date__ = "12 Dec 2016"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 from conkit.io._parser import ContactFileParser
 from conkit.core.contact import Contact

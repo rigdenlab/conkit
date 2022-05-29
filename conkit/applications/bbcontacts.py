@@ -35,7 +35,7 @@ Command line object for bbcontacts contact filtering application
 
 __author__ = "Felix Simkovic"
 __date__ = "10 Aug 2016"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 from Bio.Application import _Argument
 from Bio.Application import _Option
