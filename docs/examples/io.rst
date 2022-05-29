@@ -17,7 +17,6 @@
      - .. cssclass:: btn btn-default btn-sm btn-example
 
           :ref:`Python <python_convert_conpred>`
-
     * - - Residue distance predictions
          - .. cssclass:: btn btn-primary btn-sm btn-example
 
