@@ -31,7 +31,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "14 Apr 2017"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 import logging
 import sys

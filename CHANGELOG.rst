@@ -1,3 +1,21 @@
+**[0.13.3]**
+
+*Added*
+
+-  ``conkit.core.ContactMap.match_naive`` method for contact map match when no sequence alignment is required
+- Examples on how to use ``conkit-validate`` in documentation at conkit.org
+- Examples on how file conversions for ditances in documentation at conkit.org
+- Examples on how to plot residue ditances in documentation at conkit.org
+
+*Changed*
+
+- Update ``requirements.txt`` to include versions of biopython and sklearn compatible with CCP4 8.0
+- Update requirements list in documentation at conkit.org
+
+*Fixed*
+
+- Resolve contact map match when one of the input maps is empty
+
 **[0.13.2]**
 
 *Fixed*

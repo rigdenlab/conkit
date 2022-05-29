@@ -62,13 +62,13 @@ External software
 
 Required dependencies
 +++++++++++++++++++++
-Python 2.7, 3.4, 3.5, or 3.6
+Python 3.7, 3.8 or 3.9
   `Download Python <https://www.python.org/downloads/>`_
-Numba 0.36.2 (or later)
-  `Download Numba <http://numba.pydata.org/numba-doc/dev/index.html>`_
 NumPy 1.8.2 (or later)
   `Download NumPy <http://www.scipy.org/scipylib/download.html>`_
-BioPython 1.64 (or later)
+Pandas
+  `Documentation NumPy <https://pandas.pydata.org/>`_
+BioPython 1.74 (or later)
   `Download BioPython <http://biopython.org/wiki/Documentation>`_
 Matplotlib 1.3.1 (or later)
   `Download matplotlib <http://matplotlib.org/users/installing.html>`_
@@ -77,9 +77,11 @@ setuptools
 
 Optional dependencies
 +++++++++++++++++++++
-.. SciPy 0.16 (or later)
-..   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
-scikit-learn 0.18 (or later)
+ SciPy 0.16 (or later)
+  `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
+Cython
+  `Documentation Cython <https://cython.org/>`_
+scikit-learn 0.24.1
   `Download scikit-learn <http://scikit-learn.org/stable/install.html>`_
 HHblits
    `Download HHblits <https://github.com/soedinglab/hh-suite>`_

@@ -33,7 +33,7 @@ Parent classes for all parser classes
 
 __author__ = "Felix Simkovic"
 __date__ = "04 Oct 2016"
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 import abc
 
