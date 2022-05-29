@@ -35,6 +35,14 @@
 
           :ref:`Python <python_plot_cdens>`
 
+   * - - Distogram
+     - .. cssclass:: btn btn-primary btn-sm btn-example
+
+          :ref:`Script <script_plot_distogram>`
+     - .. cssclass:: btn btn-default btn-sm btn-example
+
+          :ref:`Python <python_plot_distogram>`
+
    * - - Precision Evaluation
      - .. cssclass:: btn btn-primary btn-sm btn-example
 

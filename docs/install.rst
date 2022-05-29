@@ -77,7 +77,7 @@ setuptools
 
 Optional dependencies
 +++++++++++++++++++++
- SciPy 0.16 (or later)
+SciPy 0.16 (or later)
   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
 Cython
   `Documentation Cython <https://cython.org/>`_
