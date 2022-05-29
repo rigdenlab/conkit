@@ -18,10 +18,10 @@
 
           :ref:`Python <python_convert_conpred>`
 
-* - - Residue distance predictions
-     - .. cssclass:: btn btn-primary btn-sm btn-example
+    * - - Residue distance predictions
+         - .. cssclass:: btn btn-primary btn-sm btn-example
 
-          :ref:`Script <script_convert_distpred>`
-     - .. cssclass:: btn btn-default btn-sm btn-example
+              :ref:`Script <script_convert_distpred>`
+         - .. cssclass:: btn btn-default btn-sm btn-example
 
-          :ref:`Python <python_convert_distpred>`
+              :ref:`Python <python_convert_distpred>`
