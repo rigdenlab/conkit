@@ -7,3 +7,4 @@
      - .. cssclass:: btn btn-primary btn-sm btn-example
 
           :ref:`Script <script_model_validation>`
+     - .. cssclass:: btn btn-default btn-sm btn-example
