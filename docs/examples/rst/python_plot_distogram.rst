@@ -11,7 +11,7 @@ Distogram Plotting
    :language: python
    :linenos:
 
-.. figure:: ../_static/plot_distogram_simple.png
+.. figure:: ../../_static/plot_distogram_simple.png
    :alt: 7l6q Distogram Simple
    :scale: 30
 
