@@ -880,7 +880,7 @@ class ContactMap(Entity):
         for contactid in contact_map2.as_list():
             contactid = tuple(contactid)
             if contactid not in contact_map1:
-                contact_map2[contactid].false_negative = True
+                contact_map2[contactid].status = ContactMatchState.false_negative
                 if add_false_negatives:
                     contact = contact_map2[contactid].copy()
                     contact_map1.add(contact)
