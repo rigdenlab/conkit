@@ -39,7 +39,7 @@ include:
 
 For a general overview of ConKit, watch `this video <https://youtu.be/YhHkfa7ggAE>`_.
 
-For an overview of model validation with ConKit, watch `this video <https://www.youtube.com/watch?v=rG_WoUhdnLU&t=565s>`_.
+For an overview of model validation with ConKit, watch this `video <https://www.youtube.com/watch?v=rG_WoUhdnLU&t=565s>`_.
 
 .. CHECKPOINT FOR READTHEDOCS 
 
