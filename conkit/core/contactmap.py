@@ -801,15 +801,16 @@ class ContactMap(Entity):
         else:
             contact_map2 = other._inplace(False)
 
-        if contact_map1.empty and add_false_negatives:
+        if contact_map1.empty:
             for contact in contact_map2:
                 contact.false_negative = True
+                if add_false_negatives:
+                    contact_map1.add(contact)
+            return contact_map1
 
         if contact_map2.empty:
             for contact in contact_map1:
                 contact.false_positive = True
-
-        if contact_map2.empty or contact_map1.empty:
             return contact_map1
 
         # ================================================================
