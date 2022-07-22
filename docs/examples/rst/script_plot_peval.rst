@@ -11,7 +11,7 @@ The ``peval`` subcommand of the ``conkit-plot`` script is used to plot the preci
 
 Three command line flags above are important to note. The ``-min`` flag is the minimum factor for contact selection, i.e. ``L * min`` number of contacts. The ``-max`` flag is the maximum factor for contact selection, i.e. ``L * max`` number of contacts. The ``-j`` flag defines the stepwise increase inbetween ``-min`` and ``-max``.
 
-.. figure:: ../images/toxd_peval_plot.png
+.. figure:: ../../_static/plot_peval_toxd.png
    :alt: Toxd Precision Evaluation Plot
    :align: center
    :scale: 30

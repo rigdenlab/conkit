@@ -11,7 +11,7 @@ The ``scov`` subcommand of the ``conkit-plot`` script is used to plot the covera
 
 The following plot will be produced. Your alignment coverage is shown with the black line with each point corresponding to a residue in the alignment. The other two lines give you indicators of how good your alignment is.
 
-.. figure:: ../images/toxd_scov_plot.png
+.. figure:: ../../_static/plot_scov_toxd.png
    :alt: Toxd Sequence Coverage Plot
    :align: center
    :scale: 30
