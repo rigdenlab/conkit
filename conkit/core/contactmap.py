@@ -738,13 +738,14 @@ class ContactMap(Entity):
             else:
                 contact.false_positive = True
 
-        if not add_false_negatives:
+        if not add_false_negatives and not match_other:
             return contact_map1
 
         for contact in contact_map2:
             if contact.id not in contact_map1_set:
                 contact.false_negative = True
-                contact_map1.add(contact)
+                if add_false_negatives:
+                    contact_map1.add(contact)
 
         return contact_map1
 
@@ -800,15 +801,16 @@ class ContactMap(Entity):
         else:
             contact_map2 = other._inplace(False)
 
-        if contact_map1.empty and add_false_negatives:
+        if contact_map1.empty:
             for contact in contact_map2:
                 contact.false_negative = True
+                if add_false_negatives:
+                    contact_map1.add(contact)
+            return contact_map1
 
         if contact_map2.empty:
             for contact in contact_map1:
                 contact.false_positive = True
-
-        if contact_map2.empty or contact_map1.empty:
             return contact_map1
 
         # ================================================================
@@ -876,12 +878,12 @@ class ContactMap(Entity):
         # ================================================================
         # 3. Add false negatives
         # ================================================================
-        if add_false_negatives:
-            for contactid in contact_map2.as_list():
-                contactid = tuple(contactid)
-                if contactid not in contact_map1:
+        for contactid in contact_map2.as_list():
+            contactid = tuple(contactid)
+            if contactid not in contact_map1:
+                contact_map2[contactid].status = ContactMatchState.false_negative
+                if add_false_negatives:
                     contact = contact_map2[contactid].copy()
-                    contact.false_negative = True
                     contact_map1.add(contact)
 
         # ================================================================
