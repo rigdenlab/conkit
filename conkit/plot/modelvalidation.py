@@ -133,17 +133,14 @@ class ModelValidationFigure(Figure):
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
 
-        self.map_align_exe = map_align_exe
         self.l_factor = l_factor
         self.dist_bins = dist_bins
         self.model = model
         self.prediction = prediction
         self.sequence = sequence
-        self.classifier, self.scaler = load_validation_model()
         self.absent_residues = self._get_absent_residues()
-        self.dssp = self._parse_dssp(dssp)
 
-        self.draw()
+        #self.draw()
 
     def __repr__(self):
         return self.__class__.__name__
@@ -313,6 +310,15 @@ class ModelValidationFigure(Figure):
             return np.nan
         scaled_features = self.scaler.transform(residue_features.values)
         return self.classifier.predict_proba(scaled_features)[0, 1]
+
+    def svm(self,dssp):
+
+        self.classifier, self.scaler = load_validation_model()
+        self.dssp = self._parse_dssp(dssp)
+
+    def map_algin(self,map_align_exe):    
+
+        self.map_align_exe = map_align_exe
 
     def draw(self):
         model_distogram = self._prepare_distogram(self.model.copy())

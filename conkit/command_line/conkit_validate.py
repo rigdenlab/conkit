@@ -84,6 +84,12 @@ def create_argument_parser():
                         help="Sequence separation cutoff"),
     parser.add_argument("--n_iterations", dest="n_iterations", default=20, type=int,
                         help="Number of iterations")
+    parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
+                        help="Type of molecule")
+    parser.add_argument("--run_svm", dest="RUN_SVM", default=True, type=bool,
+                        help="Whether to run the support vector machine validation")
+    parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default=True, type=bool,
+                        help="Whether to run the contactmap alignment validation")
 
     return parser
 
@@ -123,6 +129,8 @@ def main():
     global logger
     logger = conkit.command_line.setup_logging(level="info")
 
+    print("Compilation check")
+
     if os.path.isfile(args.output) and not args.overwrite:
         raise FileExistsError('The output file {} already exists!'.format(args.output))
 
@@ -138,20 +146,36 @@ def main():
     prediction = conkit.io.read(args.distfile, args.distformat).top
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
     model = conkit.io.read(args.pdbfile, args.pdbformat).top
-    p = PDBParser()
-    structure = p.get_structure('structure', args.pdbfile)[0]
-    dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
-
-    logger.info(os.linesep + "Validating model.")
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
 
-    figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
-    figure.savefig(args.output, overwrite=args.overwrite)
+    ### add filters ###
+
+    logger.info(os.linesep + "Validating model.")
+
+    validation = conkit.plot.ModelValidationFigure(model, prediction, sequence)
+
+    if args.RUN_SVM:
+        p = PDBParser()
+        structure = p.get_structure('structure', args.pdbfile)[0]
+        dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
+        validation.svm(dssp)
+
+
+    ### add SVM run ###
+    ### add map_align run ###
+
+    if args.RUN_MAP_ALIGN:
+        validation.map_algin(map_align_exe=args.map_align_exe)
+
+    validation.draw()
+
+    #figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
+    validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
-    residue_info = figure.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
+    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register"]
 
@@ -172,6 +196,9 @@ def main():
             register = _empty_register
 
         table.add_row([current_residue, score, register])
+
+    ### add json format report ###
+    print("Compilation check")
 
     logger.info(os.linesep)
     logger.info(table)
