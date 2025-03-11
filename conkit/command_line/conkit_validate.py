@@ -90,6 +90,10 @@ def create_argument_parser():
                         help="Whether to run the support vector machine validation")
     parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
                         help="Whether to run the contactmap alignment validation")
+    parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
+                        help="distance cutoff for contacts when using Custom moltype")
+    parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=float,
+                        help="representative atom for contacts when using Custom moltype")
 
     return parser
 
@@ -119,6 +123,26 @@ def check_file_exists(input_path):
         return os.path.abspath(input_path)
     else:
         raise FileNotFoundError("{} cannot be found".format(input_path))
+    
+def set_contact_definition(moltype,rep_atom=None,cutoff=None):
+
+    if rep_atom!=None:
+        if cutoff!=None:
+            return rep_atom, cutoff
+        else: return rep_atom, 10
+
+    elif moltype=='Protein':
+        rep_atom = "CB"
+        if cutoff==None: cutoff=8
+        return rep_atom, cutoff
+    
+    elif moltype=='RNA':
+        rep_atom = "C1'"
+        if cutoff==None: cutoff=10.5
+        return rep_atom, cutoff
+
+    else:
+        raise ValueError('Molecule type not supported without explicit contact definition, set atleast the --rep_atom flag and considder setting --contact_dist')
 
 
 def main():
@@ -139,11 +163,13 @@ def main():
     if len(sequence) < 5:
         raise ValueError('Cannot validate model with less than 5 residues')
 
+    rep_atom, cutoff = set_contact_definition(args.moltype,rep_atom=args.rep_atom,cutoff=args.contact_distance_cutoff)
+
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
-    prediction = conkit.io.read(args.distfile, args.distformat).top
+    prediction = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom).top
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
-    model = conkit.io.read(args.pdbfile, args.pdbformat).top
+    model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
@@ -159,7 +185,11 @@ def main():
         logger.info(os.linesep + "Running Support Vector Machine.")
         p = PDBParser()
         structure = p.get_structure('structure', args.pdbfile)[0]
-        dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
+
+        if args.moltype=='Protein':
+            dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
+        else: dssp = None
+
         validation.svm(dssp)
         
 

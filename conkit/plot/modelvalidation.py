@@ -258,6 +258,7 @@ class ModelValidationFigure(Figure):
                 _dssp_list.append((resnum, np.nan, np.nan, np.nan, np.nan))
                 continue
             acc = dssp[residue][3]
+            print(acc)
             if dssp[residue][2] in ('-', 'T', 'S'):
                 ss2 = (1, 0, 0)
             elif dssp[residue][2] in ('H', 'G', 'I'):
@@ -335,18 +336,16 @@ class ModelValidationFigure(Figure):
     def svm(self,dssp):
 
         self.classifier, self.scaler = load_validation_model()
-        self.dssp = self._parse_dssp(dssp)
+        if dssp==None: 
+            self.dssp=pd.DataFrame()
+            self.dssp['RESNUM'] = self.data['RESNUM'].copy()
+            self.dssp['COIL'], self.dssp['HELIX'], self.dssp['SHEET'], self.dssp['ACC'] = 0, 0, 0, 0
+        else: 
+            self.dssp = self._parse_dssp(dssp)
 
         self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
 
-        residues = self.data['RESNUM']
-        scores = {}
-
-        for resnum in residues:
-            _score = self._predict_score(resnum)
-            scores[resnum] = _score
-
-        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: scores.get(x))
+        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
 
 
 
