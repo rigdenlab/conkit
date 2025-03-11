@@ -86,9 +86,9 @@ def create_argument_parser():
                         help="Number of iterations")
     parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
                         help="Type of molecule")
-    parser.add_argument("--run_svm", dest="RUN_SVM", default=True, type=bool,
+    parser.add_argument("--run_svm", dest="RUN_SVM", default='yes', type=str,
                         help="Whether to run the support vector machine validation")
-    parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default=True, type=bool,
+    parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
                         help="Whether to run the contactmap alignment validation")
 
     return parser
@@ -129,8 +129,6 @@ def main():
     global logger
     logger = conkit.command_line.setup_logging(level="info")
 
-    print("Compilation check")
-
     if os.path.isfile(args.output) and not args.overwrite:
         raise FileExistsError('The output file {} already exists!'.format(args.output))
 
@@ -156,20 +154,22 @@ def main():
 
     validation = conkit.plot.ModelValidationFigure(model, prediction, sequence)
 
-    if args.RUN_SVM:
+    if args.RUN_SVM=='yes':
+        print(args.RUN_SVM)
+        logger.info(os.linesep + "Running Support Vector Machine.")
         p = PDBParser()
         structure = p.get_structure('structure', args.pdbfile)[0]
         dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
         validation.svm(dssp)
+        
+
+    if args.RUN_MAP_ALIGN=='yes':
+        logger.info(os.linesep + "Running Map Align.")
+        validation.map_align(map_align_exe=args.map_align_exe)
 
 
-    ### add SVM run ###
-    ### add map_align run ###
-
-    if args.RUN_MAP_ALIGN:
-        validation.map_algin(map_align_exe=args.map_align_exe)
-
-    validation.draw()
+    logger.info(os.linesep + "Creating Figure.")
+    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'))
 
     #figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
     validation.savefig(args.output, overwrite=args.overwrite)
@@ -190,8 +190,8 @@ def main():
         current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
         score = _error_score_template.format(score) if score > 0.5 else _correct_score_template.format(score)
 
-        if misalignment and resnum in figure.alignment.keys():
-            register = _register_template.format(sequence.seq[figure.alignment[resnum] - 1], figure.alignment[resnum])
+        if misalignment and resnum in validation.alignment.keys():
+            register = _register_template.format(sequence.seq[validation.alignment[resnum] - 1], validation.alignment[resnum])
         else:
             register = _empty_register
 
