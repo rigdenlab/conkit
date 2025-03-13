@@ -92,7 +92,7 @@ def create_argument_parser():
                         help="Whether to run the contactmap alignment validation")
     parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
                         help="distance cutoff for contacts when using Custom moltype")
-    parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=float,
+    parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
 
     return parser
@@ -167,7 +167,9 @@ def main():
 
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
-    prediction = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom).top
+    if args.distformat in ['pdb', 'mmcif']:
+        prediction = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom).top
+    else: prediction = conkit.io.read(args.distfile, args.distformat).top
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
     model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
@@ -181,7 +183,6 @@ def main():
     validation = conkit.plot.ModelValidationFigure(model, prediction, sequence)
 
     if args.RUN_SVM=='yes':
-        print(args.RUN_SVM)
         logger.info(os.linesep + "Running Support Vector Machine.")
         p = PDBParser()
         structure = p.get_structure('structure', args.pdbfile)[0]

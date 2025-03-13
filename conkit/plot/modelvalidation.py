@@ -258,7 +258,6 @@ class ModelValidationFigure(Figure):
                 _dssp_list.append((resnum, np.nan, np.nan, np.nan, np.nan))
                 continue
             acc = dssp[residue][3]
-            print(acc)
             if dssp[residue][2] in ('-', 'T', 'S'):
                 ss2 = (1, 0, 0)
             elif dssp[residue][2] in ('H', 'G', 'I'):
