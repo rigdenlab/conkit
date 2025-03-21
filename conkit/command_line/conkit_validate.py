@@ -184,10 +184,10 @@ def main():
 
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
-        p = PDBParser()
-        structure = p.get_structure('structure', args.pdbfile)[0]
 
         if args.moltype=='Protein':
+            p = PDBParser()
+            structure = p.get_structure('structure', args.pdbfile)[0]
             dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
         else: dssp = None
 

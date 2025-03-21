@@ -343,7 +343,6 @@ class ModelValidationFigure(Figure):
             self.dssp = self._parse_dssp(dssp)
 
         self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
-
         self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
 
 
