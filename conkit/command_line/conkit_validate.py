@@ -238,7 +238,6 @@ def main():
     logger.info(os.linesep + "Creating Figure.")
     validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'))
 
-    #figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
