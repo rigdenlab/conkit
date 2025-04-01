@@ -346,8 +346,6 @@ class ModelValidationFigure(Figure):
         self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
 
 
-
-
     def map_align(self,map_align_exe=None):    
 
         self.map_align_exe = map_align_exe
@@ -358,10 +356,14 @@ class ModelValidationFigure(Figure):
         else:
             self.data['MISALIGNED'] = False
 
+    def count_contacts(self):
+
+        cmap = self.prediction.as_contactmap()
+        cmap_dict = cmap.as_dict()
+        self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
 
 
-
-    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True):
+    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True):
 
         
         misaligned_residues = set(self.alignment.keys())
@@ -371,7 +373,7 @@ class ModelValidationFigure(Figure):
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
             self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
             self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
-            self.ax.plot(self.smooth_scores, color=tools.ColorDefinitions.SCORE)
+            self.ax.plot(sorted(scores.keys()), self.smooth_scores, color=tools.ColorDefinitions.SCORE)
             for resnum in residues:
                 color = tools.ColorDefinitions.ERROR if scores[resnum] > 0.5 else tools.ColorDefinitions.CORRECT
                 self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
@@ -384,6 +386,13 @@ class ModelValidationFigure(Figure):
                 else:
                     color = tools.ColorDefinitions.ALIGNED
                 self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
+
+        if RUN_FILTERS:
+            ax2 = self.ax.twinx()
+            n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
+            self.sorted_contacts = np.nan_to_num([n_contacts[resnum] for resnum in sorted(n_contacts.keys())])
+            ax2.plot(residues,self.sorted_contacts)
+            ax2.axhline(2, **LINEKWARGS)
 
         self.ax.axhline(0.5, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')

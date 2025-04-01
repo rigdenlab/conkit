@@ -48,6 +48,8 @@ import argparse
 from Bio.PDB import PDBParser
 from Bio.PDB.DSSP import DSSP
 import os
+import subprocess
+import json
 from prettytable import PrettyTable
 
 import conkit.applications
@@ -72,10 +74,13 @@ def create_argument_parser():
     parser.add_argument("pdbformat", type=str, help="Format of structure file", choices=['pdb', 'mmcif'])
     parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
+    parser.add_argument("-output_json", dest="output_json", default=None, help="path to output json file", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
                         type=is_executable, help="Path to the map_align executable")
+    parser.add_argument("--gesamt_exe", dest="gesamt_exe", default=None,
+                        type=is_executable, help="Path to the gesamt executable to check structural alignment")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -90,10 +95,16 @@ def create_argument_parser():
                         help="Whether to run the support vector machine validation")
     parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
                         help="Whether to run the contactmap alignment validation")
+    parser.add_argument("--run_filters", dest="RUN_FILTERS", default='yes', type=str,
+                        help="Whether to run the filters against false positives(if possible given the provided info)")
     parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
                         help="distance cutoff for contacts when using Custom moltype")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
+    parser.add_argument("--confidence_file", dest="conf_file", default=None, type=check_file_exists,
+                        help="File containing confidences of prediction")
+    parser.add_argument("--confidence_file_type", dest="conf_file_type", default=None, type=str,
+                        help="type of file containing confidences of prediction")
 
     return parser
 
@@ -123,6 +134,13 @@ def check_file_exists(input_path):
         return os.path.abspath(input_path)
     else:
         raise FileNotFoundError("{} cannot be found".format(input_path))
+    
+
+def touch(fname, content='', mode='wb'):
+    with open(fname, mode) as fhandle:
+        fhandle.write(content)
+    fhandle.close()
+
     
 def set_contact_definition(moltype,rep_atom=None,cutoff=None):
 
@@ -176,8 +194,6 @@ def main():
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
 
-    ### add filters ###
-
     logger.info(os.linesep + "Validating model.")
 
     validation = conkit.plot.ModelValidationFigure(model, prediction, sequence)
@@ -199,14 +215,37 @@ def main():
         validation.map_align(map_align_exe=args.map_align_exe)
 
 
+    if args.RUN_FILTERS=='yes':
+        logger.info(os.linesep + "Running Filters.")
+
+        validation.count_contacts()
+
+        if args.conf_file: ##turn into check for plddt
+            #confidence = conkit.io.read(args.conf_file,args.conf_file_type)
+            #validation.add_pllddt(confidence)
+            logger.info(os.linesep + "now plddts would be added.")
+            
+        if args.gesamt_exe:
+            cmd = 'gesamt {} {}'
+            logfname = '_gesamt.stdout'
+            p = subprocess.Popen(cmd.format(args.pdbfile, args.distfile), stdout=subprocess.PIPE, shell=True)
+            logcontents = str(p.communicate()[0])
+            start_index = logcontents.find('Q-score          :')
+            end_index = logcontents.find('\\n',start_index,-1)
+            print(logcontents[end_index-10:end_index])
+        
+
     logger.info(os.linesep + "Creating Figure.")
-    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'))
+    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'))
 
     #figure = conkit.plot.ModelValidationFigure(model, prediction, sequence, dssp, map_align_exe=args.map_align_exe)
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
     residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
+
+
+
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register"]
 
@@ -229,7 +268,15 @@ def main():
         table.add_row([current_residue, score, register])
 
     ### add json format report ###
-    print("Compilation check")
+
+
+
+
+    if args.output_json:
+        residue_info_json = residue_info.to_dict(orient='list')
+        with open(args.output_json+".json", "w") as outfile:
+            json.dump(residue_info_json, outfile)
+
 
     logger.info(os.linesep)
     logger.info(table)
