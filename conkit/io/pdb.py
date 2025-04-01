@@ -64,6 +64,16 @@ class GenericStructureParser(ContactFileParser):
         """Build a peptide using :mod:`biopython` to extract the sequence"""
         return Sequence(chain.id + "_seq", "".join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
 
+    def _build_plddts(self, chain):
+        """extract the plddts (B-factor collumn) of a chain"""
+        plddts = []
+        for residue in chain:
+            for atom in residue.get_atoms():
+                plddts.append(atom.get_bfactor())
+        print(len(plddts))
+        return plddts
+
+
     def _chain_contacts(self, chain1, chain2):
         """Determine the contact pairs intra- or inter-molecular
 
@@ -146,6 +156,7 @@ class GenericStructureParser(ContactFileParser):
             for chain in chains:
                 self._remove_hetatm(chain)
                 self._remove_atom(chain, atom_type)
+            #    print(chain[100].get_unpacked_list())
 
             for chain1, chain2 in itertools.product(chains, chains):
                 if chain1.id == chain2.id:  # intra
@@ -177,6 +188,8 @@ class GenericStructureParser(ContactFileParser):
                 else:
                     if len(distogram.id) == 1:
                         distogram.sequence = self._build_sequence(chain1)
+                        print(len(distogram.sequence))
+                        distogram.plddt = self._build_plddts(chain1)
                         assert len(distogram.sequence.seq) == len(chain1)
                     else:
                         distogram.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)

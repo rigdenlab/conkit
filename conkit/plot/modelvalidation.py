@@ -362,8 +362,15 @@ class ModelValidationFigure(Figure):
         cmap_dict = cmap.as_dict()
         self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
 
+    def add_plddt(self,externally_supplied_plddts = []):
 
-    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True):
+        if externally_supplied_plddts== []:
+            self.data['PLDDT'] = self.prediction.plddt
+        else:
+            print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
+
+
+    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
 
         
         misaligned_residues = set(self.alignment.keys())
@@ -388,11 +395,18 @@ class ModelValidationFigure(Figure):
                 self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
 
         if RUN_FILTERS:
-            ax2 = self.ax.twinx()
+
             n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
-            self.sorted_contacts = np.nan_to_num([n_contacts[resnum] for resnum in sorted(n_contacts.keys())])
-            ax2.plot(residues,self.sorted_contacts)
-            ax2.axhline(2, **LINEKWARGS)
+            plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
+
+            for resnum in residues:
+
+                color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
+                self.ax.plot(resnum - 1, -0.1, mfc=color, c=color, **MARKERKWARGS)
+
+                color = tools.ColorDefinitions.LOW_CONFIDENCE if plddts[resnum] < plddt_threshold else tools.ColorDefinitions.HIGH_CONFIDENCE
+                self.ax.plot(resnum - 1, -0.15, mfc=color, c=color, **MARKERKWARGS)
+
 
         self.ax.axhline(0.5, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')

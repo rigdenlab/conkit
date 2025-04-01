@@ -105,6 +105,8 @@ def create_argument_parser():
                         help="File containing confidences of prediction")
     parser.add_argument("--confidence_file_type", dest="conf_file_type", default=None, type=str,
                         help="type of file containing confidences of prediction")
+    parser.add_argument("--take_plddt_from_distance_prediction", dest="PLDDT_IN_DISTFILE", default='yes', type=str,
+                        help="Whether the predicted distfile supplies plddts (for example a pdb or mmciff file might have plddt scores in the bfactor collumn), if not but filters are asked for the confidence file could supply plddts")
 
     return parser
 
@@ -220,9 +222,12 @@ def main():
 
         validation.count_contacts()
 
-        if args.conf_file: ##turn into check for plddt
-            #confidence = conkit.io.read(args.conf_file,args.conf_file_type)
-            #validation.add_pllddt(confidence)
+        if (prediction.plddt != None) and (args.PLDDT_IN_DISTFILE == 'yes'): ##turn into check for plddt
+
+            ## add a check to see if any external plddts were suplied
+            validation.add_plddt()
+        elif False: #replace with a check to see if plddts can be taken from conf_file in future
+            # validation.add_plddt(externally_supplied_plddts = A_list_from_conf_file)
             logger.info(os.linesep + "now plddts would be added.")
             
         if args.gesamt_exe:

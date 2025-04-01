@@ -73,6 +73,10 @@ class ColorDefinitions(object):
     CORRECT = '#40eef7'
     ALIGNED = '#3d8beb'
     MISALIGNED = '#f7ba40'
+    LOW_CONTACTS = '#eecece'
+    SUFFICIENT_CONTACTS = '#a78383'
+    LOW_CONFIDENCE = '#c29431'
+    HIGH_CONFIDENCE = '#204e4c'
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",
