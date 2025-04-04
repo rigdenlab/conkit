@@ -413,7 +413,7 @@ class ContactMap(Entity):
         Returns
         -------
         list
-           A list containing the plddt values ordered along the sequence
+           A dict containing the plddt values ordered along the sequence
 
         """
         return self._plddt
@@ -444,7 +444,7 @@ class ContactMap(Entity):
 
         Parameters
         ----------
-        plddt list
+        plddt dict
 
         Raises
         ------
@@ -452,7 +452,7 @@ class ContactMap(Entity):
            Incorrect hierarchy instance provided
 
         """
-        if isinstance(plddt, list):
+        if isinstance(plddt, dict):
             self._plddt = plddt
         else:
             raise TypeError("list required")

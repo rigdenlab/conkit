@@ -303,18 +303,31 @@ class ModelValidationFigure(Figure):
 
 
 
-    def _add_legend(self):
+    def _add_legend(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
         """Adds legend to the :obj:`~conkit.plot.ModelValidationFigure`"""
-        _error = self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
-        _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
-        _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
-        _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
-        plots = _score_plot + _threshold_line + _correct + _error
 
-        if self.map_align_exe is not None:
+        plots = []
+
+        if RUN_SVM:
+            _error = self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
+            _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
+            _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
+            _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
+        plots += _score_plot + _threshold_line + _correct + _error
+
+        if RUN_MAP_ALIGN:
             _misaligned = self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
             _aligned = self.ax.plot([], [], c=tools.ColorDefinitions.ALIGNED, label='Aligned', **_MARKERKWARGS)
             plots += _misaligned + _aligned
+
+        if RUN_FILTERS:
+            _sufficient_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS, label='Sufficient contacts', **_MARKERKWARGS)
+            _low_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS, label='Low contacts <'+str(n_contacts_per_res), **_MARKERKWARGS)
+
+            _high_confidence = self.ax.plot([], [], c=tools.ColorDefinitions.HIGH_CONFIDENCE, label='Plddt >'+str(plddt_threshold), **_MARKERKWARGS)
+            _low_confidence = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONFIDENCE, label='Plddt <'+str(plddt_threshold), **_MARKERKWARGS)
+
+            plots += _sufficient_contacts + _low_contacts + _high_confidence + _low_confidence
 
         labels = [l.get_label() for l in plots]
         self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
@@ -362,10 +375,10 @@ class ModelValidationFigure(Figure):
         cmap_dict = cmap.as_dict()
         self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
 
-    def add_plddt(self,externally_supplied_plddts = []):
+    def add_plddt(self,externally_supplied_plddts = {}):
 
-        if externally_supplied_plddts== []:
-            self.data['PLDDT'] = self.prediction.plddt
+        if externally_supplied_plddts== {}:
+            self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)])
         else:
             print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
 
@@ -392,20 +405,24 @@ class ModelValidationFigure(Figure):
                     color = tools.ColorDefinitions.MISALIGNED
                 else:
                     color = tools.ColorDefinitions.ALIGNED
-                self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
+                self.ax.plot(resnum - 1, -0.03, mfc=color, c=color, **MARKERKWARGS)
 
         if RUN_FILTERS:
 
-            n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
-            plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
+            if 'CONTACTS' in self.data.columns:
+                n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
+                
+                for resnum in residues:
+                    color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
+                    self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
 
-            for resnum in residues:
+            
+            if 'PLDDT' in self.data.columns:
+                plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
 
-                color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
-                self.ax.plot(resnum - 1, -0.1, mfc=color, c=color, **MARKERKWARGS)
-
-                color = tools.ColorDefinitions.LOW_CONFIDENCE if plddts[resnum] < plddt_threshold else tools.ColorDefinitions.HIGH_CONFIDENCE
-                self.ax.plot(resnum - 1, -0.15, mfc=color, c=color, **MARKERKWARGS)
+                for resnum in residues:
+                    color = tools.ColorDefinitions.LOW_CONFIDENCE if plddts[resnum] < plddt_threshold else tools.ColorDefinitions.HIGH_CONFIDENCE
+                    self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **MARKERKWARGS)
 
 
         self.ax.axhline(0.5, **LINEKWARGS)
@@ -413,7 +430,7 @@ class ModelValidationFigure(Figure):
         self.ax.set_ylabel('Smoothed score')
 
         if self.legend:
-            self._add_legend()
+            self._add_legend(RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65)
 
         # TODO: deprecate this in 0.14
         if self._file_name:

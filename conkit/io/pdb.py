@@ -66,11 +66,10 @@ class GenericStructureParser(ContactFileParser):
 
     def _build_plddts(self, chain):
         """extract the plddts (B-factor collumn) of a chain"""
-        plddts = []
+        plddts = {}
         for residue in chain:
             for atom in residue.get_atoms():
-                plddts.append(atom.get_bfactor())
-        print(len(plddts))
+                plddts[residue.get_id()[1]] = atom.get_bfactor()
         return plddts
 
 
@@ -188,7 +187,6 @@ class GenericStructureParser(ContactFileParser):
                 else:
                     if len(distogram.id) == 1:
                         distogram.sequence = self._build_sequence(chain1)
-                        print(len(distogram.sequence))
                         distogram.plddt = self._build_plddts(chain1)
                         assert len(distogram.sequence.seq) == len(chain1)
                     else:
