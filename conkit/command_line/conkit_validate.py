@@ -188,8 +188,11 @@ def main():
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
     if args.distformat in ['pdb', 'mmcif']:
-        prediction = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom).top
-    else: prediction = conkit.io.read(args.distfile, args.distformat).top
+        prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom)
+        prediction = prediction_file.top
+    else: 
+        prediction_file = conkit.io.read(args.distfile, args.distformat)
+        prediction = prediction_file.top
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
     model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
@@ -226,7 +229,9 @@ def main():
 
             ## add a check to see if any external plddts were suplied
             validation.add_plddt()
-        elif False: #replace with a check to see if plddts can be taken from conf_file in future
+
+        elif args.conf_file: #replace with a check to see if plddts can be taken from conf_file in future
+            plddts = conkit.io.read(args.conf_file, args.conf_file_type)
             # validation.add_plddt(externally_supplied_plddts = A_list_from_conf_file)
             logger.info(os.linesep + "now plddts would be added.")
             

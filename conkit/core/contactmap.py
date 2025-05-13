@@ -491,7 +491,7 @@ class ContactMap(Entity):
         Returns
         -------
         dict
-            A dictionary represnetation of the :obj:`~conkit.core.contactmap.ContactMap` instance
+            A dictionary representation of the :obj:`~conkit.core.contactmap.ContactMap` instance
         """
         if self.sequence is None:
             seq_len = self.highest_residue_number

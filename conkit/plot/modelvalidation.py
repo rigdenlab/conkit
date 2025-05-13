@@ -324,10 +324,13 @@ class ModelValidationFigure(Figure):
             _sufficient_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS, label='Sufficient contacts', **_MARKERKWARGS)
             _low_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS, label='Low contacts <'+str(n_contacts_per_res), **_MARKERKWARGS)
 
-            _high_confidence = self.ax.plot([], [], c=tools.ColorDefinitions.HIGH_CONFIDENCE, label='Plddt >'+str(plddt_threshold), **_MARKERKWARGS)
-            _low_confidence = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONFIDENCE, label='Plddt <'+str(plddt_threshold), **_MARKERKWARGS)
+            plots += _sufficient_contacts + _low_contacts
 
-            plots += _sufficient_contacts + _low_contacts + _high_confidence + _low_confidence
+            color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+            thresholds = list(color_scheme.keys())
+            thresholds.sort()
+            for th in thresholds:
+                plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
 
         labels = [l.get_label() for l in plots]
         self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
@@ -421,7 +424,16 @@ class ModelValidationFigure(Figure):
                 plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
 
                 for resnum in residues:
-                    color = tools.ColorDefinitions.LOW_CONFIDENCE if plddts[resnum] < plddt_threshold else tools.ColorDefinitions.HIGH_CONFIDENCE
+
+                    color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+                    thresholds = list(color_scheme.keys())
+                    thresholds.sort()
+                    color = color_scheme[thresholds[0]] 
+
+                    for th in thresholds:
+                        if plddts[resnum] < th:
+                            color = color_scheme[th] 
+
                     self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **MARKERKWARGS)
 
 

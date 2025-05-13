@@ -62,6 +62,7 @@ class RosettaNpzParser(BinaryDistanceFileParser):
         :obj:`~conkit.core.distancefile.DistanceFile`
 
         """
+        atom = "C1'"
 
         hierarchy = DistanceFile(f_id)
         hierarchy.original_file_format = "rosettanpz"
@@ -69,7 +70,12 @@ class RosettaNpzParser(BinaryDistanceFileParser):
         hierarchy.add(_map)
 
         prediction = np.load(f_handle, allow_pickle=True)
-        probs = prediction['dist']
+        if 'dist' in prediction.keys():
+            probs = prediction['dist']
+        elif 'distance' in prediction.keys():
+            probs = prediction['distance'].item()[atom]
+        else:
+            print('no distograms found in rosettanpz')
         # Bin #0 corresponds with d>20A & bins #1 ~ #36 correspond with 2A<d<20A in increments of 0.5A
         probs = probs[:, :, [x for x in range(1, 37)] + [0]]
 

@@ -75,8 +75,12 @@ class ColorDefinitions(object):
     MISALIGNED = '#f7ba40'
     LOW_CONTACTS = '#eecece'
     SUFFICIENT_CONTACTS = '#a78383'
-    LOW_CONFIDENCE = '#c29431'
-    HIGH_CONFIDENCE = '#204e4c'
+    PLDDT_COLORS = {
+        100: "#0D57D4",
+        90: "#6ACCF2",
+        70: "#FFDA36",
+        50: "#FE7D4D"
+    }
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",
