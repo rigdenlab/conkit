@@ -427,7 +427,7 @@ class ModelValidationFigure(Figure):
 
                     color_scheme = tools.ColorDefinitions.PLDDT_COLORS
                     thresholds = list(color_scheme.keys())
-                    thresholds.sort()
+                    thresholds.sort(reverse=True)
                     color = color_scheme[thresholds[0]] 
 
                     for th in thresholds:
