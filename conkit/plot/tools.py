@@ -73,6 +73,14 @@ class ColorDefinitions(object):
     CORRECT = '#40eef7'
     ALIGNED = '#3d8beb'
     MISALIGNED = '#f7ba40'
+    LOW_CONTACTS = '#eecece'
+    SUFFICIENT_CONTACTS = '#a78383'
+    PLDDT_COLORS = {
+        100: "#0D57D4",
+        90: "#6ACCF2",
+        70: "#FFDA36",
+        50: "#FE7D4D"
+    }
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",

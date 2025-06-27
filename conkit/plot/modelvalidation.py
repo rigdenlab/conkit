@@ -96,7 +96,7 @@ class ModelValidationFigure(Figure):
 
     """
 
-    def __init__(self, model, prediction, sequence, dssp, map_align_exe=None, dist_bins=None, l_factor=0.5, **kwargs):
+    def __init__(self, model, prediction, sequence, map_align_exe=None, dist_bins=None, l_factor=0.5, **kwargs):
         """A new model validation plot
 
         Parameters
@@ -129,21 +129,35 @@ class ModelValidationFigure(Figure):
         self.alignment = {}
         self.sorted_scores = None
         self.smooth_scores = None
+        self.map_align_exe = None
 
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
 
-        self.map_align_exe = map_align_exe
         self.l_factor = l_factor
         self.dist_bins = dist_bins
         self.model = model
         self.prediction = prediction
         self.sequence = sequence
-        self.classifier, self.scaler = load_validation_model()
         self.absent_residues = self._get_absent_residues()
-        self.dssp = self._parse_dssp(dssp)
 
-        self.draw()
+        self.data = pd.DataFrame()
+
+        model_distogram = self._prepare_distogram(self.model.copy())
+        prediction_distogram = self._prepare_distogram(self.prediction.copy())
+        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_dict = model_cmap.as_dict()
+        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
+        predicted_dict = prediction_cmap.as_dict()
+
+        cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict,
+                                                                              self.sequence, self.absent_residues)
+        rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
+        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics)
+
+        self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
+
+        #self.draw()
 
     def __repr__(self):
         return self.__class__.__name__
@@ -273,6 +287,8 @@ class ModelValidationFigure(Figure):
             stdout, stderr = map_align_cline()
             self.alignment = tools.parse_map_align_stdout(stdout)
 
+
+
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
         _features = []
@@ -281,30 +297,46 @@ class ModelValidationFigure(Figure):
 
         self.data = pd.DataFrame(_features)
         self.data.columns = ALL_VALIDATION_FEATURES
-        self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
 
-        if self.map_align_exe is not None:
-            self._get_cmap_alignment()
-            self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
-        else:
-            self.data['MISALIGNED'] = False
+        self.data['MISALIGNED'] = False        
+        self.data['SCORE'] = 0
 
-    def _add_legend(self):
+
+
+    def _add_legend(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
         """Adds legend to the :obj:`~conkit.plot.ModelValidationFigure`"""
-        _error = self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
-        _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
-        _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
-        _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
-        plots = _score_plot + _threshold_line + _correct + _error
 
-        if self.map_align_exe is not None:
+        plots = []
+
+        if RUN_SVM:
+            _error = self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
+            _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
+            _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
+            _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
+        plots += _score_plot + _threshold_line + _correct + _error
+
+        if RUN_MAP_ALIGN:
             _misaligned = self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
             _aligned = self.ax.plot([], [], c=tools.ColorDefinitions.ALIGNED, label='Aligned', **_MARKERKWARGS)
             plots += _misaligned + _aligned
 
+        if RUN_FILTERS:
+            _sufficient_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS, label='Sufficient contacts', **_MARKERKWARGS)
+            _low_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS, label='Low contacts <'+str(n_contacts_per_res), **_MARKERKWARGS)
+
+            plots += _sufficient_contacts + _low_contacts
+
+            color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+            thresholds = list(color_scheme.keys())
+            thresholds.sort()
+            for th in thresholds:
+                plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
+
         labels = [l.get_label() for l in plots]
         self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
                        ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
+
+
 
     def _predict_score(self, resnum):
         """Predict whether a given residue is part of a model error or not"""
@@ -314,46 +346,106 @@ class ModelValidationFigure(Figure):
         scaled_features = self.scaler.transform(residue_features.values)
         return self.classifier.predict_proba(scaled_features)[0, 1]
 
-    def draw(self):
-        model_distogram = self._prepare_distogram(self.model.copy())
-        prediction_distogram = self._prepare_distogram(self.prediction.copy())
-        model_cmap = self._prepare_contactmap(self.model.copy())
-        model_dict = model_cmap.as_dict()
-        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
-        predicted_dict = prediction_cmap.as_dict()
 
-        cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict,
-                                                                              self.sequence, self.absent_residues)
-        rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
-        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics)
-        self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
-        scores = {}
+    def svm(self,dssp):
+
+        self.classifier, self.scaler = load_validation_model()
+        if dssp==None: 
+            self.dssp=pd.DataFrame()
+            self.dssp['RESNUM'] = self.data['RESNUM'].copy()
+            self.dssp['COIL'], self.dssp['HELIX'], self.dssp['SHEET'], self.dssp['ACC'] = 0, 0, 0, 0
+        else: 
+            self.dssp = self._parse_dssp(dssp)
+
+        self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
+        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
+
+
+    def map_align(self,map_align_exe=None):    
+
+        self.map_align_exe = map_align_exe
+
+        if self.map_align_exe is not None:
+            self._get_cmap_alignment()
+            self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
+        else:
+            self.data['MISALIGNED'] = False
+
+    def count_contacts(self):
+
+        cmap = self.prediction.as_contactmap()
+        cmap_dict = cmap.as_dict()
+        self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
+
+    def add_plddt(self,externally_supplied_plddts = {}):
+
+        if externally_supplied_plddts== {}:
+            self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)])
+        else:
+            print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
+
+
+    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
+
+        
         misaligned_residues = set(self.alignment.keys())
+        residues = self.data['RESNUM']
+        if RUN_SVM:
 
-        for resnum in sorted(predicted_dict.keys()):
-            _score = self._predict_score(resnum)
-            scores[resnum] = _score
-            color = tools.ColorDefinitions.ERROR if _score > 0.5 else tools.ColorDefinitions.CORRECT
-            self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
-            if self.map_align_exe is not None:
+            scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
+            self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
+            self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
+            self.ax.plot(sorted(scores.keys()), self.smooth_scores, color=tools.ColorDefinitions.SCORE)
+            for resnum in residues:
+                color = tools.ColorDefinitions.ERROR if scores[resnum] > 0.5 else tools.ColorDefinitions.CORRECT
+                self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
+
+        if RUN_MAP_ALIGN:
+
+            for resnum in residues:
                 if resnum in misaligned_residues:
                     color = tools.ColorDefinitions.MISALIGNED
                 else:
                     color = tools.ColorDefinitions.ALIGNED
-                self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
+                self.ax.plot(resnum - 1, -0.03, mfc=color, c=color, **MARKERKWARGS)
 
-        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: scores.get(x))
-        self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
-        self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
+        if RUN_FILTERS:
+
+            if 'CONTACTS' in self.data.columns:
+                n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
+                
+                for resnum in residues:
+                    color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
+                    self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
+
+            
+            if 'PLDDT' in self.data.columns:
+                plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
+
+                for resnum in residues:
+
+                    color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+                    thresholds = list(color_scheme.keys())
+                    thresholds.sort(reverse=True)
+                    color = color_scheme[thresholds[0]] 
+
+                    for th in thresholds:
+                        if plddts[resnum] < th:
+                            color = color_scheme[th] 
+
+                    self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **MARKERKWARGS)
+
+
         self.ax.axhline(0.5, **LINEKWARGS)
-        self.ax.plot(self.smooth_scores, color=tools.ColorDefinitions.SCORE)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
 
         if self.legend:
-            self._add_legend()
+            self._add_legend(RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65)
 
         # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
+
+##### Test Change #####

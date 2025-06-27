@@ -64,7 +64,7 @@ class Distogram(ContactMap):
 
     """
 
-    __slots__ = ["_original_file_format", "_sequence"]
+    __slots__ = ["_original_file_format", "_sequence","_plddt"]
 
     def __init__(self, id):
         self._original_file_format = None

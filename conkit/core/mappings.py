@@ -130,7 +130,11 @@ class AminoAcidThreeToOne(Enum):
     XAA = "X"
     UNK = "X"
     XLE = "J"
-
+    U = "U"
+    A = "A"
+    C = "C"
+    G = "G"
+    T = "T"
 
 @unique
 class ContactMatchState(Enum):
