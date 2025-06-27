@@ -251,12 +251,11 @@ def main():
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
-    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
-
-
+    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED', 'PLDDT', 'CONTACTS']]
+    residue_info['NEW_REGISTER'] = ''
 
     table = PrettyTable()
-    table.field_names = ["Residue", "Predicted score", "Suggested register"]
+    table.field_names = ["Residue", "Predicted score", "Suggested register", "plddt", "predicted contacts"]
 
     _resnum_template = '{} ({})'
     _error_score_template = '*** {0:.2f} ***'
@@ -265,20 +264,20 @@ def main():
     _empty_register = '               '
 
     for residue in residue_info.values:
-        resnum, score, misalignment = residue
+        resnum, score, misalignment, plddt, contacts, register = residue
         current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
         score = _error_score_template.format(score) if score > 0.5 else _correct_score_template.format(score)
 
         if misalignment and resnum in validation.alignment.keys():
             register = _register_template.format(sequence.seq[validation.alignment[resnum] - 1], validation.alignment[resnum])
+            residue_info.loc[residue_info['RESNUM'] == resnum, 'NEW_REGISTER'] = register
         else:
             register = _empty_register
+            residue_info.loc[residue_info['RESNUM'] == resnum, 'NEW_REGISTER'] = register
 
-        table.add_row([current_residue, score, register])
+        table.add_row([current_residue, score, register, plddt, contacts])
 
     ### add json format report ###
-
-
 
 
     if args.output_json:
