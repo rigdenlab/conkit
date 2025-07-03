@@ -164,6 +164,29 @@ def set_contact_definition(moltype,rep_atom=None,cutoff=None):
     else:
         raise ValueError('Molecule type not supported without explicit contact definition, set atleast the --rep_atom flag and considder setting --contact_dist')
 
+def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A'): 
+    err_length = err_border[1] - err_border[0]
+    start = err_border[0] - int(err_length/2)
+    end = err_border[1] + int(err_length/2)
+    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'
+    logfname = '_gesamt.stdout'
+    #print('running gesamt with :' + cmd.format(gesamt_exe, structurefile, chain_fixed, start, end, experimentfile, chain_moving, start, end))
+    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
+    logcontents = str(p.communicate()[0])
+    start_index = logcontents.find('Q-score          :')
+    end_index = logcontents.find('\\n',start_index,-1)
+    try:
+        Q = float(logcontents[end_index-10:end_index])
+    except:
+        print('Qscore not found, instead got:')
+        print(logcontents)
+        Q = -1
+    return Q
+
+def get_error_borders():
+
+    
+
 
 def main():
     """The main routine for conkit-validate functionality"""
@@ -236,6 +259,9 @@ def main():
             logger.info(os.linesep + "now plddts would be added.")
             
         if args.gesamt_exe:
+            # identify potential errors
+
+
             cmd = 'gesamt {} {}'
             logfname = '_gesamt.stdout'
             p = subprocess.Popen(cmd.format(args.pdbfile, args.distfile), stdout=subprocess.PIPE, shell=True)
