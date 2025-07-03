@@ -41,6 +41,7 @@ from __future__ import print_function
 
 import os
 from Bio.PDB.DSSP import DSSP
+from Bio.PDB import PDBParser
 import numpy as np
 import pandas as pd
 import tempfile
@@ -300,6 +301,9 @@ class ModelValidationFigure(Figure):
 
         self.data['MISALIGNED'] = False        
         self.data['SCORE'] = 0
+        self.data['CONTACTS'] = 0        
+        self.data['PLDDT'] = 0
+        self.data['Q_IN_ERROR'] = 0   
 
 
 
@@ -384,6 +388,42 @@ class ModelValidationFigure(Figure):
             self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)])
         else:
             print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
+
+    def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe):
+
+        map_align_raw = self.data['MISALIGNED']
+        svm_raw = self.data['SCORE']
+        resnums_raw = self.data['RESNUM']
+
+        self.data['Q_IN_ERROR'] = self.data['RESNUM'].apply(lambda x: 2)
+
+        seen = set()
+        resnums = []
+        svm = []
+        map_align = []
+
+        for r, s, m in zip(resnums_raw, svm_raw, map_align_raw):
+            if r not in seen:
+                seen.add(r)
+                resnums.append(r)
+                svm.append(s)
+                map_align.append(m)
+
+        # identify potential errors
+
+        flagged_regions = tools.get_error_borders(svm, map_align, resnums)
+
+        # run gesamt for every region
+        p = PDBParser()
+        model = p.get_structure('structure', experimentfile)[0]
+        chain = model[0]
+        chain_experiment = chain.get_id()
+
+        for region in flagged_regions:
+            Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A')
+            self.data.loc[self.data['RESNUM'] <= region[1] and self.data['RESNUM'] >= region[0], 'Q_IN_ERROR'] = Q_region
+        
+        return 0
 
 
     def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
