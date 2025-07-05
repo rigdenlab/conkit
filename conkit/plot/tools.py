@@ -35,6 +35,7 @@ __version__ = "0.13.3"
 
 import numpy as np
 import os
+import subprocess
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -580,7 +581,7 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums):
     svm_filled = np.zeros(length)
     map_align_filled = np.zeros(length, dtype=bool)
     relative_indices = moddeled_resnums - np.min(moddeled_resnums)
-    resnums_completed = np.arange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
+    resnums_completed = np.arange(np.min(moddeled_resnums), np.max(moddeled_resnums) + 1)
     svm_filled[relative_indices] = svm_list
     svm_bool = (svm_filled >= 0.5)
     map_align_filled[relative_indices] = map_align_list

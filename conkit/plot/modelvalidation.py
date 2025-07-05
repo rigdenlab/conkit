@@ -395,7 +395,7 @@ class ModelValidationFigure(Figure):
         svm_raw = self.data['SCORE']
         resnums_raw = self.data['RESNUM']
 
-        self.data['Q_IN_ERROR'] = self.data['RESNUM'].apply(lambda x: 2)
+        self.data['Q_IN_ERROR'] = 2
 
         seen = set()
         resnums = []
@@ -409,19 +409,20 @@ class ModelValidationFigure(Figure):
                 svm.append(s)
                 map_align.append(m)
 
+        print(map_align[127:167])
         # identify potential errors
 
         flagged_regions = tools.get_error_borders(svm, map_align, resnums)
 
         # run gesamt for every region
         p = PDBParser()
-        model = p.get_structure('structure', experimentfile)[0]
-        chain = model[0]
-        chain_experiment = chain.get_id()
+        model = p.get_structure('structure', experimentfile)[0]  ## hot fix to get chain name needed for gesamt while we are running single chain only this block needs fixing with external chain selection when multi chain handeling is introduced
+        for chain in model:
+            chain_experiment = chain.get_id()
 
         for region in flagged_regions:
             Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A')
-            self.data.loc[self.data['RESNUM'] <= region[1] and self.data['RESNUM'] >= region[0], 'Q_IN_ERROR'] = Q_region
+            self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
         
         return 0
 
