@@ -357,7 +357,7 @@ def main():
     _empty_register = '               '
 
     for residue in residue_info.values:
-        resnum, score, misalignment, plddt, contacts, register, Qs = residue
+        resnum, score, misalignment, plddt, contacts, Qs, register = residue
         current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
         score = _error_score_template.format(score) if score > 0.5 else _correct_score_template.format(score)
 

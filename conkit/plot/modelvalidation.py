@@ -395,7 +395,7 @@ class ModelValidationFigure(Figure):
         svm_raw = self.data['SCORE']
         resnums_raw = self.data['RESNUM']
 
-        self.data['Q_IN_ERROR'] = 2
+        self.data['Q_IN_ERROR'] = ''
 
         seen = set()
         resnums = []
