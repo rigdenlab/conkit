@@ -82,6 +82,11 @@ class ColorDefinitions(object):
         70: "#FFDA36",
         50: "#FE7D4D"
     }
+    Q_COLORS = {
+        1: "#6A7EFC",
+        0.5: "#FF5656",
+        0: "#494953"
+    }
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",
@@ -501,7 +506,7 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A'): 
+def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype = 'Protein'): 
     err_length = err_border[1] - err_border[0]
     start = err_border[0] - int(err_length/2)
     end = err_border[1] + int(err_length/2)

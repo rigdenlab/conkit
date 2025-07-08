@@ -336,6 +336,13 @@ class ModelValidationFigure(Figure):
             for th in thresholds:
                 plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
 
+            color_scheme = tools.ColorDefinitions.Q_COLORS
+            thresholds = list(color_scheme.keys())
+            thresholds.sort()
+            plots += self.ax.plot([], [], c=color_scheme[thresholds[2]], label='Q > 0.5', **_MARKERKWARGS)
+            plots += self.ax.plot([], [], c=color_scheme[thresholds[1]], label='Q < 0.5', **_MARKERKWARGS)
+            plots += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
+
         labels = [l.get_label() for l in plots]
         self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
                        ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
@@ -409,7 +416,6 @@ class ModelValidationFigure(Figure):
                 svm.append(s)
                 map_align.append(m)
 
-        print(map_align[127:167])
         # identify potential errors
 
         flagged_regions = tools.get_error_borders(svm, map_align, resnums)
@@ -464,11 +470,12 @@ class ModelValidationFigure(Figure):
             if 'PLDDT' in self.data.columns:
                 plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
 
+                color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+                thresholds = list(color_scheme.keys())
+                thresholds.sort(reverse=True)
+
                 for resnum in residues:
 
-                    color_scheme = tools.ColorDefinitions.PLDDT_COLORS
-                    thresholds = list(color_scheme.keys())
-                    thresholds.sort(reverse=True)
                     color = color_scheme[thresholds[0]] 
 
                     for th in thresholds:
@@ -476,6 +483,28 @@ class ModelValidationFigure(Figure):
                             color = color_scheme[th] 
 
                     self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **MARKERKWARGS)
+
+            if 'Q_IN_ERROR' in self.data.columns:
+                Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
+
+                color_scheme = tools.ColorDefinitions.Q_COLORS
+                thresholds = list(color_scheme.keys())
+                thresholds.sort(reverse=True)
+
+                for resnum in residues:
+
+                    if Qs[resnum] == '':
+                        continue
+                    else:
+                        color = color_scheme[thresholds[0]] 
+
+                        for th in thresholds:
+                            if Qs[resnum] < th:
+                                color = color_scheme[th] 
+
+                    self.ax.plot(resnum - 1, -0.09, mfc=color, c=color, **MARKERKWARGS)
+
+            
 
 
         self.ax.axhline(0.5, **LINEKWARGS)
