@@ -41,6 +41,7 @@ from __future__ import print_function
 
 import os
 from Bio.PDB.DSSP import DSSP
+from Bio.PDB import PDBParser
 import numpy as np
 import pandas as pd
 import tempfile
@@ -300,6 +301,9 @@ class ModelValidationFigure(Figure):
 
         self.data['MISALIGNED'] = False        
         self.data['SCORE'] = 0
+        self.data['CONTACTS'] = 0        
+        self.data['PLDDT'] = 0
+        self.data['Q_IN_ERROR'] = 0   
 
 
 
@@ -331,6 +335,13 @@ class ModelValidationFigure(Figure):
             thresholds.sort()
             for th in thresholds:
                 plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
+
+            color_scheme = tools.ColorDefinitions.Q_COLORS
+            thresholds = list(color_scheme.keys())
+            thresholds.sort()
+            plots += self.ax.plot([], [], c=color_scheme[thresholds[2]], label='Q > 0.5', **_MARKERKWARGS)
+            plots += self.ax.plot([], [], c=color_scheme[thresholds[1]], label='Q < 0.5', **_MARKERKWARGS)
+            plots += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
 
         labels = [l.get_label() for l in plots]
         self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
@@ -385,6 +396,42 @@ class ModelValidationFigure(Figure):
         else:
             print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
 
+    def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe):
+
+        map_align_raw = self.data['MISALIGNED']
+        svm_raw = self.data['SCORE']
+        resnums_raw = self.data['RESNUM']
+
+        self.data['Q_IN_ERROR'] = ''
+
+        seen = set()
+        resnums = []
+        svm = []
+        map_align = []
+
+        for r, s, m in zip(resnums_raw, svm_raw, map_align_raw):
+            if r not in seen:
+                seen.add(r)
+                resnums.append(r)
+                svm.append(s)
+                map_align.append(m)
+
+        # identify potential errors
+
+        flagged_regions = tools.get_error_borders(svm, map_align, resnums)
+
+        # run gesamt for every region
+        p = PDBParser()
+        model = p.get_structure('structure', experimentfile)[0]  ## hot fix to get chain name needed for gesamt while we are running single chain only this block needs fixing with external chain selection when multi chain handeling is introduced
+        for chain in model:
+            chain_experiment = chain.get_id()
+
+        for region in flagged_regions:
+            Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A')
+            self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
+        
+        return 0
+
 
     def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
 
@@ -423,11 +470,12 @@ class ModelValidationFigure(Figure):
             if 'PLDDT' in self.data.columns:
                 plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
 
+                color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+                thresholds = list(color_scheme.keys())
+                thresholds.sort(reverse=True)
+
                 for resnum in residues:
 
-                    color_scheme = tools.ColorDefinitions.PLDDT_COLORS
-                    thresholds = list(color_scheme.keys())
-                    thresholds.sort(reverse=True)
                     color = color_scheme[thresholds[0]] 
 
                     for th in thresholds:
@@ -435,6 +483,28 @@ class ModelValidationFigure(Figure):
                             color = color_scheme[th] 
 
                     self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **MARKERKWARGS)
+
+            if 'Q_IN_ERROR' in self.data.columns:
+                Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
+
+                color_scheme = tools.ColorDefinitions.Q_COLORS
+                thresholds = list(color_scheme.keys())
+                thresholds.sort(reverse=True)
+
+                for resnum in residues:
+
+                    if Qs[resnum] == '':
+                        continue
+                    else:
+                        color = color_scheme[thresholds[0]] 
+
+                        for th in thresholds:
+                            if Qs[resnum] < th:
+                                color = color_scheme[th] 
+
+                    self.ax.plot(resnum - 1, -0.09, mfc=color, c=color, **MARKERKWARGS)
+
+            
 
 
         self.ax.axhline(0.5, **LINEKWARGS)
