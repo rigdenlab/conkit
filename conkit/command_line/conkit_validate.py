@@ -334,7 +334,7 @@ def main():
             
         if args.gesamt_exe and (args.distformat in ['pdb', 'mmcif']):
 
-            validation.Run_gesamt_filter(args.pdbfile, args.distfile, args.gesamt_exe)
+            validation.Run_gesamt_filter(args.pdbfile, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
             # identify potential errors
             logger.info(os.linesep + "added Q-scores")            
    

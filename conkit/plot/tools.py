@@ -506,13 +506,31 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype = 'Protein'): 
+def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype = 'Protein'): 
     err_length = err_border[1] - err_border[0]
     start = err_border[0] - int(err_length/2)
     end = err_border[1] + int(err_length/2)
     cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'
+
+    # this block is included to support current protein only gesamt
+    o = subprocess.Popen(gesamt_exe, stdout=subprocess.PIPE, shell=True)
+    version_check_logcontents = str(o.communicate()[0])
     logfname = '_gesamt.stdout'
-    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
+
+    if 'moltype' in version_check_logcontents:
+
+        cmd += ' -moltype={}'
+        if moltype=='CUSTOM':
+            print('custom contact atom parsing handling to be added')
+        p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end, moltype), stdout=subprocess.PIPE, shell=True)
+   
+    elif moltype != 'Protein':
+        print(f'Provided gesamt executable only accepts Protein, You tried to run it on {moltype}')
+        return -1
+    
+    else:
+        p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
+    
     logcontents = str(p.communicate()[0])
     start_index = logcontents.find('Q-score          :')
     end_index = logcontents.find('\\n',start_index,-1)
