@@ -569,6 +569,7 @@ def split_into_blocks(indices):
 def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
     label_index_num_offset = np.min(valid_nums)
     
+    print(region)
     regionstart = np.min(region)
     regionend = np.max(region)
     
@@ -615,8 +616,10 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums):
     general_error_resnums = resnums_completed[general_errors_indices]
     general_errors = split_into_blocks(general_error_resnums)
     region_borders = set()
+    print(general_errors)
     for err in general_errors:
-        borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
-        region_borders.add(borders)
+        if err:
+            borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            region_borders.add(borders)
     
     return region_borders
