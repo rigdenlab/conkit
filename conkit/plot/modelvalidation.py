@@ -41,7 +41,7 @@ from __future__ import print_function
 
 import os
 from Bio.PDB.DSSP import DSSP
-from Bio.PDB import PDBParser
+from Bio.PDB import PDBParser, MMCIFParser
 import numpy as np
 import pandas as pd
 import tempfile
@@ -303,7 +303,7 @@ class ModelValidationFigure(Figure):
         self.data['SCORE'] = 0
         self.data['CONTACTS'] = 0        
         self.data['PLDDT'] = 0
-        self.data['Q_IN_ERROR'] = 0   
+        self.data['Q_IN_ERROR'] = ''
 
 
 
@@ -396,13 +396,11 @@ class ModelValidationFigure(Figure):
         else:
             print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
 
-    def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe):
+    def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe, moltype='Protein', experimentfiletype='pdb'):
 
         map_align_raw = self.data['MISALIGNED']
         svm_raw = self.data['SCORE']
         resnums_raw = self.data['RESNUM']
-
-        self.data['Q_IN_ERROR'] = ''
 
         seen = set()
         resnums = []
@@ -421,13 +419,16 @@ class ModelValidationFigure(Figure):
         flagged_regions = tools.get_error_borders(svm, map_align, resnums)
 
         # run gesamt for every region
-        p = PDBParser()
+        if experimentfiletype == 'pdb':
+            p = PDBParser()
+        if experimentfiletype == 'mmcif':
+            p = MMCIFParser()
         model = p.get_structure('structure', experimentfile)[0]  ## hot fix to get chain name needed for gesamt while we are running single chain only this block needs fixing with external chain selection when multi chain handeling is introduced
         for chain in model:
             chain_experiment = chain.get_id()
 
         for region in flagged_regions:
-            Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A')
+            Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
             self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
         
         return 0
