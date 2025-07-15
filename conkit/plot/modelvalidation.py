@@ -303,7 +303,7 @@ class ModelValidationFigure(Figure):
         self.data['SCORE'] = 0
         self.data['CONTACTS'] = 0        
         self.data['PLDDT'] = 0
-        self.data['Q_IN_ERROR'] = 0   
+        self.data['Q_IN_ERROR'] = ''
 
 
 
@@ -401,8 +401,6 @@ class ModelValidationFigure(Figure):
         map_align_raw = self.data['MISALIGNED']
         svm_raw = self.data['SCORE']
         resnums_raw = self.data['RESNUM']
-
-        self.data['Q_IN_ERROR'] = ''
 
         seen = set()
         resnums = []
