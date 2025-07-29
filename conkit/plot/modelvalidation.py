@@ -303,7 +303,7 @@ class ModelValidationFigure(Figure):
         self.data['SCORE'] = 0
         self.data['CONTACTS'] = 0        
         self.data['PLDDT'] = 0
-        self.data['Q_IN_ERROR'] = ''
+        self.data['Q_IN_ERROR'] = ''  
 
 
 
@@ -428,9 +428,13 @@ class ModelValidationFigure(Figure):
             chain_experiment = chain.get_id()
 
         for region in flagged_regions:
+            print(f'running gesamt on region {region}')
             Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
             self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
         
+
+        Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
+        print(Qs)
         return 0
 
 
@@ -487,7 +491,7 @@ class ModelValidationFigure(Figure):
 
             if 'Q_IN_ERROR' in self.data.columns:
                 Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
-
+                print(Qs)
                 color_scheme = tools.ColorDefinitions.Q_COLORS
                 thresholds = list(color_scheme.keys())
                 thresholds.sort(reverse=True)

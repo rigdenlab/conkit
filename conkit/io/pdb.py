@@ -112,6 +112,20 @@ class GenericStructureParser(ContactFileParser):
 
     def _remove_atom(self, chain, type):
         """Tidy up a chain removing all HETATM entries"""
+
+        if type == 'BASEPAIRING':
+            #handle special request for contacts/distances based on basepairing atoms in NA rather than backbone atoms
+            for residue in chain.copy():
+                for atom in residue.copy():
+                    if atom.is_disordered():
+                        chain[residue.id].detach_child(atom.id)
+                    elif atom.id == 'N1' and residue.resname in ['A', 'G', 'DA', 'DG']:
+                        continue
+                    elif atom.id == 'N9' and residue.resname in ['C', 'T', 'U' 'DC', 'DT','DU']:
+                        continue
+                    else:
+                        chain[residue.id].detach_child(atom.id)
+
         for residue in chain.copy():
             for atom in residue.copy():
                 if atom.is_disordered():
