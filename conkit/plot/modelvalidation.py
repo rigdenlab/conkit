@@ -383,9 +383,9 @@ class ModelValidationFigure(Figure):
         else:
             self.data['MISALIGNED'] = False
 
-    def count_contacts(self):
+    def count_contacts(self,cutoff):
 
-        cmap = self.prediction.as_contactmap()
+        cmap = self.prediction.as_contactmap(distance_cutoff=cutoff)
         cmap_dict = cmap.as_dict()
         self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
 

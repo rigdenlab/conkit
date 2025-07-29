@@ -320,7 +320,7 @@ def main():
     if args.RUN_FILTERS=='yes':
         logger.info(os.linesep + "Running Filters.")
 
-        validation.count_contacts()
+        validation.count_contacts(cutoff=cutoff)
 
         if (prediction.plddt != None) and (args.PLDDT_IN_DISTFILE == 'yes'): ##turn into check for plddt
 
