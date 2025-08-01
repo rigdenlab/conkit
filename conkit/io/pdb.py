@@ -116,6 +116,7 @@ class GenericStructureParser(ContactFileParser):
 
         if type == 'BASEPAIRING':
             #handle special request for contacts/distances based on basepairing atoms in NA rather than backbone atoms
+            #this could be improved to handle hoogsteen pairs
             for residue in chain.copy():
                 for atom in residue.copy():
                     if atom.is_disordered():
