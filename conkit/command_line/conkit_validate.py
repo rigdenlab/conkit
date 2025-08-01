@@ -275,7 +275,8 @@ def main():
 
     logger.info(os.linesep + "Working directory:                           %s", os.getcwd())
     logger.info("Reading input sequence:                      %s", args.seqfile)
-    sequence = conkit.io.read(args.seqfile, args.seqformat).top
+    sequencefile = conkit.io.read(args.seqfile, args.seqformat)
+    sequence = sequencefile.top
 
     if len(sequence) < 5:
         raise ValueError('Cannot validate model with less than 5 residues')
@@ -290,6 +291,7 @@ def main():
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
+
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
     model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
