@@ -71,6 +71,7 @@ class GenericStructureParser(ContactFileParser):
         for residue in chain:
             for atom in residue.get_atoms():
                 plddts[residue.get_id()[1]] = atom.get_bfactor()
+
         return plddts
 
 
@@ -112,14 +113,28 @@ class GenericStructureParser(ContactFileParser):
 
     def _remove_atom(self, chain, type):
         """Tidy up a chain removing all HETATM entries"""
-        for residue in chain.copy():
-            for atom in residue.copy():
-                if atom.is_disordered():
-                    chain[residue.id].detach_child(atom.id)
-                elif residue.resname == "GLY" and type == "CB" and atom.id == "CA":
-                    continue
-                elif atom.id != type:
-                    chain[residue.id].detach_child(atom.id)
+
+        if type == 'BASEPAIRING':
+            #handle special request for contacts/distances based on basepairing atoms in NA rather than backbone atoms
+            #this could be improved to handle hoogsteen pairs
+            for residue in chain.copy():
+                for atom in residue.copy():
+                    if atom.is_disordered():
+                        chain[residue.id].detach_child(atom.id)
+                    else:
+                        atom_needed = (atom.id == 'N1' and residue.resname in ['A', 'G', 'DA', 'DG'])
+                        atom_needed = atom_needed or (atom.id == 'N3' and residue.resname in ['C', 'T', 'U', 'DC', 'DT','DU'])
+                        if not atom_needed:
+                            chain[residue.id].detach_child(atom.id)
+        else:
+            for residue in chain.copy():
+                for atom in residue.copy():
+                    if atom.is_disordered():
+                        chain[residue.id].detach_child(atom.id)
+                    elif residue.resname == "GLY" and type == "CB" and atom.id == "CA":
+                        continue
+                    elif atom.id != type:
+                        chain[residue.id].detach_child(atom.id)
 
     def _remove_hetatm(self, chain):
         """Tidy up a chain removing all HETATM entries"""
