@@ -311,6 +311,8 @@ def main():
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
 
+        validation.calculate_features()
+
         if args.moltype=='Protein':
             p = PDBParser()
             structure = p.get_structure('structure', args.pdbfile)[0]

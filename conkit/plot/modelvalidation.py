@@ -141,8 +141,19 @@ class ModelValidationFigure(Figure):
         self.prediction = prediction
         self.sequence = sequence
         self.absent_residues = self._get_absent_residues()
+        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
+        predicted_dict = prediction_cmap.as_dict()
 
         self.data = pd.DataFrame()
+
+        self.data['RESNUM'] = predicted_dict.keys()
+        self.data['MISALIGNED'] = False        
+        self.data['SCORE'] = 0
+        self.data['CONTACTS'] = 0        
+        self.data['PLDDT'] = 0
+        self.data['Q_IN_ERROR'] = ''  
+
+    def calculate_features(self):
 
         model_distogram = self._prepare_distogram(self.model.copy())
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
@@ -296,14 +307,10 @@ class ModelValidationFigure(Figure):
         for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
             _features.append((*residue_features,))
 
-        self.data = pd.DataFrame(_features)
-        self.data.columns = ALL_VALIDATION_FEATURES
-
-        self.data['MISALIGNED'] = False        
-        self.data['SCORE'] = 0
-        self.data['CONTACTS'] = 0        
-        self.data['PLDDT'] = 0
-        self.data['Q_IN_ERROR'] = ''  
+        feature_df = pd.DataFrame(_features)
+        feature_df.columns = ALL_VALIDATION_FEATURES
+        
+        self.data = self.data.merge(feature_df, how='inner', on =['RESNUM'])
 
 
 
