@@ -94,7 +94,7 @@ def create_argument_parser():
                         help="Number of iterations")
     parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
                         help="Type of molecule")
-    parser.add_argument("--run_svm", dest="RUN_SVM", default='yes', type=str,
+    parser.add_argument("--run_svm", dest="RUN_SVM", default='yes if prediction not pdb or mmcif', type=str,
                         help="Whether to run the support vector machine validation")
     parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
                         help="Whether to run the contactmap alignment validation")
@@ -275,7 +275,8 @@ def main():
 
     logger.info(os.linesep + "Working directory:                           %s", os.getcwd())
     logger.info("Reading input sequence:                      %s", args.seqfile)
-    sequence = conkit.io.read(args.seqfile, args.seqformat).top
+    sequencefile = conkit.io.read(args.seqfile, args.seqformat)
+    sequence = sequencefile.top
 
     if len(sequence) < 5:
         raise ValueError('Cannot validate model with less than 5 residues')
@@ -290,6 +291,7 @@ def main():
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
+
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
     model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
@@ -299,6 +301,12 @@ def main():
     logger.info(os.linesep + "Validating model.")
 
     validation = conkit.plot.ModelValidationFigure(model, prediction, sequence)
+
+    if args.RUN_SVM=='yes if prediction not pdb or mmcif': #don't run the svm if prediction is a structure by default
+        if args.distformat in ['pdb', 'mmcif']:
+            args.RUN_SVM='no'
+        else:
+            args.RUN_SVM='yes'
 
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
