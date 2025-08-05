@@ -408,7 +408,7 @@ def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics)
     absent_residues: list, tuple, set
         The residues that are missing from the model
     *metrics: list
-        The mertics for which the Z-Scores will be calculated
+        The metrics for which the Z-Scores will be calculated
 
     Returns
     -------
