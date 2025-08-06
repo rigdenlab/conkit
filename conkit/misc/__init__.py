@@ -54,6 +54,7 @@ def load_validation_model():
         raise FileNotFoundError('Cannot find scaler pickle file {}'.format(STANDARD_SCALER_PICKLE))
     classifier = joblib.load(TRAINED_CLASSIFIER_PICKLE)
     scaler = joblib.load(STANDARD_SCALER_PICKLE)
+
     return classifier, scaler
 
 

@@ -288,6 +288,9 @@ def main():
     if args.distformat in ['pdb', 'mmcif']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom)
         prediction = prediction_file.top
+    elif args.distformat in ['rosettanpz']:
+        prediction_file = conkit.io.read(args.distfile, args.distformat, atom_type=rep_atom)
+        prediction = prediction_file.top
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
