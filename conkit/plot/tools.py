@@ -292,7 +292,7 @@ def convolution_smooth_values(x, window=5):
     return x_smooth
 
 
-def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights=''):
     """Calculate the RMSD between two different distograms
 
     Parameters
@@ -309,8 +309,8 @@ def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
     tuple
        Two lists with the raw/smoothed RMSD values at each residue position
     """
-    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd)
-    rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), 10)
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd, external_weights='')
+    rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), smooth_window)
     return rmsd_raw, rmsd_smooth
 
 
@@ -618,7 +618,7 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums):
     region_borders = set()
     print(general_errors)
     for err in general_errors:
-        if err:
+        if len(err)>=MIN_ERROR_SIZE:
             borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
             region_borders.add(borders)
     
