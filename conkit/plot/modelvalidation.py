@@ -141,12 +141,12 @@ class ModelValidationFigure(Figure):
         self.prediction = prediction
         self.sequence = sequence
         self.absent_residues = self._get_absent_residues()
-        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
-        predicted_dict = prediction_cmap.as_dict()
+        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_dict = model_cmap.as_dict()
 
         self.data = pd.DataFrame()
 
-        self.data['RESNUM'] = predicted_dict.keys()
+        self.data['RESNUM'] = model_dict.keys()
         self.data['MISALIGNED'] = False        
         self.data['SCORE'] = 0
         self.data['CONTACTS'] = 0        

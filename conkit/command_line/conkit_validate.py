@@ -61,9 +61,6 @@ from conkit.plot.tools import is_executable
 
 logger = None
 
-MIN_ERROR_SIZE = 5
-ERROR_BORDER_BUFFER = 3
-
 def create_argument_parser():
     """Create a parser for the command line arguments used in conkit-validate"""
 
@@ -94,6 +91,10 @@ def create_argument_parser():
                         help="Number of iterations")
     parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
                         help="Type of molecule")
+    parser.add_argument("--chain", dest="selected_chain", default="", type=str,
+                        help="Type of molecule")
+    parser.add_argument("--renumber_model", dest="RENUMBER", default='yes', type=str,
+                        help="Whether to crops-style create a version of the input model renumbered to match the sequence")
     parser.add_argument("--run_svm", dest="RUN_SVM", default='yes if prediction not pdb or mmcif', type=str,
                         help="Whether to run the support vector machine validation")
     parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
@@ -167,101 +168,6 @@ def set_contact_definition(moltype,rep_atom=None,cutoff=None):
     else:
         raise ValueError('Molecule type not supported without explicit contact definition, set atleast the --rep_atom flag and considder setting --contact_dist')
 
-def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A'): 
-    err_length = err_border[1] - err_border[0]
-    start = err_border[0] - int(err_length/2)
-    end = err_border[1] + int(err_length/2)
-    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'
-    logfname = '_gesamt.stdout'
-    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
-    logcontents = str(p.communicate()[0])
-    start_index = logcontents.find('Q-score          :')
-    end_index = logcontents.find('\\n',start_index,-1)
-    try:
-        Q = float(logcontents[end_index-10:end_index])
-    except:
-        print('Qscore not found, instead got:')
-        print(logcontents)
-        Q = -1
-    return Q
-
-def all_consecutive_true_indices(arr, count=5):
-    arr = np.asarray(arr, dtype=bool)
-    int_arr = arr.astype(int)
-    
-    # Find where windows of `count` True values occur
-    window_sum = np.convolve(int_arr, np.ones(count, dtype=int), mode='valid')
-    start_indices = np.where(window_sum == count)[0]
-
-    # Collect all indices that are part of any such window
-    result_indices = set()
-    for start in start_indices:
-        result_indices.update(range(start, start + count))
-
-    # Return sorted list of unique indices
-    return sorted(result_indices)
-
-def split_into_blocks(indices):
-
-    diffs = np.diff(indices)
-    split_indices = np.where(diffs > 1)[0] + 1
-    blocks = np.split(indices, split_indices)
-
-    return blocks
-
-def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
-    label_index_num_offset = np.min(valid_nums)
-    
-    regionstart = np.min(region)
-    regionend = np.max(region)
-    
-    b = 1
-    while b<=buffer:
-        if regionend + 1 not in valid_nums:
-            break
-        else: 
-            regionend += 1
-            if labels[regionend-label_index_num_offset]:
-                b = 1
-            else:
-                b += 1
-
-    b = 1
-    while b<=buffer:
-        if regionstart -1 not in valid_nums:
-            break
-        else: 
-            regionstart -= 1
-            if labels[regionstart-label_index_num_offset]:
-                b = 1
-            else:
-                b += 1
-
-    return (regionstart,regionend)
-
-def get_error_borders(svm_list, map_align_list, moddeled_resnums):
-
-    length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
-    svm_filled = np.zeros(length)
-    map_align_filled = np.zeros(length, dtype=bool)
-    relative_indices = moddeled_resnums - np.min(moddeled_resnums)
-    resnums_completed = np.arrange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
-    svm_filled[relative_indices] = svm_list
-    svm_bool = (svm_filled >= 0.5)
-    map_align_filled[relative_indices] = map_align_list
-
-    general_flagged = svm_bool|map_align_filled
-
-    general_errors_indices = all_consecutive_true_indices(general_flagged, count = MIN_ERROR_SIZE)
-    general_error_resnums = resnums_completed[general_errors_indices]
-    general_errors = split_into_blocks(general_error_resnums)
-    region_borders = set()
-    for err in general_errors:
-        borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
-        region_borders.add(borders)
-    
-    return region_borders
-
 def main():
     """The main routine for conkit-validate functionality"""
     parser = create_argument_parser()
@@ -296,6 +202,9 @@ def main():
         prediction = prediction_file.top
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
+
+    out_name, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=selected_chain)
+
     model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
     if len(sequence) > 500:
