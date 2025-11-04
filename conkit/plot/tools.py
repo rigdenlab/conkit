@@ -395,7 +395,7 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
     return cmap_metrics, smooth_cmap_metrics
 
 
-def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics):
+def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics, population_radius = 10):
     """Calculate the Z-Scores for a series of metrics at each residue position
     using the population of residues within 10A
 
@@ -424,7 +424,7 @@ def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics)
                 zscore_metric.append(np.nan)
             continue
 
-        neighbour_residues = model_distogram.find_residues_within(resnum, 10)
+        neighbour_residues = model_distogram.find_residues_within(resnum, population_radius)
         for cmap_metric, zscore_metric in zip(metrics, zscore_cmap_metrics):
             population_scores = [cmap_metric[resid - 1] for resid in neighbour_residues]
             observed_score = cmap_metric[resnum - 1]

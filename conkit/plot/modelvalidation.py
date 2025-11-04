@@ -153,7 +153,7 @@ class ModelValidationFigure(Figure):
         self.data['PLDDT'] = 0
         self.data['Q_IN_ERROR'] = ''  
 
-    def calculate_features(self):
+    def calculate_features(self,z_radius = 10):
 
         model_distogram = self._prepare_distogram(self.model.copy())
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
@@ -165,7 +165,7 @@ class ModelValidationFigure(Figure):
         cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict,
                                                                               self.sequence, self.absent_residues)
         rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
-        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics)
+        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics, population_radius = z_radius)
 
         self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
