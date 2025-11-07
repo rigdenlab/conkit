@@ -58,6 +58,7 @@ import conkit.command_line
 import conkit.io
 import conkit.plot
 from conkit.plot.tools import is_executable
+from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
 
 logger = None
 
@@ -203,9 +204,12 @@ def main():
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
 
-    out_name, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=selected_chain)
+    try:
+        out_name, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=args.selected_chain)
+    except:
+        logger.info("No sufficient sequence alignment was found between chains in: %s and %s check wheter these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
 
-    model = conkit.io.read(args.pdbfile, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
+    model = conkit.io.read(out_name, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")

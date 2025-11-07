@@ -597,7 +597,7 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE
     region_borders = set()
     for err in general_errors:
         if len(err)>=MIN_ERROR_SIZE:
-        borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
-        region_borders.add(borders)
+            borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            region_borders.add(borders)
     
     return region_borders
