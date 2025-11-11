@@ -141,19 +141,19 @@ class ModelValidationFigure(Figure):
         self.prediction = prediction
         self.sequence = sequence
         self.absent_residues = self._get_absent_residues()
-        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
-        predicted_dict = prediction_cmap.as_dict()
+        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_dict = model_cmap.as_dict()
 
         self.data = pd.DataFrame()
 
-        self.data['RESNUM'] = predicted_dict.keys()
+        self.data['RESNUM'] = model_dict.keys()
         self.data['MISALIGNED'] = False        
         self.data['SCORE'] = 0
         self.data['CONTACTS'] = 0        
         self.data['PLDDT'] = 0
         self.data['Q_IN_ERROR'] = ''  
 
-    def calculate_features(self):
+    def calculate_features(self,z_radius = 10):
 
         model_distogram = self._prepare_distogram(self.model.copy())
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
@@ -165,7 +165,7 @@ class ModelValidationFigure(Figure):
         cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict,
                                                                               self.sequence, self.absent_residues)
         rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
-        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics)
+        zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics, population_radius = z_radius)
 
         self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
@@ -392,14 +392,15 @@ class ModelValidationFigure(Figure):
 
     def count_contacts(self,cutoff):
 
-        cmap = self.prediction.as_contactmap(distance_cutoff=cutoff)
-        cmap_dict = cmap.as_dict()
-        self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
+        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_dict = model_cmap.as_dict()
+        self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(model_dict[int(x)]))
 
     def add_plddt(self,externally_supplied_plddts = {}):
 
-        if externally_supplied_plddts== {}:
-            self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)])
+        if externally_supplied_plddts == {}:
+            prediction_end = len(self.prediction.plddt)
+            self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)] if int(x) < prediction_end else 0)
         else:
             print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
 
@@ -436,7 +437,7 @@ class ModelValidationFigure(Figure):
 
         for region in flagged_regions:
 
-            Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
+            Q_region = tools.Gesamt_Q_score(predictionfile, experimentfile, region, gesamt_exe = gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
             self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
         
 

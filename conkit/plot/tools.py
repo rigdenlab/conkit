@@ -395,7 +395,7 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
     return cmap_metrics, smooth_cmap_metrics
 
 
-def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics):
+def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics, population_radius = 10):
     """Calculate the Z-Scores for a series of metrics at each residue position
     using the population of residues within 10A
 
@@ -424,7 +424,7 @@ def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics)
                 zscore_metric.append(np.nan)
             continue
 
-        neighbour_residues = model_distogram.find_residues_within(resnum, 10)
+        neighbour_residues = model_distogram.find_residues_within(resnum, population_radius)
         for cmap_metric, zscore_metric in zip(metrics, zscore_cmap_metrics):
             population_scores = [cmap_metric[resid - 1] for resid in neighbour_residues]
             observed_score = cmap_metric[resnum - 1]
@@ -506,31 +506,13 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype = 'Protein'): 
+def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A'): 
     err_length = err_border[1] - err_border[0]
     start = err_border[0] - int(err_length/2)
     end = err_border[1] + int(err_length/2)
     cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'
-
-    # this block is included to support current protein only gesamt
-    o = subprocess.Popen(gesamt_exe, stdout=subprocess.PIPE, shell=True)
-    version_check_logcontents = str(o.communicate()[0])
     logfname = '_gesamt.stdout'
-
-    if 'moltype' in version_check_logcontents:
-
-        cmd += ' -moltype={}'
-        if moltype=='CUSTOM':
-            print('custom contact atom parsing handling to be added')
-        p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end, moltype), stdout=subprocess.PIPE, shell=True)
-   
-    elif moltype != 'Protein':
-        print(f'Provided gesamt executable only accepts Protein, You tried to run it on {moltype}')
-        return -1
-    
-    else:
-        p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
-    
+    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
     logcontents = str(p.communicate()[0])
     start_index = logcontents.find('Q-score          :')
     end_index = logcontents.find('\\n',start_index,-1)
@@ -569,7 +551,6 @@ def split_into_blocks(indices):
 def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
     label_index_num_offset = np.min(valid_nums)
     
-    print(region)
     regionstart = np.min(region)
     regionend = np.max(region)
     
@@ -597,15 +578,13 @@ def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
 
     return (regionstart,regionend)
 
-def get_error_borders(svm_list, map_align_list, moddeled_resnums):
-    MIN_ERROR_SIZE = 3
-    ERROR_BORDER_BUFFER = 5
+def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 3):
 
     length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
     svm_filled = np.zeros(length)
     map_align_filled = np.zeros(length, dtype=bool)
     relative_indices = moddeled_resnums - np.min(moddeled_resnums)
-    resnums_completed = np.arange(np.min(moddeled_resnums), np.max(moddeled_resnums) + 1)
+    resnums_completed = np.arrange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
     svm_filled[relative_indices] = svm_list
     svm_bool = (svm_filled >= 0.5)
     map_align_filled[relative_indices] = map_align_list
@@ -616,7 +595,6 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums):
     general_error_resnums = resnums_completed[general_errors_indices]
     general_errors = split_into_blocks(general_error_resnums)
     region_borders = set()
-    print(general_errors)
     for err in general_errors:
         if len(err)>=MIN_ERROR_SIZE:
             borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
