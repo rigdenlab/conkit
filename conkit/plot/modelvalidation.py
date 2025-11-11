@@ -392,14 +392,15 @@ class ModelValidationFigure(Figure):
 
     def count_contacts(self,cutoff):
 
-        cmap = self.prediction.as_contactmap(distance_cutoff=cutoff)
-        cmap_dict = cmap.as_dict()
-        self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(cmap_dict[int(x)]))
+        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_dict = model_cmap.as_dict()
+        self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(model_dict[int(x)]))
 
     def add_plddt(self,externally_supplied_plddts = {}):
 
-        if externally_supplied_plddts== {}:
-            self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)])
+        if externally_supplied_plddts == {}:
+            prediction_end = len(self.prediction.plddt)
+            self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)] if int(x) < prediction_end else 0)
         else:
             print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
 
@@ -436,7 +437,7 @@ class ModelValidationFigure(Figure):
 
         for region in flagged_regions:
 
-            Q_region = tools.Gesamt_Q_score(predictionfile,experimentfile,region,gesamt_exe=gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
+            Q_region = tools.Gesamt_Q_score(predictionfile, experimentfile, region, gesamt_exe = gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
             self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
         
 

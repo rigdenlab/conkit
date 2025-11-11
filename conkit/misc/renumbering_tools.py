@@ -1,6 +1,16 @@
 def construct_seq_from_chain(chain, return_borders = True, place_holder = '?',alphabet = 'RNA'):
     #takes in a biopython chain and returns its sequence accoring to the original numbering
     from Bio.PDB.Selection import unfold_entities
+    import conkit.misc.rescodes
+
+    #set the right alphabet for translation to 1 letter codes, only load standard AA/bases as modifications are unlikly to be reliably anotated in sequence file
+    if alphabet == 'RNA':
+        from conkit.misc.rescodes import RNA_standard_rescodes as rescodes
+    if alphabet == 'Protein':
+        from conkit.misc.rescodes import PROTEIN_standard_rescodes as rescodes
+    if alphabet == 'DNA':
+        from conkit.misc.rescodes import DNA_standard_rescodes as rescodes
+
 
     #read in biopython chain
     residues = unfold_entities(chain, "R")
@@ -22,8 +32,8 @@ def construct_seq_from_chain(chain, return_borders = True, place_holder = '?',al
     #for every number add the rescode to the sequence, if there is no item add place holder
     for r in range(first_res, last_res+1):
         if r in residues: 
-            if res_seq_map[r] in ['A','C','T','G','U']:  #Check if residue name is a standard AA or nucleobase
-                seq += res_seq_map[r]
+            if res_seq_map[r] in rescodes.keys():  #Check if residue name is a standard AA or nucleobase
+                seq += rescodes[res_seq_map[r]]
             else: seq += place_holder
         else: seq += place_holder
 
@@ -47,7 +57,6 @@ def get_alignment_map_dict(moving, static, return_score = False, return_both_dir
     aligner.extend_gap_score = extend_gap_score
     aligner.wildcard = place_holder
 
-    print('trying to aling')
     try:
         alignments = list(aligner.align(static, moving))
     except ValueError as e:
@@ -110,28 +119,25 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
         return
 
     sequence = seq.seq  # take only the sequence of the input seq
-
     model = structure[0]
     chainlist = unfold_entities(model, "C")
 
     # if a chain was pre selected, find that chain in the pdbfile and make the sequence alignment
-    if selected_chain != '':
 
+    if selected_chain != '':
         for chain in chainlist:
             if chain.id == selected_chain:
                 chain_seq, selected_start, selected_stop = construct_seq_from_chain(chain, place_holder = '?', alphabet=moltype)
                 break 
-        
-        alignment_dict, reverse_alignment_dict = get_alignment_map_dict(chain_seq, sequence, place_holder = '?',  alphabet=moltype)
+        alignment_dict, reverse_alignment_dict = get_alignment_map_dict(chain_seq, sequence, place_holder = '?')
     # if no chain was preselected, choose the chain that best aligns to the input sequence
     else:
-
         score_old = 0
         alignment_dict = {}
         reverse_alignment_dict = {}
 
         for chain in chainlist:
-            chain_seq, start, stop = construct_seq_from_chain(chain, place_holder = '?')
+            chain_seq, start, stop = construct_seq_from_chain(chain, place_holder = '?', alphabet=moltype)
             alignment_dict_new, reverse_alignment_dict_new, score = get_alignment_map_dict(chain_seq, sequence, return_score = True, place_holder = '?')
             if score >= score_old:
                 score_old = score
@@ -149,23 +155,28 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
     # renumber each residue in the selected chain based on the alignment
     chain = model[selected_chain]
     reslist = unfold_entities(chain, "R")
+
+    unusable_residues = []
     for res in reslist:
         resid = res.get_id()
-        resid = (resid[0], alignment_dict[resid[1] - selected_start]+1, resid[2])
-        res.id = resid
+        if resid[1] - selected_start in alignment_dict.keys():
+            resid = (resid[0], alignment_dict[resid[1] - selected_start]+1, resid[2])
+            res.id = resid
+        else: unusable_residues.append(resid)
+    
+    io = PDBIO()
+    io.set_structure(structure)
+    out_name = os.path.join(loc,f'renumbered_{selected_chain}_{outprefix}.{ext}')
 
     class ChainSelect(Select):
 
         def accept_residue(self, residue):
-            if residue.get_full_id()[-2] == selected_chain:
+            if residue.get_full_id()[-2] == selected_chain and not(residue.get_id() in unusable_residues):
                 return True
             else:
                 return False
 
     print(f'Writing out isolated and renumbered chain to {loc}/renumbered_{selected_chain}_{outprefix}.{ext}')
-    io = PDBIO()
-    io.set_structure(structure)
-    out_name = os.path.join(loc,f'renumbered_{selected_chain}_{outprefix}.{ext}')
     io.save(out_name,ChainSelect())
 
     return out_name, alignment_dict, reverse_alignment_dict

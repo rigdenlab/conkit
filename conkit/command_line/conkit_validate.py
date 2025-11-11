@@ -204,12 +204,15 @@ def main():
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
 
-    try:
-        out_name, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=args.selected_chain)
-    except:
-        logger.info("No sufficient sequence alignment was found between chains in: %s and %s check wheter these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
-
-    model = conkit.io.read(out_name, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
+    if args.RENUMBER == 'yes':
+        try:
+            usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=args.selected_chain,moltype=args.moltype)
+        except:
+            logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
+    else: 
+        usable_model = args.pdbfile
+    
+    model = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
@@ -260,7 +263,7 @@ def main():
             
         if args.gesamt_exe and (args.distformat in ['pdb', 'mmcif']):
 
-            validation.Run_gesamt_filter(args.pdbfile, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
+            validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
             # identify potential errors
             logger.info(os.linesep + "added Q-scores")            
    
@@ -297,7 +300,6 @@ def main():
         table.add_row([current_residue, score, register, plddt, contacts, Qs])
 
     ### add json format report ###
-
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
