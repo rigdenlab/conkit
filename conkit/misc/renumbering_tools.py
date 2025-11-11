@@ -1,4 +1,4 @@
-def construct_seq_from_chain(chain, return_borders = True, place_holder = '?'):
+def construct_seq_from_chain(chain, return_borders = True, place_holder = '?',alphabet = 'RNA'):
     #takes in a biopython chain and returns its sequence accoring to the original numbering
     from Bio.PDB.Selection import unfold_entities
 
@@ -74,7 +74,7 @@ def get_alignment_map_dict(moving, static, return_score = False, return_both_dir
     else:
         return alignment_dict
 
-def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,selected_chain=''):
+def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,selected_chain='',moltype='RNA'):
     # identify a single chain in structure file, adapt the numbereing to match the given sequence and write out a structure file of that chain isolated and renumbered, usable for further analysis 
     import os.path
     from Bio.PDB.Selection import unfold_entities
@@ -119,10 +119,10 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
 
         for chain in chainlist:
             if chain.id == selected_chain:
-                chain_seq, selected_start, selected_stop = construct_seq_from_chain(chain, place_holder = '?')
+                chain_seq, selected_start, selected_stop = construct_seq_from_chain(chain, place_holder = '?', alphabet=moltype)
                 break 
         
-        alignment_dict, reverse_alignment_dict = get_alignment_map_dict(chain_seq, sequence, place_holder = '?')
+        alignment_dict, reverse_alignment_dict = get_alignment_map_dict(chain_seq, sequence, place_holder = '?',  alphabet=moltype)
     # if no chain was preselected, choose the chain that best aligns to the input sequence
     else:
 
