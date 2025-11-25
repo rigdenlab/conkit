@@ -106,6 +106,10 @@ def create_argument_parser():
                         help="distance cutoff for contacts when using Custom moltype")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
+    parser.add_argument("--min_error_length", dest="min_err_size", default=6, type=int,
+                        help="minimum number of consecutive residues in a error before the svm labels it")
+    parser.add_argument("--svm_threshold", dest="score_threshold", default=0.9, type=float,
+                        help="the svm probability of error threshold for calling errors")
     parser.add_argument("--confidence_file", dest="conf_file", default=None, type=check_file_exists,
                         help="File containing confidences of prediction")
     parser.add_argument("--confidence_file_type", dest="conf_file_type", default=None, type=str,
@@ -239,6 +243,7 @@ def main():
         else: dssp = None
 
         validation.svm(dssp)
+        validation.svm_error_calling(min_err_size=args.min_error_size,score_threshold=args.score_threshold)
         
 
     if args.RUN_MAP_ALIGN=='yes':
@@ -268,7 +273,7 @@ def main():
             logger.info(os.linesep + "added Q-scores")            
    
     logger.info(os.linesep + "Creating Figure.")
-    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'))
+    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold)
 
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
