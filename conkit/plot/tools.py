@@ -601,3 +601,47 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE
             region_borders.add(borders)
     
     return region_borders
+
+def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log',coord_format_exe='coord_format'):
+
+    if file_type != 'pdb':
+        if file_type == 'mmcif':
+            structfile_no_extension = structfile.split('.')[0]
+            subprocess.popen([coord_format_exe,structfile,structfile_no_extension+'.pdb'])
+            structfile = structfile_no_extension+'.pdb'
+        else: 
+            print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
+            return
+
+    with open(tempfile_instructions_name,'w') as f:
+        f.write("REPORT CONTACT NO GXGRATIO NO\n")
+        f.write("END\n")
+        f.write("eof")
+
+    cmd = f'{areaimol_exe} XYZIN {structfile} < {tempfile_instructions_name} > {tempfile_out_name}'
+    os.popen(cmd)  
+
+    with open(tempfile_out_name, 'r') as f:
+        lines = f.readlines()
+
+    for l in range(len(lines)):
+        if  'Per-residue ASA & ratio to reference GXG value.' in lines[l]:
+            start = l+3
+        if  "Total area of chain '" in lines[l]:
+            end = l-2
+
+    whole_list_of_values = []
+    for l in range(start,end):
+        lsplitted=lines[l].split()
+        whole_list_of_values = whole_list_of_values + lsplitted
+
+    resnums = whole_list_of_values[2::5].copy()
+    acc = whole_list_of_values[3::5].copy()
+
+    for r in range(len(resnums)):
+        resnums[r] = int(resnums[r]) 
+        acc[r] = float(acc[r])
+
+    ACC_df = {'RESNUM' : resnums, 'ACC' : acc}
+
+    return ACC_df

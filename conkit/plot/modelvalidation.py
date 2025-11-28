@@ -49,7 +49,7 @@ import tempfile
 from conkit.applications import MapAlignCommandline
 from conkit.core.distance import Distance
 import conkit.io
-from conkit.misc import load_validation_model, SELECTED_VALIDATION_FEATURES, ALL_VALIDATION_FEATURES
+from conkit.misc import load_specific_validation_model, SELECTED_VALIDATION_FEATURES, ALL_VALIDATION_FEATURES
 from conkit.plot.figure import Figure
 import conkit.plot.tools as tools
 
@@ -356,27 +356,47 @@ class ModelValidationFigure(Figure):
 
 
 
-    def _predict_score(self, resnum):
+    def _predict_score(self, resnum,moltype='Protein',prediction_type='DIST'):
         """Predict whether a given residue is part of a model error or not"""
-        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES]
+        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[f'{moltype}_{prediction_type}']]
         if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
             return np.nan
         scaled_features = self.scaler.transform(residue_features.values)
         return self.classifier.predict_proba(scaled_features)[0, 1]
 
 
-    def svm(self,dssp):
+    def svm(self,ext_info,moltype='Protein',prediction_type='DIST'):
 
-        self.classifier, self.scaler = load_validation_model()
-        if dssp==None: 
-            self.dssp=pd.DataFrame()
-            self.dssp['RESNUM'] = self.data['RESNUM'].copy()
-            self.dssp['COIL'], self.dssp['HELIX'], self.dssp['SHEET'], self.dssp['ACC'] = 0, 0, 0, 0
-        else: 
-            self.dssp = self._parse_dssp(dssp)
+        if moltype == 'Protein':
+            self.classifier, self.scaler = load_specific_validation_model()        
+            if ext_info==None: 
+                self.ext_info=pd.DataFrame()
+                self.ext_info['RESNUM'] = self.data['RESNUM'].copy()
+                self.ext_info['COIL'], self.ext_info['HELIX'], self.ext_info['SHEET'], self.ext_info['ACC'] = 0, 0, 0, 0
+            else: 
+                self.ext_info = self._parse_dssp(ext_info)
 
-        self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
-        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
+            self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
+
+        elif moltype == 'RNA':
+            if prediction_type == 'DIST':
+                name = 'RNA_AF3_dist_'
+            if prediction_type == 'STRUCT':
+                name = 'RNA_AF3_struct_'
+
+            self.classifier, self.scaler = load_specific_validation_model(name)   
+                 
+            if ext_info==None: 
+                self.ext_info=pd.DataFrame()
+                self.ext_info['RESNUM'] = self.data['RESNUM'].copy()
+                self.ext_info['ACC'] = 0
+            else: 
+                self.ext_info = pd.DataFrame.from_dict(ext_info)
+
+            self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
+
+        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x,moltype=moltype,prediction_type=prediction_type))
+
 
     def svm_error_calling(self,min_err_size=1,score_threshold=0.5):
 
