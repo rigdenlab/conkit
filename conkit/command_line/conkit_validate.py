@@ -84,8 +84,8 @@ def create_argument_parser():
                         type=is_executable, help="Path to the gesamt executable to check structural alignment")
     parser.add_argument("--areaimol_exe", dest="areaimol_exe", default="areaimol",
                         type=is_executable, help="Path to areaimol executable to calculate solvent accesibility for RNA")
-    parser.add_argument("--coord_format_exe", dest="coord_format_exe", default="coord_format",
-                        type=is_executable, help="Path to the coord_format executable for converting mmcif to legacy pdb required for areaimol")
+    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default="gemmi",
+                        type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -200,6 +200,7 @@ def main():
 
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
+
     if args.distformat in ['pdb', 'mmcif']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom)
         prediction = prediction_file.top
@@ -238,14 +239,14 @@ def main():
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
 
-        validation.calculate_features()
-
         if args.moltype=='Protein':
             p = PDBParser()
             structure = p.get_structure('structure', usable_model)[0]
             ext_info = DSSP(structure, usable_model, dssp=args.dssp, acc_array='Wilke')
+            validation.calculate_features()
         elif args.moltype=='RNA': 
-            ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', coord_format_exe=args.coord_format_exe)
+            ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
+            validation.calculate_features(z_radius=20)
         else:
             ext_info = None
 
@@ -254,7 +255,7 @@ def main():
         else:
             validation.svm(ext_info,moltype=args.moltype,prediction_type='DIST')
         
-        validation.svm_error_calling(min_err_size=args.min_error_size,score_threshold=args.score_threshold)
+        validation.svm_error_calling(min_err_size=args.min_err_size,score_threshold=args.score_threshold)
         
 
     if args.RUN_MAP_ALIGN=='yes':

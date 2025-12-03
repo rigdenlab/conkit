@@ -49,7 +49,7 @@ import tempfile
 from conkit.applications import MapAlignCommandline
 from conkit.core.distance import Distance
 import conkit.io
-from conkit.misc import load_specific_validation_model, SELECTED_VALIDATION_FEATURES, ALL_VALIDATION_FEATURES
+from conkit.misc import load_specific_validation_model, load_validation_model, SELECTED_VALIDATION_FEATURES, SELECTED_VALIDATION_FEATURES_DICT, ALL_VALIDATION_FEATURES
 from conkit.plot.figure import Figure
 import conkit.plot.tools as tools
 
@@ -167,7 +167,7 @@ class ModelValidationFigure(Figure):
         rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
         zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics, population_radius = z_radius)
 
-        self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
+        self._parse_data(predicted_dict, rmsd, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
         #self.draw()
 
@@ -303,6 +303,7 @@ class ModelValidationFigure(Figure):
 
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
+        print(ALL_VALIDATION_FEATURES)
         _features = []
         for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
             _features.append((*residue_features,))
@@ -368,13 +369,15 @@ class ModelValidationFigure(Figure):
     def svm(self,ext_info,moltype='Protein',prediction_type='DIST'):
 
         if moltype == 'Protein':
-            self.classifier, self.scaler = load_specific_validation_model()        
+            self.classifier, self.scaler = load_validation_model()        
             if ext_info==None: 
                 self.ext_info=pd.DataFrame()
                 self.ext_info['RESNUM'] = self.data['RESNUM'].copy()
                 self.ext_info['COIL'], self.ext_info['HELIX'], self.ext_info['SHEET'], self.ext_info['ACC'] = 0, 0, 0, 0
             else: 
                 self.ext_info = self._parse_dssp(ext_info)
+                print(self.ext_info)
+
 
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
 
@@ -402,7 +405,7 @@ class ModelValidationFigure(Figure):
 
         score_list = list(self.data['SCORE'])
         index_threshold_mask = [True if s >= score_threshold else False for s in score_list]
-        error_called_indices = tools.all_consecutive_true_indices(arr, count=min_err_size)
+        error_called_indices = tools.all_consecutive_true_indices(index_threshold_mask, count=min_err_size)
         self.data['SVM_CALLED_ERROR'] = [True if i in error_called_indices else False for i in range(len(score_list))]
 
 

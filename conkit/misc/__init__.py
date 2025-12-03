@@ -53,13 +53,14 @@ SELECTED_VALIDATION_FEATURES_DICT ={'Protein_DIST': ['WRMSD_SMOOTH', 'ZSCORE_WRM
                                 'RNA_STRUCT': ['ACC', 'WRMSD', 'WRMSD_SMOOTH', 'FPR', 'SPECIFICITY',
                                 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH', 'SENSITIVITY_SMOOTH',
                                 'SPECIFICITY_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_FP', 'ZSCORE_SENSITIVITY']}
-ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
+ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
                            'SPECIFICITY', 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH',
                            'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN',
                            'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY']
 
 
 def load_validation_model():
+    print(TRAINED_CLASSIFIER_PICKLE)  
     if not os.path.isfile(TRAINED_CLASSIFIER_PICKLE):
         raise FileNotFoundError('Cannot find classifier pickle file {}'.format(TRAINED_CLASSIFIER_PICKLE))
     if not os.path.isfile(STANDARD_SCALER_PICKLE):

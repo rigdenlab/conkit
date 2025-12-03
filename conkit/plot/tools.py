@@ -602,27 +602,25 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE
     
     return region_borders
 
-def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log',coord_format_exe='coord_format'):
+def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log',gemmi_exe='gemmi'):
 
     if file_type != 'pdb':
         if file_type == 'mmcif':
             structfile_no_extension = structfile.split('.')[0]
-            subprocess.popen([coord_format_exe,structfile,structfile_no_extension+'.pdb'])
+            subprocess.Popen([gemmi_exe,'convert','--from=mmcif','--to=pdb',structfile,structfile_no_extension+'.pdb'])
             structfile = structfile_no_extension+'.pdb'
+            print(f'tried to make {structfile}')
         else: 
             print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
             return
 
-    with open(tempfile_instructions_name,'w') as f:
-        f.write("REPORT CONTACT NO GXGRATIO NO\n")
-        f.write("END\n")
-        f.write("eof")
+    cmd = [f'{areaimol_exe}', 'XYZIN' ,f'{structfile}']
+    instructions = "REPORT CONTACT NO GXGRATIO NO\nEND\neof".encode('utf-8')
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE,stdin=subprocess.PIPE) 
+    out, err = p.communicate(instructions)
 
-    cmd = f'{areaimol_exe} XYZIN {structfile} < {tempfile_instructions_name} > {tempfile_out_name}'
-    os.popen(cmd)  
-
-    with open(tempfile_out_name, 'r') as f:
-        lines = f.readlines()
+    out_str = out.decode('utf-8')
+    lines = out_str.split('\n')
 
     for l in range(len(lines)):
         if  'Per-residue ASA & ratio to reference GXG value.' in lines[l]:
