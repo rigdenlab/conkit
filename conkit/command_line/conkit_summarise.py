@@ -1,0 +1,125 @@
+#!/usr/bin/env python
+#
+# BSD 3-Clause License
+#
+# Copyright (c) 2016-21, University of Liverpool
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""This script provides a command-line interface to summmarise multple structures into a single contact probability map.
+
+"""
+
+__author__ = "Aderik Voorspoels"
+__date__ = "03 december 2025"
+__version__ = "0.13.3"
+
+import argparse
+from Bio.PDB import PDBParser
+from Bio.PDB.DSSP import DSSP
+import inspect
+import glob
+
+import conkit.command_line
+import conkit.io
+from conkit.io import DISTANCE_FILE_PARSERS
+from conkit.io.tools import set_contact_definition
+import conkit.plot
+import conkit.plot.tools
+from conkit.core import Contact, ContactMap
+import os
+
+logger = None
+
+def create_argument_parser():
+    """Create a parser for the command line arguments used in conkit-validate"""
+
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("struct_files", type=str, help="expression to find the needed structure files")
+    parser.add_argument("struct_format", type=str, help="structure format")
+
+    #parser.add_argument("reference_struct", type=str, default=None, help="reference structure to overlay on summary")
+    #parser.add_argument("reference_struct_format", type=str, default=None, help="structure format")
+
+    parser.add_argument("--output", dest="output", default="conkit_summary.png", type=str,
+                        help="File to save the summary figure to.")
+
+    parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
+                        help="Type of molecule")
+    parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
+                        help="distance cutoff for contacts when using Custom moltype")
+    parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
+                        help="representative atom for contacts when using Custom moltype")
+
+    return parser
+
+def main():
+    """The main routine for conkit-summarise functionality"""
+    parser = create_argument_parser()
+    args = parser.parse_args()
+
+    global logger
+    logger = conkit.command_line.setup_logging(level="info")
+
+    if os.path.isfile(args.output) and not args.overwrite:
+        raise FileExistsError('The output file {} already exists!'.format(args.output))
+
+    logger.info(os.linesep + "Working directory:                           %s", os.getcwd())
+
+    rep_atom, cutoff = set_contact_definition(args.moltype,rep_atom=args.rep_atom,cutoff=args.contact_distance_cutoff)
+
+    struct_fn_list = glob.glob(args.struct_files)
+    number_of_structures = len(struct_fn_list)
+
+    logger.info(os.linesep + f"Found {number_of_structures} structure files to compile.")
+
+    #summary_contact_map = ContactMap("summary")
+    summary_contact_dict = {}
+
+    for fn in struct_fn_list:
+
+        file = conkit.io.read(fn, args.struct_format, distance_cutoff=cutoff, atom_type=rep_atom)
+        contact_map = (file.top).as_contactmap( distance_cutoff=cutoff )
+        contact_set = contact_map.as_set()
+
+        for contact in contact_set:
+            if contact in summary_contact_dict.keys():
+                summary_contact_dict[contact] += 1
+            else:
+                summary_contact_dict[contact] =1
+
+    summary_contact_map = ContactMap("summary")
+
+    for contact in summary_contact_dict.keys():
+        summary_contact_dict[contact] = summary_contact_dict[contact]/number_of_structures
+        summary_contact_map.add(Contact(contact[0], contact[1], summary_contact_dict[contact]) )
+
+    summary_plot = conkit.plot.ContactMapMatrixFigure(summary_contact_map, cmap='cool')
+    summary_plot.savfig(args.output)
+
+
+if __name__ == "__main__":
+    main()

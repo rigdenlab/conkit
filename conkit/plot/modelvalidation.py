@@ -360,6 +360,7 @@ class ModelValidationFigure(Figure):
     def _predict_score(self, resnum,moltype='Protein',prediction_type='DIST'):
         """Predict whether a given residue is part of a model error or not"""
         residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[f'{moltype}_{prediction_type}']]
+        print(residue_features.columns)
         if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
             return np.nan
         scaled_features = self.scaler.transform(residue_features.values)
@@ -397,7 +398,7 @@ class ModelValidationFigure(Figure):
                 self.ext_info = pd.DataFrame.from_dict(ext_info)
 
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
-
+        print(SELECTED_VALIDATION_FEATURES_DICT[f'{moltype}_{prediction_type}'])
         self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x,moltype=moltype,prediction_type=prediction_type))
 
 

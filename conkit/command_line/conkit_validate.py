@@ -56,6 +56,7 @@ from prettytable import PrettyTable
 import conkit.applications
 import conkit.command_line
 import conkit.io
+import conkit.io.tools import set_contact_definition
 import conkit.plot
 from conkit.plot.tools import is_executable, areaimol_ACC
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
@@ -156,26 +157,6 @@ def touch(fname, content='', mode='wb'):
         fhandle.write(content)
     fhandle.close()
 
-    
-def set_contact_definition(moltype,rep_atom=None,cutoff=None):
-
-    if rep_atom!=None:
-        if cutoff!=None:
-            return rep_atom, cutoff
-        else: return rep_atom, 10
-
-    elif moltype=='Protein':
-        rep_atom = "CB"
-        if cutoff==None: cutoff=8
-        return rep_atom, cutoff
-    
-    elif moltype=='RNA':
-        rep_atom = "C1'"
-        if cutoff==None: cutoff=10.5
-        return rep_atom, cutoff
-
-    else:
-        raise ValueError('Molecule type not supported without explicit contact definition, set atleast the --rep_atom flag and considder setting --contact_dist')
 
 def main():
     """The main routine for conkit-validate functionality"""

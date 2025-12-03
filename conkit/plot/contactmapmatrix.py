@@ -72,7 +72,7 @@ class ContactMapMatrixFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, other=None, altloc=False, lim=None, **kwargs):
+    def __init__(self, hierarchy, other=None, altloc=False, lim=None, cmap=cmap, **kwargs):
         """A new contact map plot
 
         Parameters
@@ -103,7 +103,7 @@ class ContactMapMatrixFigure(Figure):
         if lim:
             self.lim = lim
 
-        self.draw()
+        self.draw(cmap=cmap)
 
     def __repr__(self):
         return self.__class__.__name__
@@ -143,11 +143,11 @@ class ContactMapMatrixFigure(Figure):
         else:
             raise TypeError("A list with [min, max] limits is required!")
 
-    def draw(self):
+    def draw(self,cmap=cmap):
         _hierarchy = self._hierarchy.rescale()
 
         self_data = np.array([c for c in _hierarchy.as_list() if all(ci != Gap.IDENTIFIER for ci in c)])
-        self_colors = ContactMapMatrixFigure._determine_color(_hierarchy)
+        self_colors = ContactMapMatrixFigure._determine_color(_hierarchy,cmap=cmap)
         self_rawsc = np.array(
             [c.raw_score for c in _hierarchy if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
         )
@@ -155,7 +155,7 @@ class ContactMapMatrixFigure(Figure):
         if self._other:
             _other = self._other.rescale()
             other_data = np.array([c for c in _other.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
-            other_colors = ContactMapMatrixFigure._determine_color(_other)
+            other_colors = ContactMapMatrixFigure._determine_color(_other,,cmap=cmap)
             other_rawsc = np.array(
                 [c.raw_score for c in _other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
             )
@@ -203,7 +203,7 @@ class ContactMapMatrixFigure(Figure):
         self.ax.set_ylabel("Residue number")
 
     @staticmethod
-    def _determine_color(h):
+    def _determine_color(h,cmap="Greys"):
         """Determine the color of the contacts in order"""
         greys = plt.get_cmap("Greys")
         return [greys(contact.raw_score) for contact in h]
