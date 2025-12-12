@@ -72,7 +72,7 @@ class ContactMapMatrixFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, other=None, altloc=False, lim=None, cmap=cmap, **kwargs):
+    def __init__(self, hierarchy, other=None, altloc=False, lim=None, cmap="Greys", **kwargs):
         """A new contact map plot
 
         Parameters
@@ -143,7 +143,7 @@ class ContactMapMatrixFigure(Figure):
         else:
             raise TypeError("A list with [min, max] limits is required!")
 
-    def draw(self,cmap=cmap):
+    def draw(self,cmap="Greys"):
         _hierarchy = self._hierarchy.rescale()
 
         self_data = np.array([c for c in _hierarchy.as_list() if all(ci != Gap.IDENTIFIER for ci in c)])
@@ -155,7 +155,7 @@ class ContactMapMatrixFigure(Figure):
         if self._other:
             _other = self._other.rescale()
             other_data = np.array([c for c in _other.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
-            other_colors = ContactMapMatrixFigure._determine_color(_other,,cmap=cmap)
+            other_colors = ContactMapMatrixFigure._determine_color(_other,cmap=cmap)
             other_rawsc = np.array(
                 [c.raw_score for c in _other if all(ci != Gap.IDENTIFIER for ci in [c.res1_seq, c.res2_seq])]
             )
@@ -205,5 +205,5 @@ class ContactMapMatrixFigure(Figure):
     @staticmethod
     def _determine_color(h,cmap="Greys"):
         """Determine the color of the contacts in order"""
-        greys = plt.get_cmap("Greys")
-        return [greys(contact.raw_score) for contact in h]
+        cmap = plt.get_cmap(cmap)
+        return [cmap(contact.raw_score) for contact in h]

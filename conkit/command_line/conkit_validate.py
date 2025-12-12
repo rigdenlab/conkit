@@ -56,7 +56,7 @@ from prettytable import PrettyTable
 import conkit.applications
 import conkit.command_line
 import conkit.io
-import conkit.io.tools import set_contact_definition
+from conkit.io.tools import set_contact_definition
 import conkit.plot
 from conkit.plot.tools import is_executable, areaimol_ACC
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct

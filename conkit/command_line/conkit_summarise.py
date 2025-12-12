@@ -49,7 +49,7 @@ from conkit.io import DISTANCE_FILE_PARSERS
 from conkit.io.tools import set_contact_definition
 import conkit.plot
 import conkit.plot.tools
-from conkit.core import Contact, ContactMap
+from conkit.core import Contact, ContactMap, ContactFile
 import os
 
 logger = None
@@ -66,13 +66,25 @@ def create_argument_parser():
 
     parser.add_argument("--output", dest="output", default="conkit_summary.png", type=str,
                         help="File to save the summary figure to.")
+    parser.add_argument("--output_contact_map", dest="contact_map_out", default="conkit_summary.mat", type=str,
+                        help="File to save the summary contact matrix to.")
+    parser.add_argument("--color_map", dest="cmap", default="Greys", type=str,
+                        help="matplotlib cmap for output figure.")    
+    parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
+                        help="overwrite output figure png file if it already exists")
 
     parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
-                        help="Type of molecule")
+                        help="Type of molecule [Protein,RNA].")
     parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
-                        help="distance cutoff for contacts when using Custom moltype")
+                        help="distance cutoff for contacts when using Custom moltype.")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
-                        help="representative atom for contacts when using Custom moltype")
+                        help="representative atom for contacts when using Custom moltype.")
+    
+    parser.add_argument("--overlay_structure", dest="o_struct_fn", default=None, type=str,
+                        help="Optional additional structure file to overlay on the summary contact map.")
+    parser.add_argument("--overlay_struct_type", dest="o_struct_type", default=None, type=str,
+                        help="File type of the addtional structure to be overlayed.")
+  
 
     return parser
 
@@ -100,7 +112,8 @@ def main():
     summary_contact_dict = {}
 
     for fn in struct_fn_list:
-
+        logger.info(os.linesep + f"extracting contacts from {fn}.")
+    
         file = conkit.io.read(fn, args.struct_format, distance_cutoff=cutoff, atom_type=rep_atom)
         contact_map = (file.top).as_contactmap( distance_cutoff=cutoff )
         contact_set = contact_map.as_set()
@@ -113,13 +126,32 @@ def main():
 
     summary_contact_map = ContactMap("summary")
 
+    logger.info(os.linesep + f"Creating summary contactmap.")
+
     for contact in summary_contact_dict.keys():
         summary_contact_dict[contact] = summary_contact_dict[contact]/number_of_structures
         summary_contact_map.add(Contact(contact[0], contact[1], summary_contact_dict[contact]) )
 
-    summary_plot = conkit.plot.ContactMapMatrixFigure(summary_contact_map, cmap='cool')
-    summary_plot.savfig(args.output)
+    logger.info(os.linesep + "Creating Figure.")
+    if args.o_struct_fn and args.o_struct_type:
+        overlay_file = conkit.io.read(args.o_struct_fn, args.o_struct_type, distance_cutoff=cutoff, atom_type=rep_atom)
+        overlay_map = (overlay_file.top).as_contactmap()
+    else: 
+        overlay_map = None
+    summary_plot = conkit.plot.ContactMapMatrixFigure( summary_contact_map, other=overlay_map, cmap=args.cmap )
 
+    summary_plot.savefig(args.output, overwrite=args.overwrite)
+    logger.info(os.linesep + "Validation plot written to %s", args.output)
+
+    ##purely for testing purposes
+    test_plot = conkit.plot.ContactMapMatrixFigure( overlay_map, cmap=args.cmap )
+    test_plot.savefig("test_plot.png", overwrite=args.overwrite)
+    
+
+    if args.contact_map_out:
+        contact_mat_out_file = ContactFile("out_matrix_file")
+        contact_mat_out_file.add(summary_contact_map)
+        conkit.io.write(args.contact_map_out, 'ccmpred', contact_mat_out_file)
 
 if __name__ == "__main__":
     main()
