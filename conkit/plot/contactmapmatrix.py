@@ -38,6 +38,7 @@ __version__ = "0.13.3"
 
 import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import numpy as np
 
 from conkit.core.struct import Gap
@@ -72,7 +73,7 @@ class ContactMapMatrixFigure(Figure):
 
     """
 
-    def __init__(self, hierarchy, other=None, altloc=False, lim=None, cmap="Greys", **kwargs):
+    def __init__(self, hierarchy, overlay=None, other=None, altloc=False, lim=None, cmap="Greys", **kwargs):
         """A new contact map plot
 
         Parameters
@@ -91,7 +92,8 @@ class ContactMapMatrixFigure(Figure):
         """
         super(ContactMapMatrixFigure, self).__init__(**kwargs)
 
-        self._hierarchy = None
+        self._overlay = None
+        self._hierarchy = None                  
         self._other = None
         self._lim = None
 
@@ -102,11 +104,24 @@ class ContactMapMatrixFigure(Figure):
             self.other = other
         if lim:
             self.lim = lim
+        if overlay:
+            self.overlay = overlay
 
         self.draw(cmap=cmap)
 
     def __repr__(self):
         return self.__class__.__name__
+
+    @property
+    def overlay(self):
+        return self._overlay
+
+    @overlay.setter
+    def overlay(self, overlay):
+        if overlay and _isinstance(overlay, "ContactMap"):
+            self._overlay = overlay
+        else:
+            raise TypeError("Invalid overlay type: %s" % overlay.__class__.__name__)
 
     @property
     def hierarchy(self):
@@ -171,6 +186,13 @@ class ContactMapMatrixFigure(Figure):
             other_data[:, 0], other_data[:, 1], symbol="s", facecolor=other_colors, radius=1.0, linewidth=0
         )
 
+        if self._overlay:
+            _overlay = self._overlay.rescale()
+            overlay_data = np.array([c for c in _overlay.as_list() if any(ci != Gap.IDENTIFIER for ci in c)])
+            self._patch_scatter( overlay_data[:, 0]+0.5, overlay_data[:, 1]+0.5, symbol="o", facecolor='black', edgecolor='white', radius=0.25, linewidth=0.2)
+            self._patch_scatter( overlay_data[:, 1]+0.5, overlay_data[:, 0]+0.5, symbol="o", facecolor='black', edgecolor='white', radius=0.25, linewidth=0.2)
+
+        self.fig.colorbar(cm.ScalarMappable(cmap=cmap), orientation='vertical',ax=self.ax, label='Contact occurrence rate')
         self.define_axis_settings(self_data, other_data)
 
         # TODO: deprecate this in 0.14

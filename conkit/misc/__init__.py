@@ -50,13 +50,13 @@ SELECTED_VALIDATION_FEATURES_DICT ={
                                 'Protein_STRUCT': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'], 
 
-                                'RNA_DIST': ['ACC', 'WRMSD', 'FN', 'FPR', 'SENSITIVITY', 'ACCURACY_SMOOTH', 
-                                'FPR_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 
-                                'ZSCORE_FN', 'ZSCORE_FNR', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY'],
+                                'RNA_DIST': ['ACC', 'WRMSD', 'FN', 'SENSITIVITY', 'SPECIFICITY', 'ACCURACY', 'FN_SMOOTH',
+                                'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 
+                                'ZSCORE_FN', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY'],
 
-                                'RNA_STRUCT': ['ACC', 'WRMSD', 'WRMSD_SMOOTH', 'FPR', 'SPECIFICITY',
-                                'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH', 'SENSITIVITY_SMOOTH',
-                                'SPECIFICITY_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_FP', 'ZSCORE_SENSITIVITY']
+                                'RNA_STRUCT': ['ACC', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FP', 'FPR', 'SPECIFICITY', 
+                                'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 
+                                'ZSCORE_FN', 'ZSCORE_FP', 'ZSCORE_FPR']
                                 }
 
 ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
