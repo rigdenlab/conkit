@@ -39,21 +39,52 @@ import warnings
 
 TRAINED_CLASSIFIER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'trained_classifier.joblib')
 STANDARD_SCALER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'standard_scaler.joblib')
+LOCATION = os.path.abspath(os.path.dirname(__file__))
+
 SELECTED_VALIDATION_FEATURES = ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY']
-ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
+SELECTED_VALIDATION_FEATURES_DICT ={
+                                'Protein_DIST': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
+                                'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'],
+
+                                'Protein_STRUCT': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
+                                'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'], 
+
+                                'RNA_DIST': ['ACC', 'WRMSD', 'FN', 'SENSITIVITY', 'SPECIFICITY', 'ACCURACY', 'FN_SMOOTH',
+                                'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 
+                                'ZSCORE_FN', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY'],
+
+                                'RNA_STRUCT': ['ACC', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FP', 'FPR', 'SPECIFICITY', 
+                                'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 
+                                'ZSCORE_FN', 'ZSCORE_FP', 'ZSCORE_FPR']
+                                }
+
+ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
                            'SPECIFICITY', 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH',
                            'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN',
                            'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY']
 
 
 def load_validation_model():
+    print(TRAINED_CLASSIFIER_PICKLE)  
     if not os.path.isfile(TRAINED_CLASSIFIER_PICKLE):
         raise FileNotFoundError('Cannot find classifier pickle file {}'.format(TRAINED_CLASSIFIER_PICKLE))
     if not os.path.isfile(STANDARD_SCALER_PICKLE):
         raise FileNotFoundError('Cannot find scaler pickle file {}'.format(STANDARD_SCALER_PICKLE))
     classifier = joblib.load(TRAINED_CLASSIFIER_PICKLE)
     scaler = joblib.load(STANDARD_SCALER_PICKLE)
+
+    return classifier, scaler
+
+def load_specific_validation_model(name):
+    classifier_fn = os.path.join(LOCATION, f'{name}trained_classifier.pkl')
+    scaler_fn = os.path.join(LOCATION, f'{name}standard_scaler.pkl')
+    if not os.path.isfile(classifier_fn):
+        raise FileNotFoundError('Cannot find classifier pickle file {}'.format(classifier_fn))
+    if not os.path.isfile(scaler_fn):
+        raise FileNotFoundError('Cannot find scaler pickle file {}'.format(scaler_fn))
+    classifier = joblib.load(classifier_fn)
+    scaler = joblib.load(scaler_fn)
 
     return classifier, scaler
 

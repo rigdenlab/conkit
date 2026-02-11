@@ -6,3 +6,4 @@ include requirements.txt
 include setup.cfg
 include pyproject.toml
 recursive-include conkit/misc/ *.joblib
+recursive-include conkit/misc/ *.pkl

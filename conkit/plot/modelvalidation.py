@@ -49,7 +49,7 @@ import tempfile
 from conkit.applications import MapAlignCommandline
 from conkit.core.distance import Distance
 import conkit.io
-from conkit.misc import load_validation_model, SELECTED_VALIDATION_FEATURES, ALL_VALIDATION_FEATURES
+from conkit.misc import load_specific_validation_model, load_validation_model, SELECTED_VALIDATION_FEATURES, SELECTED_VALIDATION_FEATURES_DICT, ALL_VALIDATION_FEATURES
 from conkit.plot.figure import Figure
 import conkit.plot.tools as tools
 
@@ -167,7 +167,7 @@ class ModelValidationFigure(Figure):
         rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
         zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics, population_radius = z_radius)
 
-        self._parse_data(predicted_dict, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
+        self._parse_data(predicted_dict, rmsd, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
 
         #self.draw()
 
@@ -303,6 +303,7 @@ class ModelValidationFigure(Figure):
 
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
+        print(ALL_VALIDATION_FEATURES)
         _features = []
         for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
             _features.append((*residue_features,))
@@ -356,28 +357,57 @@ class ModelValidationFigure(Figure):
 
 
 
-    def _predict_score(self, resnum):
+    def _predict_score(self, resnum,moltype='Protein',prediction_type='DIST'):
         """Predict whether a given residue is part of a model error or not"""
-        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES]
+        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[f'{moltype}_{prediction_type}']]
+
         if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
             return np.nan
         scaled_features = self.scaler.transform(residue_features.values)
         return self.classifier.predict_proba(scaled_features)[0, 1]
 
 
+    def svm(self,ext_info,moltype='Protein',prediction_type='DIST'):
 
-    def svm(self,dssp):
+        if moltype == 'Protein':
+            self.classifier, self.scaler = load_validation_model()        
+            if ext_info==None: 
+                self.ext_info=pd.DataFrame()
+                self.ext_info['RESNUM'] = self.data['RESNUM'].copy()
+                self.ext_info['COIL'], self.ext_info['HELIX'], self.ext_info['SHEET'], self.ext_info['ACC'] = 0, 0, 0, 0
+            else: 
+                self.ext_info = self._parse_dssp(ext_info)
+                print(self.ext_info)
 
-        self.classifier, self.scaler = load_validation_model()
-        if dssp==None: 
-            self.dssp=pd.DataFrame()
-            self.dssp['RESNUM'] = self.data['RESNUM'].copy()
-            self.dssp['COIL'], self.dssp['HELIX'], self.dssp['SHEET'], self.dssp['ACC'] = 0, 0, 0, 0
-        else: 
-            self.dssp = self._parse_dssp(dssp)
 
-        self.data = self.data.merge(self.dssp, how='inner', on=['RESNUM'])
-        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
+            self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
+
+        elif moltype == 'RNA':
+            if prediction_type == 'DIST':
+                name = 'RNA_AF3_dist_'
+            if prediction_type == 'STRUCT':
+                name = 'RNA_AF3_struct_'
+
+            self.classifier, self.scaler = load_specific_validation_model(name)   
+                 
+            if ext_info==None: 
+                self.ext_info=pd.DataFrame()
+                self.ext_info['RESNUM'] = self.data['RESNUM'].copy()
+                self.ext_info['ACC'] = 0
+            else: 
+                self.ext_info = pd.DataFrame.from_dict(ext_info)
+
+            self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
+
+        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x,moltype=moltype,prediction_type=prediction_type))
+
+
+    def svm_error_calling(self,min_err_size=1,score_threshold=0.5):
+
+        score_list = list(self.data['SCORE'])
+        index_threshold_mask = [True if s >= score_threshold else False for s in score_list]
+        error_called_indices = tools.all_consecutive_true_indices(index_threshold_mask, count=min_err_size)
+        self.data['SVM_CALLED_ERROR'] = [True if i in error_called_indices else False for i in range(len(score_list))]
 
 
     def map_align(self,map_align_exe=None):    
@@ -444,7 +474,7 @@ class ModelValidationFigure(Figure):
         return 0
 
 
-    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
+    def draw(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65,svm_threshold=0.5):
 
         
         misaligned_residues = set(self.alignment.keys())
@@ -452,11 +482,12 @@ class ModelValidationFigure(Figure):
         if RUN_SVM:
 
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
+            called_errors = self.data.set_index('RESNUM')['SVM_CALLED_ERROR'].to_dict()
             self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
             self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
             self.ax.plot(sorted(scores.keys()), self.smooth_scores, color=tools.ColorDefinitions.SCORE)
             for resnum in residues:
-                color = tools.ColorDefinitions.ERROR if scores[resnum] > 0.5 else tools.ColorDefinitions.CORRECT
+                color = tools.ColorDefinitions.ERROR if called_errors[resnum] else tools.ColorDefinitions.CORRECT
                 self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
 
         if RUN_MAP_ALIGN:
@@ -515,9 +546,7 @@ class ModelValidationFigure(Figure):
                     self.ax.plot(resnum - 1, -0.09, mfc=color, c=color, **MARKERKWARGS)
 
             
-
-
-        self.ax.axhline(0.5, **LINEKWARGS)
+        self.ax.axhline(svm_threshold, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
 

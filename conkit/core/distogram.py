@@ -213,7 +213,7 @@ class Distogram(ContactMap):
         for distance in self:
             distance._reshape_bins(new_bins)
 
-    def as_contactmap(self, distance_cutoff=8):
+    def as_contactmap(self, distance_cutoff=10):
         """Create a :obj:`~conkit.core.contactmap.ContactMap` instance with the contacts present in this
         :obj:`~conkit.core.distogram.Distogram` instance.
 

@@ -56,8 +56,9 @@ from prettytable import PrettyTable
 import conkit.applications
 import conkit.command_line
 import conkit.io
+from conkit.io.tools import set_contact_definition
 import conkit.plot
-from conkit.plot.tools import is_executable
+from conkit.plot.tools import is_executable, areaimol_ACC
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
 
 logger = None
@@ -82,6 +83,10 @@ def create_argument_parser():
                         type=is_executable, help="Path to the map_align executable")
     parser.add_argument("--gesamt_exe", dest="gesamt_exe", default=None,
                         type=is_executable, help="Path to the gesamt executable to check structural alignment")
+    parser.add_argument("--areaimol_exe", dest="areaimol_exe", default="areaimol",
+                        type=is_executable, help="Path to areaimol executable to calculate solvent accesibility for RNA")
+    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default="gemmi",
+                        type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -106,6 +111,10 @@ def create_argument_parser():
                         help="distance cutoff for contacts when using Custom moltype")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
+    parser.add_argument("--min_error_length", dest="min_err_size", default=6, type=int,
+                        help="minimum number of consecutive residues in a error before the svm labels it")
+    parser.add_argument("--svm_threshold", dest="score_threshold", default=0.9, type=float,
+                        help="the svm probability of error threshold for calling errors")
     parser.add_argument("--confidence_file", dest="conf_file", default=None, type=check_file_exists,
                         help="File containing confidences of prediction")
     parser.add_argument("--confidence_file_type", dest="conf_file_type", default=None, type=str,
@@ -148,26 +157,6 @@ def touch(fname, content='', mode='wb'):
         fhandle.write(content)
     fhandle.close()
 
-    
-def set_contact_definition(moltype,rep_atom=None,cutoff=None):
-
-    if rep_atom!=None:
-        if cutoff!=None:
-            return rep_atom, cutoff
-        else: return rep_atom, 10
-
-    elif moltype=='Protein':
-        rep_atom = "CB"
-        if cutoff==None: cutoff=8
-        return rep_atom, cutoff
-    
-    elif moltype=='RNA':
-        rep_atom = "C1'"
-        if cutoff==None: cutoff=10.5
-        return rep_atom, cutoff
-
-    else:
-        raise ValueError('Molecule type not supported without explicit contact definition, set atleast the --rep_atom flag and considder setting --contact_dist')
 
 def main():
     """The main routine for conkit-validate functionality"""
@@ -192,6 +181,7 @@ def main():
 
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
+
     if args.distformat in ['pdb', 'mmcif']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom)
         prediction = prediction_file.top
@@ -230,15 +220,23 @@ def main():
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
 
-        validation.calculate_features()
-
         if args.moltype=='Protein':
             p = PDBParser()
-            structure = p.get_structure('structure', args.pdbfile)[0]
-            dssp = DSSP(structure, args.pdbfile, dssp=args.dssp, acc_array='Wilke')
-        else: dssp = None
+            structure = p.get_structure('structure', usable_model)[0]
+            ext_info = DSSP(structure, usable_model, dssp=args.dssp, acc_array='Wilke')
+            validation.calculate_features()
+        elif args.moltype=='RNA': 
+            ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
+            validation.calculate_features(z_radius=20)
+        else:
+            ext_info = None
 
-        validation.svm(dssp)
+        if args.distformat in ['pdb', 'mmcif']:
+            validation.svm(ext_info,moltype=args.moltype,prediction_type='STRUCT')
+        else:
+            validation.svm(ext_info,moltype=args.moltype,prediction_type='DIST')
+        
+        validation.svm_error_calling(min_err_size=args.min_err_size,score_threshold=args.score_threshold)
         
 
     if args.RUN_MAP_ALIGN=='yes':
@@ -268,7 +266,7 @@ def main():
             logger.info(os.linesep + "added Q-scores")            
    
     logger.info(os.linesep + "Creating Figure.")
-    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'))
+    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold)
 
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
