@@ -38,10 +38,9 @@ __date__ = "03 december 2025"
 __version__ = "0.13.3"
 
 import argparse
-from Bio.PDB import PDBParser
-from Bio.PDB.DSSP import DSSP
-import inspect
 import glob
+import os
+
 
 import conkit.command_line
 import conkit.io
@@ -50,12 +49,11 @@ from conkit.io.tools import set_contact_definition
 import conkit.plot
 import conkit.plot.tools
 from conkit.core import Contact, ContactMap, ContactFile
-import os
 
 logger = None
 
 def create_argument_parser():
-    """Create a parser for the command line arguments used in conkit-validate"""
+    """Create a parser for the command line arguments used in conkit-summarise"""
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("struct_files", type=str, help="expression to find the needed structure files")
@@ -76,6 +74,8 @@ def create_argument_parser():
                         help="File to save the summary figure to.")
     parser.add_argument("--output_contact_map", dest="contact_map_out", default="conkit_summary.mat", type=str,
                         help="File to save the summary contact matrix to.")
+    parser.add_argument("--output_contact_map_format", dest="contact_map_out_format", default="mapalign", type=str,
+                        help="Desired output format of the contact map")
     parser.add_argument("--color_map", dest="cmap", default="Greys", type=str,
                         help="matplotlib cmap for output figure.")    
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
@@ -146,11 +146,9 @@ def main():
     if args.o_struct_fn and args.o_struct_type:
         overlay_file = conkit.io.read(args.o_struct_fn, args.o_struct_type, distance_cutoff=cutoff, atom_type=rep_atom)
         overlay_map = (overlay_file.top).as_contactmap(distance_cutoff=cutoff)
-#        summary_plot = conkit.plot.ContactMapMatrixFigure( summary_contact_map, overlay=overlay_map, cmap=args.cmap )
+
     else: 
         overlay_map = None
-#        summary_plot = conkit.plot.ContactMapMatrixFigure( summary_contact_map, cmap=args.cmap )
-    
 
     logger.info(os.linesep + "Creating Figure.")
     summary_plot = conkit.plot.ContactMapMatrixFigure( summary_contact_map, other= other_summary_contact_map, overlay=overlay_map, cmap=args.cmap )
@@ -161,7 +159,7 @@ def main():
     if args.contact_map_out:
         contact_mat_out_file = ContactFile("out_matrix_file")
         contact_mat_out_file.add(summary_contact_map)
-        conkit.io.write(args.contact_map_out, 'ccmpred', contact_mat_out_file)
+        conkit.io.write(args.contact_map_out, args.contact_map_out_format, contact_mat_out_file)
 
 def summarise_files_to_single_map(fns,f_type,moltype='Protein',rep_atom=None,cutoff=None):
 
