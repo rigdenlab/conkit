@@ -128,6 +128,7 @@ class ModelValidationFigure(Figure):
         self._distance_bins = None
         self.data = None
         self.alignment = {}
+        self.svm_name = None
         self.sorted_scores = None
         self.smooth_scores = None
         self.map_align_exe = None
@@ -300,7 +301,6 @@ class ModelValidationFigure(Figure):
             self.alignment = tools.parse_map_align_stdout(stdout)
 
 
-
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
         print(ALL_VALIDATION_FEATURES)
@@ -312,7 +312,6 @@ class ModelValidationFigure(Figure):
         feature_df.columns = ALL_VALIDATION_FEATURES
         
         self.data = self.data.merge(feature_df, how='inner', on =['RESNUM'])
-
 
 
     def _add_legend(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
@@ -357,9 +356,9 @@ class ModelValidationFigure(Figure):
 
 
 
-    def _predict_score(self, resnum,moltype='Protein',prediction_type='DIST'):
+    def _predict_score(self, resnum):
         """Predict whether a given residue is part of a model error or not"""
-        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[f'{moltype}_{prediction_type}']]
+        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[self.svm_name]]
 
         if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
             return np.nan
@@ -367,9 +366,10 @@ class ModelValidationFigure(Figure):
         return self.classifier.predict_proba(scaled_features)[0, 1]
 
 
-    def svm(self,ext_info,moltype='Protein',prediction_type='DIST'):
+    def svm(self,ext_info,moltype='Protein',prediction_type='DIST',sec_struc_info='DSSP'):
 
         if moltype == 'Protein':
+            self.svm_name = 'Protein_AF2_Dist'
             self.classifier, self.scaler = load_validation_model()        
             if ext_info==None: 
                 self.ext_info=pd.DataFrame()
@@ -383,12 +383,18 @@ class ModelValidationFigure(Figure):
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
 
         elif moltype == 'RNA':
-            if prediction_type == 'DIST':
-                name = 'RNA_AF3_dist_'
-            if prediction_type == 'STRUCT':
-                name = 'RNA_AF3_struct_'
+            if sec_struc_info == 'DNATCO':
+                if prediction_type == 'DIST':
+                    self.svm_name = 'RNA_DNATCO_AF3_dist_'
+                if prediction_type == 'STRUCT':
+                    self.svm_name = 'RNA_DNATCO_AF3_struct_'
+            else :
+                if prediction_type == 'DIST':
+                    self.svm_name = 'RNA_AF3_dist_'
+                if prediction_type == 'STRUCT':
+                    self.svm_name = 'RNA_AF3_struct_'
 
-            self.classifier, self.scaler = load_specific_validation_model(name)   
+            self.classifier, self.scaler = load_specific_validation_model(self.svm_name)   # load the correct SVM for the given style of input (Distogram or structure and with or without dnatco) should  potentially make protein side compliant to this
                  
             if ext_info==None: 
                 self.ext_info=pd.DataFrame()
@@ -399,7 +405,7 @@ class ModelValidationFigure(Figure):
 
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
 
-        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x,moltype=moltype,prediction_type=prediction_type))
+        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
 
 
     def svm_error_calling(self,min_err_size=1,score_threshold=0.5):
