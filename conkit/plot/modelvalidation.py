@@ -40,6 +40,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import time
 from Bio.PDB.DSSP import DSSP
 from Bio.PDB import PDBParser, MMCIFParser
 import numpy as np
@@ -132,6 +133,7 @@ class ModelValidationFigure(Figure):
         self.sorted_scores = None
         self.smooth_scores = None
         self.map_align_exe = None
+        self.out_dir = None
 
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
@@ -283,15 +285,19 @@ class ModelValidationFigure(Figure):
         dssp.columns = ['RESNUM', 'COIL', 'HELIX', 'SHEET', 'ACC']
         return dssp
 
-    def _get_cmap_alignment(self):
+    def _get_cmap_alignment(self,tempdirname=None):
         """Obtain a contact map alignment between :attr:`~conkit.plot.ModelValidationFigure.model` and
         :attr:`~conkit.plot.ModelValidationFigure.prediction` and get the misaligned residues"""
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            contact_map_a = os.path.join(tmpdirname, 'contact_map_a.mapalign')
-            contact_map_b = os.path.join(tmpdirname, 'contact_map_b.mapalign')
-            conkit.io.write(contact_map_a, 'mapalign', self.prediction)
-            conkit.io.write(contact_map_b, 'mapalign', self.model)
 
+        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
+        model_cmap = self._prepare_contactmap(self.model.copy())
+
+        if tempdirname:
+            contact_map_a = os.path.join(tempdirname, 'contact_map_a.mapalign')
+            contact_map_b = os.path.join(tempdirname, 'contact_map_b.mapalign')
+            conkit.io.write(contact_map_a, 'mapalign', prediction_cmap)
+            conkit.io.write(contact_map_b, 'mapalign', model_cmap)
+            time.sleep(2)
             map_align_cline = MapAlignCommandline(
                 cmd=self.map_align_exe,
                 contact_map_a=contact_map_a,
@@ -299,6 +305,21 @@ class ModelValidationFigure(Figure):
 
             stdout, stderr = map_align_cline()
             self.alignment = tools.parse_map_align_stdout(stdout)
+
+        else:
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                contact_map_a = os.path.join(tmpdirname, 'contact_map_a.mapalign')
+                contact_map_b = os.path.join(tmpdirname, 'contact_map_b.mapalign')
+                conkit.io.write(contact_map_a, 'mapalign', self.prediction)
+                conkit.io.write(contact_map_b, 'mapalign', self.model)
+                time.sleep(2)
+                map_align_cline = MapAlignCommandline(
+                    cmd=self.map_align_exe,
+                    contact_map_a=contact_map_a,
+                    contact_map_b=contact_map_b)
+
+                stdout, stderr = map_align_cline()
+                self.alignment = tools.parse_map_align_stdout(stdout)
 
 
     def _parse_data(self, predicted_dict, *metrics):
@@ -416,12 +437,12 @@ class ModelValidationFigure(Figure):
         self.data['SVM_CALLED_ERROR'] = [True if i in error_called_indices else False for i in range(len(score_list))]
 
 
-    def map_align(self,map_align_exe=None):    
+    def map_align(self,map_align_exe=None,temp_dir_name=None):    
 
         self.map_align_exe = map_align_exe
 
         if self.map_align_exe is not None:
-            self._get_cmap_alignment()
+            self._get_cmap_alignment(tempdirname=temp_dir_name)
             self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
         else:
             self.data['MISALIGNED'] = False

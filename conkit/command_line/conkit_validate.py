@@ -78,6 +78,7 @@ def create_argument_parser():
     parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("-output_json", dest="output_json", default=None, help="path to output json file", type=str)
+    parser.add_argument("-outdir", dest="outdir", default=None, help="path to write created contactmaps to for debugging, if not specified maps get deleted", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
@@ -300,7 +301,9 @@ def main():
             if args.dnatco_exe:
                 dnatco_cats = calculate_dnatco(usable_model)
                 secondary_structure_determination = 'DNATCO'
-            ext_info = pd.merge(ext_info,dnatco_cats,how='outer',on='RESNUM')
+                ext_info = pd.merge(ext_info,dnatco_cats,how='outer',on='RESNUM')
+            else: 
+                secondary_structure_determination = None
             validation.calculate_features(z_radius=20)
         else:
             ext_info = None
@@ -315,7 +318,7 @@ def main():
 
     if args.RUN_MAP_ALIGN=='yes':
         logger.info(os.linesep + "Running Map Align.")
-        validation.map_align(map_align_exe=args.map_align_exe)
+        validation.map_align(map_align_exe=args.map_align_exe,temp_dir_name=args.outdir)
 
 
     if args.RUN_FILTERS=='yes':

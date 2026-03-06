@@ -44,19 +44,19 @@ LOCATION = os.path.abspath(os.path.dirname(__file__))
 SELECTED_VALIDATION_FEATURES = ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY']
 SELECTED_VALIDATION_FEATURES_DICT ={
-                                'Protein_DSSP_AF2_DIST_': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
+                                'Protein_DSSP_AF2_dist_': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'],
 
-                                'RNA_AF3_DIST_': ['ACC', 'WRMSD', 'FNR', 'FP', 'FPR', 'SENSITIVITY', 'SPECIFICITY', 'FNR_SMOOTH',
+                                'RNA_AF3_dist_': ['ACC', 'WRMSD', 'FNR', 'FP', 'FPR', 'SENSITIVITY', 'SPECIFICITY', 'FNR_SMOOTH',
                                 'FPR_SMOOTH', 'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY'],
 
-                                'RNA_AF3_STRUCT_': ['ACC', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'SENSITIVITY', 'SPECIFICITY', 
+                                'RNA_AF3_struct_': ['ACC', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'SENSITIVITY', 'SPECIFICITY', 
                                 'FN_SMOOTH', 'FNR_SMOOTH', 'FPR_SMOOTH', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY'],
 
-                                'RNA_DNATCO_AF3_DIST_': ['AAw', 'AAu', 'A-B', 'B-A', 'BBw', 'ICL', 'OPN', 'SYN', 'ZZZ', 
+                                'RNA_DNATCO_AF3_dist_': ['AAw', 'AAu', 'A-B', 'B-A', 'BBw', 'ICL', 'OPN', 'SYN', 'ZZZ', 
                                 'WRMSD_SMOOTH', 'FNR', 'FPR_SMOOTH', 'SENSITIVITY_SMOOTH', 'ZSCORE_FP'],
 
-                                'RNA_DNATCO AF3_STRUCT_': ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBw', 'ICL', 'OPN', 'SYN', 'ZZZ',
+                                'RNA_DNATCO AF3_struct_': ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBw', 'ICL', 'OPN', 'SYN', 'ZZZ',
                                 'FNR', 'FPR_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'] 
                                 
                                 }

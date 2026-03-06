@@ -584,7 +584,7 @@ def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE
     svm_filled = np.zeros(length)
     map_align_filled = np.zeros(length, dtype=bool)
     relative_indices = moddeled_resnums - np.min(moddeled_resnums)
-    resnums_completed = np.arrange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
+    resnums_completed = np.arange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
     svm_filled[relative_indices] = svm_list
     svm_bool = (svm_filled >= 0.5)
     map_align_filled[relative_indices] = map_align_list
