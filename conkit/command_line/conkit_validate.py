@@ -51,6 +51,7 @@ import os
 import subprocess
 import json
 import numpy as np
+import pandas as pd
 from prettytable import PrettyTable
 
 import conkit.applications
@@ -77,6 +78,7 @@ def create_argument_parser():
     parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("-output_json", dest="output_json", default=None, help="path to output json file", type=str)
+    parser.add_argument("-outdir", dest="outdir", default=None, help="path to write created contactmaps to for debugging, if not specified maps get deleted", type=str)
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
@@ -85,6 +87,8 @@ def create_argument_parser():
                         type=is_executable, help="Path to the gesamt executable to check structural alignment")
     parser.add_argument("--areaimol_exe", dest="areaimol_exe", default="areaimol",
                         type=is_executable, help="Path to areaimol executable to calculate solvent accesibility for RNA")
+    parser.add_argument("--dnatco_exe", dest="dnatco_exe", default=None,
+                        type=is_executable, help="Path to dnatco executable to calculate CANA categories for RNA")
     parser.add_argument("--gemmi_exe", dest="gemmi_exe", default="gemmi",
                         type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
@@ -152,6 +156,72 @@ def check_file_exists(input_path):
         raise FileNotFoundError("{} cannot be found".format(input_path))
     
 
+def calculate_dnatco(structfile,type,dnatco_exe):
+    from collections import defaultdict
+    outfile='custom_report.txt'
+
+    if type != 'mmcif':
+        if type == 'pdb':
+            subprocess.run(['pdb2cif',structfile,structfile.replace('.cif','.pdb')])  # step to try to rescue pdb file entered should be changed because it silently introduces a dependency perhaps this can/should be replaced by a gemmin based call? also the swapping of the extensions is likely not a great way to do this
+            structfile = structfile.replace('.cif','.pdb')
+        else: 
+            print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
+            return
+
+    subprocess.run(['node',dnatco_exe,'--coords',structfile,'--reportText']) # could specify an output directory like temp
+
+    with open(outfile, 'r') as f:
+        lines = f.readlines()
+
+    for l in range(len(lines)):
+        if  '|                               All dinucleotides                              |' in lines[l]:
+            start = l+4
+        if  "|                             Dinucleotide outliers                            |" in lines[l]:
+            end = l-6
+
+
+    records = []
+    for l in range(start,end):
+        parts = lines[l].split()
+        nt1, nt2 = parts[3], parts[4]
+        cana = parts[6]
+        rmsd = float(parts[7])
+
+        r1 = int(re.search(r"\d+", nt1).group())
+        r2 = int(re.search(r"\d+", nt2).group())
+
+        records.append((r1, r2, cana, rmsd))
+
+    steps_df = pd.DataFrame(records, columns=["res1", "res2", "CANA", "RMSD"])
+
+    # -----------------------------
+    # Accumulate RMSDs per (residue, CANA)
+    # -----------------------------
+    rmsd_map = defaultdict(list)
+
+    for _, row in steps_df.iterrows():
+        rmsd_map[(row["res1"], row["CANA"])].append(row["RMSD"])
+        rmsd_map[(row["res2"], row["CANA"])].append(row["RMSD"])
+
+    # all residues present
+    residues = sorted(
+        set(steps_df["res1"]).union(steps_df["res2"])
+    )
+
+    # -----------------------------
+    # Build final dataframe
+    # -----------------------------
+    res_df = pd.DataFrame(0.0, index=residues, columns=DNATCO_CATEGORIES)
+    res_df.index.name = "RESNUM"
+
+    for (res, cana), rmsds in rmsd_map.items():
+        avg_rmsd = sum(rmsds) / len(rmsds)
+        res_df.loc[res, cana] = 1.0 / avg_rmsd
+        res_df.loc[res,'DNATCO_TOT_RMSD'] += sum(rmsds)
+
+    return res_df
+
+
 def touch(fname, content='', mode='wb'):
     with open(fname, mode) as fhandle:
         fhandle.write(content)
@@ -188,15 +258,17 @@ def main():
     elif args.distformat in ['rosettanpz']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, atom_type=rep_atom)
         prediction = prediction_file.top
+        prediction.distance_cutoff(cutoff)
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
+        prediction.distance_cutoff(cutoff)
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
 
     if args.RENUMBER == 'yes':
         try:
-            usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=args.selected_chain,moltype=args.moltype)
+            usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
         except:
             logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
     else: 
@@ -224,24 +296,31 @@ def main():
             p = PDBParser()
             structure = p.get_structure('structure', usable_model)[0]
             ext_info = DSSP(structure, usable_model, dssp=args.dssp, acc_array='Wilke')
+            secondary_structure_determination = 'DSSP'
             validation.calculate_features()
         elif args.moltype=='RNA': 
             ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
+            if args.dnatco_exe:
+                dnatco_cats = calculate_dnatco(usable_model)
+                secondary_structure_determination = 'DNATCO'
+                ext_info = pd.merge(ext_info,dnatco_cats,how='outer',on='RESNUM')
+            else: 
+                secondary_structure_determination = None
             validation.calculate_features(z_radius=20)
         else:
             ext_info = None
 
         if args.distformat in ['pdb', 'mmcif']:
-            validation.svm(ext_info,moltype=args.moltype,prediction_type='STRUCT')
+            validation.svm(ext_info,moltype=args.moltype,prediction_type='STRUCT',sec_struc_info=secondary_structure_determination)
         else:
-            validation.svm(ext_info,moltype=args.moltype,prediction_type='DIST')
+            validation.svm(ext_info,moltype=args.moltype,prediction_type='DIST',sec_struc_info=secondary_structure_determination)
         
         validation.svm_error_calling(min_err_size=args.min_err_size,score_threshold=args.score_threshold)
         
 
     if args.RUN_MAP_ALIGN=='yes':
         logger.info(os.linesep + "Running Map Align.")
-        validation.map_align(map_align_exe=args.map_align_exe)
+        validation.map_align(map_align_exe=args.map_align_exe,temp_dir_name=args.outdir)
 
 
     if args.RUN_FILTERS=='yes':

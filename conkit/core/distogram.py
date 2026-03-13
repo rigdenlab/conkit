@@ -64,15 +64,39 @@ class Distogram(ContactMap):
 
     """
 
-    __slots__ = ["_original_file_format", "_sequence","_plddt"]
+    __slots__ = ["_original_file_format", "_distance_cutoff", "_reference_atom", "_sequence","_plddt"]
 
     def __init__(self, id):
         self._original_file_format = None
+        self._distance_cutoff = 8
+        self._reference_atom = "CA"
         super(Distogram, self).__init__(id)
 
     def __repr__(self):
         return '{}(id="{}", ndistances={})'.format(self.__class__.__name__, self.id, self.ndistances)
 
+    @distance_cutoff.setter
+    def distance_cutoff(self, distance_cutoff):
+        if isinstance(distance_cutoff, (int, float)) and not isinstance(distance_cutoff, bool) and (x >= 0):
+            self._distance_cutoff = distance_cutoff
+        else:
+            raise TypeError("Invalid value type for distance cutoff" )
+
+    @property.distance_cutoff
+    def distance_cutoff(self):
+        return self._distance_cutoff
+
+    @reference_atom.setter
+    def reference_atom(self, reference_atom):
+        if isinstance(reference_atom, (str)):
+            self._reference_atom = reference_atom
+        else:
+            raise TypeError("Invalid value type for distance cutoff" )
+
+    @property.reference_atom
+    def reference_atom(self):
+        return self._reference_atom
+    
     @property
     def ndistances(self):
         """The number of :obj:`~conkit.core.distance.Distance` instances
@@ -213,7 +237,7 @@ class Distogram(ContactMap):
         for distance in self:
             distance._reshape_bins(new_bins)
 
-    def as_contactmap(self, distance_cutoff=10):
+    def as_contactmap(self, distance_cutoff=None):
         """Create a :obj:`~conkit.core.contactmap.ContactMap` instance with the contacts present in this
         :obj:`~conkit.core.distogram.Distogram` instance.
 
@@ -227,6 +251,10 @@ class Distogram(ContactMap):
         :obj:`~conkit.core.contactmap.ContactMap`
             A contactmap with the contacts present in this distogram instance.
         """
+
+        if not(distance_cutoff):
+            distance_cutoff = self._distance_cutoff
+
         contactmap = ContactMap("map_1")
         for dist in self:
             if dist.predicted_distance <= distance_cutoff:

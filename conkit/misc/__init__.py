@@ -44,19 +44,21 @@ LOCATION = os.path.abspath(os.path.dirname(__file__))
 SELECTED_VALIDATION_FEATURES = ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY']
 SELECTED_VALIDATION_FEATURES_DICT ={
-                                'Protein_DIST': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
+                                'Protein_DSSP_AF2_dist_': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'],
 
-                                'Protein_STRUCT': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
-                                'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'], 
+                                'RNA_AF3_dist_': ['ACC', 'WRMSD', 'FNR', 'FP', 'FPR', 'SENSITIVITY', 'SPECIFICITY', 'FNR_SMOOTH',
+                                'FPR_SMOOTH', 'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY'],
 
-                                'RNA_DIST': ['ACC', 'WRMSD', 'FN', 'SENSITIVITY', 'SPECIFICITY', 'ACCURACY', 'FN_SMOOTH',
-                                'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 
-                                'ZSCORE_FN', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY'],
+                                'RNA_AF3_struct_': ['ACC', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'SENSITIVITY', 'SPECIFICITY', 
+                                'FN_SMOOTH', 'FNR_SMOOTH', 'FPR_SMOOTH', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY'],
 
-                                'RNA_STRUCT': ['ACC', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FP', 'FPR', 'SPECIFICITY', 
-                                'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 
-                                'ZSCORE_FN', 'ZSCORE_FP', 'ZSCORE_FPR']
+                                'RNA_DNATCO_AF3_dist_': ['AAw', 'AAu', 'A-B', 'B-A', 'BBw', 'ICL', 'OPN', 'SYN', 'ZZZ', 
+                                'WRMSD_SMOOTH', 'FNR', 'FPR_SMOOTH', 'SENSITIVITY_SMOOTH', 'ZSCORE_FP'],
+
+                                'RNA_DNATCO AF3_struct_': ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBw', 'ICL', 'OPN', 'SYN', 'ZZZ',
+                                'FNR', 'FPR_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'] 
+                                
                                 }
 
 ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',

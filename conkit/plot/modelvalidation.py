@@ -40,6 +40,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import time
 from Bio.PDB.DSSP import DSSP
 from Bio.PDB import PDBParser, MMCIFParser
 import numpy as np
@@ -128,9 +129,11 @@ class ModelValidationFigure(Figure):
         self._distance_bins = None
         self.data = None
         self.alignment = {}
+        self.svm_name = None
         self.sorted_scores = None
         self.smooth_scores = None
         self.map_align_exe = None
+        self.out_dir = None
 
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
@@ -243,9 +246,9 @@ class ModelValidationFigure(Figure):
 
         return distogram
 
-    def _prepare_contactmap(self, distogram):
+    def _prepare_contactmap(self, distogram, cutoff=8):
         """General operations to prepare a :obj:`~conkit.core.contactmap.ContactMap` instance before plotting."""
-        contactmap = distogram.as_contactmap()
+        contactmap = distogram.as_contactmap(distance_cutoff=cutoff)
         contactmap.sequence = self.sequence
         contactmap.set_sequence_register()
         contactmap.remove_neighbors(inplace=True)
@@ -282,15 +285,19 @@ class ModelValidationFigure(Figure):
         dssp.columns = ['RESNUM', 'COIL', 'HELIX', 'SHEET', 'ACC']
         return dssp
 
-    def _get_cmap_alignment(self):
+    def _get_cmap_alignment(self,tempdirname=None):
         """Obtain a contact map alignment between :attr:`~conkit.plot.ModelValidationFigure.model` and
         :attr:`~conkit.plot.ModelValidationFigure.prediction` and get the misaligned residues"""
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            contact_map_a = os.path.join(tmpdirname, 'contact_map_a.mapalign')
-            contact_map_b = os.path.join(tmpdirname, 'contact_map_b.mapalign')
-            conkit.io.write(contact_map_a, 'mapalign', self.prediction)
-            conkit.io.write(contact_map_b, 'mapalign', self.model)
 
+        prediction_cmap = self._prepare_contactmap(self.prediction.copy())
+        model_cmap = self._prepare_contactmap(self.model.copy())
+
+        if tempdirname:
+            contact_map_a = os.path.join(tempdirname, 'contact_map_a.mapalign')
+            contact_map_b = os.path.join(tempdirname, 'contact_map_b.mapalign')
+            conkit.io.write(contact_map_a, 'mapalign', prediction_cmap)
+            conkit.io.write(contact_map_b, 'mapalign', model_cmap)
+            time.sleep(2)
             map_align_cline = MapAlignCommandline(
                 cmd=self.map_align_exe,
                 contact_map_a=contact_map_a,
@@ -299,6 +306,20 @@ class ModelValidationFigure(Figure):
             stdout, stderr = map_align_cline()
             self.alignment = tools.parse_map_align_stdout(stdout)
 
+        else:
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                contact_map_a = os.path.join(tmpdirname, 'contact_map_a.mapalign')
+                contact_map_b = os.path.join(tmpdirname, 'contact_map_b.mapalign')
+                conkit.io.write(contact_map_a, 'mapalign', self.prediction)
+                conkit.io.write(contact_map_b, 'mapalign', self.model)
+                time.sleep(2)
+                map_align_cline = MapAlignCommandline(
+                    cmd=self.map_align_exe,
+                    contact_map_a=contact_map_a,
+                    contact_map_b=contact_map_b)
+
+                stdout, stderr = map_align_cline()
+                self.alignment = tools.parse_map_align_stdout(stdout)
 
 
     def _parse_data(self, predicted_dict, *metrics):
@@ -312,7 +333,6 @@ class ModelValidationFigure(Figure):
         feature_df.columns = ALL_VALIDATION_FEATURES
         
         self.data = self.data.merge(feature_df, how='inner', on =['RESNUM'])
-
 
 
     def _add_legend(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65):
@@ -357,9 +377,9 @@ class ModelValidationFigure(Figure):
 
 
 
-    def _predict_score(self, resnum,moltype='Protein',prediction_type='DIST'):
+    def _predict_score(self, resnum):
         """Predict whether a given residue is part of a model error or not"""
-        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[f'{moltype}_{prediction_type}']]
+        residue_features = self.data.loc[self.data.RESNUM == resnum][SELECTED_VALIDATION_FEATURES_DICT[self.svm_name]]
 
         if (self.absent_residues and resnum in self.absent_residues) or residue_features.isnull().values.any():
             return np.nan
@@ -367,9 +387,10 @@ class ModelValidationFigure(Figure):
         return self.classifier.predict_proba(scaled_features)[0, 1]
 
 
-    def svm(self,ext_info,moltype='Protein',prediction_type='DIST'):
+    def svm(self,ext_info,moltype='Protein',prediction_type='DIST',sec_struc_info='DSSP'):
 
         if moltype == 'Protein':
+            self.svm_name = 'Protein_AF2_Dist'
             self.classifier, self.scaler = load_validation_model()        
             if ext_info==None: 
                 self.ext_info=pd.DataFrame()
@@ -383,12 +404,18 @@ class ModelValidationFigure(Figure):
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
 
         elif moltype == 'RNA':
-            if prediction_type == 'DIST':
-                name = 'RNA_AF3_dist_'
-            if prediction_type == 'STRUCT':
-                name = 'RNA_AF3_struct_'
+            if sec_struc_info == 'DNATCO':
+                if prediction_type == 'DIST':
+                    self.svm_name = 'RNA_DNATCO_AF3_dist_'
+                if prediction_type == 'STRUCT':
+                    self.svm_name = 'RNA_DNATCO_AF3_struct_'
+            else :
+                if prediction_type == 'DIST':
+                    self.svm_name = 'RNA_AF3_dist_'
+                if prediction_type == 'STRUCT':
+                    self.svm_name = 'RNA_AF3_struct_'
 
-            self.classifier, self.scaler = load_specific_validation_model(name)   
+            self.classifier, self.scaler = load_specific_validation_model(self.svm_name)   # load the correct SVM for the given style of input (Distogram or structure and with or without dnatco) should  potentially make protein side compliant to this
                  
             if ext_info==None: 
                 self.ext_info=pd.DataFrame()
@@ -399,7 +426,7 @@ class ModelValidationFigure(Figure):
 
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
 
-        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x,moltype=moltype,prediction_type=prediction_type))
+        self.data['SCORE'] = self.data['RESNUM'].apply(lambda x: self._predict_score(x))
 
 
     def svm_error_calling(self,min_err_size=1,score_threshold=0.5):
@@ -410,12 +437,12 @@ class ModelValidationFigure(Figure):
         self.data['SVM_CALLED_ERROR'] = [True if i in error_called_indices else False for i in range(len(score_list))]
 
 
-    def map_align(self,map_align_exe=None):    
+    def map_align(self,map_align_exe=None,temp_dir_name=None):    
 
         self.map_align_exe = map_align_exe
 
         if self.map_align_exe is not None:
-            self._get_cmap_alignment()
+            self._get_cmap_alignment(tempdirname=temp_dir_name)
             self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
         else:
             self.data['MISALIGNED'] = False
