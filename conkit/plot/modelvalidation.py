@@ -246,9 +246,9 @@ class ModelValidationFigure(Figure):
 
         return distogram
 
-    def _prepare_contactmap(self, distogram):
+    def _prepare_contactmap(self, distogram, cutoff=8):
         """General operations to prepare a :obj:`~conkit.core.contactmap.ContactMap` instance before plotting."""
-        contactmap = distogram.as_contactmap()
+        contactmap = distogram.as_contactmap(distance_cutoff=cutoff)
         contactmap.sequence = self.sequence
         contactmap.set_sequence_register()
         contactmap.remove_neighbors(inplace=True)

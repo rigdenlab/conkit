@@ -258,15 +258,17 @@ def main():
     elif args.distformat in ['rosettanpz']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, atom_type=rep_atom)
         prediction = prediction_file.top
+        prediction.distance_cutoff(cutoff)
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
+        prediction.distance_cutoff(cutoff)
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
 
     if args.RENUMBER == 'yes':
         try:
-            usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile,args.pdbformat,sequence,selected_chain=args.selected_chain,moltype=args.moltype)
+            usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
         except:
             logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
     else: 
