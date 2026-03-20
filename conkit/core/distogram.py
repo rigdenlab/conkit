@@ -75,16 +75,20 @@ class Distogram(ContactMap):
     def __repr__(self):
         return '{}(id="{}", ndistances={})'.format(self.__class__.__name__, self.id, self.ndistances)
 
+    @property
+    def distance_cutoff(self):
+        return self._distance_cutoff
+
     @distance_cutoff.setter
     def distance_cutoff(self, distance_cutoff):
-        if isinstance(distance_cutoff, (int, float)) and not isinstance(distance_cutoff, bool) and (x >= 0):
+        if isinstance(distance_cutoff, (int, float)) and not isinstance(distance_cutoff, bool) and (distance_cutoff >= 0):
             self._distance_cutoff = distance_cutoff
         else:
             raise TypeError("Invalid value type for distance cutoff" )
 
-    @property.distance_cutoff
-    def distance_cutoff(self):
-        return self._distance_cutoff
+    @property
+    def reference_atom(self):
+        return self._reference_atom
 
     @reference_atom.setter
     def reference_atom(self, reference_atom):
@@ -92,10 +96,6 @@ class Distogram(ContactMap):
             self._reference_atom = reference_atom
         else:
             raise TypeError("Invalid value type for distance cutoff" )
-
-    @property.reference_atom
-    def reference_atom(self):
-        return self._reference_atom
     
     @property
     def ndistances(self):

@@ -112,7 +112,7 @@ def create_argument_parser():
     parser.add_argument("--run_filters", dest="RUN_FILTERS", default='yes', type=str,
                         help="Whether to run the filters against false positives(if possible given the provided info)")
     parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
-                        help="distance cutoff for contacts when using Custom moltype")
+                        help="distance cutoff for contacts when using Custom moltype (in angstrom)")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
     parser.add_argument("--min_error_length", dest="min_err_size", default=6, type=int,
@@ -258,11 +258,11 @@ def main():
     elif args.distformat in ['rosettanpz']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, atom_type=rep_atom)
         prediction = prediction_file.top
-        prediction.distance_cutoff(cutoff)
+        prediction.distance_cutoff = cutoff
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
-        prediction.distance_cutoff(cutoff)
+        prediction.distance_cutoff = cutoff
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
 

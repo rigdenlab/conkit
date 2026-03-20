@@ -209,8 +209,8 @@ class GenericStructureParser(ContactFileParser):
                         distogram.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
                         assert len(distogram.sequence.seq) == len(chain1) + len(chain2)
                     
-                    distogram.distance_cutoff(distance_cutoff)
-                    distogram.reference_atom(atom_type)
+                    distogram.distance_cutoff = distance_cutoff
+                    distogram.reference_atom = atom_type
                     hierarchy.add(distogram)
 
             hierarchy.method = "Distogram extracted from PDB " + str(model.id)
