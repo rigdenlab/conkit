@@ -449,7 +449,7 @@ class ModelValidationFigure(Figure):
 
     def count_contacts(self,cutoff):
 
-        model_cmap = self._prepare_contactmap(self.model.copy())
+        model_cmap = self._prepare_contactmap(self.model.copy(),cutoff=cutoff)
         model_dict = model_cmap.as_dict()
         self.data['CONTACTS'] = self.data['RESNUM'].apply(lambda x: len(model_dict[int(x)]))
 

@@ -247,7 +247,7 @@ def main():
     if len(sequence) < 5:
         raise ValueError('Cannot validate model with less than 5 residues')
 
-    rep_atom, cutoff = set_contact_definition(args.moltype,rep_atom=args.rep_atom,cutoff=args.contact_distance_cutoff)
+    rep_atom, cutoff = set_contact_definition(args.moltype, rep_atom=args.rep_atom, cutoff=args.contact_distance_cutoff)
 
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
