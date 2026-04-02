@@ -448,4 +448,7 @@ class Contact(Entity):
             return a_a
         elif a_a in AminoAcidThreeToOne.__members__:
             return AminoAcidThreeToOne[a_a].value
+        else:
+            #print(f'leaving residue {amino_acid} as orginal code (Not translatable to one letter)')
+            return amino_acid
         raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))

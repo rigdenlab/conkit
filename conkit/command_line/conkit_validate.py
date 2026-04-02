@@ -75,7 +75,7 @@ def create_argument_parser():
                         choices=list(conkit.io.DISTANCE_FILE_PARSERS.keys()))
     parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file", choices=['pdb', 'mmcif'])
-    parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
+    parser.add_argument("-dssp_exe", dest="dssp", default=None, help="path to dssp executable")#, type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("-output_json", dest="output_json", default=None, help="path to output json file", type=str)
     parser.add_argument("-outdir", dest="outdir", default=None, help="path to write created contactmaps to for debugging, if not specified maps get deleted", type=str)
@@ -85,11 +85,11 @@ def create_argument_parser():
                         type=is_executable, help="Path to the map_align executable")
     parser.add_argument("--gesamt_exe", dest="gesamt_exe", default=None,
                         type=is_executable, help="Path to the gesamt executable to check structural alignment")
-    parser.add_argument("--areaimol_exe", dest="areaimol_exe", default="areaimol",
+    parser.add_argument("--areaimol_exe", dest="areaimol_exe", default=None,
                         type=is_executable, help="Path to areaimol executable to calculate solvent accesibility for RNA")
     parser.add_argument("--dnatco_exe", dest="dnatco_exe", default=None,
                         type=is_executable, help="Path to dnatco executable to calculate CANA categories for RNA")
-    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default="gemmi",
+    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default=None,
                         type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
@@ -233,6 +233,8 @@ def main():
     parser = create_argument_parser()
     args = parser.parse_args()
 
+    include_hetatms=(args.moltype == 'RNA')  #modified bases are very common in RNA strcutures, removing all hetatm records is a bad idea in this case
+
     global logger
     logger = conkit.command_line.setup_logging(level="info")
 
@@ -253,7 +255,7 @@ def main():
     logger.info("Reading input distance prediction:           %s", args.distfile)
 
     if args.distformat in ['pdb', 'mmcif']:
-        prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom)
+        prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
         prediction = prediction_file.top
     elif args.distformat in ['rosettanpz']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, atom_type=rep_atom)
@@ -270,11 +272,13 @@ def main():
         try:
             usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
         except:
-            logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
+            logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain or if your model only has one chain you could turn of renumbering by setting --renumber no", args.pdbfile, args.seqfile)
     else: 
         usable_model = args.pdbfile
     
-    model = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
+    model_file = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
+    model = model_file.top
+    model.distance_cutoff = cutoff
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
@@ -326,7 +330,7 @@ def main():
     if args.RUN_FILTERS=='yes':
         logger.info(os.linesep + "Running Filters.")
 
-        validation.count_contacts(cutoff=cutoff)
+        validation.count_contacts()
 
         if (prediction.plddt != None) and (args.PLDDT_IN_DISTFILE == 'yes'): ##turn into check for plddt
 

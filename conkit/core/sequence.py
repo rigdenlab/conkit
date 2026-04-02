@@ -135,7 +135,9 @@ class Sequence(Entity):
            One or more amino acids in the sequence are not recognised
 
         """
-        if all(AminoAcidOneToThree[c].value for c in seq.upper() if c != "-"):
+        if "?" in seq:
+            print("sequence containing placeholders was passed, this is normal if RNA contains non-canonical bases, is less normal for proteins")
+        if all(AminoAcidOneToThree[c].value for c in seq.upper() if  not c in ["-","?"]):   #added ? to allow for having placeholder in the sequence for not standard bases is this a good idea? maybe ...
             self._seq = seq
         else:
             raise ValueError("Unrecognized amino acids in sequence")

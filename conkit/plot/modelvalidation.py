@@ -447,7 +447,7 @@ class ModelValidationFigure(Figure):
         else:
             self.data['MISALIGNED'] = False
 
-    def count_contacts(self,cutoff):
+    def count_contacts(self):
 
         model_cmap = self._prepare_contactmap(self.model.copy())
         model_dict = model_cmap.as_dict()

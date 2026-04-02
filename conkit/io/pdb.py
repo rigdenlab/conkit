@@ -62,7 +62,15 @@ class GenericStructureParser(ContactFileParser):
 
     def _build_sequence(self, chain):
         """Build a peptide using :mod:`biopython` to extract the sequence"""
-        return Sequence(chain.id + "_seq", "".join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
+        seq_str = ""
+        canonicals = AminoAcidThreeToOne.__members__
+        for residue in chain:
+            if residue.resname in canonicals:
+                seq_str = seq_str + AminoAcidThreeToOne[residue.resname].value
+            else:
+                seq_str = seq_str + '?'
+
+        return Sequence(chain.id + "_seq", seq_str)
 
     def _build_plddts(self, chain):
         """extract the plddts (B-factor collumn) of a chain"""
@@ -142,7 +150,7 @@ class GenericStructureParser(ContactFileParser):
             if residue.id[0].strip() and residue.resname not in AminoAcidThreeToOne.__members__:
                 chain.detach_child(residue.id)
 
-    def _read(self, structure, f_id, distance_cutoff, atom_type):
+    def _read(self, structure, f_id, distance_cutoff, atom_type, include_hetatms=False):
         """Read a contact file
 
         Parameters
@@ -169,7 +177,8 @@ class GenericStructureParser(ContactFileParser):
             chains = list(chain for chain in model)
 
             for chain in chains:
-                self._remove_hetatm(chain)
+                if not include_hetatms:
+                    self._remove_hetatm(chain)
                 self._remove_atom(chain, atom_type)
             #    print(chain[100].get_unpacked_list())
 
@@ -246,7 +255,7 @@ class MmCifParser(GenericStructureParser):
     def __init__(self):
         super(MmCifParser, self).__init__()
 
-    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type="CB"):
+    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type="CB", include_hetatms=False):
         """Read a contact file
 
         Parameters
@@ -266,7 +275,7 @@ class MmCifParser(GenericStructureParser):
 
         """
         structure = MMCIFParser(QUIET=True).get_structure("mmcif", f_handle)
-        return self._read(structure, f_id, distance_cutoff, atom_type)
+        return self._read(structure, f_id, distance_cutoff, atom_type, include_hetatms=include_hetatms)
 
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to to file
@@ -296,7 +305,7 @@ class PdbParser(GenericStructureParser):
     def __init__(self):
         super(PdbParser, self).__init__()
 
-    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type="CB"):
+    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type="CB", include_hetatms=False):
         """Read a contact file
 
         Parameters
@@ -316,7 +325,7 @@ class PdbParser(GenericStructureParser):
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
-        return self._read(structure, f_id, distance_cutoff, atom_type)
+        return self._read(structure, f_id, distance_cutoff, atom_type, include_hetatms=include_hetatms)
 
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to to file

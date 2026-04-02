@@ -100,7 +100,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
     # read in the structure
     if file_type == 'pdb':
         from Bio.PDB.PDBParser import PDBParser
-        from Bio.PDB.PDBIO import PDBIO
+        from Bio.PDB.PDBIO import PDBIO 
         from Bio.PDB.PDBIO import Select
         parser = PDBParser()
         structure = parser.get_structure(outprefix,struct_file)
@@ -135,7 +135,6 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
         score_old = 0
         alignment_dict = {}
         reverse_alignment_dict = {}
-
         for chain in chainlist:
             chain_seq, start, stop = construct_seq_from_chain(chain, place_holder = '?', alphabet=moltype)
             alignment_dict_new, reverse_alignment_dict_new, score = get_alignment_map_dict(chain_seq, sequence, return_score = True, place_holder = '?')
@@ -145,7 +144,6 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
                 selected_start = start
                 alignment_dict = alignment_dict_new
                 reverse_alignment_dict = reverse_alignment_dict_new
-
         if score_old <= -100000:
             print(f'no chain in {struct_file} has sufficient sequence similarity to input, aborting')
             #return 0
@@ -164,7 +162,11 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
             res.id = resid
         else: unusable_residues.append(resid)
     
-    io = PDBIO()
+    if file_type == 'pdb':
+        io = PDBIO()
+    elif file_type == 'mmcif':
+        io = MMCIFIO()
+
     io.set_structure(structure)
     out_name = os.path.join(loc,f'renumbered_{selected_chain}_{outprefix}.{ext}')
 
