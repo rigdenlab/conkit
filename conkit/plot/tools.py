@@ -618,8 +618,9 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     instructions = "REPORT CONTACT NO GXGRATIO NO\nEND\neof".encode('utf-8')
     p = subprocess.Popen(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE,stdin=subprocess.PIPE) 
     out, err = p.communicate(instructions)
-
+    ### this section needs error handling
     out_str = out.decode('utf-8')
+    print(out_str)
     lines = out_str.split('\n')
 
     for l in range(len(lines)):

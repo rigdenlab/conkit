@@ -50,9 +50,11 @@ from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 from conkit.core.sequence import Sequence
 from conkit.core.mappings import AminoAcidThreeToOne
+from conkit.misc.rescodes import reslist, mod_reslist, nuclist, mod_nuclist
+
+RELEVANT_RESCODES = reslist.keys() | mod_reslist.keys() | nuclist.keys() | mod_nuclist.keys()
 
 ATOM = collections.namedtuple("Atom", "resname resseq resseq_alt reschain")
-
 
 class GenericStructureParser(ContactFileParser):
     """
@@ -144,10 +146,16 @@ class GenericStructureParser(ContactFileParser):
                     elif atom.id != type:
                         chain[residue.id].detach_child(atom.id)
 
-    def _remove_hetatm(self, chain):
+    def _remove_hetatm(self, chain):     #should this be changed so it collects a minmial definition of a residue for consideration and removes all that don't follow that definition? (Like has C1', .... )
         """Tidy up a chain removing all HETATM entries"""
         for residue in chain.copy():
             if residue.id[0].strip() and residue.resname not in AminoAcidThreeToOne.__members__:
+                chain.detach_child(residue.id)
+
+    def _remove_non_polymer_residues(self, chain):     #should this be changed so it collects a minmial definition of a residue for consideration and removes all that don't follow that definition? (Like has C1', .... )
+        """Tidy up a chain removing all NON polymer (non base or AA) entries"""
+        for residue in chain.copy():
+            if residue.id[0].strip() and residue.resname not in RELEVANT_RESCODES:
                 chain.detach_child(residue.id)
 
     def _read(self, structure, f_id, distance_cutoff, atom_type, include_hetatms=False):
@@ -172,12 +180,16 @@ class GenericStructureParser(ContactFileParser):
         hierarchies = []
         distance_bound = (0.0, float(distance_cutoff))
         for model in structure:
+
             hierarchy = DistanceFile(f_id + "_" + str(model.id))
             hierarchy.original_file_format = "pdb"
             chains = list(chain for chain in model)
 
             for chain in chains:
-                if not include_hetatms:
+
+                if include_hetatms:
+                    self._remove_non_polymer_residues(chain)
+                else:
                     self._remove_hetatm(chain)
                 self._remove_atom(chain, atom_type)
             #    print(chain[100].get_unpacked_list())

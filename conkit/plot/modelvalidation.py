@@ -152,9 +152,9 @@ class ModelValidationFigure(Figure):
         self.data['RESNUM'] = model_dict.keys()
         self.data['MISALIGNED'] = False        
         self.data['SCORE'] = 0
-        self.data['CONTACTS'] = 0        
-        self.data['PLDDT'] = 0
-        self.data['Q_IN_ERROR'] = ''  
+        #self.data['CONTACTS'] = 0        
+        #self.data['PLDDT'] = 0
+        #self.data['Q_IN_ERROR'] = ''  
 
     def calculate_features(self,z_radius = 10):
 
@@ -353,23 +353,26 @@ class ModelValidationFigure(Figure):
             plots += _misaligned + _aligned
 
         if RUN_FILTERS:
-            _sufficient_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS, label='Sufficient contacts', **_MARKERKWARGS)
-            _low_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS, label='Low contacts <'+str(n_contacts_per_res), **_MARKERKWARGS)
+            if 'CONTACTS' in self.data.columns:
+                _sufficient_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS, label='Sufficient contacts', **_MARKERKWARGS)
+                _low_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS, label='Low contacts <'+str(n_contacts_per_res), **_MARKERKWARGS)
 
-            plots += _sufficient_contacts + _low_contacts
+                plots += _sufficient_contacts + _low_contacts
 
-            color_scheme = tools.ColorDefinitions.PLDDT_COLORS
-            thresholds = list(color_scheme.keys())
-            thresholds.sort()
-            for th in thresholds:
-                plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
+            if 'PLDDT' in self.data.columns:
+                color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+                thresholds = list(color_scheme.keys())
+                thresholds.sort()
+                for th in thresholds:
+                    plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
 
-            color_scheme = tools.ColorDefinitions.Q_COLORS
-            thresholds = list(color_scheme.keys())
-            thresholds.sort()
-            plots += self.ax.plot([], [], c=color_scheme[thresholds[2]], label='Q > 0.5', **_MARKERKWARGS)
-            plots += self.ax.plot([], [], c=color_scheme[thresholds[1]], label='Q < 0.5', **_MARKERKWARGS)
-            plots += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
+            if 'Q_IN_ERROR' in self.data.columns:
+                color_scheme = tools.ColorDefinitions.Q_COLORS
+                thresholds = list(color_scheme.keys())
+                thresholds.sort()
+                plots += self.ax.plot([], [], c=color_scheme[thresholds[2]], label='Q > 0.5', **_MARKERKWARGS)
+                plots += self.ax.plot([], [], c=color_scheme[thresholds[1]], label='Q < 0.5', **_MARKERKWARGS)
+                plots += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
 
         labels = [l.get_label() for l in plots]
         self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
@@ -515,7 +518,7 @@ class ModelValidationFigure(Figure):
             self.ax.plot(sorted(scores.keys()), self.smooth_scores, color=tools.ColorDefinitions.SCORE)
             for resnum in residues:
                 color = tools.ColorDefinitions.ERROR if called_errors[resnum] else tools.ColorDefinitions.CORRECT
-                self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **MARKERKWARGS)
+                self.ax.plot(resnum - 1, -0.01, mfc=color, c=color, **_MARKERKWARGS)
 
         if RUN_MAP_ALIGN:
 
@@ -524,7 +527,7 @@ class ModelValidationFigure(Figure):
                     color = tools.ColorDefinitions.MISALIGNED
                 else:
                     color = tools.ColorDefinitions.ALIGNED
-                self.ax.plot(resnum - 1, -0.03, mfc=color, c=color, **MARKERKWARGS)
+                self.ax.plot(resnum - 1, -0.03, mfc=color, c=color, **_MARKERKWARGS)
 
         if RUN_FILTERS:
 
@@ -533,7 +536,7 @@ class ModelValidationFigure(Figure):
                 
                 for resnum in residues:
                     color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
-                    self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **MARKERKWARGS)
+                    self.ax.plot(resnum - 1, -0.05, mfc=color, c=color, **_MARKERKWARGS)
 
             
             if 'PLDDT' in self.data.columns:
@@ -551,7 +554,7 @@ class ModelValidationFigure(Figure):
                         if plddts[resnum] < th:
                             color = color_scheme[th] 
 
-                    self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **MARKERKWARGS)
+                    self.ax.plot(resnum - 1, -0.07, mfc=color, c=color, **_MARKERKWARGS)
 
             if 'Q_IN_ERROR' in self.data.columns:
                 Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
@@ -570,7 +573,7 @@ class ModelValidationFigure(Figure):
                             if Qs[resnum] < th:
                                 color = color_scheme[th] 
 
-                    self.ax.plot(resnum - 1, -0.09, mfc=color, c=color, **MARKERKWARGS)
+                    self.ax.plot(resnum - 1, -0.09, mfc=color, c=color, **_MARKERKWARGS)
 
             
         self.ax.axhline(svm_threshold, **LINEKWARGS)
@@ -578,7 +581,7 @@ class ModelValidationFigure(Figure):
         self.ax.set_ylabel('Smoothed score')
 
         if self.legend:
-            self._add_legend(RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65)
+            self._add_legend(RUN_SVM=RUN_SVM,RUN_MAP_ALIGN=RUN_MAP_ALIGN,RUN_FILTERS=RUN_FILTERS,n_contacts_per_res=2,plddt_threshold=65)
 
         # TODO: deprecate this in 0.14
         if self._file_name:

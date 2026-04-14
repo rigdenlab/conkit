@@ -49,6 +49,7 @@ from conkit.io.tools import set_contact_definition
 import conkit.plot
 import conkit.plot.tools
 from conkit.core import Contact, ContactMap, ContactFile
+from conkit.core import Distance, Distogram, DistanceFile
 
 logger = None
 
@@ -117,7 +118,9 @@ def main():
         logger.info(os.linesep + f"extracting contacts from {fn}.")
     
         file = conkit.io.read(fn, args.struct_format, distance_cutoff=cutoff, atom_type=rep_atom)
-        contact_map = (file.top).as_contactmap( distance_cutoff=cutoff )
+        print(file)
+        struct = file.top
+        contact_map = struct.as_contactmap( distance_cutoff=cutoff )
         contact_set = contact_map.as_set()
 
         for contact in contact_set:

@@ -354,8 +354,16 @@ def main():
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
-    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED', 'PLDDT', 'CONTACTS', 'Q_IN_ERROR']]
+    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
+    for filter_name in ['PLDDT', 'CONTACTS', 'Q_IN_ERROR']:
+        if filter_name in validation.data.columns:
+            residue_info[filter_name] = validation.data.loc[:, filter_name]
+        else:
+            residue_info[filter_name] = ''
+
     residue_info['NEW_REGISTER'] = ''
+
+
 
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register", "plddt", "predicted contacts", "Q in error"]
