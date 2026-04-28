@@ -345,7 +345,7 @@ class ModelValidationFigure(Figure):
             _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
             _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
             _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
-        plots += _score_plot + _threshold_line + _correct + _error
+            plots += _score_plot + _threshold_line + _correct + _error
 
         if RUN_MAP_ALIGN:
             _misaligned = self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
@@ -388,7 +388,6 @@ class ModelValidationFigure(Figure):
             return np.nan
         scaled_features = self.scaler.transform(residue_features.values)
         return self.classifier.predict_proba(scaled_features)[0, 1]
-
 
     def svm(self,ext_info,moltype='Protein',prediction_type='DIST',sec_struc_info='DSSP'):
 
@@ -466,9 +465,12 @@ class ModelValidationFigure(Figure):
 
     def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe, moltype='Protein', experimentfiletype='pdb'):
 
+        suggested_correspondece = self.alignment.copy()
+
         map_align_raw = self.data['MISALIGNED']
         svm_raw = self.data['SCORE']
         resnums_raw = self.data['RESNUM']
+        absent_residues = self.absent_residues
 
         seen = set()
         resnums = []
@@ -476,15 +478,16 @@ class ModelValidationFigure(Figure):
         map_align = []
 
         for r, s, m in zip(resnums_raw, svm_raw, map_align_raw):
-            if r not in seen:
+            if (not r in seen) and (not r in absent_residues):
                 seen.add(r)
                 resnums.append(r)
                 svm.append(s)
                 map_align.append(m)
+                if not r in suggested_correspondece.keys():
+                    suggested_correspondece[r]=r
 
         # identify potential errors
-
-        flagged_regions = tools.get_error_borders(svm, map_align, resnums)
+        flagged_experiment_regions, flagged_predcition_regions = tools.get_error_borders(svm, map_align, resnums, suggested_correspondece)
 
         # run gesamt for every region
         if experimentfiletype == 'pdb':
@@ -495,10 +498,10 @@ class ModelValidationFigure(Figure):
         for chain in model:
             chain_experiment = chain.get_id()
 
-        for region in flagged_regions:
+        for r_exp, r_pred in zip(flagged_experiment_regions, flagged_predcition_regions):
 
-            Q_region = tools.Gesamt_Q_score(predictionfile, experimentfile, region, gesamt_exe = gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
-            self.data.loc[ (self.data['RESNUM'] <= region[1]) & (self.data['RESNUM'] >= region[0]), 'Q_IN_ERROR'] = Q_region
+            Q_region = tools.Gesamt_Q_score(predictionfile, r_pred, experimentfile, r_exp, gesamt_exe = gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
+            self.data.loc[ (self.data['RESNUM'] <= r_exp[1]) & (self.data['RESNUM'] >= r_exp[0]), 'Q_IN_ERROR'] = Q_region
         
 
         return 0

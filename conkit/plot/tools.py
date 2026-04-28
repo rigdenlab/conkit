@@ -506,13 +506,16 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A'): 
+def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype='Protein'): 
     err_length = err_border[1] - err_border[0]
-    start = err_border[0] - int(err_length/2)
-    end = err_border[1] + int(err_length/2)
-    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'
+    start_exp = err_border[0] #- int(err_length/2)
+    end_exp = err_border[1] #+ int(err_length/2)
+    start_pred = err_border_pred[0] #- int(err_length/2)
+    end_pred = err_border_pred[1] #+ int(err_length/2)
+
+    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{} -moltype={}'
     logfname = '_gesamt.stdout'
-    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred, experimentfile, chain_experiment, start_exp, end_exp, moltype), stdout=subprocess.PIPE, shell=True)
     logcontents = str(p.communicate()[0])
     start_index = logcontents.find('Q-score          :')
     end_index = logcontents.find('\\n',start_index,-1)
@@ -548,6 +551,23 @@ def split_into_blocks(indices):
 
     return blocks
 
+def split_into_congruos_blocks(indices,correspondence):
+
+    diffs = np.diff(indices)
+    split_indices = np.where(diffs > 1)[0] + 1
+
+    shifts = [i-correspondence[i] for i in indices ]
+    shift_diffs = np.diff(shifts)
+    print(shift_diffs)
+    shift_indices = np.where(shift_diffs !=0 )[0] +1
+
+    splits = list(set(split_indices)|set(shift_indices))
+    splits.sort()
+
+    blocks = np.split(indices, splits)
+
+    return blocks
+
 def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
     label_index_num_offset = np.min(valid_nums)
     
@@ -578,29 +598,49 @@ def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
 
     return (regionstart,regionend)
 
-def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 3):
+def get_error_borders(svm_list, map_align_list, moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 0):
 
     length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
     svm_filled = np.zeros(length)
     map_align_filled = np.zeros(length, dtype=bool)
+
     relative_indices = moddeled_resnums - np.min(moddeled_resnums)
-    resnums_completed = np.arange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
+    resnums_completed = np.arange(np.min(moddeled_resnums), np.max(moddeled_resnums) + 1)
+
     svm_filled[relative_indices] = svm_list
     svm_bool = (svm_filled >= 0.5)
+
     map_align_filled[relative_indices] = map_align_list
 
     general_flagged = svm_bool|map_align_filled
 
     general_errors_indices = all_consecutive_true_indices(general_flagged, count = MIN_ERROR_SIZE)
     general_error_resnums = resnums_completed[general_errors_indices]
-    general_errors = split_into_blocks(general_error_resnums)
-    region_borders = set()
+    general_errors = split_into_congruos_blocks(moddeled_resnums,correspondence)
+    #general_errors = split_into_blocks(general_error_resnums)
+
+    region_borders = []
+    region_borders_equiv = []
+
     for err in general_errors:
         if len(err)>=MIN_ERROR_SIZE:
-            borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
-            region_borders.add(borders)
-    
-    return region_borders
+
+            err_equiv = [correspondence[err[0]],correspondence[err[-1]]]
+
+            region_borders.append([err[0],err[-1]])
+            region_borders_equiv.append([err_equiv[0],err_equiv[-1]])
+            #borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            #region_borders.append(borders)
+
+            #borders_equiv = grow_region_to_correct_buffer(err_equiv, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            #region_borders_equiv.append(borders_equiv)
+    #print()
+    return region_borders, region_borders_equiv
+
+def get_chunk_borders(moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 0):
+    length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
+
+
 
 def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log',gemmi_exe='gemmi'):
 
