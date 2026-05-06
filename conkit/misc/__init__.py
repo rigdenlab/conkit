@@ -57,7 +57,7 @@ SELECTED_VALIDATION_FEATURES_DICT ={
                                 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'ACCURACY_SMOOTH', 
                                 'FN_SMOOTH', 'FPR_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'],
 
-                                'RNA_DNATCO AF3_struct_': ['ACC', 'AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12',
+                                'RNA_DNATCO_AF3_struct_': ['ACC', 'AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12',
                                 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN',
                                 'SENSITIVITY', 'ACCURACY_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY'] 
                                 

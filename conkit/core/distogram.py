@@ -266,7 +266,7 @@ class Distogram(ContactMap):
         return contactmap
 
     @staticmethod
-    def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False, external_weights=''):
+    def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False, external_weights='', max_distance=None):
         """Calculate the RMSD between two :obj:`~conkit.core.distogram.Distogram` instances.
 
         Parameters
@@ -293,9 +293,8 @@ class Distogram(ContactMap):
         """
         if not isinstance(model, Distogram) or not isinstance(prediction, Distogram):
             raise ValueError('Need to provide a conkit.core.distogram.Distogram instance')
-
-        max_distance = prediction.top.distance_bins[-1][0]
-
+        if not max_distance:
+            max_distance = prediction.top.distance_bins[-1][0]
         model_array = model.as_array(seq_len=seq_len)
         model_array[model_array > max_distance] = max_distance
         prediction_array = prediction.as_array(seq_len=seq_len)

@@ -292,7 +292,7 @@ def convolution_smooth_values(x, window=5):
     return x_smooth
 
 
-def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights=''):
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights='',max_distance=None):
     """Calculate the RMSD between two different distograms
 
     Parameters
@@ -309,7 +309,7 @@ def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, e
     tuple
        Two lists with the raw/smoothed RMSD values at each residue position
     """
-    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd, external_weights='')
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd, external_weights=external_weights,max_distance=max_distance)
     rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), smooth_window)
     return rmsd_raw, rmsd_smooth
 

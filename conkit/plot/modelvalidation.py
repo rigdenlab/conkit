@@ -156,7 +156,7 @@ class ModelValidationFigure(Figure):
         #self.data['PLDDT'] = 0
         #self.data['Q_IN_ERROR'] = ''  
 
-    def calculate_features(self,z_radius = 10):
+    def calculate_features(self,z_radius = 10, max_distance = None):
 
         model_distogram = self._prepare_distogram(self.model.copy())
         prediction_distogram = self._prepare_distogram(self.prediction.copy())
@@ -167,7 +167,7 @@ class ModelValidationFigure(Figure):
 
         cmap_metrics, cmap_metrics_smooth = tools.get_cmap_validation_metrics(model_dict, predicted_dict,
                                                                               self.sequence, self.absent_residues)
-        rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram)
+        rmsd, rmsd_smooth = tools.get_rmsd(prediction_distogram, model_distogram, max_distance = max_distance )
         zscore_metrics = tools.get_zscores(model_distogram, predicted_dict, self.absent_residues, rmsd, *cmap_metrics, population_radius = z_radius)
 
         self._parse_data(predicted_dict, rmsd, rmsd_smooth, *cmap_metrics, *cmap_metrics_smooth, *zscore_metrics)
@@ -392,7 +392,7 @@ class ModelValidationFigure(Figure):
     def svm(self,ext_info,moltype='Protein',prediction_type='DIST',sec_struc_info='DSSP'):
 
         if moltype == 'Protein':
-            self.svm_name = 'Protein_AF2_Dist'
+            self.svm_name = 'Protein_DSSP_AF2_dist_'
             self.classifier, self.scaler = load_validation_model()        
             if ext_info==None: 
                 self.ext_info=pd.DataFrame()
@@ -400,7 +400,6 @@ class ModelValidationFigure(Figure):
                 self.ext_info['COIL'], self.ext_info['HELIX'], self.ext_info['SHEET'], self.ext_info['ACC'] = 0, 0, 0, 0
             else: 
                 self.ext_info = self._parse_dssp(ext_info)
-                print(self.ext_info)
 
 
             self.data = self.data.merge(self.ext_info, how='inner', on=['RESNUM'])
