@@ -293,6 +293,7 @@ class Distogram(ContactMap):
         """
         if not isinstance(model, Distogram) or not isinstance(prediction, Distogram):
             raise ValueError('Need to provide a conkit.core.distogram.Distogram instance')
+            
         if not max_distance:
             max_distance = prediction.top.distance_bins[-1][0]
         model_array = model.as_array(seq_len=seq_len)

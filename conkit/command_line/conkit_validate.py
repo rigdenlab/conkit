@@ -296,7 +296,7 @@ def main():
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
 
-        if not args.distformat in ['pdb','mmcif']:    # the maximal distance to account for in calculating the wRMSD when inputting a distogram is set by the lower bound of the highest bin, to mirror this with predicted structure we put it at 25 (slightly above where it would be with af2 distograms)
+        if args.distformat in ['pdb','mmcif']:    # the maximal distance to account for in calculating the wRMSD when inputting a distogram is set by the lower bound of the highest bin, to mirror this with predicted structure we put it at 25 (slightly above where it would be with af2 distograms)
             max_distance = 25
         else: 
             max_distance = None
@@ -312,6 +312,7 @@ def main():
             ext_info = DSSP(structure[0], usable_model, dssp=args.dssp, acc_array='Wilke') # this [0] might not be universal between pdb and mmcif file types (the biopython wrapper for dssp is a bit of a mess), dssp doesn't seeem to run for most (ie those with improper headers) pdb files
             secondary_structure_determination = 'DSSP'
             validation.calculate_features(max_distance = max_distance)
+
         elif args.moltype=='RNA': 
             ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
             if args.dnatco_exe:
