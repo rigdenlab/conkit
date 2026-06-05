@@ -266,7 +266,7 @@ class Distogram(ContactMap):
         return contactmap
 
     @staticmethod
-    def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False, external_weights='', max_distance=None):
+    def calculate_rmsd(prediction, model, seq_len=None, calculate_wrmsd=False, external_weights=None, max_distance=None):
         """Calculate the RMSD between two :obj:`~conkit.core.distogram.Distogram` instances.
 
         Parameters
@@ -308,7 +308,7 @@ class Distogram(ContactMap):
         squared_difference = difference ** 2
 
         if calculate_wrmsd:
-            if external_weights == '':
+            if external_weights == None:
                 weights = prediction.as_array(seq_len=seq_len, get_weigths=True)
             elif prediction_array.shape != external_weights.shape:
                 raise ValueError('Weights and distograms cannot be matched')

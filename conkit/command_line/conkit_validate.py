@@ -79,8 +79,10 @@ def create_argument_parser():
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("-output_json", dest="output_json", default=None, help="path to output json file", type=str)
     parser.add_argument("-outdir", dest="outdir", default=None, help="path to write created contactmaps to for debugging, if not specified maps get deleted", type=str)
+    
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
+
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
                         type=is_executable, help="Path to the map_align executable")
     parser.add_argument("--gesamt_exe", dest="gesamt_exe", default=None,
@@ -91,6 +93,7 @@ def create_argument_parser():
                         type=is_executable, help="Path to dnatco executable to calculate CANA categories for RNA")
     parser.add_argument("--gemmi_exe", dest="gemmi_exe", default=None,
                         type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
+
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -99,26 +102,37 @@ def create_argument_parser():
                         help="Sequence separation cutoff"),
     parser.add_argument("--n_iterations", dest="n_iterations", default=20, type=int,
                         help="Number of iterations")
+
     parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
                         help="Type of molecule")
+
     parser.add_argument("--chain", dest="selected_chain", default="", type=str,
                         help="Type of molecule")
     parser.add_argument("--renumber_model", dest="RENUMBER", default='yes', type=str,
                         help="Whether to crops-style create a version of the input model renumbered to match the sequence")
+
     parser.add_argument("--run_svm", dest="RUN_SVM", default='yes if prediction not pdb or mmcif', type=str,
                         help="Whether to run the support vector machine validation")
     parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
                         help="Whether to run the contactmap alignment validation")
+
     parser.add_argument("--run_filters", dest="RUN_FILTERS", default='yes', type=str,
                         help="Whether to run the filters against false positives(if possible given the provided info)")
+    parser.add_argument("--cmo_filter", dest="cmo_filter_threshold", default=0.54, type=float,
+                        help="the threshold value for the cmo filter (residues with a lower score are considered false positives)")
+    parser.add_argument("--rf_filter", dest="rf_filter_threshold", default=0.76, type=float,
+                        help="the threshold value for the RF filter (residues with a lower score are considered false positives)")
+
     parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
                         help="distance cutoff for contacts when using Custom moltype (in angstrom)")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
+
     parser.add_argument("--min_error_length", dest="min_err_size", default=6, type=int,
                         help="minimum number of consecutive residues in a error before the svm labels it")
-    parser.add_argument("--svm_threshold", dest="score_threshold", default=0.9, type=float,
+    parser.add_argument("--svm_threshold", dest="score_threshold", default=0.5, type=float,
                         help="the svm probability of error threshold for calling errors")
+                        
     parser.add_argument("--confidence_file", dest="conf_file", default=None, type=check_file_exists,
                         help="File containing confidences of prediction")
     parser.add_argument("--confidence_file_type", dest="conf_file_type", default=None, type=str,
@@ -357,7 +371,15 @@ def main():
 
             validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
             # identify potential errors
-            logger.info(os.linesep + "added Q-scores")            
+            logger.info(os.linesep + "added Q-scores")    
+
+        if  {'PLDDT', 'CONTACTS', 'Q_IN_ERROR'}.issubset(validation.data.columns):
+            # run the trained combination filters if all filter features calculated
+            if args.RUN_MAP_ALIGN=='yes' and args.moltype=='RNA': 
+                validation.Run_combined_filter(filter_type = 'CMO', filter_th = 0.54)
+
+            if args.RUN_SVM=='yes' and args.moltype=='RNA': 
+                validation.Run_combined_filter(filter_type = 'RF', filter_th = 0.76)
    
     logger.info(os.linesep + "Creating Figure.")
     validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold)
@@ -366,7 +388,7 @@ def main():
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
     residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
-    for filter_name in ['PLDDT', 'CONTACTS', 'Q_IN_ERROR']:
+    for filter_name in ['CMO_FILTER', 'RF_FILTER', 'PLDDT', 'CONTACTS', 'Q_IN_ERROR']:
         if filter_name in validation.data.columns:
             residue_info[filter_name] = validation.data.loc[:, filter_name]
         else:
@@ -374,10 +396,8 @@ def main():
 
     residue_info['NEW_REGISTER'] = ''
 
-
-
     table = PrettyTable()
-    table.field_names = ["Residue", "Predicted score", "Suggested register", "plddt", "predicted contacts", "Q in error"]
+    table.field_names = ["Residue", "Predicted score", "Suggested register", "map align filter", "classifier filter","plddt", "predicted contacts", "Q in error"]
 
     _resnum_template = '{} ({})'
     _error_score_template = '*** {0:.2f} ***'
@@ -386,9 +406,11 @@ def main():
     _empty_register = '               '
 
     for residue in residue_info.values:
-        resnum, score, misalignment, plddt, contacts, Qs, register = residue
+        resnum, score, misalignment, cmo_filter, rf_filter, plddt, contacts, Qs, register = residue
         current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
-        score = _error_score_template.format(score) if score > 0.5 else _correct_score_template.format(score)
+        score = _error_score_template.format(score) if score > args.score_threshold else _correct_score_template.format(score)
+        cmo_filter = _error_score_template.format(cmo_filter) if cmo_filter > args.cmo_filter_threshold else _correct_score_template.format(cmo_filter)
+        rf_filter = _error_score_template.format(rf_filter) if rf_filter > args.rf_filter_threshold else _correct_score_template.format(rf_filter)
 
         if misalignment and resnum in validation.alignment.keys():
             register = _register_template.format(sequence.seq[validation.alignment[resnum] - 1], validation.alignment[resnum])
@@ -397,7 +419,7 @@ def main():
             register = _empty_register
             residue_info.loc[residue_info['RESNUM'] == resnum, 'NEW_REGISTER'] = register
 
-        table.add_row([current_residue, score, register, plddt, contacts, Qs])
+        table.add_row([current_residue, score, register, cmo_filter, rf_filter, plddt, contacts, Qs])
 
     ### add json format report ###
 

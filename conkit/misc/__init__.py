@@ -92,6 +92,23 @@ def load_specific_validation_model(name):
 
     return classifier, scaler
 
+def load_filter(filter_type):
+    scaler_fn = f'{filter_type}_lasso_filter_scaler.pkl'
+    filter_fn = f'{filter_type}_lasso_filter.pkl'
+
+    filter_file = os.path.join(LOCATION, filter_fn)
+    scaler_file = os.path.join(LOCATION, scaler_fn)
+
+    if not os.path.isfile(filter_file):
+        raise FileNotFoundError('Cannot find filter pickle file {}'.format(filter_file))
+    if not os.path.isfile(scaler_file):
+        raise FileNotFoundError('Cannot find scaler pickle file {}'.format(scaler_file))
+        
+    _filter = joblib.load(filter_file)
+    _filter = joblib.load(scaler_file)
+
+    return _filter, _filter
+
 
 def deprecate(version, msg=None):
     """Decorator to deprecate Python classes and functions

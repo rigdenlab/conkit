@@ -110,6 +110,10 @@ class ColorDefinitions(object):
         "Y": "#2B3D26",
         "X": "#000000",
     }
+    FAILED_CMO_FILTER = '#FFFFFF'
+    FAILED_RF_FILTER = '#FFFFFF'
+    PASSED_CMO_FILTER = '#339900'
+    PASSED_RF_FILTER = '#00FF00'
 
 
 def find_minima(data, order=1):
@@ -291,8 +295,27 @@ def convolution_smooth_values(x, window=5):
     x_smooth = np.convolve(x, box, mode='same')
     return x_smooth
 
+def convolution_diff_values(x, window=5):
+    """Use convolutions to smooth a list of numeric values
 
-def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights='',max_distance=None):
+    Parameters
+    ----------
+    x : list, tuple
+       A list with the numeric values to be smoothed
+    window : int
+       The residue window to be used to smooth values [default: 5]
+
+    Returns
+    -------
+    list
+       A list with the smoothed numeric values
+    """
+    box = (np.arange(window) - int(window/2))
+    x_smooth = np.convolve(x, box, mode='same')
+    return x_smooth
+
+
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights=None,max_distance=None):
     """Calculate the RMSD between two different distograms
 
     Parameters
