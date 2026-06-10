@@ -324,6 +324,7 @@ def main():
                 logger.info(os.linesep + "Unrecognized structure file type being passed to DSSP.")
             structure = p.get_structure('structure', usable_model)
             ext_info = DSSP(structure[0], usable_model, dssp=args.dssp, acc_array='Wilke') # this [0] might not be universal between pdb and mmcif file types (the biopython wrapper for dssp is a bit of a mess), dssp doesn't seeem to run for most (ie those with improper headers) pdb files
+            #print(ext_info.keys())
             secondary_structure_determination = 'DSSP'
             validation.calculate_features(max_distance = max_distance)
 
@@ -409,8 +410,10 @@ def main():
         resnum, score, misalignment, cmo_filter, rf_filter, plddt, contacts, Qs, register = residue
         current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
         score = _error_score_template.format(score) if score > args.score_threshold else _correct_score_template.format(score)
-        cmo_filter = _error_score_template.format(cmo_filter) if cmo_filter > args.cmo_filter_threshold else _correct_score_template.format(cmo_filter)
-        rf_filter = _error_score_template.format(rf_filter) if rf_filter > args.rf_filter_threshold else _correct_score_template.format(rf_filter)
+        if type(cmo_filter) in [int, float]:
+            cmo_filter = _error_score_template.format(cmo_filter) if cmo_filter > args.cmo_filter_threshold else _correct_score_template.format(cmo_filter)
+        if type(rf_filter) in [int, float]:
+            rf_filter = _error_score_template.format(rf_filter) if rf_filter > args.rf_filter_threshold else _correct_score_template.format(rf_filter)
 
         if misalignment and resnum in validation.alignment.keys():
             register = _register_template.format(sequence.seq[validation.alignment[resnum] - 1], validation.alignment[resnum])
@@ -425,6 +428,7 @@ def main():
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
+        print(residue_info_json)
         with open(args.output_json+".json", "w") as outfile:
             json.dump(residue_info_json, outfile)
 

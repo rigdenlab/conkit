@@ -513,11 +513,11 @@ class ModelValidationFigure(Figure):
 
     def _calculate_filter_features(self):
 
-        self.data['PLDDT_smooth'] = tools.convolution_smooth_values(self.data['PLDDT'])
-        self.data['CONTACTS_smooth'] = tools.convolution_smooth_values(self.data['CONTACTS'])
+        self.data['PLDDT_Smooth'] = tools.convolution_smooth_values(self.data['PLDDT'],window=5)
+        self.data['CONTACTS_Smooth'] = tools.convolution_smooth_values(self.data['CONTACTS'],window=5)
 
-        self.data['PLDDT_diff'] = tools.convolution_diff_values(self.data['PLDDT'])
-        self.data['CONTACTS_diff'] = tools.convolution_smooth_values(self.data['CONTACTS'])
+        self.data['PLDDT_Diff'] = tools.convolution_diff_values(self.data['PLDDT'],window=3)
+        self.data['CONTACTS_Diff'] = tools.convolution_diff_values(self.data['CONTACTS'],window=3)
 
         return 0
 
@@ -546,7 +546,7 @@ class ModelValidationFigure(Figure):
             return np.nan
         scaled_features = _scaler.transform(residue_features.values)
 
-        return _filter.predict_proba(scaled_features)[0, 1]
+        return _filter.predict(scaled_features)[0]
 
 
     def Run_combined_filter(self, filter_type = 'CMO', filter_th=0.5):
@@ -582,7 +582,7 @@ class ModelValidationFigure(Figure):
         residues = self.data['RESNUM']
 
         combinded_filters_available = False
-        
+
         if RUN_SVM:
 
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()

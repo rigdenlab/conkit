@@ -50,8 +50,8 @@ SELECTED_VALIDATION_FEATURES_DICT ={
                                 'RNA_AF3_dist_': ['ACC', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'ACCURACY_SMOOTH', 'FN_SMOOTH',
                                 'FPR_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'],
 
-                                'RNA_AF3_struct_': ['ACC', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'SENSITIVITY', 
-                                'ACCURACY_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY'],
+                                'RNA_AF3_struct_': ['ACC', 'WRMSD', 'FN', 'SENSITIVITY', 'ACCURACY_SMOOTH', 'ZSCORE_WRMSD', 
+                                'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY'],
 
                                 'RNA_DNATCO_AF3_dist_': ['ACC', 'AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12',
                                 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'ACCURACY_SMOOTH', 
@@ -81,6 +81,7 @@ def load_validation_model():
     return classifier, scaler
 
 def load_specific_validation_model(name):
+    print(f'loading model : {name}')
     classifier_fn = os.path.join(LOCATION, f'{name}trained_classifier.pkl')
     scaler_fn = os.path.join(LOCATION, f'{name}standard_scaler.pkl')
     if not os.path.isfile(classifier_fn):
@@ -105,9 +106,9 @@ def load_filter(filter_type):
         raise FileNotFoundError('Cannot find scaler pickle file {}'.format(scaler_file))
         
     _filter = joblib.load(filter_file)
-    _filter = joblib.load(scaler_file)
+    _scaler = joblib.load(scaler_file)
 
-    return _filter, _filter
+    return _filter, _scaler
 
 
 def deprecate(version, msg=None):

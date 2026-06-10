@@ -69,7 +69,7 @@ def set_contact_definition(moltype,rep_atom=None,cutoff=None):
     
     elif moltype=='RNA':
         rep_atom = "C1'"
-        if cutoff==None: cutoff = 10.5
+        if cutoff==None: cutoff = 12.5
         return rep_atom, cutoff
 
     else:
