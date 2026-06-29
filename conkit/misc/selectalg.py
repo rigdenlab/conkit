@@ -95,7 +95,7 @@ class SubselectionAlgorithm(object):
 
         """
         sorted_indices = cls._numpify(data).argsort()[::-1]
-        pivot = np.ceil(sorted_indices.shape[0] * cutoff).astype(np.int)
+        pivot = np.ceil(sorted_indices.shape[0] * cutoff).astype(int)
         keep = sorted_indices[:pivot]
         throw = sorted_indices[pivot:]
         return keep.tolist(), throw.tolist()

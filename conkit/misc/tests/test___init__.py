@@ -139,23 +139,27 @@ class TestMiscInit(unittest.TestCase):
 
     def test_deprecated_10(self):
         class Obj(object):
-            @deprecate("0.0.0")
             @staticmethod
+            @deprecate("0.0.0")
             def f(a, b):
                 return a + b
 
-        with self.assertRaises(Exception):
-            Obj.f(1, 1)
+        with self.assertWarns(DeprecationWarning):
+            result = Obj.f(1, 1)
+        self.assertEqual(2, result)
 
     def test_deprecated_11(self):
         class Obj(object):
-            @deprecate("0.0.0")
-            @classmethod
-            def f(cls, a, b):
-                return a + b
+            CONST = 5
 
-        with self.assertRaises(AttributeError):
-            Obj().f(1, 1)
+            @classmethod
+            @deprecate("0.0.0")
+            def f(cls, a, b):
+                return a + b + cls.CONST
+
+        with self.assertWarns(DeprecationWarning):
+            result = Obj.f(1, 1)
+        self.assertEqual(7, result)
 
     def test_dnatco_categories_is_list(self):
         self.assertIsInstance(DNATCO_CATEGORIES, list)
