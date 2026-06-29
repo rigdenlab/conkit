@@ -68,6 +68,8 @@ ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 
                            'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN',
                            'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY']
 
+DNATCO_CATEGORIES = ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12', 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'DNATCO_TOT_RMSD']
+
 
 def load_validation_model():
     print(TRAINED_CLASSIFIER_PICKLE)  

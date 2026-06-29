@@ -48,6 +48,7 @@ import argparse
 from Bio.PDB import PDBParser, MMCIFParser
 from Bio.PDB.DSSP import DSSP
 import os
+import re
 import subprocess
 import json
 import numpy as np
@@ -60,6 +61,7 @@ import conkit.io
 from conkit.io.tools import set_contact_definition
 import conkit.plot
 from conkit.plot.tools import is_executable, areaimol_ACC
+from conkit.misc import DNATCO_CATEGORIES
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
 
 logger = None

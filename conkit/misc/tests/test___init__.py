@@ -157,6 +157,17 @@ class TestMiscInit(unittest.TestCase):
         with self.assertRaises(AttributeError):
             Obj().f(1, 1)
 
+    def test_dnatco_categories_is_list(self):
+        self.assertIsInstance(DNATCO_CATEGORIES, list)
+
+    def test_dnatco_categories_length(self):
+        # 14 CANA classes + DNATCO_TOT_RMSD
+        self.assertEqual(15, len(DNATCO_CATEGORIES))
+
+    def test_dnatco_categories_contents(self):
+        expected = ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12', 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'DNATCO_TOT_RMSD']
+        self.assertListEqual(expected, DNATCO_CATEGORIES)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

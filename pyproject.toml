@@ -8,6 +8,4 @@ target-version = ['py37']
 
 [tool.pytest.ini_options]
 minversion = "2.0"
-addopts = "-vv --pep8 --cov=conkit --cov-report=xml --pyargs conkit"
-pep8maxlinelength = "120"
-pep8ignore = "E203 E402 E501 W503 .eggs ALL *.egg ALL"
+addopts = "-vv --cov=conkit --cov-report=xml --pyargs conkit"
