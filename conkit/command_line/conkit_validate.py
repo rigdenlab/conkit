@@ -50,6 +50,7 @@ from Bio.PDB.DSSP import DSSP
 import os
 import re
 import subprocess
+import tempfile
 import json
 import numpy as np
 import pandas as pd
@@ -172,22 +173,24 @@ def check_file_exists(input_path):
         raise FileNotFoundError("{} cannot be found".format(input_path))
     
 
-def calculate_dnatco(structfile,type,dnatco_exe):
+def calculate_dnatco(structfile, filetype, dnatco_exe):
     from collections import defaultdict
-    outfile='custom_report.txt'
 
-    if type != 'mmcif':
-        if type == 'pdb':
+    if filetype != 'mmcif':
+        if filetype == 'pdb':
             subprocess.run(['pdb2cif',structfile,structfile.replace('.cif','.pdb')])  # step to try to rescue pdb file entered should be changed because it silently introduces a dependency perhaps this can/should be replaced by a gemmin based call? also the swapping of the extensions is likely not a great way to do this
             structfile = structfile.replace('.cif','.pdb')
-        else: 
+        else:
             print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
             return
 
-    subprocess.run(['node',dnatco_exe,'--coords',structfile,'--reportText']) # could specify an output directory like temp
+    structfile = os.path.abspath(structfile)
 
-    with open(outfile, 'r') as f:
-        lines = f.readlines()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        subprocess.run(['node', dnatco_exe, '--coords', structfile, '--reportText'], cwd=tmpdir)
+
+        with open(os.path.join(tmpdir, 'custom_report.txt'), 'r') as f:
+            lines = f.readlines()
 
     for l in range(len(lines)):
         if  '|                               All dinucleotides                              |' in lines[l]:
@@ -333,7 +336,7 @@ def main():
         elif args.moltype=='RNA': 
             ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
             if args.dnatco_exe:
-                dnatco_cats = calculate_dnatco(usable_model)
+                dnatco_cats = calculate_dnatco(usable_model, args.pdbformat, args.dnatco_exe)
                 secondary_structure_determination = 'DNATCO'
                 ext_info = pd.merge(ext_info,dnatco_cats,how='outer',on='RESNUM')
             else: 

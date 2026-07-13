@@ -2,6 +2,7 @@
 import os
 import tempfile
 import unittest
+import unittest.mock
 from unittest.mock import patch
 
 import pandas as pd
@@ -43,21 +44,21 @@ class TestCalculateDnatco(unittest.TestCase):
     def _run_with_fixture(self):
         """Write fixture to custom_report.txt in a temp dir and call the function.
 
-        calculate_dnatco always reads from the hardcoded name 'custom_report.txt' in
-        the current directory, so we change directory to a temporary location where we
-        have placed our fixture, then restore the original directory afterwards.
+        calculate_dnatco creates its own TemporaryDirectory internally, so we mock
+        that to return the test's tmpdir where the fixture file already lives.
         """
         with tempfile.TemporaryDirectory() as tmpdir:
             with open(os.path.join(tmpdir, 'custom_report.txt'), 'w') as fh:
                 fh.write(_DNATCO_FIXTURE)
 
-            original_dir = os.getcwd()
-            try:
-                os.chdir(tmpdir)
-                with patch('conkit.command_line.conkit_validate.subprocess.run'):
-                    result = calculate_dnatco('test.cif', 'mmcif', '/path/to/dnatco')
-            finally:
-                os.chdir(original_dir)
+            mock_td = unittest.mock.MagicMock()
+            mock_td.__enter__ = unittest.mock.MagicMock(return_value=tmpdir)
+            mock_td.__exit__ = unittest.mock.MagicMock(return_value=False)
+
+            with patch('conkit.command_line.conkit_validate.subprocess.run'), \
+                 patch('conkit.command_line.conkit_validate.tempfile.TemporaryDirectory',
+                       return_value=mock_td):
+                result = calculate_dnatco('test.cif', 'mmcif', '/path/to/dnatco')
 
         return result
 
