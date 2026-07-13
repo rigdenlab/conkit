@@ -319,7 +319,12 @@ class Test(unittest.TestCase):
         self.assertEqual(sys.executable, tools.is_executable(sys.executable))
 
     def test_is_executable_2(self):
-        self.assertEqual(sys.executable, tools.is_executable(os.path.basename(sys.executable)))
+        # Verify that a bare executable name resolves to a real file on PATH.
+        # We cannot assert equality with sys.executable — PATH ordering may
+        # surface a different Python installation first (e.g. base conda env).
+        result = tools.is_executable(os.path.basename(sys.executable))
+        self.assertTrue(os.path.isfile(result))
+        self.assertTrue(os.access(result, os.X_OK))
 
     def test_is_executable_3(self):
         with self.assertRaises(ValueError):
