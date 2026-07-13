@@ -1,10 +1,69 @@
 [build-system]
-requires = ["cython", "pytest-runner", "scipy", "setuptools", "wheel"]
+requires = ["cython", "numpy", "setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "conkit"
+dynamic = ["version"]
+description = "Python Interface for Residue-Residue Contact Predictions"
+readme = "README.rst"
+license = { text = "BSD License" }
+authors = [
+    { name = "Felix Simkovic", email = "felixsimkovic@me.com" },
+]
+maintainers = [
+    { name = "Aderik Voorspoels", email = "aderik.voorspoels@liverpool.ac.uk" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "scipy",
+    "cython",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "biopython>=1.85",
+    "scikit-learn>=1.0",
+    "prettytable",
+    "joblib",
+]
+
+[project.urls]
+Homepage = "http://www.conkit.org/en/latest/"
+
+[project.scripts]
+conkit-convert   = "conkit.command_line.conkit_convert:main"
+conkit-msatool   = "conkit.command_line.conkit_msatool:main"
+conkit-plot      = "conkit.command_line.conkit_plot:main"
+conkit-precision = "conkit.command_line.conkit_precision:main"
+conkit-predict   = "conkit.command_line.conkit_predict:main"
+conkit-summarise = "conkit.command_line.conkit_summarise:main"
+conkit-trim      = "conkit.command_line.conkit_trim:main"
+conkit-validate  = "conkit.command_line.conkit_validate:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "conkit.version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["conkit*"]
+
+[tool.setuptools.package-data]
+"conkit.misc" = ["*.joblib", "*.pkl"]
 
 [tool.black]
 line-length = 120
-target-version = ['py37']
+target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.pytest.ini_options]
 minversion = "2.0"
