@@ -45,10 +45,12 @@ It uses one external program to perform this task:
 """
 
 import argparse
-from Bio.PDB import PDBParser
+from Bio.PDB import PDBParser, MMCIFParser
 from Bio.PDB.DSSP import DSSP
 import os
+import re
 import subprocess
+import tempfile
 import json
 import numpy as np
 import pandas as pd
@@ -60,6 +62,7 @@ import conkit.io
 from conkit.io.tools import set_contact_definition
 import conkit.plot
 from conkit.plot.tools import is_executable, areaimol_ACC
+from conkit.misc import DNATCO_CATEGORIES
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
 
 logger = None
@@ -75,22 +78,25 @@ def create_argument_parser():
                         choices=list(conkit.io.DISTANCE_FILE_PARSERS.keys()))
     parser.add_argument("pdbfile", type=check_file_exists, help="Path to structure file")
     parser.add_argument("pdbformat", type=str, help="Format of structure file", choices=['pdb', 'mmcif'])
-    parser.add_argument("-dssp_exe", dest="dssp", default='mkdssp', help="path to dssp executable", type=is_executable)
+    parser.add_argument("-dssp_exe", dest="dssp", default=None, help="path to dssp executable")#, type=is_executable)
     parser.add_argument("-output", dest="output", default="conkit.png", help="path to output figure png file", type=str)
     parser.add_argument("-output_json", dest="output_json", default=None, help="path to output json file", type=str)
     parser.add_argument("-outdir", dest="outdir", default=None, help="path to write created contactmaps to for debugging, if not specified maps get deleted", type=str)
+    
     parser.add_argument("--overwrite", dest="overwrite", default=False, action="store_true",
                         help="overwrite output figure png file if it already exists")
+
     parser.add_argument("--map_align_exe", dest="map_align_exe", default=None,
                         type=is_executable, help="Path to the map_align executable")
     parser.add_argument("--gesamt_exe", dest="gesamt_exe", default=None,
                         type=is_executable, help="Path to the gesamt executable to check structural alignment")
-    parser.add_argument("--areaimol_exe", dest="areaimol_exe", default="areaimol",
+    parser.add_argument("--areaimol_exe", dest="areaimol_exe", default=None,
                         type=is_executable, help="Path to areaimol executable to calculate solvent accesibility for RNA")
     parser.add_argument("--dnatco_exe", dest="dnatco_exe", default=None,
                         type=is_executable, help="Path to dnatco executable to calculate CANA categories for RNA")
-    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default="gemmi",
+    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default=None,
                         type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
+
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
     parser.add_argument("--gap_extension_penalty", dest="gap_extension_penalty", default=-0.01, type=float,
@@ -99,26 +105,37 @@ def create_argument_parser():
                         help="Sequence separation cutoff"),
     parser.add_argument("--n_iterations", dest="n_iterations", default=20, type=int,
                         help="Number of iterations")
+
     parser.add_argument("--moltype", dest="moltype", default="Protein", type=str,
                         help="Type of molecule")
+
     parser.add_argument("--chain", dest="selected_chain", default="", type=str,
                         help="Type of molecule")
     parser.add_argument("--renumber_model", dest="RENUMBER", default='yes', type=str,
                         help="Whether to crops-style create a version of the input model renumbered to match the sequence")
+
     parser.add_argument("--run_svm", dest="RUN_SVM", default='yes if prediction not pdb or mmcif', type=str,
                         help="Whether to run the support vector machine validation")
     parser.add_argument("--run_map_align", dest="RUN_MAP_ALIGN", default='yes', type=str,
                         help="Whether to run the contactmap alignment validation")
+
     parser.add_argument("--run_filters", dest="RUN_FILTERS", default='yes', type=str,
                         help="Whether to run the filters against false positives(if possible given the provided info)")
+    parser.add_argument("--cmo_filter", dest="cmo_filter_threshold", default=0.54, type=float,
+                        help="the threshold value for the cmo filter (residues with a lower score are considered false positives)")
+    parser.add_argument("--rf_filter", dest="rf_filter_threshold", default=0.76, type=float,
+                        help="the threshold value for the RF filter (residues with a lower score are considered false positives)")
+
     parser.add_argument("--contact_dist", dest="contact_distance_cutoff", default=None, type=float,
-                        help="distance cutoff for contacts when using Custom moltype")
+                        help="distance cutoff for contacts when using Custom moltype (in angstrom)")
     parser.add_argument("--rep_atom", dest="rep_atom", default=None, type=str,
                         help="representative atom for contacts when using Custom moltype")
+
     parser.add_argument("--min_error_length", dest="min_err_size", default=6, type=int,
                         help="minimum number of consecutive residues in a error before the svm labels it")
-    parser.add_argument("--svm_threshold", dest="score_threshold", default=0.9, type=float,
+    parser.add_argument("--svm_threshold", dest="score_threshold", default=0.5, type=float,
                         help="the svm probability of error threshold for calling errors")
+                        
     parser.add_argument("--confidence_file", dest="conf_file", default=None, type=check_file_exists,
                         help="File containing confidences of prediction")
     parser.add_argument("--confidence_file_type", dest="conf_file_type", default=None, type=str,
@@ -156,22 +173,24 @@ def check_file_exists(input_path):
         raise FileNotFoundError("{} cannot be found".format(input_path))
     
 
-def calculate_dnatco(structfile,type,dnatco_exe):
+def calculate_dnatco(structfile, filetype, dnatco_exe):
     from collections import defaultdict
-    outfile='custom_report.txt'
 
-    if type != 'mmcif':
-        if type == 'pdb':
+    if filetype != 'mmcif':
+        if filetype == 'pdb':
             subprocess.run(['pdb2cif',structfile,structfile.replace('.cif','.pdb')])  # step to try to rescue pdb file entered should be changed because it silently introduces a dependency perhaps this can/should be replaced by a gemmin based call? also the swapping of the extensions is likely not a great way to do this
             structfile = structfile.replace('.cif','.pdb')
-        else: 
+        else:
             print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
             return
 
-    subprocess.run(['node',dnatco_exe,'--coords',structfile,'--reportText']) # could specify an output directory like temp
+    structfile = os.path.abspath(structfile)
 
-    with open(outfile, 'r') as f:
-        lines = f.readlines()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        subprocess.run(['node', dnatco_exe, '--coords', structfile, '--reportText'], cwd=tmpdir)
+
+        with open(os.path.join(tmpdir, 'custom_report.txt'), 'r') as f:
+            lines = f.readlines()
 
     for l in range(len(lines)):
         if  '|                               All dinucleotides                              |' in lines[l]:
@@ -233,6 +252,8 @@ def main():
     parser = create_argument_parser()
     args = parser.parse_args()
 
+    include_hetatms=(args.moltype == 'RNA')  #modified bases are very common in RNA strcutures, removing all hetatm records is a bad idea in this case
+
     global logger
     logger = conkit.command_line.setup_logging(level="info")
 
@@ -247,22 +268,22 @@ def main():
     if len(sequence) < 5:
         raise ValueError('Cannot validate model with less than 5 residues')
 
-    rep_atom, cutoff = set_contact_definition(args.moltype,rep_atom=args.rep_atom,cutoff=args.contact_distance_cutoff)
+    rep_atom, cutoff = set_contact_definition(args.moltype, rep_atom=args.rep_atom, cutoff=args.contact_distance_cutoff)
 
     logger.info("Length of the sequence:                      %d", len(sequence))
     logger.info("Reading input distance prediction:           %s", args.distfile)
 
     if args.distformat in ['pdb', 'mmcif']:
-        prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom)
+        prediction_file = conkit.io.read(args.distfile, args.distformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
         prediction = prediction_file.top
     elif args.distformat in ['rosettanpz']:
         prediction_file = conkit.io.read(args.distfile, args.distformat, atom_type=rep_atom)
         prediction = prediction_file.top
-        prediction.distance_cutoff(cutoff)
+        prediction.distance_cutoff = cutoff
     else: 
         prediction_file = conkit.io.read(args.distfile, args.distformat)
         prediction = prediction_file.top
-        prediction.distance_cutoff(cutoff)
+        prediction.distance_cutoff = cutoff
 
     logger.info("Reading input PDB model:                     %s", args.pdbfile)
 
@@ -270,11 +291,13 @@ def main():
         try:
             usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
         except:
-            logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain", args.pdbfile, args.seqfile)
+            logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain or if your model only has one chain you could turn of renumbering by setting --renumber no", args.pdbfile, args.seqfile)
     else: 
         usable_model = args.pdbfile
     
-    model = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom).top
+    model_file = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
+    model = model_file.top
+    model.distance_cutoff = cutoff
 
     if len(sequence) > 500:
         logger.info("Input model has more than 500 residues, this might take a while...")
@@ -292,21 +315,33 @@ def main():
     if args.RUN_SVM=='yes':
         logger.info(os.linesep + "Running Support Vector Machine.")
 
-        if args.moltype=='Protein':
-            p = PDBParser()
-            structure = p.get_structure('structure', usable_model)[0]
-            ext_info = DSSP(structure, usable_model, dssp=args.dssp, acc_array='Wilke')
+        if args.distformat in ['pdb','mmcif']:    # the maximal distance to account for in calculating the wRMSD when inputting a distogram is set by the lower bound of the highest bin, to mirror this with predicted structure we put it at 25 (slightly above where it would be with af2 distograms)
+            max_distance = 25
+        else: 
+            max_distance = None
+
+        if args.moltype=='Protein': # this might need a switch to run or not run dssp
+            if args.pdbformat == 'pdb':
+                p = PDBParser()
+            elif args.pdbformat == 'mmcif':
+                p = MMCIFParser()
+            else:
+                logger.info(os.linesep + "Unrecognized structure file type being passed to DSSP.")
+            structure = p.get_structure('structure', usable_model)
+            ext_info = DSSP(structure[0], usable_model, dssp=args.dssp, acc_array='Wilke') # this [0] might not be universal between pdb and mmcif file types (the biopython wrapper for dssp is a bit of a mess), dssp doesn't seeem to run for most (ie those with improper headers) pdb files
+            #print(ext_info.keys())
             secondary_structure_determination = 'DSSP'
-            validation.calculate_features()
+            validation.calculate_features(max_distance = max_distance)
+
         elif args.moltype=='RNA': 
             ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
             if args.dnatco_exe:
-                dnatco_cats = calculate_dnatco(usable_model)
+                dnatco_cats = calculate_dnatco(usable_model, args.pdbformat, args.dnatco_exe)
                 secondary_structure_determination = 'DNATCO'
                 ext_info = pd.merge(ext_info,dnatco_cats,how='outer',on='RESNUM')
             else: 
                 secondary_structure_determination = None
-            validation.calculate_features(z_radius=20)
+            validation.calculate_features(z_radius = 20, max_distance = max_distance)
         else:
             ext_info = None
 
@@ -326,7 +361,7 @@ def main():
     if args.RUN_FILTERS=='yes':
         logger.info(os.linesep + "Running Filters.")
 
-        validation.count_contacts(cutoff=cutoff)
+        validation.count_contacts()
 
         if (prediction.plddt != None) and (args.PLDDT_IN_DISTFILE == 'yes'): ##turn into check for plddt
 
@@ -342,7 +377,15 @@ def main():
 
             validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
             # identify potential errors
-            logger.info(os.linesep + "added Q-scores")            
+            logger.info(os.linesep + "added Q-scores")    
+
+        if  {'PLDDT', 'CONTACTS', 'Q_IN_ERROR'}.issubset(validation.data.columns):
+            # run the trained combination filters if all filter features calculated
+            if args.RUN_MAP_ALIGN=='yes' and args.moltype=='RNA': 
+                validation.Run_combined_filter(filter_type = 'CMO', filter_th = 0.54)
+
+            if args.RUN_SVM=='yes' and args.moltype=='RNA': 
+                validation.Run_combined_filter(filter_type = 'RF', filter_th = 0.76)
    
     logger.info(os.linesep + "Creating Figure.")
     validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold)
@@ -350,11 +393,17 @@ def main():
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
 
-    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED', 'PLDDT', 'CONTACTS', 'Q_IN_ERROR']]
+    residue_info = validation.data.loc[:, ['RESNUM', 'SCORE', 'MISALIGNED']]
+    for filter_name in ['CMO_FILTER', 'RF_FILTER', 'PLDDT', 'CONTACTS', 'Q_IN_ERROR']:
+        if filter_name in validation.data.columns:
+            residue_info[filter_name] = validation.data.loc[:, filter_name]
+        else:
+            residue_info[filter_name] = ''
+
     residue_info['NEW_REGISTER'] = ''
 
     table = PrettyTable()
-    table.field_names = ["Residue", "Predicted score", "Suggested register", "plddt", "predicted contacts", "Q in error"]
+    table.field_names = ["Residue", "Predicted score", "Suggested register", "map align filter", "classifier filter","plddt", "predicted contacts", "Q in error"]
 
     _resnum_template = '{} ({})'
     _error_score_template = '*** {0:.2f} ***'
@@ -363,9 +412,13 @@ def main():
     _empty_register = '               '
 
     for residue in residue_info.values:
-        resnum, score, misalignment, plddt, contacts, Qs, register = residue
+        resnum, score, misalignment, cmo_filter, rf_filter, plddt, contacts, Qs, register = residue
         current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
-        score = _error_score_template.format(score) if score > 0.5 else _correct_score_template.format(score)
+        score = _error_score_template.format(score) if score > args.score_threshold else _correct_score_template.format(score)
+        if type(cmo_filter) in [int, float]:
+            cmo_filter = _error_score_template.format(cmo_filter) if cmo_filter > args.cmo_filter_threshold else _correct_score_template.format(cmo_filter)
+        if type(rf_filter) in [int, float]:
+            rf_filter = _error_score_template.format(rf_filter) if rf_filter > args.rf_filter_threshold else _correct_score_template.format(rf_filter)
 
         if misalignment and resnum in validation.alignment.keys():
             register = _register_template.format(sequence.seq[validation.alignment[resnum] - 1], validation.alignment[resnum])
@@ -374,12 +427,13 @@ def main():
             register = _empty_register
             residue_info.loc[residue_info['RESNUM'] == resnum, 'NEW_REGISTER'] = register
 
-        table.add_row([current_residue, score, register, plddt, contacts, Qs])
+        table.add_row([current_residue, score, register, cmo_filter, rf_filter, plddt, contacts, Qs])
 
     ### add json format report ###
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
+        print(residue_info_json)
         with open(args.output_json+".json", "w") as outfile:
             json.dump(residue_info_json, outfile)
 

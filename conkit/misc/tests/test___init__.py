@@ -139,23 +139,38 @@ class TestMiscInit(unittest.TestCase):
 
     def test_deprecated_10(self):
         class Obj(object):
-            @deprecate("0.0.0")
             @staticmethod
+            @deprecate("0.0.0")
             def f(a, b):
                 return a + b
 
-        with self.assertRaises(Exception):
-            Obj.f(1, 1)
+        with self.assertWarns(DeprecationWarning):
+            result = Obj.f(1, 1)
+        self.assertEqual(2, result)
 
     def test_deprecated_11(self):
         class Obj(object):
-            @deprecate("0.0.0")
-            @classmethod
-            def f(cls, a, b):
-                return a + b
+            CONST = 5
 
-        with self.assertRaises(AttributeError):
-            Obj().f(1, 1)
+            @classmethod
+            @deprecate("0.0.0")
+            def f(cls, a, b):
+                return a + b + cls.CONST
+
+        with self.assertWarns(DeprecationWarning):
+            result = Obj.f(1, 1)
+        self.assertEqual(7, result)
+
+    def test_dnatco_categories_is_list(self):
+        self.assertIsInstance(DNATCO_CATEGORIES, list)
+
+    def test_dnatco_categories_length(self):
+        # 14 CANA classes + DNATCO_TOT_RMSD
+        self.assertEqual(15, len(DNATCO_CATEGORIES))
+
+    def test_dnatco_categories_contents(self):
+        expected = ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12', 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'DNATCO_TOT_RMSD']
+        self.assertListEqual(expected, DNATCO_CATEGORIES)
 
 
 if __name__ == "__main__":

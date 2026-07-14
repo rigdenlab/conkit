@@ -110,6 +110,10 @@ class ColorDefinitions(object):
         "Y": "#2B3D26",
         "X": "#000000",
     }
+    FAILED_CMO_FILTER = '#FFFFFF'
+    FAILED_RF_FILTER = '#FFFFFF'
+    PASSED_CMO_FILTER = '#339900'
+    PASSED_RF_FILTER = '#00FF00'
 
 
 def find_minima(data, order=1):
@@ -291,8 +295,27 @@ def convolution_smooth_values(x, window=5):
     x_smooth = np.convolve(x, box, mode='same')
     return x_smooth
 
+def convolution_diff_values(x, window=5):
+    """Use convolutions to smooth a list of numeric values
 
-def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights=''):
+    Parameters
+    ----------
+    x : list, tuple
+       A list with the numeric values to be smoothed
+    window : int
+       The residue window to be used to smooth values [default: 5]
+
+    Returns
+    -------
+    list
+       A list with the smoothed numeric values
+    """
+    box = (np.arange(window) - int(window/2))
+    x_smooth = np.convolve(x, box, mode='same')
+    return x_smooth
+
+
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights=None,max_distance=None):
     """Calculate the RMSD between two different distograms
 
     Parameters
@@ -309,7 +332,7 @@ def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, e
     tuple
        Two lists with the raw/smoothed RMSD values at each residue position
     """
-    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd, external_weights='')
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd, external_weights=external_weights,max_distance=max_distance)
     rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), smooth_window)
     return rmsd_raw, rmsd_smooth
 
@@ -506,13 +529,16 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile,experimentfile,err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A'): 
+def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype='Protein'): 
     err_length = err_border[1] - err_border[0]
-    start = err_border[0] - int(err_length/2)
-    end = err_border[1] + int(err_length/2)
-    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'
+    start_exp = err_border[0] #- int(err_length/2)
+    end_exp = err_border[1] #+ int(err_length/2)
+    start_pred = err_border_pred[0] #- int(err_length/2)
+    end_pred = err_border_pred[1] #+ int(err_length/2)
+
+    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{} -moltype={}'
     logfname = '_gesamt.stdout'
-    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start, end, experimentfile, chain_experiment, start, end), stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred, experimentfile, chain_experiment, start_exp, end_exp, moltype), stdout=subprocess.PIPE, shell=True)
     logcontents = str(p.communicate()[0])
     start_index = logcontents.find('Q-score          :')
     end_index = logcontents.find('\\n',start_index,-1)
@@ -548,6 +574,23 @@ def split_into_blocks(indices):
 
     return blocks
 
+def split_into_congruos_blocks(indices,correspondence):
+
+    diffs = np.diff(indices)
+    split_indices = np.where(diffs > 1)[0] + 1
+
+    shifts = [i-correspondence[i] for i in indices ]
+    shift_diffs = np.diff(shifts)
+    print(shift_diffs)
+    shift_indices = np.where(shift_diffs !=0 )[0] +1
+
+    splits = list(set(split_indices)|set(shift_indices))
+    splits.sort()
+
+    blocks = np.split(indices, splits)
+
+    return blocks
+
 def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
     label_index_num_offset = np.min(valid_nums)
     
@@ -578,29 +621,49 @@ def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
 
     return (regionstart,regionend)
 
-def get_error_borders(svm_list, map_align_list, moddeled_resnums, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 3):
+def get_error_borders(svm_list, map_align_list, moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 0):
 
     length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
     svm_filled = np.zeros(length)
     map_align_filled = np.zeros(length, dtype=bool)
+
     relative_indices = moddeled_resnums - np.min(moddeled_resnums)
-    resnums_completed = np.arange(np.max(moddeled_resnums), np.min(moddeled_resnums) + 1)
+    resnums_completed = np.arange(np.min(moddeled_resnums), np.max(moddeled_resnums) + 1)
+
     svm_filled[relative_indices] = svm_list
     svm_bool = (svm_filled >= 0.5)
+
     map_align_filled[relative_indices] = map_align_list
 
     general_flagged = svm_bool|map_align_filled
 
     general_errors_indices = all_consecutive_true_indices(general_flagged, count = MIN_ERROR_SIZE)
     general_error_resnums = resnums_completed[general_errors_indices]
-    general_errors = split_into_blocks(general_error_resnums)
-    region_borders = set()
+    general_errors = split_into_congruos_blocks(moddeled_resnums,correspondence)
+    #general_errors = split_into_blocks(general_error_resnums)
+
+    region_borders = []
+    region_borders_equiv = []
+
     for err in general_errors:
         if len(err)>=MIN_ERROR_SIZE:
-            borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
-            region_borders.add(borders)
-    
-    return region_borders
+
+            err_equiv = [correspondence[err[0]],correspondence[err[-1]]]
+
+            region_borders.append([err[0],err[-1]])
+            region_borders_equiv.append([err_equiv[0],err_equiv[-1]])
+            #borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            #region_borders.append(borders)
+
+            #borders_equiv = grow_region_to_correct_buffer(err_equiv, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            #region_borders_equiv.append(borders_equiv)
+    #print()
+    return region_borders, region_borders_equiv
+
+def get_chunk_borders(moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 0):
+    length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
+
+
 
 def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log',gemmi_exe='gemmi'):
 
@@ -618,8 +681,9 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     instructions = "REPORT CONTACT NO GXGRATIO NO\nEND\neof".encode('utf-8')
     p = subprocess.Popen(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE,stdin=subprocess.PIPE) 
     out, err = p.communicate(instructions)
-
+    ### this section needs error handling
     out_str = out.decode('utf-8')
+    print(out_str)
     lines = out_str.split('\n')
 
     for l in range(len(lines)):

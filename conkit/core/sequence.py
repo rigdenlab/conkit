@@ -38,7 +38,7 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "0.13.3"
 
-from Bio import pairwise2
+from Bio.Align import PairwiseAligner
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidMapping, AminoAcidOneToThree
 
@@ -135,7 +135,9 @@ class Sequence(Entity):
            One or more amino acids in the sequence are not recognised
 
         """
-        if all(AminoAcidOneToThree[c].value for c in seq.upper() if c != "-"):
+        if "?" in seq:
+            print("sequence containing placeholders was passed, this is normal if RNA contains non-canonical bases.")
+        if all(AminoAcidOneToThree[c].value for c in seq.upper() if not c in ["-","?"]):   #added ? to allow for having placeholder in the sequence for not standard bases is this a good idea? maybe ...
             self._seq = seq
         else:
             raise ValueError("Unrecognized amino acids in sequence")
@@ -177,11 +179,15 @@ class Sequence(Entity):
         sequence1 = self._inplace(inplace)
         sequence2 = other._inplace(inplace)
 
-        alignment = pairwise2.align.globalms(
-            sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
-        )
-        sequence1.seq = alignment[-1][0]
-        sequence2.seq = alignment[-1][1]
+        aligner = PairwiseAligner()
+        aligner.mode = 'global'
+        aligner.match_score = id_chars
+        aligner.mismatch_score = nonid_chars
+        aligner.open_gap_score = gap_open_pen
+        aligner.extend_gap_score = gap_ext_pen
+        alignment = aligner.align(sequence1.seq, sequence2.seq)[0]
+        sequence1.seq = alignment[0]
+        sequence2.seq = alignment[1]
 
         return sequence1, sequence2
 
@@ -207,11 +213,18 @@ class Sequence(Entity):
         sequence1 = self._inplace(inplace)
         sequence2 = other._inplace(inplace)
 
-        alignment = pairwise2.align.localms(
-            sequence1.seq, sequence2.seq, id_chars, nonid_chars, gap_open_pen, gap_ext_pen
-        )
-
-        sequence1.seq = alignment[-1][0]
-        sequence2.seq = alignment[-1][1]
+        aligner = PairwiseAligner()
+        aligner.mode = 'local'
+        aligner.match_score = id_chars
+        aligner.mismatch_score = nonid_chars
+        aligner.open_gap_score = gap_open_pen
+        aligner.extend_gap_score = gap_ext_pen
+        alignment = aligner.align(sequence1.seq, sequence2.seq)[0]
+        # pairwise2 returned full-length sequences: non-aligned flanks of the target
+        # are kept as original characters; query flanks are padded with dashes.
+        t_start = int(alignment.aligned[0][0][0])
+        t_end = int(alignment.aligned[0][-1][1])
+        sequence1.seq = sequence1.seq[:t_start] + alignment[0] + sequence1.seq[t_end:]
+        sequence2.seq = '-' * t_start + alignment[1] + '-' * (len(sequence1.seq) - t_start - len(alignment[1]))
 
         return sequence1, sequence2

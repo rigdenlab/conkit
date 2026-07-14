@@ -6,11 +6,15 @@ def construct_seq_from_chain(chain, return_borders = True, place_holder = '?',al
     #set the right alphabet for translation to 1 letter codes, only load standard AA/bases as modifications are unlikly to be reliably anotated in sequence file
     if alphabet == 'RNA':
         from conkit.misc.rescodes import RNA_standard_rescodes as rescodes
+        from conkit.misc.rescodes import mod_nuclist as mod_rescodes
     if alphabet == 'Protein':
         from conkit.misc.rescodes import PROTEIN_standard_rescodes as rescodes
+        from conkit.misc.rescodes import mod_reslist as mod_rescodes
     if alphabet == 'DNA':
         from conkit.misc.rescodes import DNA_standard_rescodes as rescodes
+        from conkit.misc.rescodes import mod_nuclist as mod_rescodes
 
+    from conkit.misc.rescodes import IRRELEVANT_res_codes as rescodes_to_ignore
 
     #read in biopython chain
     residues = unfold_entities(chain, "R")
@@ -31,11 +35,16 @@ def construct_seq_from_chain(chain, return_borders = True, place_holder = '?',al
     #loop form the lowest key to the highest key
     #for every number add the rescode to the sequence, if there is no item add place holder
     for r in range(first_res, last_res+1):
-        if r in residues: 
+
+        if r in residues:
             if res_seq_map[r] in rescodes.keys():  #Check if residue name is a standard AA or nucleobase
                 seq += rescodes[res_seq_map[r]]
-            else: seq += place_holder
-        else: seq += place_holder
+            elif res_seq_map[r] in  mod_rescodes.keys(): # Check if residue is a known modification from a standard AA or nucleobase
+                seq += mod_rescodes[res_seq_map[r]]
+            else: 
+                seq += place_holder
+        else: 
+            seq += place_holder
 
     #output
     if return_borders: 
@@ -100,7 +109,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
     # read in the structure
     if file_type == 'pdb':
         from Bio.PDB.PDBParser import PDBParser
-        from Bio.PDB.PDBIO import PDBIO
+        from Bio.PDB.PDBIO import PDBIO 
         from Bio.PDB.PDBIO import Select
         parser = PDBParser()
         structure = parser.get_structure(outprefix,struct_file)
@@ -132,10 +141,9 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
         alignment_dict, reverse_alignment_dict = get_alignment_map_dict(chain_seq, sequence, place_holder = '?')
     # if no chain was preselected, choose the chain that best aligns to the input sequence
     else:
-        score_old = 0
+        score_old = -1000
         alignment_dict = {}
         reverse_alignment_dict = {}
-
         for chain in chainlist:
             chain_seq, start, stop = construct_seq_from_chain(chain, place_holder = '?', alphabet=moltype)
             alignment_dict_new, reverse_alignment_dict_new, score = get_alignment_map_dict(chain_seq, sequence, return_score = True, place_holder = '?')
@@ -145,13 +153,13 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
                 selected_start = start
                 alignment_dict = alignment_dict_new
                 reverse_alignment_dict = reverse_alignment_dict_new
-
-        if score_old <= -100000:
+        if score_old == -1000:
             print(f'no chain in {struct_file} has sufficient sequence similarity to input, aborting')
             #return 0
         
         print(f'in {struct_file} chain {selected_chain} best aligns to the provided sequence with an alignment score of {score_old}, will continue with this one')
-
+        print(chain_seq)
+        print(sequence)
     # renumber each residue in the selected chain based on the alignment
     chain = model[selected_chain]
     reslist = unfold_entities(chain, "R")
@@ -164,7 +172,11 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
             res.id = resid
         else: unusable_residues.append(resid)
     
-    io = PDBIO()
+    if file_type == 'pdb':
+        io = PDBIO()
+    elif file_type == 'mmcif':
+        io = MMCIFIO()
+
     io.set_structure(structure)
     out_name = os.path.join(loc,f'renumbered_{selected_chain}_{outprefix}.{ext}')
 

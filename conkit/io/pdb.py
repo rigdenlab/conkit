@@ -50,9 +50,11 @@ from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
 from conkit.core.sequence import Sequence
 from conkit.core.mappings import AminoAcidThreeToOne
+from conkit.misc.rescodes import reslist, mod_reslist, nuclist, mod_nuclist
+
+RELEVANT_RESCODES = reslist.keys() | mod_reslist.keys() | nuclist.keys() | mod_nuclist.keys()
 
 ATOM = collections.namedtuple("Atom", "resname resseq resseq_alt reschain")
-
 
 class GenericStructureParser(ContactFileParser):
     """
@@ -62,7 +64,15 @@ class GenericStructureParser(ContactFileParser):
 
     def _build_sequence(self, chain):
         """Build a peptide using :mod:`biopython` to extract the sequence"""
-        return Sequence(chain.id + "_seq", "".join(AminoAcidThreeToOne[residue.resname].value for residue in chain))
+        seq_str = ""
+        canonicals = AminoAcidThreeToOne.__members__
+        for residue in chain:
+            if residue.resname in canonicals:
+                seq_str = seq_str + AminoAcidThreeToOne[residue.resname].value
+            else:
+                seq_str = seq_str + '?'
+
+        return Sequence(chain.id + "_seq", seq_str)
 
     def _build_plddts(self, chain):
         """extract the plddts (B-factor collumn) of a chain"""
@@ -136,13 +146,19 @@ class GenericStructureParser(ContactFileParser):
                     elif atom.id != type:
                         chain[residue.id].detach_child(atom.id)
 
-    def _remove_hetatm(self, chain):
+    def _remove_hetatm(self, chain):     #should this be changed so it collects a minmial definition of a residue for consideration and removes all that don't follow that definition? (Like has C1', .... )
         """Tidy up a chain removing all HETATM entries"""
         for residue in chain.copy():
             if residue.id[0].strip() and residue.resname not in AminoAcidThreeToOne.__members__:
                 chain.detach_child(residue.id)
 
-    def _read(self, structure, f_id, distance_cutoff, atom_type):
+    def _remove_non_polymer_residues(self, chain):     #should this be changed so it collects a minmial definition of a residue for consideration and removes all that don't follow that definition? (Like has C1', .... )
+        """Tidy up a chain removing all NON polymer (non base or AA) entries"""
+        for residue in chain.copy():
+            if residue.id[0].strip() and residue.resname not in RELEVANT_RESCODES:
+                chain.detach_child(residue.id)
+
+    def _read(self, structure, f_id, distance_cutoff, atom_type, include_hetatms=False):
         """Read a contact file
 
         Parameters
@@ -164,12 +180,17 @@ class GenericStructureParser(ContactFileParser):
         hierarchies = []
         distance_bound = (0.0, float(distance_cutoff))
         for model in structure:
+
             hierarchy = DistanceFile(f_id + "_" + str(model.id))
             hierarchy.original_file_format = "pdb"
             chains = list(chain for chain in model)
 
             for chain in chains:
-                self._remove_hetatm(chain)
+
+                if include_hetatms:
+                    self._remove_non_polymer_residues(chain)
+                else:
+                    self._remove_hetatm(chain)
                 self._remove_atom(chain, atom_type)
             #    print(chain[100].get_unpacked_list())
 
@@ -209,8 +230,8 @@ class GenericStructureParser(ContactFileParser):
                         distogram.sequence = self._build_sequence(chain1) + self._build_sequence(chain2)
                         assert len(distogram.sequence.seq) == len(chain1) + len(chain2)
                     
-                    distogram.distance_cutoff(distance_cutoff)
-                    distogram.reference_atom(atom_type)
+                    distogram.distance_cutoff = distance_cutoff
+                    distogram.reference_atom = atom_type
                     hierarchy.add(distogram)
 
             hierarchy.method = "Distogram extracted from PDB " + str(model.id)
@@ -246,7 +267,7 @@ class MmCifParser(GenericStructureParser):
     def __init__(self):
         super(MmCifParser, self).__init__()
 
-    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type="CB"):
+    def read(self, f_handle, f_id="mmcif", distance_cutoff=8, atom_type="CB", include_hetatms=False):
         """Read a contact file
 
         Parameters
@@ -266,7 +287,7 @@ class MmCifParser(GenericStructureParser):
 
         """
         structure = MMCIFParser(QUIET=True).get_structure("mmcif", f_handle)
-        return self._read(structure, f_id, distance_cutoff, atom_type)
+        return self._read(structure, f_id, distance_cutoff, atom_type, include_hetatms=include_hetatms)
 
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to to file
@@ -296,7 +317,7 @@ class PdbParser(GenericStructureParser):
     def __init__(self):
         super(PdbParser, self).__init__()
 
-    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type="CB"):
+    def read(self, f_handle, f_id="pdb", distance_cutoff=8, atom_type="CB", include_hetatms=False):
         """Read a contact file
 
         Parameters
@@ -316,7 +337,7 @@ class PdbParser(GenericStructureParser):
 
         """
         structure = PDBParser(QUIET=True).get_structure("pdb", f_handle)
-        return self._read(structure, f_id, distance_cutoff, atom_type)
+        return self._read(structure, f_id, distance_cutoff, atom_type, include_hetatms=include_hetatms)
 
     def write(self, f_handle, hierarchy):
         """Write a contact file instance to to file

@@ -329,7 +329,7 @@ class SequenceFile(Entity):
             from conkit.core.ext.c_sequencefile import c_filter
 
             X = np.array(self.ascii_matrix, dtype=np.int64)
-            throwables = np.full(X.shape[0], False, dtype=np.bool)
+            throwables = np.full(X.shape[0], False, dtype=bool)
             c_filter(X, min_id, max_id, throwables)
             filtered = self._inplace(inplace)
             for i, sequence in enumerate(self):
@@ -378,7 +378,7 @@ class SequenceFile(Entity):
 
             X = np.array(self.encoded_matrix, dtype=np.int64)
             symbol = getattr(AminoAcidMapping, symbol, AminoAcidMapping["X"]).value
-            throwables = np.full(X.shape[0], False, dtype=np.bool)
+            throwables = np.full(X.shape[0], False, dtype=bool)
             c_filter_symbol(X, min_prop, max_prop, symbol, throwables)
             filtered = self._inplace(inplace)
             for i, sequence in enumerate(self):

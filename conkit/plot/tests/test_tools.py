@@ -5,12 +5,25 @@ __date__ = "16 Feb 2017"
 
 import os.path
 import sys
+from unittest.mock import patch, MagicMock
 
 from conkit.core import *
 from conkit.plot import tools
 
 import numpy as np
 import unittest
+
+# Minimal areaimol output: just the sections the parser actually reads.
+# Each data line holds 3 residues as 5 tokens each: name chain resnum ASA ratio.
+_AREAIMOL_OUTPUT = """\
+ Per-residue ASA & ratio to reference GXG value.
+ -----------------------------------------------
+
+ G   A   1   327.2  0.66    G   A   2   204.7  0.41    U   A   3   168.5  0.35
+<B><FONT COLOR="#FF0000"><!--SUMMARY_BEGIN-->
+
+ Total area of chain 'A':      701.4
+"""
 
 
 class Test(unittest.TestCase):
@@ -306,11 +319,51 @@ class Test(unittest.TestCase):
         self.assertEqual(sys.executable, tools.is_executable(sys.executable))
 
     def test_is_executable_2(self):
-        self.assertEqual(sys.executable, tools.is_executable(os.path.basename(sys.executable)))
+        # Verify that a bare executable name resolves to a real file on PATH.
+        # We cannot assert equality with sys.executable — PATH ordering may
+        # surface a different Python installation first (e.g. base conda env).
+        result = tools.is_executable(os.path.basename(sys.executable))
+        self.assertTrue(os.path.isfile(result))
+        self.assertTrue(os.access(result, os.X_OK))
 
     def test_is_executable_3(self):
         with self.assertRaises(ValueError):
             tools.is_executable('qweasdzxcpoilkjmnb')
+
+
+class TestAreiamolACC(unittest.TestCase):
+
+    def _run_with_mock(self):
+        # Helper: run areaimol_ACC with Popen replaced by a fake that returns
+        # _AREAIMOL_OUTPUT. We also silence the print() inside the function.
+        with patch('conkit.plot.tools.subprocess.Popen') as mock_popen, \
+             patch('builtins.print'):
+            mock_process = MagicMock()
+            mock_process.communicate.return_value = (_AREAIMOL_OUTPUT.encode('utf-8'), b'')
+            mock_popen.return_value = mock_process
+            result = tools.areaimol_ACC('test.pdb', 'pdb', 'areaimol')
+        return result
+
+    def test_areaimol_acc_returns_expected_keys(self):
+        result = self._run_with_mock()
+        self.assertIn('RESNUM', result)
+        self.assertIn('ACC', result)
+
+    def test_areaimol_acc_parses_resnums(self):
+        result = self._run_with_mock()
+        self.assertEqual([1, 2, 3], result['RESNUM'])
+
+    def test_areaimol_acc_parses_acc_values(self):
+        result = self._run_with_mock()
+        self.assertAlmostEqual(327.2, result['ACC'][0], places=1)
+        self.assertAlmostEqual(204.7, result['ACC'][1], places=1)
+        self.assertAlmostEqual(168.5, result['ACC'][2], places=1)
+
+    def test_areaimol_acc_unsupported_filetype_returns_none(self):
+        # No mocking needed — the function returns early before touching subprocess
+        with patch('builtins.print'):
+            result = tools.areaimol_ACC('test.xyz', 'xyz', 'areaimol')
+        self.assertIsNone(result)
 
 
 if __name__ == "__main__":
