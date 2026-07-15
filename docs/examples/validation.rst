@@ -3,7 +3,13 @@
    :class: table-hover
    :widths: 1000, 10, 10
 
-   * - - Model validation with AlphaFold 2 predictions
+   * - - Protein model validation with AlphaFold 2 predictions
+     -
+     - .. cssclass:: btn btn-default btn-sm btn-example
+
+          :ref:`Script <script_model_validation>`
+
+   * - - RNA model validation with AlphaFold 3 predictions
      -
      - .. cssclass:: btn btn-default btn-sm btn-example
 
