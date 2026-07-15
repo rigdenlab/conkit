@@ -41,10 +41,18 @@ For RNA, use ``--moltype RNA``. The tool will use C1′ inter-nucleotide distanc
 
 .. code-block:: bash
 
-   $> conkit-validate rna/target.fasta fasta rna/target.cif mmcif rna/target_model.cif mmcif \
+   $> conkit-validate 4wce/4wce_Y.fasta fasta 4wce/alphafold3_4wce_Y_distogram.npz alphafold3 \
+          4wce/alphafold3_4wce_Y_model.cif mmcif \
           --moltype RNA \
           --map_align_exe /usr/bin/map_align \
-          --output rna/target.png
+          --output 4wce/4wce_Y.png
+
+This command validates chain Y of PDB entry 4WCE (an RNA structure) against an AlphaFold 3 distogram prediction. The output figure ``4wce_Y.png`` is shown below:
+
+.. figure:: ../../_static/plot_rna_model_validation.png
+   :alt: 4WCE chain Y RNA Model Validation
+   :align: center
+   :scale: 30
 
 .. note::
 
