@@ -674,7 +674,7 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
             structfile = structfile_no_extension+'.pdb'
             print(f'tried to make {structfile}')
         else: 
-            print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
+            print(f'{structfile} was not recognised as a .pdb or .cif file based on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
             return
 
     cmd = [f'{areaimol_exe}', 'XYZIN' ,f'{structfile}']

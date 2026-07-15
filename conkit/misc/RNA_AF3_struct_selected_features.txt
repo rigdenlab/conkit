@@ -1,0 +1,1 @@
+['ACC', 'WRMSD_AF3_struct', 'FN_AF3_struct', 'SENSITIVITY_AF3_struct', 'ACCURACY_SMOOTH_AF3_struct', 'ZSCORE_WRMSD_AF3_struct', 'ZSCORE_ACCURACY_AF3_struct', 'ZSCORE_FN_AF3_struct', 'ZSCORE_SENSITIVITY_AF3_struct']

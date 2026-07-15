@@ -1,0 +1,1 @@
+['ACC', 'WRMSD_AF3_dist', 'ACCURACY_AF3_dist', 'FN_AF3_dist', 'FP_AF3_dist', 'FPR_AF3_dist', 'ACCURACY_SMOOTH_AF3_dist', 'FN_SMOOTH_AF3_dist', 'FPR_SMOOTH_AF3_dist', 'ZSCORE_WRMSD_AF3_dist', 'ZSCORE_ACCURACY_AF3_dist', 'ZSCORE_FPR_AF3_dist']

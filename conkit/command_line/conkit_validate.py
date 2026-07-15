@@ -433,7 +433,6 @@ def main():
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
-        print(residue_info_json)
         with open(args.output_json+".json", "w") as outfile:
             json.dump(residue_info_json, outfile)
 
