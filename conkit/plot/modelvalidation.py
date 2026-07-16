@@ -384,8 +384,8 @@ class ModelValidationFigure(Figure):
                 handles += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
 
         self.ax.legend(handles, [h.get_label() for h in handles],
-                       bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
-                       ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
+                       bbox_to_anchor=(0.5, 1.02), loc='lower center',
+                       ncol=2, borderaxespad=0.0, scatterpoints=1)
 
     def _predict_score(self, resnum):
         """Predict whether a given residue is part of a model error or not"""
