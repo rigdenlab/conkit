@@ -671,10 +671,18 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     if file_type != 'pdb':
         if file_type == 'mmcif':
             structfile_no_extension = structfile.split('.')[0]
-            # TODO: subprocess.Popen returns immediately; gemmi conversion may not be complete
-            # before areaimol is called — replace with subprocess.run to block until done
-            subprocess.Popen([gemmi_exe,'convert','--from=mmcif','--to=pdb',structfile,structfile_no_extension+'.pdb'])
-            structfile = structfile_no_extension+'.pdb'
+            pdb_path = structfile_no_extension + '.pdb'
+            result = subprocess.run(
+                [gemmi_exe, 'convert', '--from=mmcif', '--to=pdb', structfile, pdb_path],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+            if result.returncode != 0:
+                logger.warning(
+                    "areaimol_ACC: gemmi conversion failed (exit %d): %s",
+                    result.returncode, result.stderr.decode().strip(),
+                )
+                return
+            structfile = pdb_path
             logger.debug("Converted mmcif to pdb: %s", structfile)
         else:
             logger.warning("areaimol_ACC: unrecognised structure file type %r (expected 'pdb' or 'mmcif'); skipping ACC calculation.", file_type)
