@@ -38,7 +38,11 @@ __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
 __version__ = "0.13.3"
 
+import logging
+
 from Bio.Align import PairwiseAligner
+
+logger = logging.getLogger(__name__)
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidMapping, AminoAcidOneToThree
 
@@ -136,7 +140,7 @@ class Sequence(Entity):
 
         """
         if "?" in seq:
-            print("sequence containing placeholders was passed, this is normal if RNA contains non-canonical bases.")
+            logger.debug("Sequence contains placeholder characters (?); expected for RNA with non-canonical bases.")
         if all(AminoAcidOneToThree[c].value for c in seq.upper() if not c in ["-","?"]):   #added ? to allow for having placeholder in the sequence for not standard bases is this a good idea? maybe ...
             self._seq = seq
         else:

@@ -33,9 +33,12 @@ __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
 __version__ = "0.13.3"
 
+import logging
 import numpy as np
 import os
 import subprocess
+
+logger = logging.getLogger(__name__)
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -544,9 +547,8 @@ def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border,g
     end_index = logcontents.find('\\n',start_index,-1)
     try:
         Q = float(logcontents[end_index-10:end_index])
-    except:
-        print('Qscore not found, instead got:')
-        print(logcontents)
+    except Exception:
+        logger.warning("Q-score not found in gesamt output:\n%s", logcontents)
         Q = -1
     return Q
 
@@ -581,7 +583,6 @@ def split_into_congruos_blocks(indices,correspondence):
 
     shifts = [i-correspondence[i] for i in indices ]
     shift_diffs = np.diff(shifts)
-    print(shift_diffs)
     shift_indices = np.where(shift_diffs !=0 )[0] +1
 
     splits = list(set(split_indices)|set(shift_indices))
@@ -670,11 +671,13 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     if file_type != 'pdb':
         if file_type == 'mmcif':
             structfile_no_extension = structfile.split('.')[0]
+            # TODO: subprocess.Popen returns immediately; gemmi conversion may not be complete
+            # before areaimol is called — replace with subprocess.run to block until done
             subprocess.Popen([gemmi_exe,'convert','--from=mmcif','--to=pdb',structfile,structfile_no_extension+'.pdb'])
             structfile = structfile_no_extension+'.pdb'
-            print(f'tried to make {structfile}')
-        else: 
-            print(f'{structfile} was not recognised as a .pdb or .cif file based on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
+            logger.debug("Converted mmcif to pdb: %s", structfile)
+        else:
+            logger.warning("areaimol_ACC: unrecognised structure file type %r (expected 'pdb' or 'mmcif'); skipping ACC calculation.", file_type)
             return
 
     cmd = [f'{areaimol_exe}', 'XYZIN' ,f'{structfile}']
@@ -683,7 +686,6 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     out, err = p.communicate(instructions)
     ### this section needs error handling
     out_str = out.decode('utf-8')
-    print(out_str)
     lines = out_str.split('\n')
 
     for l in range(len(lines)):

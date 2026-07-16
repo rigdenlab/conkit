@@ -56,6 +56,8 @@ import numpy as np
 import pandas as pd
 from prettytable import PrettyTable
 
+import logging
+
 import conkit.applications
 import conkit.command_line
 import conkit.io
@@ -65,7 +67,7 @@ from conkit.plot.tools import is_executable, areaimol_ACC
 from conkit.misc import DNATCO_CATEGORIES
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
 
-logger = None
+logger = logging.getLogger(__name__)
 
 def create_argument_parser():
     """Create a parser for the command line arguments used in conkit-validate"""
@@ -181,7 +183,7 @@ def calculate_dnatco(structfile, filetype, dnatco_exe):
             subprocess.run(['pdb2cif',structfile,structfile.replace('.cif','.pdb')])  # step to try to rescue pdb file entered should be changed because it silently introduces a dependency perhaps this can/should be replaced by a gemmin based call? also the swapping of the extensions is likely not a great way to do this
             structfile = structfile.replace('.cif','.pdb')
         else:
-            print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
+            logger.warning("DNATCO: unrecognised structure file type %r (expected 'pdb' or 'mmcif'); skipping DNATCO calculation.", filetype)
             return
 
     structfile = os.path.abspath(structfile)
@@ -254,8 +256,7 @@ def main():
 
     include_hetatms=(args.moltype == 'RNA')  #modified bases are very common in RNA strcutures, removing all hetatm records is a bad idea in this case
 
-    global logger
-    logger = conkit.command_line.setup_logging(level="info")
+    conkit.command_line.setup_logging(level="info")
 
     if os.path.isfile(args.output) and not args.overwrite:
         raise FileExistsError('The output file {} already exists!'.format(args.output))
@@ -290,9 +291,13 @@ def main():
     if args.RENUMBER == 'yes':
         try:
             usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
-        except:
-            logger.critical("No sufficient sequence alignment was found between chains in: %s and %s check whether these are the right files and consider specifying the chain by setting --chain or if your model only has one chain you could turn of renumbering by setting --renumber no", args.pdbfile, args.seqfile)
-    else: 
+        except Exception as e:
+            logger.critical("Renumbering failed: %s", e)
+            logger.critical("No sufficient sequence alignment was found between chains in %s and %s. "
+                            "Check these are the right files; consider specifying --chain or disabling "
+                            "renumbering with --renumber_model no.", args.pdbfile, args.seqfile)
+            raise SystemExit(1)
+    else:
         usable_model = args.pdbfile
     
     model_file = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
@@ -326,10 +331,9 @@ def main():
             elif args.pdbformat == 'mmcif':
                 p = MMCIFParser()
             else:
-                logger.info(os.linesep + "Unrecognized structure file type being passed to DSSP.")
+                logger.warning("Unrecognized structure file type %r being passed to DSSP.", args.pdbformat)
             structure = p.get_structure('structure', usable_model)
             ext_info = DSSP(structure[0], usable_model, dssp=args.dssp, acc_array='Wilke') # this [0] might not be universal between pdb and mmcif file types (the biopython wrapper for dssp is a bit of a mess), dssp doesn't seeem to run for most (ie those with improper headers) pdb files
-            #print(ext_info.keys())
             secondary_structure_determination = 'DSSP'
             validation.calculate_features(max_distance = max_distance)
 
@@ -369,15 +373,14 @@ def main():
             validation.add_plddt()
 
         elif args.conf_file: #replace with a check to see if plddts can be taken from conf_file in future
-            plddts = conkit.io.read(args.conf_file, args.conf_file_type)
-            # validation.add_plddt(externally_supplied_plddts = A_list_from_conf_file)
-            logger.info(os.linesep + "now plddts would be added.")
+            # TODO: implement reading pLDDT from external confidence file and passing to add_plddt()
+            logger.warning("External confidence file supplied but reading pLDDT from external files is not yet implemented; pLDDT filter will be skipped.")
             
         if args.gesamt_exe and (args.distformat in ['pdb', 'mmcif']):
 
             validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
             # identify potential errors
-            logger.info(os.linesep + "added Q-scores")    
+            logger.info(os.linesep + "Added Q-scores.")
 
         if  {'PLDDT', 'CONTACTS', 'Q_IN_ERROR'}.issubset(validation.data.columns):
             # run the trained combination filters if all filter features calculated

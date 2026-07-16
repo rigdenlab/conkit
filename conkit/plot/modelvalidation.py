@@ -39,8 +39,11 @@ It uses one external program:
 from __future__ import division
 from __future__ import print_function
 
+import logging
 import os
 import time
+
+logger = logging.getLogger(__name__)
 from Bio.PDB.DSSP import DSSP
 from Bio.PDB import PDBParser, MMCIFParser
 import numpy as np
@@ -325,7 +328,6 @@ class ModelValidationFigure(Figure):
 
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
-        print(ALL_VALIDATION_FEATURES)
         _features = []
         for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
             _features.append((*residue_features,))
@@ -466,7 +468,8 @@ class ModelValidationFigure(Figure):
             prediction_end = len(self.prediction.plddt)
             self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)] if int(x) < prediction_end else 0)
         else:
-            print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
+            # TODO: implement using externally_supplied_plddts once the format is decided
+            logger.warning("externally_supplied_plddts was provided but external pLDDT support is not yet implemented; pLDDT filter will be skipped.")
 
     def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe, moltype='Protein', experimentfiletype='pdb'):
 
@@ -530,7 +533,7 @@ class ModelValidationFigure(Figure):
             Filter_Feature_names = ['CONTACTS','CONTACTS_Smooth','CONTACTS_Diff','PLDDT','PLDDT_Smooth','PLDDT_Diff','Q_IN_ERROR','SCORE']
         
         else:
-            print(f'unkown filter type {filter_type} requested, doing nothing')
+            logger.warning("Unknown filter type %r requested; doing nothing.", filter_type)
             return 1
 
         _filter, _scaler = load_filter(filter_type)
@@ -554,16 +557,16 @@ class ModelValidationFigure(Figure):
         self.filter_threshold[filter_type] = filter_th
 
         if not filter_type in ['CMO','RF']:
-            print(f'unkown filter type {filter_type} requested, doing nothing')
+            logger.warning("Unknown filter type %r requested; doing nothing.", filter_type)
             return 1
 
         if not {'CONTACTS','PLDDT','Q_IN_ERROR'}.issubset(set(self.data.columns)):
-            print('combinded filtering attempted but not all features were provided, setting all filter values 0')
+            logger.warning("Combined filtering requested but not all required features are available; setting all %s filter values to 0.", filter_type)
             self.data[f'{filter_type}_FILTER'] = 0
             return 1
 
-        if filter_type=='RF' and not 'SCORE' in self.data.columns:
-            print('combinded filtering attempted for RF classifier but no RF probabilityies could be found, try running the svm method of this object first, setting all filter values 0')
+        if filter_type=='RF' and 'SCORE' not in self.data.columns:
+            logger.warning("Combined RF filter requested but no classifier scores found; run svm() first. Setting all RF filter values to 0.")
             self.data[f'{filter_type}_FILTER'] = 0
             return 1
         
@@ -571,7 +574,7 @@ class ModelValidationFigure(Figure):
 
         self._apply_filter(filter_type)
 
-        self.data['PASSED_{filter_type}_FILTER'] = self.data[f'{filter_type}_FILTER'].apply(lambda x: x >= filter_th)
+        self.data[f'PASSED_{filter_type}_FILTER'] = self.data[f'{filter_type}_FILTER'].apply(lambda x: x >= filter_th)
 
         return 0
 
@@ -667,5 +670,3 @@ class ModelValidationFigure(Figure):
         # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
-
-##### Test Change #####

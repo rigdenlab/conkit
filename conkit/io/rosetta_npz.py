@@ -31,8 +31,11 @@
 Parser module specific to rosetta NPZ distance predictions
 """
 
+import logging
 import numpy as np
 from conkit.io._parser import BinaryDistanceFileParser
+
+logger = logging.getLogger(__name__)
 from conkit.core.distance import Distance
 from conkit.core.distogram import Distogram
 from conkit.core.distancefile import DistanceFile
@@ -75,7 +78,7 @@ class RosettaNpzParser(BinaryDistanceFileParser):
         elif 'distance' in prediction.keys():
             probs = prediction['distance'].item()[atom_type]
         else:
-            print('no distograms found in rosettanpz')
+            logger.warning("No distogram array found in rosettanpz file.")
         # Bin #0 corresponds with d>20A & bins #1 ~ #36 correspond with 2A<d<20A in increments of 0.5A
         probs = probs[:, :, [x for x in range(1, 37)] + [0]]
 
