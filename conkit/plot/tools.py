@@ -86,9 +86,9 @@ class ColorDefinitions(object):
         50: "#FE7D4D"
     }
     Q_COLORS = {
-        1: "#6A7EFC",
-        0.5: "#FF5656",
-        0: "#494953"
+        1:   "#a5d6a7",  # light green  (Q > 0.5 – structures agree, error may be FP)
+        0.5: "#e64a19",  # deep orange  (Q < 0.5 – structures differ, error plausible)
+        0:   "#494953",  # near-black   (gesamt failed to align)
     }
     AA_ENCODING = {
         "A": "#882D17",
@@ -528,19 +528,37 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype='Protein'): 
-    err_length = err_border[1] - err_border[0]
-    start_exp = err_border[0] #- int(err_length/2)
-    end_exp = err_border[1] #+ int(err_length/2)
-    start_pred = err_border_pred[0] #- int(err_length/2)
-    end_pred = err_border_pred[1] #+ int(err_length/2)
+_gesamt_moltype_support_cache = {}
 
-    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{} -moltype={}'
-    logfname = '_gesamt.stdout'
-    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred, experimentfile, chain_experiment, start_exp, end_exp, moltype), stdout=subprocess.PIPE, shell=True)
+def _gesamt_supports_moltype(gesamt_exe):
+    """Return True if this gesamt build recognises the -moltype flag."""
+    if gesamt_exe not in _gesamt_moltype_support_cache:
+        try:
+            out = subprocess.run([gesamt_exe, '-help'], capture_output=True, text=True, timeout=10)
+            supported = '-moltype' in out.stdout or '-moltype' in out.stderr
+        except Exception:
+            supported = False
+        _gesamt_moltype_support_cache[gesamt_exe] = supported
+    return _gesamt_moltype_support_cache[gesamt_exe]
+
+
+def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border, gesamt_exe='gesamt', chain_experiment='A', chain_prediction='A', moltype='Protein'):
+    start_exp = err_border[0]
+    end_exp = err_border[1]
+    start_pred = err_border_pred[0]
+    end_pred = err_border_pred[1]
+
+    base_cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'.format(
+        gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred,
+        experimentfile, chain_experiment, start_exp, end_exp,
+    )
+    if _gesamt_supports_moltype(gesamt_exe):
+        base_cmd += ' -moltype={}'.format(moltype)
+
+    p = subprocess.Popen(base_cmd, stdout=subprocess.PIPE, shell=True)
     logcontents = str(p.communicate()[0])
     start_index = logcontents.find('Q-score          :')
-    end_index = logcontents.find('\\n',start_index,-1)
+    end_index = logcontents.find('\\n', start_index, -1)
     try:
         Q = float(logcontents[end_index-10:end_index])
     except Exception:

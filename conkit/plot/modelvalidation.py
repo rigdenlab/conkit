@@ -44,6 +44,7 @@ import os
 import time
 
 from matplotlib.patches import Patch
+import matplotlib.transforms as mtransforms
 
 logger = logging.getLogger(__name__)
 from Bio.PDB.DSSP import DSSP
@@ -583,7 +584,7 @@ class ModelValidationFigure(Figure):
 
         return 0
 
-    def draw(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True, n_contacts_per_res=2, plddt_threshold=65, svm_threshold=0.5):
+    def draw(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True, n_contacts_per_res=2, plddt_threshold=65, svm_threshold=0.5, moltype='Protein'):
 
         misaligned_residues = set(self.alignment.keys())
         residues = self.data['RESNUM']
@@ -603,6 +604,9 @@ class ModelValidationFigure(Figure):
         _BAR_STEP = _BAR_HEIGHT + _BAR_GAP
         bar_top = _BAR_TOP
 
+        classifier_label = 'RF' if moltype == 'RNA' else 'SVM'
+        _blend = mtransforms.blended_transform_factory(self.ax.transAxes, self.ax.transData)
+
         def _color_bar(resnums, color, hatch=None):
             """Draw a single-color (optionally hatched) segment of the current bar row."""
             if resnums:
@@ -611,6 +615,12 @@ class ModelValidationFigure(Figure):
                     kwargs['hatch'] = hatch
                     kwargs['edgecolor'] = 'white'
                 self.ax.bar(resnums, _BAR_HEIGHT, bottom=bar_top - _BAR_HEIGHT, **kwargs)
+
+        def _label_bar(text):
+            """Place a row label just outside the left edge of the axes."""
+            self.ax.text(-0.01, bar_top - _BAR_HEIGHT / 2, text,
+                         transform=_blend, ha='right', va='center',
+                         fontsize=7, color='#555555')
 
         if RUN_SVM:
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
@@ -643,6 +653,7 @@ class ModelValidationFigure(Figure):
                            tools.ColorDefinitions.ERROR, hatch='///')
             else:
                 _color_bar(error_rns, tools.ColorDefinitions.ERROR)
+            _label_bar(classifier_label)
             bar_top -= _BAR_STEP
 
         if RUN_MAP_ALIGN and self._map_align_ran:
@@ -658,6 +669,7 @@ class ModelValidationFigure(Figure):
                            tools.ColorDefinitions.MISALIGNED, hatch='///')
             else:
                 _color_bar(misaligned_rns, tools.ColorDefinitions.MISALIGNED)
+            _label_bar('CMO')
             bar_top -= _BAR_STEP
 
         # Individual filter bars shown as fallback when combined filter data is unavailable.
@@ -668,6 +680,7 @@ class ModelValidationFigure(Figure):
                            tools.ColorDefinitions.LOW_CONTACTS)
                 _color_bar([r for r in present_residues if n_contacts.get(r, 0) >= n_contacts_per_res],
                            tools.ColorDefinitions.SUFFICIENT_CONTACTS)
+                _label_bar('Contacts')
                 bar_top -= _BAR_STEP
 
             if 'PLDDT' in self.data.columns:
@@ -683,6 +696,7 @@ class ModelValidationFigure(Figure):
                     plddt_groups.setdefault(color, []).append(r)
                 for color, rns in plddt_groups.items():
                     _color_bar(rns, color)
+                _label_bar('pLDDT')
                 bar_top -= _BAR_STEP
 
             if 'Q_IN_ERROR' in self.data.columns:
@@ -700,6 +714,7 @@ class ModelValidationFigure(Figure):
                     q_groups.setdefault(color, []).append(r)
                 for color, rns in q_groups.items():
                     _color_bar(rns, color)
+                _label_bar('Q-score')
                 bar_top -= _BAR_STEP
 
         self.ax.set_ylim(bottom=bar_top)

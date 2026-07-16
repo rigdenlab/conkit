@@ -10,12 +10,14 @@ Basic usage
 
 .. code-block:: bash
 
-   $> conkit-validate 7l6q/7l6q.fasta fasta 7l6q/7l6q.af2 alphafold2 7l6q/7l6q_B.pdb pdb \
+   $> conkit-validate 7l6q/7l6q.fasta fasta 7l6q/fold_7l6q_model_0.cif mmcif 7l6q/7l6q_B.pdb pdb \
           --map_align_exe /usr/bin/map_align \
           --dssp_exe /usr/bin/mkdssp \
+          --gesamt_exe /usr/bin/gesamt \
+          --run_svm yes \
           --output 7l6q/7l6q.png
 
-The positional arguments are, in order: the sequence file and its format, the distance prediction file and its format, and the structure file and its format. The ``--map_align_exe`` and ``--dssp_exe`` flags provide paths to the required external executables (see :ref:`installation`).
+The positional arguments are, in order: the sequence file and its format, the distance prediction file and its format, and the structure file and its format. Here the prediction is an AlphaFold2 predicted structure in mmCIF format. The ``--map_align_exe``, ``--dssp_exe``, and ``--gesamt_exe`` flags provide paths to the required external executables (see :ref:`installation`). The ``--run_svm yes`` flag forces the classifier to run even when the input is a structure file (by default the classifier only runs with a distogram).
 
 This command will create the file ``7l6q.png``:
 
@@ -24,11 +26,13 @@ This command will create the file ``7l6q.png``:
    :align: center
    :scale: 30
 
-The output figure shows a smoothed classifier score for each residue position (turquoise line; higher score = more likely to be a modelling error), with a red dotted line at the 0.5 threshold. Below the score curve, annotation bars are drawn for each active feature:
+The output figure shows a smoothed classifier score for each residue position (turquoise line; higher score = more likely to be a modelling error), with a pink dashed line at the 0.5 threshold. Below the score curve, labelled annotation bars are drawn for each active feature:
 
-- **Classifier score bar** — red if the score was above the threshold, cyan if below
-- **CMO alignment bar** — dark blue if the sequence register in the model achieved the CMO, yellow if map_align preferred an alternative register
-- **False-positive indicator bars** — when requested, these show per-residue contact count, pLDDT confidence, or GESAMT Q-score, which help identify regions flagged as errors due to inapplicability of the method (low contacts), low confidence in the prediction, or the model having a different local conformation
+- **SVM bar** — cyan if the residue was predicted correct, red if predicted as a potential error
+- **CMO bar** — dark blue if the contact-map alignment placed the model at the correct register, amber if map_align preferred an alternative register
+- **Contacts bar** — green if the residue has sufficient contacts in the prediction, purple if it has too few (potential false-positive indicator)
+- **pLDDT bar** — AlphaFold confidence tier for each residue using the standard AlphaFold colour scheme; low-confidence residues are more likely to produce false-positive error calls
+- **Q-score bar** — local GESAMT Q-score between the prediction and the model in flagged regions; light green if Q > 0.5 (structures agree locally, error may be a false positive), deep orange if Q < 0.5 (structures differ, error signal is stronger)
 
 The same information is also printed to the terminal as a table.
 
@@ -37,22 +41,28 @@ If you want to know more about ``conkit-validate`` you may want to `watch our vi
 RNA model validation
 ^^^^^^^^^^^^^^^^^^^^^
 
-For RNA, use ``--moltype RNA``. The tool will use C1′ inter-nucleotide distances and switch to RNA-specific classifiers automatically.
+For RNA, use ``--moltype RNA``. The tool will use C1′ inter-nucleotide distances and switch to RNA-specific classifiers (Random Forest) automatically.
 
 .. code-block:: bash
 
-   $> conkit-validate 4wce/4wce_Y.fasta fasta 4wce/alphafold3_4wce_Y_distogram.npz alphafold3 \
-          4wce/alphafold3_4wce_Y_model.cif mmcif \
+   $> conkit-validate 4wce/4wce_Y.fasta fasta 4wce/alphafold3_4wce_Y_model.cif mmcif \
+          4wce/4wce_Y.pdb pdb \
           --moltype RNA \
           --map_align_exe /usr/bin/map_align \
+          --gesamt_exe /usr/bin/gesamt \
+          --areaimol_exe /usr/bin/areaimol \
+          --gemmi_exe /usr/bin/gemmi \
+          --run_svm yes \
           --output 4wce/4wce_Y.png
 
-This command validates chain Y of PDB entry 4WCE (an RNA structure) against an AlphaFold 3 distogram prediction. The output figure ``4wce_Y.png`` is shown below:
+This command validates the experimental chain Y structure of PDB entry 4WCE against an AlphaFold 3 predicted structural model. The predicted model is used both as the contact-map reference and as the target for GESAMT structural alignment. The output figure ``4wce_Y.png`` is shown below:
 
 .. figure:: ../../_static/plot_rna_model_validation.png
    :alt: 4WCE chain Y RNA Model Validation
    :align: center
    :scale: 30
+
+For RNA the figure shows two labelled bars: the **RF bar** (Random Forest classifier) and the **CMO bar** (contact-map alignment). When the combined filter has sufficient data (pLDDT + contact count + GESAMT Q-score all available), individual filter bars are collapsed into a hatched overlay directly on the RF and CMO bars: a hatched pattern on an error or misaligned residue indicates the filter is uncertain whether that call is a true error or a false positive.
 
 .. note::
 
