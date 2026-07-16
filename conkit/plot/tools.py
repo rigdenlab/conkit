@@ -74,11 +74,11 @@ class ColorDefinitions(object):
     FACTOR1 = L20CUTOFF
     SCORE = '#3299a8'
     ERROR = '#f54242'
-    CORRECT = '#40eef7'
+    CORRECT = '#5bc5e0'
     ALIGNED = '#3d8beb'
     MISALIGNED = '#f7ba40'
-    LOW_CONTACTS = '#eecece'
-    SUFFICIENT_CONTACTS = '#a78383'
+    LOW_CONTACTS = '#9b80c8'
+    SUFFICIENT_CONTACTS = '#7ab87a'
     PLDDT_COLORS = {
         100: "#0D57D4",
         90: "#6ACCF2",
@@ -113,10 +113,6 @@ class ColorDefinitions(object):
         "Y": "#2B3D26",
         "X": "#000000",
     }
-    FAILED_CMO_FILTER = '#FFFFFF'
-    FAILED_RF_FILTER = '#FFFFFF'
-    PASSED_CMO_FILTER = '#339900'
-    PASSED_RF_FILTER = '#00FF00'
 
 
 def find_minima(data, order=1):
