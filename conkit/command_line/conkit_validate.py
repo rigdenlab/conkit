@@ -325,25 +325,38 @@ def main():
         else: 
             max_distance = None
 
-        if args.moltype=='Protein': # this might need a switch to run or not run dssp
+        if args.moltype=='Protein':
             if args.pdbformat == 'pdb':
                 p = PDBParser()
             elif args.pdbformat == 'mmcif':
                 p = MMCIFParser()
             else:
                 logger.warning("Unrecognized structure file type %r being passed to DSSP.", args.pdbformat)
-            structure = p.get_structure('structure', usable_model)
-            ext_info = DSSP(structure[0], usable_model, dssp=args.dssp, acc_array='Wilke') # this [0] might not be universal between pdb and mmcif file types (the biopython wrapper for dssp is a bit of a mess), dssp doesn't seeem to run for most (ie those with improper headers) pdb files
-            secondary_structure_determination = 'DSSP'
+            try:
+                structure = p.get_structure('structure', usable_model)
+                ext_info = DSSP(structure[0], usable_model, dssp=args.dssp, acc_array='Wilke')
+                secondary_structure_determination = 'DSSP'
+            except Exception as e:
+                logger.warning("DSSP failed; proceeding without secondary structure features. Error: %s", e)
+                ext_info = None
+                secondary_structure_determination = None
             validation.calculate_features(max_distance = max_distance)
 
-        elif args.moltype=='RNA': 
-            ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
+        elif args.moltype=='RNA':
+            try:
+                ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
+            except Exception as e:
+                logger.warning("areaimol ACC calculation failed; proceeding with ACC=0. Error: %s", e)
+                ext_info = None
             if args.dnatco_exe:
-                dnatco_cats = calculate_dnatco(usable_model, args.pdbformat, args.dnatco_exe)
-                secondary_structure_determination = 'DNATCO'
-                ext_info = pd.merge(ext_info,dnatco_cats,how='outer',on='RESNUM')
-            else: 
+                try:
+                    dnatco_cats = calculate_dnatco(usable_model, args.pdbformat, args.dnatco_exe)
+                    secondary_structure_determination = 'DNATCO'
+                    ext_info = pd.merge(ext_info, dnatco_cats, how='outer', on='RESNUM')
+                except Exception as e:
+                    logger.warning("DNATCO calculation failed; proceeding without DNATCO features. Error: %s", e)
+                    secondary_structure_determination = None
+            else:
                 secondary_structure_determination = None
             validation.calculate_features(z_radius = 20, max_distance = max_distance)
         else:
@@ -367,20 +380,22 @@ def main():
 
         validation.count_contacts()
 
-        if (prediction.plddt != None) and (args.PLDDT_IN_DISTFILE == 'yes'): ##turn into check for plddt
-
-            ## add a check to see if any external plddts were suplied
-            validation.add_plddt()
+        if (prediction.plddt != None) and (args.PLDDT_IN_DISTFILE == 'yes'):
+            try:
+                validation.add_plddt()
+            except Exception as e:
+                logger.warning("Failed to add pLDDT scores; pLDDT filter will be skipped. Error: %s", e)
 
         elif args.conf_file: #replace with a check to see if plddts can be taken from conf_file in future
             # TODO: implement reading pLDDT from external confidence file and passing to add_plddt()
             logger.warning("External confidence file supplied but reading pLDDT from external files is not yet implemented; pLDDT filter will be skipped.")
             
         if args.gesamt_exe and (args.distformat in ['pdb', 'mmcif']):
-
-            validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
-            # identify potential errors
-            logger.info(os.linesep + "Added Q-scores.")
+            try:
+                validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
+                logger.info(os.linesep + "Added Q-scores.")
+            except Exception as e:
+                logger.warning("gesamt Q-score filter failed; Q-score filter will be skipped. Error: %s", e)
 
         if  {'PLDDT', 'CONTACTS', 'Q_IN_ERROR'}.issubset(validation.data.columns):
             # run the trained combination filters if all filter features calculated
