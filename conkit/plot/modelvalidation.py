@@ -138,6 +138,7 @@ class ModelValidationFigure(Figure):
         self.smooth_scores = None
         self.map_align_exe = None
         self.out_dir = None
+        self._map_align_ran = False
 
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
@@ -353,7 +354,7 @@ class ModelValidationFigure(Figure):
                 _RF_filter = self.ax.plot([], [], c=tools.ColorDefinitions.PASSED_RF_FILTER, label='Passed RF filter', **_MARKERKWARGS)
                 plots += _RF_filter
 
-        if RUN_MAP_ALIGN:
+        if RUN_MAP_ALIGN and self._map_align_ran:
             _misaligned = self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
             _aligned = self.ax.plot([], [], c=tools.ColorDefinitions.ALIGNED, label='Aligned', **_MARKERKWARGS)
             plots += _misaligned + _aligned
@@ -446,13 +447,18 @@ class ModelValidationFigure(Figure):
         self.data['SVM_CALLED_ERROR'] = [True if i in error_called_indices else False for i in range(len(score_list))]
 
 
-    def map_align(self,map_align_exe=None,temp_dir_name=None):    
+    def map_align(self,map_align_exe=None,temp_dir_name=None):
 
         self.map_align_exe = map_align_exe
 
         if self.map_align_exe is not None:
-            self._get_cmap_alignment(tempdirname=temp_dir_name)
-            self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
+            try:
+                self._get_cmap_alignment(tempdirname=temp_dir_name)
+                self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
+                self._map_align_ran = True
+            except Exception as e:
+                logger.warning("map_align failed; CMO alignment bar will be omitted from the figure. Error: %s", e)
+                self.alignment = {}
         else:
             self.data['MISALIGNED'] = False
 
@@ -599,7 +605,7 @@ class ModelValidationFigure(Figure):
                 self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
             bar_y -= _BAR_STEP
 
-        if RUN_MAP_ALIGN:
+        if RUN_MAP_ALIGN and self._map_align_ran:
             for resnum in residues:
                 color = tools.ColorDefinitions.MISALIGNED if resnum in misaligned_residues else tools.ColorDefinitions.ALIGNED
                 self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
