@@ -588,82 +588,118 @@ class ModelValidationFigure(Figure):
 
         misaligned_residues = set(self.alignment.keys())
         residues = self.data['RESNUM']
+        absent = self.absent_residues
+        present_residues = [r for r in sorted(residues) if r not in absent]
         combined_filters_available = False
 
-        _BAR_START = -0.02
-        _BAR_STEP = 0.02
-        bar_y = _BAR_START  # steps down by _BAR_STEP each time a bar row is drawn
+        # Each bar row is a filled band of height _BAR_HEIGHT, separated by _BAR_GAP.
+        # bar_top tracks the top edge of the next row to be drawn.
+        _BAR_TOP = -0.01
+        _BAR_HEIGHT = 0.018
+        _BAR_GAP = 0.004
+        _BAR_STEP = _BAR_HEIGHT + _BAR_GAP
+        bar_top = _BAR_TOP
+
+        def _color_bar(resnums, color):
+            """Draw a single-color segment of the current bar row."""
+            if resnums:
+                self.ax.bar(resnums, _BAR_HEIGHT, bottom=bar_top - _BAR_HEIGHT,
+                            width=1.0, color=color, linewidth=0, align='center')
 
         if RUN_SVM:
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
             called_errors = self.data.set_index('RESNUM')['SVM_CALLED_ERROR'].to_dict()
-            self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
-            self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
-            self.ax.plot(sorted(scores.keys()), self.smooth_scores, color=tools.ColorDefinitions.SCORE)
-            for resnum in residues:
-                color = tools.ColorDefinitions.ERROR if called_errors[resnum] else tools.ColorDefinitions.CORRECT
-                self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-            bar_y -= _BAR_STEP
+
+            # Build a full residue range so absent/missing positions become NaN,
+            # which causes matplotlib to draw natural line breaks at gaps.
+            full_range = list(range(min(scores), max(scores) + 1))
+            score_values = np.array([
+                np.nan if (r in absent or r not in scores) else scores[r]
+                for r in full_range
+            ])
+            # Smooth using zeros at gap positions, but mask gaps back to NaN for display.
+            smooth_input = np.where(np.isnan(score_values), 0.0, score_values)
+            smooth_scores = tools.convolution_smooth_values(smooth_input)
+            smooth_display = np.where(np.isnan(score_values), np.nan, smooth_scores)
+            self.sorted_scores = smooth_input
+            self.smooth_scores = smooth_display
+            self.ax.plot(full_range, smooth_display, color=tools.ColorDefinitions.SCORE)
+
+            _color_bar([r for r in present_residues if called_errors.get(r, False)],
+                       tools.ColorDefinitions.ERROR)
+            _color_bar([r for r in present_residues if not called_errors.get(r, False)],
+                       tools.ColorDefinitions.CORRECT)
+            bar_top -= _BAR_STEP
 
         if RUN_MAP_ALIGN and self._map_align_ran:
-            for resnum in residues:
-                color = tools.ColorDefinitions.MISALIGNED if resnum in misaligned_residues else tools.ColorDefinitions.ALIGNED
-                self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-            bar_y -= _BAR_STEP
+            _color_bar([r for r in present_residues if r in misaligned_residues],
+                       tools.ColorDefinitions.MISALIGNED)
+            _color_bar([r for r in present_residues if r not in misaligned_residues],
+                       tools.ColorDefinitions.ALIGNED)
+            bar_top -= _BAR_STEP
 
         if RUN_FILTERS:
 
             if RUN_MAP_ALIGN and ('PASSED_CMO_FILTER' in self.data.columns):
                 combined_filters_available = True
-                filter_scores = self.data.set_index('RESNUM')['PASSED_CMO_FILTER'].to_dict()
-                for resnum in residues:
-                    color = tools.ColorDefinitions.FAILED_CMO_FILTER if filter_scores[resnum] < self.filter_threshold['CMO'] else tools.ColorDefinitions.PASSED_CMO_FILTER
-                    self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                bar_y -= _BAR_STEP
+                filt = self.data.set_index('RESNUM')['PASSED_CMO_FILTER'].to_dict()
+                _color_bar([r for r in present_residues if not filt.get(r, False)],
+                           tools.ColorDefinitions.FAILED_CMO_FILTER)
+                _color_bar([r for r in present_residues if filt.get(r, False)],
+                           tools.ColorDefinitions.PASSED_CMO_FILTER)
+                bar_top -= _BAR_STEP
 
             if RUN_SVM and ('PASSED_RF_FILTER' in self.data.columns):
                 combined_filters_available = True
-                filter_scores = self.data.set_index('RESNUM')['PASSED_RF_FILTER'].to_dict()
-                for resnum in residues:
-                    color = tools.ColorDefinitions.FAILED_RF_FILTER if filter_scores[resnum] < self.filter_threshold['RF'] else tools.ColorDefinitions.PASSED_RF_FILTER
-                    self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                bar_y -= _BAR_STEP
+                filt = self.data.set_index('RESNUM')['PASSED_RF_FILTER'].to_dict()
+                _color_bar([r for r in present_residues if not filt.get(r, False)],
+                           tools.ColorDefinitions.FAILED_RF_FILTER)
+                _color_bar([r for r in present_residues if filt.get(r, False)],
+                           tools.ColorDefinitions.PASSED_RF_FILTER)
+                bar_top -= _BAR_STEP
 
             if not combined_filters_available:
                 if 'CONTACTS' in self.data.columns:
                     n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
-                    for resnum in residues:
-                        color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
-                        self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                    bar_y -= _BAR_STEP
+                    _color_bar([r for r in present_residues if n_contacts.get(r, 0) < n_contacts_per_res],
+                               tools.ColorDefinitions.LOW_CONTACTS)
+                    _color_bar([r for r in present_residues if n_contacts.get(r, 0) >= n_contacts_per_res],
+                               tools.ColorDefinitions.SUFFICIENT_CONTACTS)
+                    bar_top -= _BAR_STEP
 
                 if 'PLDDT' in self.data.columns:
                     plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
                     color_scheme = tools.ColorDefinitions.PLDDT_COLORS
                     thresholds = sorted(color_scheme.keys(), reverse=True)
-                    for resnum in residues:
+                    plddt_groups = {}
+                    for r in present_residues:
                         color = color_scheme[thresholds[0]]
                         for th in thresholds:
-                            if plddts[resnum] < th:
+                            if plddts[r] < th:
                                 color = color_scheme[th]
-                        self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                    bar_y -= _BAR_STEP
+                        plddt_groups.setdefault(color, []).append(r)
+                    for color, rns in plddt_groups.items():
+                        _color_bar(rns, color)
+                    bar_top -= _BAR_STEP
 
                 if 'Q_IN_ERROR' in self.data.columns:
                     Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
                     color_scheme = tools.ColorDefinitions.Q_COLORS
                     thresholds = sorted(color_scheme.keys(), reverse=True)
-                    for resnum in residues:
-                        if Qs[resnum] == '':
+                    q_groups = {}
+                    for r in present_residues:
+                        if Qs.get(r, '') == '':
                             continue
                         color = color_scheme[thresholds[0]]
                         for th in thresholds:
-                            if Qs[resnum] < th:
+                            if Qs[r] < th:
                                 color = color_scheme[th]
-                        self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                    bar_y -= _BAR_STEP
+                        q_groups.setdefault(color, []).append(r)
+                    for color, rns in q_groups.items():
+                        _color_bar(rns, color)
+                    bar_top -= _BAR_STEP
 
-        self.ax.set_ylim(bottom=bar_y)
+        self.ax.set_ylim(bottom=bar_top)
         self.ax.axhline(svm_threshold, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
