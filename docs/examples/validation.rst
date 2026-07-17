@@ -14,3 +14,15 @@
      - .. cssclass:: btn btn-default btn-sm btn-example
 
           :ref:`Script <script_model_validation>`
+
+   * - - Summarise an ensemble of structures into a consensus contact map
+     -
+     - .. cssclass:: btn btn-default btn-sm btn-example
+
+          :ref:`Script <script_summarise>`
+
+   * - - Trim structures to conserved contact regions
+     -
+     - .. cssclass:: btn btn-default btn-sm btn-example
+
+          :ref:`Script <script_trim>`
