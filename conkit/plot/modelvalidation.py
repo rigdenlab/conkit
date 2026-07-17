@@ -598,9 +598,10 @@ class ModelValidationFigure(Figure):
 
         # Each bar row is a filled band of height _BAR_HEIGHT, separated by _BAR_GAP.
         # bar_top tracks the top edge of the next row to be drawn.
+        # Step sized so a 6pt label inside the bar has comfortable clearance.
         _BAR_TOP = -0.01
-        _BAR_HEIGHT = 0.018
-        _BAR_GAP = 0.004
+        _BAR_HEIGHT = 0.034
+        _BAR_GAP = 0.014
         _BAR_STEP = _BAR_HEIGHT + _BAR_GAP
         bar_top = _BAR_TOP
 
@@ -617,10 +618,11 @@ class ModelValidationFigure(Figure):
                 self.ax.bar(resnums, _BAR_HEIGHT, bottom=bar_top - _BAR_HEIGHT, **kwargs)
 
         def _label_bar(text):
-            """Place a row label just outside the left edge of the axes."""
-            self.ax.text(-0.01, bar_top - _BAR_HEIGHT / 2, text,
-                         transform=_blend, ha='right', va='center',
-                         fontsize=7, color='#555555')
+            """Place a row label just inside the left edge of the axes, over the bars."""
+            self.ax.text(0.005, bar_top - _BAR_HEIGHT / 2, text,
+                         transform=_blend, ha='left', va='center',
+                         fontsize=6, color='#333333', clip_on=False,
+                         bbox=dict(boxstyle='square,pad=0.15', fc='white', alpha=0.55, ec='none'))
 
         if RUN_SVM:
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
@@ -717,7 +719,9 @@ class ModelValidationFigure(Figure):
                 _label_bar('Q-score')
                 bar_top -= _BAR_STEP
 
-        self.ax.set_ylim(bottom=bar_top)
+        # Add 10 % headroom above the actual score peak so the curve doesn't hug the top edge.
+        score_top = float(np.nanmax(self.smooth_scores)) * 1.10 if RUN_SVM else None
+        self.ax.set_ylim(bottom=bar_top, top=score_top)
         self.ax.axhline(svm_threshold, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
