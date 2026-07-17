@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def construct_seq_from_chain(chain, return_borders = True, place_holder = '?',alphabet = 'RNA'):
     #takes in a biopython chain and returns its sequence accoring to the original numbering
     from Bio.PDB.Selection import unfold_entities
@@ -69,7 +74,7 @@ def get_alignment_map_dict(moving, static, return_score = False, return_both_dir
     try:
         alignments = list(aligner.align(static, moving))
     except ValueError as e:
-        print('Needleman-Wunsch alignment failed due to:\n{}'.format(e))
+        logger.warning("Needleman-Wunsch alignment failed: %s", e)
         return None
 
     alignments.sort(key=lambda x: x.score, reverse=True)
@@ -102,8 +107,8 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
     loc, base_fn = os.path.split(struct_file)
     try:
         outprefix, ext = base_fn.split('.')
-    except: 
-        print(f'cannot split {struct_file} into name and extension')
+    except Exception:
+        logger.warning("Cannot split %r into name and extension; aborting renumbering.", struct_file)
         return []
 
     # read in the structure
@@ -124,7 +129,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
         io = MMCIFIO()
         io.set_structure(structure)
     else:
-        print('type of structure file was not recognized, will not renumber, will most likely crash')
+        logger.warning("Unrecognised structure file type %r; cannot renumber.", file_type)
         return
 
     sequence = seq.seq  # take only the sequence of the input seq
@@ -154,12 +159,13 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
                 alignment_dict = alignment_dict_new
                 reverse_alignment_dict = reverse_alignment_dict_new
         if score_old == -1000:
-            print(f'no chain in {struct_file} has sufficient sequence similarity to input, aborting')
+            logger.warning("No chain in %r has sufficient sequence similarity to the input sequence; aborting.", struct_file)
+            # TODO: investigate whether execution should stop here (renumbering bug investigation)
             #return 0
-        
-        print(f'in {struct_file} chain {selected_chain} best aligns to the provided sequence with an alignment score of {score_old}, will continue with this one')
-        print(chain_seq)
-        print(sequence)
+
+        logger.info("In %r, chain %r best aligns to the input sequence (score %.1f).", struct_file, selected_chain, score_old)
+        logger.debug("Chain sequence: %s", chain_seq)
+        logger.debug("Input sequence: %s", sequence)
     # renumber each residue in the selected chain based on the alignment
     chain = model[selected_chain]
     reslist = unfold_entities(chain, "R")
@@ -188,7 +194,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file,file_type,seq,select
             else:
                 return False
 
-    print(f'Writing out isolated and renumbered chain to {loc}/renumbered_{selected_chain}_{outprefix}.{ext}')
+    logger.info("Writing renumbered chain to %s/renumbered_%s_%s.%s", loc, selected_chain, outprefix, ext)
     io.save(out_name,ChainSelect())
 
     return out_name, alignment_dict, reverse_alignment_dict

@@ -37,8 +37,7 @@ __author__ = "Felix Simkovic"
 __date__ = "04 Aug 2016"
 __version__ = "0.13.3"
 
-from Bio.Application import _Option
-from Bio.Application import AbstractCommandline
+from conkit.applications._compat import _Option, AbstractCommandline
 
 
 class CdhitCommandline(AbstractCommandline):

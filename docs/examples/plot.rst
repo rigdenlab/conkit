@@ -35,13 +35,19 @@
 
           :ref:`Python <python_plot_cdens>`
 
-   * - - Distogram
+   * - - Distogram (protein, AlphaFold 2)
      - .. cssclass:: btn btn-primary btn-sm btn-example
 
           :ref:`Script <script_plot_distogram>`
      - .. cssclass:: btn btn-default btn-sm btn-example
 
           :ref:`Python <python_plot_distogram>`
+
+   * - - Distogram (RNA, AlphaFold 3)
+     -
+     - .. cssclass:: btn btn-default btn-sm btn-example
+
+          :ref:`Python <python_plot_distogram_rna>`
 
    * - - Precision Evaluation
      - .. cssclass:: btn btn-primary btn-sm btn-example

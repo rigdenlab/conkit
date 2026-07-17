@@ -7,15 +7,7 @@ This page contains information on how to install ConKit on your local machine or
 
 Python Package Index
 ~~~~~~~~~~~~~~~~~~~~
-The easiest way to install ConKit is via `easy_install` or `pip`. To do so, simply run the following command on your command line and you are ready to go.
-
-To install using `easy_install`:
-
-.. code-block:: bash
-
-   $> easy_install conkit
-
-To install using `pip`:
+The easiest way to install ConKit is via ``pip``. To do so, simply run the following command on your command line and you are ready to go.
 
 .. code-block:: bash
 
@@ -35,17 +27,17 @@ If you would like to install ConKit from source, download the `latest version <h
    $> git clone https://github.com/rigdenlab/conkit
    $> cd conkit
 
-Once downloaded, you might want to check that all functions are available on your system. Run the following command:
+Once downloaded, you might want to check that all functions are available on your system. Run the test suite:
 
 .. code-block:: bash
 
-   $> python setup.py test
+   $> python -m pytest
 
 If this has completed successfully, you are good to go and you can now install ConKit.
 
 .. code-block:: bash
 
-   $> python setup.py build install
+   $> pip install .
 
 ConKit is now successfully installed in your system's default Python.
 
@@ -58,22 +50,22 @@ External software
 
 .. note::
 
-   If you install ConKit via the :ref:`Python Package Index`, the dependencies are automatically installed for you!
+   If you install ConKit via the :ref:`Python Package Index`, the Python dependencies are automatically installed for you!
 
 Required dependencies
 +++++++++++++++++++++
-Python 3.7, 3.8 or 3.9
+Python 3.9, 3.10, 3.11 or 3.12
   `Download Python <https://www.python.org/downloads/>`_
 NumPy 1.8.2 (or later)
   `Download NumPy <http://www.scipy.org/scipylib/download.html>`_
 Pandas
-  `Documentation NumPy <https://pandas.pydata.org/>`_
+  `Documentation <https://pandas.pydata.org/>`_
 BioPython 1.74 (or later)
   `Download BioPython <http://biopython.org/wiki/Documentation>`_
 Matplotlib 1.3.1 (or later)
   `Download matplotlib <http://matplotlib.org/users/installing.html>`_
 setuptools
-  `Documentation <https://setuptools.readthedocs.io/en/latest/>`_    
+  `Documentation <https://setuptools.readthedocs.io/en/latest/>`_
 
 Optional dependencies
 +++++++++++++++++++++
@@ -81,8 +73,24 @@ SciPy 0.16 (or later)
   `Download SciPy <http://www.scipy.org/scipylib/download.html>`_
 Cython
   `Documentation Cython <https://cython.org/>`_
-scikit-learn 0.24.1
+scikit-learn 1.0 (or later)
+  Required for model validation (``conkit-validate``).
   `Download scikit-learn <http://scikit-learn.org/stable/install.html>`_
+mkdssp
+  Required for protein model validation (secondary structure assignment).
+  `Download DSSP <https://github.com/PDB-REDO/dssp>`_
+map_align
+  Required for contact-map order (CMO) calculation in ``conkit-validate``.
+  `Download map_align <https://github.com/FoldingAtHome/map_align>`_
+areaimol (part of CCP4)
+  Required for solvent-accessibility calculation in ``conkit-validate``.
+  `Download CCP4 <https://www.ccp4.ac.uk/download/>`_
+GESAMT (part of CCP4)
+  Required for Q-score calculation in ``conkit-validate``.
+  `Download CCP4 <https://www.ccp4.ac.uk/download/>`_
+Node.js + DNATCO
+  Required for RNA secondary-structure annotation in ``conkit-validate --moltype RNA``.
+  `Download Node.js <https://nodejs.org/>`_ — DNATCO is available from `dnatco.datmos.org <https://dnatco.datmos.org>`_
 HHblits
    `Download HHblits <https://github.com/soedinglab/hh-suite>`_
 HHblits Database

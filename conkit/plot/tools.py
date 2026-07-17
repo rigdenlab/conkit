@@ -33,9 +33,12 @@ __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
 __version__ = "0.13.3"
 
+import logging
 import numpy as np
 import os
 import subprocess
+
+logger = logging.getLogger(__name__)
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -71,11 +74,11 @@ class ColorDefinitions(object):
     FACTOR1 = L20CUTOFF
     SCORE = '#3299a8'
     ERROR = '#f54242'
-    CORRECT = '#40eef7'
+    CORRECT = '#5bc5e0'
     ALIGNED = '#3d8beb'
     MISALIGNED = '#f7ba40'
-    LOW_CONTACTS = '#eecece'
-    SUFFICIENT_CONTACTS = '#a78383'
+    LOW_CONTACTS = '#9b80c8'
+    SUFFICIENT_CONTACTS = '#7ab87a'
     PLDDT_COLORS = {
         100: "#0D57D4",
         90: "#6ACCF2",
@@ -83,9 +86,9 @@ class ColorDefinitions(object):
         50: "#FE7D4D"
     }
     Q_COLORS = {
-        1: "#6A7EFC",
-        0.5: "#FF5656",
-        0: "#494953"
+        1:   "#a5d6a7",  # light green  (Q > 0.5 – structures agree, error may be FP)
+        0.5: "#e64a19",  # deep orange  (Q < 0.5 – structures differ, error plausible)
+        0:   "#494953",  # near-black   (gesamt failed to align)
     }
     AA_ENCODING = {
         "A": "#882D17",
@@ -110,10 +113,6 @@ class ColorDefinitions(object):
         "Y": "#2B3D26",
         "X": "#000000",
     }
-    FAILED_CMO_FILTER = '#FFFFFF'
-    FAILED_RF_FILTER = '#FFFFFF'
-    PASSED_CMO_FILTER = '#339900'
-    PASSED_RF_FILTER = '#00FF00'
 
 
 def find_minima(data, order=1):
@@ -529,24 +528,41 @@ def parse_map_align_stdout(stdout):
     return alignment_dict
 
 
-def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border,gesamt_exe='~/Documents/software/gesamt/build/gesamt', chain_experiment = 'A', chain_prediction = 'A', moltype='Protein'): 
-    err_length = err_border[1] - err_border[0]
-    start_exp = err_border[0] #- int(err_length/2)
-    end_exp = err_border[1] #+ int(err_length/2)
-    start_pred = err_border_pred[0] #- int(err_length/2)
-    end_pred = err_border_pred[1] #+ int(err_length/2)
+_gesamt_moltype_support_cache = {}
 
-    cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{} -moltype={}'
-    logfname = '_gesamt.stdout'
-    p = subprocess.Popen(cmd.format(gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred, experimentfile, chain_experiment, start_exp, end_exp, moltype), stdout=subprocess.PIPE, shell=True)
+def _gesamt_supports_moltype(gesamt_exe):
+    """Return True if this gesamt build recognises the -moltype flag."""
+    if gesamt_exe not in _gesamt_moltype_support_cache:
+        try:
+            out = subprocess.run([gesamt_exe, '-help'], capture_output=True, text=True, timeout=10)
+            supported = '-moltype' in out.stdout or '-moltype' in out.stderr
+        except Exception:
+            supported = False
+        _gesamt_moltype_support_cache[gesamt_exe] = supported
+    return _gesamt_moltype_support_cache[gesamt_exe]
+
+
+def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border, gesamt_exe='gesamt', chain_experiment='A', chain_prediction='A', moltype='Protein'):
+    start_exp = err_border[0]
+    end_exp = err_border[1]
+    start_pred = err_border_pred[0]
+    end_pred = err_border_pred[1]
+
+    base_cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'.format(
+        gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred,
+        experimentfile, chain_experiment, start_exp, end_exp,
+    )
+    if _gesamt_supports_moltype(gesamt_exe):
+        base_cmd += ' -moltype={}'.format(moltype)
+
+    p = subprocess.Popen(base_cmd, stdout=subprocess.PIPE, shell=True)
     logcontents = str(p.communicate()[0])
     start_index = logcontents.find('Q-score          :')
-    end_index = logcontents.find('\\n',start_index,-1)
+    end_index = logcontents.find('\\n', start_index, -1)
     try:
         Q = float(logcontents[end_index-10:end_index])
-    except:
-        print('Qscore not found, instead got:')
-        print(logcontents)
+    except Exception:
+        logger.warning("Q-score not found in gesamt output:\n%s", logcontents)
         Q = -1
     return Q
 
@@ -581,7 +597,6 @@ def split_into_congruos_blocks(indices,correspondence):
 
     shifts = [i-correspondence[i] for i in indices ]
     shift_diffs = np.diff(shifts)
-    print(shift_diffs)
     shift_indices = np.where(shift_diffs !=0 )[0] +1
 
     splits = list(set(split_indices)|set(shift_indices))
@@ -670,11 +685,21 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     if file_type != 'pdb':
         if file_type == 'mmcif':
             structfile_no_extension = structfile.split('.')[0]
-            subprocess.Popen([gemmi_exe,'convert','--from=mmcif','--to=pdb',structfile,structfile_no_extension+'.pdb'])
-            structfile = structfile_no_extension+'.pdb'
-            print(f'tried to make {structfile}')
-        else: 
-            print(f'{structfile} was not recognised as a .pdb or .cif file base on the extension, this bit of code does not know how to deal with that, I am returning nothing, If the program crashes please try just renaming the structure file to .cif or .pdb if it is in one of those formats, if not try manually converting it (maybe try gemmi) --cheers')
+            pdb_path = structfile_no_extension + '.pdb'
+            result = subprocess.run(
+                [gemmi_exe, 'convert', '--from=mmcif', '--to=pdb', structfile, pdb_path],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+            if result.returncode != 0:
+                logger.warning(
+                    "areaimol_ACC: gemmi conversion failed (exit %d): %s",
+                    result.returncode, result.stderr.decode().strip(),
+                )
+                return
+            structfile = pdb_path
+            logger.debug("Converted mmcif to pdb: %s", structfile)
+        else:
+            logger.warning("areaimol_ACC: unrecognised structure file type %r (expected 'pdb' or 'mmcif'); skipping ACC calculation.", file_type)
             return
 
     cmd = [f'{areaimol_exe}', 'XYZIN' ,f'{structfile}']
@@ -683,7 +708,6 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     out, err = p.communicate(instructions)
     ### this section needs error handling
     out_str = out.decode('utf-8')
-    print(out_str)
     lines = out_str.split('\n')
 
     for l in range(len(lines)):

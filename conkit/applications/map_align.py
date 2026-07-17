@@ -33,48 +33,58 @@
 Command line object for map_align contact map alignment application
 """
 
-from Bio.Application import _Option
-from Bio.Application import AbstractCommandline
+import subprocess
 
 
-class MapAlignCommandline(AbstractCommandline):
+class MapAlignCommandline:
     """
-    Command line object for map_align [#]_ [#]_
+    Command line object for map_align.
 
     https://github.com/sokrypton/map_align
 
-
     Examples
     --------
-    >>> from conkit.applications import MapAlignCommandline
-    >>> mapalign_cline = MapAlignCommandline(map_a='cmap_1.mapalign', map_b='cmap_2.mapalign')
-    >>> print(mapalign_cline)
-    map_align cmap_1.mapalign cmap_2.mapalign
-
-    You would typically run the command line with :func:`mapalign_cline` or via
-    the :mod:`~subprocess` module.
+    >>> cline = MapAlignCommandline(contact_map_a='a.mapalign', contact_map_b='b.mapalign')
+    >>> stdout, stderr = cline()
 
     """
 
-    def __init__(self, cmd="map_align", **kwargs):
-        self.parameters = [
-            _Option(
-                ["-a", "contact_map_a"],
-                "contact map A",
-                filename=True,
-                equate=False,
-                is_required=True,
-            ),
-            _Option(
-                ["-b", "contact_map_b"],
-                "contact map B",
-                filename=True,
-                equate=False,
-                is_required=True,
-            ),
-            _Option(["-gap_o", "gap_opening_penalty"], "Gap opening penalty [default=-1]", equate=False),
-            _Option(["-gap_e", "gap_extension_penalty"], "Gap extension penalty [default=-0.01]", equate=False),
-            _Option(["-sep_cut", "seq_separation_cutoff"], "Sequence separation cutoff [default=3]", equate=False),
-            _Option(["-iter", "n_iterations"], "Number of iterations [default=20]", equate=False),
-        ]
-        AbstractCommandline.__init__(self, cmd, **kwargs)
+    def __init__(self, cmd="map_align", contact_map_a=None, contact_map_b=None,
+                 gap_opening_penalty=None, gap_extension_penalty=None,
+                 seq_separation_cutoff=None, n_iterations=None):
+        self.cmd = cmd
+        self.contact_map_a = contact_map_a
+        self.contact_map_b = contact_map_b
+        self.gap_opening_penalty = gap_opening_penalty
+        self.gap_extension_penalty = gap_extension_penalty
+        self.seq_separation_cutoff = seq_separation_cutoff
+        self.n_iterations = n_iterations
+
+    def _build_command(self):
+        args = [self.cmd, "-a", self.contact_map_a, "-b", self.contact_map_b]
+        if self.gap_opening_penalty is not None:
+            args += ["-gap_o", str(self.gap_opening_penalty)]
+        if self.gap_extension_penalty is not None:
+            args += ["-gap_e", str(self.gap_extension_penalty)]
+        if self.seq_separation_cutoff is not None:
+            args += ["-sep_cut", str(self.seq_separation_cutoff)]
+        if self.n_iterations is not None:
+            args += ["-iter", str(self.n_iterations)]
+        return args
+
+    def __call__(self):
+        result = subprocess.run(
+            self._build_command(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"map_align exited with code {result.returncode}.\n"
+                f"stderr: {result.stderr.strip()}"
+            )
+        return result.stdout, result.stderr
+
+    def __str__(self):
+        return " ".join(self._build_command())

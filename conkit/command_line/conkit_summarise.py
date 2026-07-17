@@ -118,7 +118,6 @@ def main():
         logger.info(os.linesep + f"extracting contacts from {fn}.")
     
         file = conkit.io.read(fn, args.struct_format, distance_cutoff=cutoff, atom_type=rep_atom)
-        print(file)
         struct = file.top
         contact_map = struct.as_contactmap( distance_cutoff=cutoff )
         contact_set = contact_map.as_set()

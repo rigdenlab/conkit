@@ -32,10 +32,13 @@ __author__ = "Felix Simkovic"
 __date__ = "18 May 2018"
 __version__ = "2.0"
 
+import logging
 import os
 import joblib
 import numpy as np
 import warnings
+
+logger = logging.getLogger(__name__)
 
 TRAINED_CLASSIFIER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'trained_classifier.joblib')
 STANDARD_SCALER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'standard_scaler.joblib')
@@ -58,8 +61,8 @@ SELECTED_VALIDATION_FEATURES_DICT ={
                                 'FN_SMOOTH', 'FPR_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'],
 
                                 'RNA_DNATCO_AF3_struct_': ['ACC', 'AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12',
-                                'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN',
-                                'SENSITIVITY', 'ACCURACY_SMOOTH', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY'] 
+                                'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'FN',
+                                'SENSITIVITY', 'ACCURACY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY']
                                 
                                 }
 
@@ -72,7 +75,6 @@ DNATCO_CATEGORIES = ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12', 'BB
 
 
 def load_validation_model():
-    print(TRAINED_CLASSIFIER_PICKLE)  
     if not os.path.isfile(TRAINED_CLASSIFIER_PICKLE):
         raise FileNotFoundError('Cannot find classifier pickle file {}'.format(TRAINED_CLASSIFIER_PICKLE))
     if not os.path.isfile(STANDARD_SCALER_PICKLE):
@@ -83,7 +85,7 @@ def load_validation_model():
     return classifier, scaler
 
 def load_specific_validation_model(name):
-    print(f'loading model : {name}')
+    logger.debug("Loading validation model: %s", name)
     classifier_fn = os.path.join(LOCATION, f'{name}trained_classifier.pkl')
     scaler_fn = os.path.join(LOCATION, f'{name}standard_scaler.pkl')
     if not os.path.isfile(classifier_fn):

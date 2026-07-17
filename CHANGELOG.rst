@@ -1,3 +1,32 @@
+**[0.14.0]**
+
+*Added*
+
+- RNA model validation in ``conkit-validate``: ``--moltype RNA`` selects RNA-specific Random Forest classifiers (note: referred to as SVM in code for historical reasons; a Random Forest was found to outperform an SVM for RNA); supports AlphaFold 3 C1′ distograms as prediction input
+- DNATCO integration for RNA secondary-structure annotation: ``--dnatco_exe`` provides the DNATCO node executable, enabling RNA-specific classifier features
+- ``include_hetatms`` flag in PDB/mmCIF reader to include modified nucleotides (e.g. PSU, M2G) and other HETATM records in distogram construction
+- RNA-aware residue handling: modified nucleotide codes of three or more characters are now accepted by the ``Contact`` residue setter
+- CMO (map_align) and SVM/RF scoring can now be run independently in ``conkit-validate`` via separate command line flags
+- False-positive indicators in ``conkit-validate``: contact counting per residue, pLDDT reading from predicted structures, and GESAMT Q-score calculation — these help identify regions flagged as errors due to missing experimental density or domain orientation differences rather than genuine modelling errors
+- ``--min_err_size`` and ``--svm_threshold`` flags in ``conkit-validate`` to control the minimum run length and score threshold for called errors
+- Generalised contact-definition flags in ``conkit-validate`` and the underlying ``set_contact_definition`` utility
+- New command line tool ``conkit-summarize``: takes multiple structures or contact maps for the same molecule and computes an averaged contact probability map; intended for identifying contacts conserved across a class of conformations (e.g. amyloid polymorphs)
+- New command line tool ``conkit-trim``: trims a structure to retain only residues that participate in contacts scoring above a given threshold on a provided contact probability map
+
+*Changed*
+
+- Packaging modernised: project metadata, entry points, and dependencies consolidated into ``pyproject.toml``; ``setup.py`` reduced to Cython extensions only; ``setup.cfg`` removed
+- Supported Python versions updated to 3.9–3.12
+- Replaced deprecated ``Bio.pairwise2`` with ``Bio.Align.PairwiseAligner`` throughout
+- wRMSD calculation from structures now applies the same distance cutoff that arises naturally when computing wRMSDs from distograms, making the two comparable and improving protein classifier performance when a structure is provided instead of a distogram
+- Annotation bars in ``ModelValidationFigure`` now stack dynamically: rows absent because a feature is disabled no longer leave visual gaps; the y-axis lower limit adjusts to the bars actually drawn
+- DNATCO subprocess output now written to an isolated temporary directory, avoiding working-directory side effects
+
+*Fixed*
+
+- Removed deprecated numpy type aliases ``np.int`` and ``np.bool`` (replaced with ``int``/``bool``)
+- Fixed ``scikit-learn`` version incompatibility in bundled classifiers and scalers
+
 **[0.13.3]**
 
 *Added*

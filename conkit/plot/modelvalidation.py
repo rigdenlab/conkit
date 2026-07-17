@@ -39,8 +39,14 @@ It uses one external program:
 from __future__ import division
 from __future__ import print_function
 
+import logging
 import os
 import time
+
+from matplotlib.patches import Patch
+import matplotlib.transforms as mtransforms
+
+logger = logging.getLogger(__name__)
 from Bio.PDB.DSSP import DSSP
 from Bio.PDB import PDBParser, MMCIFParser
 import numpy as np
@@ -135,6 +141,7 @@ class ModelValidationFigure(Figure):
         self.smooth_scores = None
         self.map_align_exe = None
         self.out_dir = None
+        self._map_align_ran = False
 
         if len(sequence) < 5:
             raise ValueError('Cannot validate a model with less than 5 residues')
@@ -325,7 +332,6 @@ class ModelValidationFigure(Figure):
 
     def _parse_data(self, predicted_dict, *metrics):
         """Create a :obj:`pandas.DataFrame` with the features of the residues in the model"""
-        print(ALL_VALIDATION_FEATURES)
         _features = []
         for residue_features in zip(sorted(predicted_dict.keys()), *metrics):
             _features.append((*residue_features,))
@@ -336,54 +342,51 @@ class ModelValidationFigure(Figure):
         self.data = self.data.merge(feature_df, how='inner', on =['RESNUM'])
 
 
-    def _add_legend(self,RUN_SVM=True,RUN_MAP_ALIGN=True,RUN_FILTERS=True,n_contacts_per_res=2,plddt_threshold=65,combine_filters=True):
+    def _add_legend(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True,
+                    n_contacts_per_res=2, plddt_threshold=65,
+                    has_rf_filter=False, has_cmo_filter=False, combine_filters=False):
         """Adds legend to the :obj:`~conkit.plot.ModelValidationFigure`"""
 
-        plots = []
+        handles = []
 
         if RUN_SVM:
-            _error = self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
-            _correct = self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
-            _threshold_line = [self.ax.axvline(0, ymin=0, ymax=0, label="Score Threshold", **LINEKWARGS)]
-            _score_plot = self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
-            plots += _score_plot + _threshold_line + _correct + _error
-            if combine_filters:
-                _RF_filter = self.ax.plot([], [], c=tools.ColorDefinitions.PASSED_RF_FILTER, label='Passed RF filter', **_MARKERKWARGS)
-                plots += _RF_filter
+            handles += self.ax.plot([], [], color=tools.ColorDefinitions.SCORE, label='Smoothed Score')
+            handles += [self.ax.axvline(0, ymin=0, ymax=0, label='Score Threshold', **LINEKWARGS)]
+            handles += self.ax.plot([], [], c=tools.ColorDefinitions.CORRECT, label='Predicted Correct', **_MARKERKWARGS)
+            handles += self.ax.plot([], [], c=tools.ColorDefinitions.ERROR, label='Predicted Error', **_MARKERKWARGS)
+            if has_rf_filter:
+                handles += [Patch(facecolor=tools.ColorDefinitions.ERROR, hatch='///',
+                                  edgecolor='white', label='Predicted Error (filter uncertain)')]
 
-        if RUN_MAP_ALIGN:
-            _misaligned = self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
-            _aligned = self.ax.plot([], [], c=tools.ColorDefinitions.ALIGNED, label='Aligned', **_MARKERKWARGS)
-            plots += _misaligned + _aligned
-            if combine_filters:
-                _CMO_filter = self.ax.plot([], [], c=tools.ColorDefinitions.PASSED_CMO_FILTER, label='Passed RF filter', **_MARKERKWARGS)
-                plots += _CMO_filter
+        if RUN_MAP_ALIGN and self._map_align_ran:
+            handles += self.ax.plot([], [], c=tools.ColorDefinitions.ALIGNED, label='Aligned', **_MARKERKWARGS)
+            handles += self.ax.plot([], [], c=tools.ColorDefinitions.MISALIGNED, label='Misaligned', **_MARKERKWARGS)
+            if has_cmo_filter:
+                handles += [Patch(facecolor=tools.ColorDefinitions.MISALIGNED, hatch='///',
+                                  edgecolor='white', label='Misaligned (filter uncertain)')]
 
         if RUN_FILTERS and not combine_filters:
             if 'CONTACTS' in self.data.columns:
-                _sufficient_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS, label='Sufficient contacts', **_MARKERKWARGS)
-                _low_contacts = self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS, label='Low contacts <'+str(n_contacts_per_res), **_MARKERKWARGS)
-
-                plots += _sufficient_contacts + _low_contacts
+                handles += self.ax.plot([], [], c=tools.ColorDefinitions.SUFFICIENT_CONTACTS,
+                                        label='Sufficient contacts', **_MARKERKWARGS)
+                handles += self.ax.plot([], [], c=tools.ColorDefinitions.LOW_CONTACTS,
+                                        label='Low contacts <' + str(n_contacts_per_res), **_MARKERKWARGS)
 
             if 'PLDDT' in self.data.columns:
                 color_scheme = tools.ColorDefinitions.PLDDT_COLORS
-                thresholds = list(color_scheme.keys())
-                thresholds.sort()
-                for th in thresholds:
-                    plots += self.ax.plot([], [], c=color_scheme[th], label='Plddt <'+str(th), **_MARKERKWARGS)
+                for th in sorted(color_scheme.keys()):
+                    handles += self.ax.plot([], [], c=color_scheme[th], label='pLDDT <' + str(th), **_MARKERKWARGS)
 
             if 'Q_IN_ERROR' in self.data.columns:
                 color_scheme = tools.ColorDefinitions.Q_COLORS
-                thresholds = list(color_scheme.keys())
-                thresholds.sort()
-                plots += self.ax.plot([], [], c=color_scheme[thresholds[2]], label='Q > 0.5', **_MARKERKWARGS)
-                plots += self.ax.plot([], [], c=color_scheme[thresholds[1]], label='Q < 0.5', **_MARKERKWARGS)
-                plots += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
+                thresholds = sorted(color_scheme.keys())
+                handles += self.ax.plot([], [], c=color_scheme[thresholds[2]], label='Q > 0.5', **_MARKERKWARGS)
+                handles += self.ax.plot([], [], c=color_scheme[thresholds[1]], label='Q < 0.5', **_MARKERKWARGS)
+                handles += self.ax.plot([], [], c=color_scheme[thresholds[0]], label='Gesamt failed to align', **_MARKERKWARGS)
 
-        labels = [l.get_label() for l in plots]
-        self.ax.legend(plots, labels, bbox_to_anchor=(0.0, 1.02, 1.0, 0.102), loc=3,
-                       ncol=3, mode="expand", borderaxespad=0.0, scatterpoints=1)
+        self.ax.legend(handles, [h.get_label() for h in handles],
+                       bbox_to_anchor=(0.5, 1.02), loc='lower center',
+                       ncol=2, borderaxespad=0.0, scatterpoints=1)
 
     def _predict_score(self, resnum):
         """Predict whether a given residue is part of a model error or not"""
@@ -444,13 +447,18 @@ class ModelValidationFigure(Figure):
         self.data['SVM_CALLED_ERROR'] = [True if i in error_called_indices else False for i in range(len(score_list))]
 
 
-    def map_align(self,map_align_exe=None,temp_dir_name=None):    
+    def map_align(self,map_align_exe=None,temp_dir_name=None):
 
         self.map_align_exe = map_align_exe
 
         if self.map_align_exe is not None:
-            self._get_cmap_alignment(tempdirname=temp_dir_name)
-            self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
+            try:
+                self._get_cmap_alignment(tempdirname=temp_dir_name)
+                self.data['MISALIGNED'] = self.data.RESNUM.isin(self.alignment.keys())
+                self._map_align_ran = True
+            except Exception as e:
+                logger.warning("map_align failed; CMO alignment bar will be omitted from the figure. Error: %s", e)
+                self.alignment = {}
         else:
             self.data['MISALIGNED'] = False
 
@@ -466,7 +474,8 @@ class ModelValidationFigure(Figure):
             prediction_end = len(self.prediction.plddt)
             self.data['PLDDT'] = self.data['RESNUM'].apply(lambda x: self.prediction.plddt[int(x)] if int(x) < prediction_end else 0)
         else:
-            print("this function is meant to take external plddts and add them to the prediction for filtering false positives")
+            # TODO: implement using externally_supplied_plddts once the format is decided
+            logger.warning("externally_supplied_plddts was provided but external pLDDT support is not yet implemented; pLDDT filter will be skipped.")
 
     def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe, moltype='Protein', experimentfiletype='pdb'):
 
@@ -530,7 +539,7 @@ class ModelValidationFigure(Figure):
             Filter_Feature_names = ['CONTACTS','CONTACTS_Smooth','CONTACTS_Diff','PLDDT','PLDDT_Smooth','PLDDT_Diff','Q_IN_ERROR','SCORE']
         
         else:
-            print(f'unkown filter type {filter_type} requested, doing nothing')
+            logger.warning("Unknown filter type %r requested; doing nothing.", filter_type)
             return 1
 
         _filter, _scaler = load_filter(filter_type)
@@ -554,16 +563,16 @@ class ModelValidationFigure(Figure):
         self.filter_threshold[filter_type] = filter_th
 
         if not filter_type in ['CMO','RF']:
-            print(f'unkown filter type {filter_type} requested, doing nothing')
+            logger.warning("Unknown filter type %r requested; doing nothing.", filter_type)
             return 1
 
         if not {'CONTACTS','PLDDT','Q_IN_ERROR'}.issubset(set(self.data.columns)):
-            print('combinded filtering attempted but not all features were provided, setting all filter values 0')
+            logger.warning("Combined filtering requested but not all required features are available; setting all %s filter values to 0.", filter_type)
             self.data[f'{filter_type}_FILTER'] = 0
             return 1
 
-        if filter_type=='RF' and not 'SCORE' in self.data.columns:
-            print('combinded filtering attempted for RF classifier but no RF probabilityies could be found, try running the svm method of this object first, setting all filter values 0')
+        if filter_type=='RF' and 'SCORE' not in self.data.columns:
+            logger.warning("Combined RF filter requested but no classifier scores found; run svm() first. Setting all RF filter values to 0.")
             self.data[f'{filter_type}_FILTER'] = 0
             return 1
         
@@ -571,90 +580,144 @@ class ModelValidationFigure(Figure):
 
         self._apply_filter(filter_type)
 
-        self.data['PASSED_{filter_type}_FILTER'] = self.data[f'{filter_type}_FILTER'].apply(lambda x: x >= filter_th)
+        self.data[f'PASSED_{filter_type}_FILTER'] = self.data[f'{filter_type}_FILTER'].apply(lambda x: x >= filter_th)
 
         return 0
 
-    def draw(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True, n_contacts_per_res=2, plddt_threshold=65, svm_threshold=0.5):
+    def draw(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True, n_contacts_per_res=2, plddt_threshold=65, svm_threshold=0.5, moltype='Protein'):
 
         misaligned_residues = set(self.alignment.keys())
         residues = self.data['RESNUM']
-        combined_filters_available = False
+        absent = self.absent_residues
+        present_residues = [r for r in sorted(residues) if r not in absent]
 
-        _BAR_START = -0.02
-        _BAR_STEP = 0.02
-        bar_y = _BAR_START  # steps down by _BAR_STEP each time a bar row is drawn
+        # Pre-check whether filter columns exist so we can choose bar style before drawing.
+        has_rf_filter = RUN_FILTERS and RUN_SVM and ('PASSED_RF_FILTER' in self.data.columns)
+        has_cmo_filter = RUN_FILTERS and RUN_MAP_ALIGN and ('PASSED_CMO_FILTER' in self.data.columns)
+        combine_filters = has_rf_filter or has_cmo_filter
+
+        # Each bar row is a filled band of height _BAR_HEIGHT, separated by _BAR_GAP.
+        # bar_top tracks the top edge of the next row to be drawn.
+        _BAR_TOP = -0.01
+        _BAR_HEIGHT = 0.018
+        _BAR_GAP = 0.004
+        _BAR_STEP = _BAR_HEIGHT + _BAR_GAP
+        bar_top = _BAR_TOP
+
+        classifier_label = 'RF' if moltype == 'RNA' else 'SVM'
+        _blend = mtransforms.blended_transform_factory(self.ax.transAxes, self.ax.transData)
+
+        def _color_bar(resnums, color, hatch=None):
+            """Draw a single-color (optionally hatched) segment of the current bar row."""
+            if resnums:
+                kwargs = dict(width=1.0, color=color, linewidth=0, align='center')
+                if hatch:
+                    kwargs['hatch'] = hatch
+                    kwargs['edgecolor'] = 'white'
+                self.ax.bar(resnums, _BAR_HEIGHT, bottom=bar_top - _BAR_HEIGHT, **kwargs)
+
+        def _label_bar(text):
+            """Place a row label just outside the left edge of the axes."""
+            self.ax.text(-0.01, bar_top - _BAR_HEIGHT / 2, text,
+                         transform=_blend, ha='right', va='center',
+                         fontsize=7, color='#555555')
 
         if RUN_SVM:
             scores = self.data.set_index('RESNUM')['SCORE'].to_dict()
             called_errors = self.data.set_index('RESNUM')['SVM_CALLED_ERROR'].to_dict()
-            self.sorted_scores = np.nan_to_num([scores[resnum] for resnum in sorted(scores.keys())])
-            self.smooth_scores = tools.convolution_smooth_values(self.sorted_scores)
-            self.ax.plot(sorted(scores.keys()), self.smooth_scores, color=tools.ColorDefinitions.SCORE)
-            for resnum in residues:
-                color = tools.ColorDefinitions.ERROR if called_errors[resnum] else tools.ColorDefinitions.CORRECT
-                self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-            bar_y -= _BAR_STEP
 
-        if RUN_MAP_ALIGN:
-            for resnum in residues:
-                color = tools.ColorDefinitions.MISALIGNED if resnum in misaligned_residues else tools.ColorDefinitions.ALIGNED
-                self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-            bar_y -= _BAR_STEP
+            # Build a full residue range so absent/missing positions become NaN,
+            # which causes matplotlib to draw natural line breaks at gaps.
+            full_range = list(range(min(scores), max(scores) + 1))
+            score_values = np.array([
+                np.nan if (r in absent or r not in scores) else scores[r]
+                for r in full_range
+            ])
+            # Smooth using zeros at gap positions, but mask gaps back to NaN for display.
+            smooth_input = np.where(np.isnan(score_values), 0.0, score_values)
+            smooth_scores = tools.convolution_smooth_values(smooth_input)
+            smooth_display = np.where(np.isnan(score_values), np.nan, smooth_scores)
+            self.sorted_scores = smooth_input
+            self.smooth_scores = smooth_display
+            self.ax.plot(full_range, smooth_display, color=tools.ColorDefinitions.SCORE)
 
-        if RUN_FILTERS:
+            correct_rns = [r for r in present_residues if not called_errors.get(r, False)]
+            error_rns   = [r for r in present_residues if called_errors.get(r, False)]
 
-            if RUN_MAP_ALIGN and ('PASSED_CMO_FILTER' in self.data.columns):
-                combined_filters_available = True
-                filter_scores = self.data.set_index('RESNUM')['PASSED_CMO_FILTER'].to_dict()
-                for resnum in residues:
-                    color = tools.ColorDefinitions.FAILED_CMO_FILTER if filter_scores[resnum] < self.filter_threshold['CMO'] else tools.ColorDefinitions.PASSED_CMO_FILTER
-                    self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                bar_y -= _BAR_STEP
+            _color_bar(correct_rns, tools.ColorDefinitions.CORRECT)
+            if has_rf_filter:
+                filt = self.data.set_index('RESNUM')['PASSED_RF_FILTER'].to_dict()
+                _color_bar([r for r in error_rns if filt.get(r, False)],
+                           tools.ColorDefinitions.ERROR)
+                _color_bar([r for r in error_rns if not filt.get(r, False)],
+                           tools.ColorDefinitions.ERROR, hatch='///')
+            else:
+                _color_bar(error_rns, tools.ColorDefinitions.ERROR)
+            _label_bar(classifier_label)
+            bar_top -= _BAR_STEP
 
-            if RUN_SVM and ('PASSED_RF_FILTER' in self.data.columns):
-                combined_filters_available = True
-                filter_scores = self.data.set_index('RESNUM')['PASSED_RF_FILTER'].to_dict()
-                for resnum in residues:
-                    color = tools.ColorDefinitions.FAILED_RF_FILTER if filter_scores[resnum] < self.filter_threshold['RF'] else tools.ColorDefinitions.PASSED_RF_FILTER
-                    self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                bar_y -= _BAR_STEP
+        if RUN_MAP_ALIGN and self._map_align_ran:
+            aligned_rns    = [r for r in present_residues if r not in misaligned_residues]
+            misaligned_rns = [r for r in present_residues if r in misaligned_residues]
 
-            if not combined_filters_available:
-                if 'CONTACTS' in self.data.columns:
-                    n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
-                    for resnum in residues:
-                        color = tools.ColorDefinitions.LOW_CONTACTS if n_contacts[resnum] < n_contacts_per_res else tools.ColorDefinitions.SUFFICIENT_CONTACTS
-                        self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                    bar_y -= _BAR_STEP
+            _color_bar(aligned_rns, tools.ColorDefinitions.ALIGNED)
+            if has_cmo_filter:
+                filt = self.data.set_index('RESNUM')['PASSED_CMO_FILTER'].to_dict()
+                _color_bar([r for r in misaligned_rns if filt.get(r, False)],
+                           tools.ColorDefinitions.MISALIGNED)
+                _color_bar([r for r in misaligned_rns if not filt.get(r, False)],
+                           tools.ColorDefinitions.MISALIGNED, hatch='///')
+            else:
+                _color_bar(misaligned_rns, tools.ColorDefinitions.MISALIGNED)
+            _label_bar('CMO')
+            bar_top -= _BAR_STEP
 
-                if 'PLDDT' in self.data.columns:
-                    plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
-                    color_scheme = tools.ColorDefinitions.PLDDT_COLORS
-                    thresholds = sorted(color_scheme.keys(), reverse=True)
-                    for resnum in residues:
-                        color = color_scheme[thresholds[0]]
-                        for th in thresholds:
-                            if plddts[resnum] < th:
-                                color = color_scheme[th]
-                        self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                    bar_y -= _BAR_STEP
+        # Individual filter bars shown as fallback when combined filter data is unavailable.
+        if RUN_FILTERS and not combine_filters:
+            if 'CONTACTS' in self.data.columns:
+                n_contacts = self.data.set_index('RESNUM')['CONTACTS'].to_dict()
+                _color_bar([r for r in present_residues if n_contacts.get(r, 0) < n_contacts_per_res],
+                           tools.ColorDefinitions.LOW_CONTACTS)
+                _color_bar([r for r in present_residues if n_contacts.get(r, 0) >= n_contacts_per_res],
+                           tools.ColorDefinitions.SUFFICIENT_CONTACTS)
+                _label_bar('Contacts')
+                bar_top -= _BAR_STEP
 
-                if 'Q_IN_ERROR' in self.data.columns:
-                    Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
-                    color_scheme = tools.ColorDefinitions.Q_COLORS
-                    thresholds = sorted(color_scheme.keys(), reverse=True)
-                    for resnum in residues:
-                        if Qs[resnum] == '':
-                            continue
-                        color = color_scheme[thresholds[0]]
-                        for th in thresholds:
-                            if Qs[resnum] < th:
-                                color = color_scheme[th]
-                        self.ax.plot(resnum - 1, bar_y, mfc=color, c=color, **_MARKERKWARGS)
-                    bar_y -= _BAR_STEP
+            if 'PLDDT' in self.data.columns:
+                plddts = self.data.set_index('RESNUM')['PLDDT'].to_dict()
+                color_scheme = tools.ColorDefinitions.PLDDT_COLORS
+                thresholds = sorted(color_scheme.keys(), reverse=True)
+                plddt_groups = {}
+                for r in present_residues:
+                    color = color_scheme[thresholds[0]]
+                    for th in thresholds:
+                        if plddts[r] < th:
+                            color = color_scheme[th]
+                    plddt_groups.setdefault(color, []).append(r)
+                for color, rns in plddt_groups.items():
+                    _color_bar(rns, color)
+                _label_bar('pLDDT')
+                bar_top -= _BAR_STEP
 
-        self.ax.set_ylim(bottom=bar_y)
+            if 'Q_IN_ERROR' in self.data.columns:
+                Qs = self.data.set_index('RESNUM')['Q_IN_ERROR'].to_dict()
+                color_scheme = tools.ColorDefinitions.Q_COLORS
+                thresholds = sorted(color_scheme.keys(), reverse=True)
+                q_groups = {}
+                for r in present_residues:
+                    if Qs.get(r, '') == '':
+                        continue
+                    color = color_scheme[thresholds[0]]
+                    for th in thresholds:
+                        if Qs[r] < th:
+                            color = color_scheme[th]
+                    q_groups.setdefault(color, []).append(r)
+                for color, rns in q_groups.items():
+                    _color_bar(rns, color)
+                _label_bar('Q-score')
+                bar_top -= _BAR_STEP
+
+        self.ax.set_ylim(bottom=bar_top)
         self.ax.axhline(svm_threshold, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')
         self.ax.set_ylabel('Smoothed score')
@@ -662,10 +725,9 @@ class ModelValidationFigure(Figure):
         if self.legend:
             self._add_legend(RUN_SVM=RUN_SVM, RUN_MAP_ALIGN=RUN_MAP_ALIGN, RUN_FILTERS=RUN_FILTERS,
                              n_contacts_per_res=n_contacts_per_res, plddt_threshold=plddt_threshold,
-                             combine_filters=combined_filters_available)
+                             has_rf_filter=has_rf_filter, has_cmo_filter=has_cmo_filter,
+                             combine_filters=combine_filters)
 
         # TODO: deprecate this in 0.14
         if self._file_name:
             self.savefig(self._file_name, dpi=self._dpi)
-
-##### Test Change #####
