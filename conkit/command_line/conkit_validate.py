@@ -300,7 +300,9 @@ def main():
     else:
         usable_model = args.pdbfile
         original_map = {}
-    
+
+    numbering_anomalies = detect_numbering_anomalies(original_map)
+
     model_file = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
     model = model_file.top
     model.distance_cutoff = cutoff
@@ -407,7 +409,7 @@ def main():
                 validation.Run_combined_filter(filter_type = 'RF', filter_th = 0.76)
    
     logger.info(os.linesep + "Creating Figure.")
-    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold, moltype=args.moltype)
+    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold, moltype=args.moltype, numbering_anomalies=numbering_anomalies)
 
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
@@ -471,7 +473,6 @@ def main():
 
     # Inject annotation-only rows for EXTRA_CANONICAL residues (no FASTA slot,
     # skipped by pdb.py — no metrics available, but user should see they exist).
-    numbering_anomalies = detect_numbering_anomalies(original_map)
     for new_seq_id, new_icode, orig_seq_id, orig_icode, resname, atype in numbering_anomalies:
         if atype == 'EXTRA_CANONICAL':
             orig_str = f"{orig_seq_id}{orig_icode.strip()}"
