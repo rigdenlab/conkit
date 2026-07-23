@@ -35,7 +35,7 @@ from __future__ import division
 
 __author__ = "Aderik Voorspoels"
 __date__ = "07 Apr 2025"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 import collections
 import numpy as np

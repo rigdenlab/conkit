@@ -35,7 +35,7 @@
 
 __author__ = "Aderik Voorspoels"
 __date__ = "11 february 2026"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 import argparse
 import inspect

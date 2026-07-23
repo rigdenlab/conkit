@@ -1,3 +1,20 @@
+**[0.14.1]**
+
+*Added*
+
+- Residue numbering anomaly detection in ``conkit-validate``: MISUSED_ICODE and EXTRA_CANONICAL events are flagged in the terminal table, the JSON output, and as annotated vertical lines in the validation figure
+- Back-mapping of original PDB residue numbers in the terminal table (``orig→new`` format) and in JSON output (``orig_resnum`` field per residue)
+
+*Changed*
+
+- ``ModelValidationFigure`` x-axis label updated to "Residue Number (FASTA position)" to clarify that residue positions refer to the provided FASTA sequence
+
+*Fixed*
+
+- RNA alignment in ``conkit-validate``: BLOSUM62 substitution matrix (protein-only alphabet, no U) replaced with simple match/mismatch scoring for non-protein moltype, fixing ``ValueError`` for any RNA sequence containing U
+- Renumbering fallthrough: ``write_renumbered_version_of_chain_in_struct`` now raises ``ValueError`` when no chain aligns, rather than silently returning an empty result
+- Scaler files resaved with plain ``pickle`` to avoid NumPy 2.5 deprecation warnings from joblib's ``NumpyArrayWrapper`` when loading
+
 **[0.14.0]**
 
 *Added*

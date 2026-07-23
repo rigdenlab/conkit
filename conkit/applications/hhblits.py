@@ -35,7 +35,7 @@ Command line object for HHblits Multiple Sequence Alignment application
 
 __author__ = "Felix Simkovic"
 __date__ = "05 Aug 2016"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 from conkit.applications._compat import _Option, _Switch, AbstractCommandline
 

@@ -35,7 +35,7 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "27 Sep 2016"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 import collections
 import itertools
@@ -110,6 +110,10 @@ class GenericStructureParser(ContactFileParser):
 
         iterator = itertools.product(list(zip(range1, chain1)), list(zip(range2, chain2)))
         for (resseq1_alt, residue1), (resseq2_alt, residue2) in iterator:
+            # Skip residues with insertion codes: they share an integer seq_id with
+            # their base residue and have no independent FASTA register entry.
+            if residue1.id[2].strip() or residue2.id[2].strip():
+                continue
             for atom1, atom2 in itertools.product(residue1, residue2):
                 if chain1 == chain2 and int(residue1.id[1]) >= int(residue2.id[1]):
                     continue

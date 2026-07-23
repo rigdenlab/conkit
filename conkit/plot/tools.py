@@ -31,7 +31,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 import logging
 import numpy as np
@@ -79,6 +79,8 @@ class ColorDefinitions(object):
     MISALIGNED = '#f7ba40'
     LOW_CONTACTS = '#9b80c8'
     SUFFICIENT_CONTACTS = '#7ab87a'
+    MISUSED_ICODE = '#E8A838'
+    EXTRA_CANONICAL = '#9B59B6'
     PLDDT_COLORS = {
         100: "#0D57D4",
         90: "#6ACCF2",

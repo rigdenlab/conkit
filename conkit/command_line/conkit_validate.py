@@ -65,7 +65,7 @@ from conkit.io.tools import set_contact_definition
 import conkit.plot
 from conkit.plot.tools import is_executable, areaimol_ACC
 from conkit.misc import DNATCO_CATEGORIES
-from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct
+from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct, detect_numbering_anomalies
 
 logger = logging.getLogger(__name__)
 
@@ -290,7 +290,7 @@ def main():
 
     if args.RENUMBER == 'yes':
         try:
-            usable_model, alignment_dict, reverse_alignment_dict = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
+            usable_model, alignment_dict, reverse_alignment_dict, original_map = write_renumbered_version_of_chain_in_struct(args.pdbfile, args.pdbformat, sequence, selected_chain=args.selected_chain, moltype=args.moltype)
         except Exception as e:
             logger.critical("Renumbering failed: %s", e)
             logger.critical("No sufficient sequence alignment was found between chains in %s and %s. "
@@ -299,7 +299,10 @@ def main():
             raise SystemExit(1)
     else:
         usable_model = args.pdbfile
-    
+        original_map = {}
+
+    numbering_anomalies = detect_numbering_anomalies(original_map)
+
     model_file = conkit.io.read(usable_model, args.pdbformat, distance_cutoff=cutoff, atom_type=rep_atom, include_hetatms=include_hetatms)
     model = model_file.top
     model.distance_cutoff = cutoff
@@ -406,7 +409,7 @@ def main():
                 validation.Run_combined_filter(filter_type = 'RF', filter_th = 0.76)
    
     logger.info(os.linesep + "Creating Figure.")
-    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold, moltype=args.moltype)
+    validation.draw(RUN_SVM=(args.RUN_SVM=='yes'), RUN_MAP_ALIGN=(args.RUN_MAP_ALIGN=='yes'), RUN_FILTERS=(args.RUN_FILTERS=='yes'), svm_threshold=args.score_threshold, moltype=args.moltype, numbering_anomalies=numbering_anomalies)
 
     validation.savefig(args.output, overwrite=args.overwrite)
     logger.info(os.linesep + "Validation plot written to %s", args.output)
@@ -423,15 +426,36 @@ def main():
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register", "map align filter", "classifier filter","plddt", "predicted contacts", "Q in error"]
 
-    _resnum_template = '{} ({})'
     _error_score_template = '*** {0:.2f} ***'
     _correct_score_template = '    {0:.2f}    '
     _register_template = '*** {} ({}) ***'
     _empty_register = '               '
 
+    def _resnum_display(new_seq_id):
+        """Format residue number, showing original→new when they differ."""
+        orig_seq_id, orig_icode, _ = original_map.get((new_seq_id, ' '), (new_seq_id, ' ', ''))
+        orig_str = f"{orig_seq_id}{orig_icode.strip()}"
+        new_str = str(new_seq_id)
+        return orig_str if orig_str == new_str else f"{orig_str}→{new_str}"
+
+    def _is_numbering_anomaly(new_seq_id):
+        """True if the residue at new_seq_id carried an insertion code in the input file."""
+        _, orig_icode, _ = original_map.get((new_seq_id, ' '), (new_seq_id, ' ', ''))
+        return orig_icode.strip() != ''
+
+    # Collect rows as (sort_key, row_list) so EXTRA_CANONICAL annotation rows
+    # can be merged in sequence order rather than appended at the end.
+    table_rows = []
+
     for residue in residue_info.values:
         resnum, score, misalignment, cmo_filter, rf_filter, plddt, contacts, Qs, register = residue
-        current_residue = _resnum_template.format(sequence.seq[resnum - 1], resnum)
+        num_display = _resnum_display(resnum)
+        residue_letter = sequence.seq[resnum - 1]
+        if _is_numbering_anomaly(resnum):
+            current_residue = f'*** {residue_letter} ({num_display}) ***'
+        else:
+            current_residue = f'{residue_letter} ({num_display})'
+
         score = _error_score_template.format(score) if score > args.score_threshold else _correct_score_template.format(score)
         if type(cmo_filter) in [int, float]:
             cmo_filter = _error_score_template.format(cmo_filter) if cmo_filter > args.cmo_filter_threshold else _correct_score_template.format(cmo_filter)
@@ -445,12 +469,40 @@ def main():
             register = _empty_register
             residue_info.loc[residue_info['RESNUM'] == resnum, 'NEW_REGISTER'] = register
 
-        table.add_row([current_residue, score, register, cmo_filter, rf_filter, plddt, contacts, Qs])
+        table_rows.append(((resnum, ' '), [current_residue, score, register, cmo_filter, rf_filter, plddt, contacts, Qs]))
+
+    # Inject annotation-only rows for EXTRA_CANONICAL residues (no FASTA slot,
+    # skipped by pdb.py — no metrics available, but user should see they exist).
+    for new_seq_id, new_icode, orig_seq_id, orig_icode, resname, atype in numbering_anomalies:
+        if atype == 'EXTRA_CANONICAL':
+            orig_str = f"{orig_seq_id}{orig_icode.strip()}"
+            new_str = f"{new_seq_id}{new_icode.strip()}"
+            current_residue = f'*** {resname} ({orig_str}→{new_str}) ***'
+            table_rows.append(((new_seq_id, new_icode), [current_residue, 'N/A', '', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A']))
+
+    table_rows.sort(key=lambda x: x[0])
+    for _, row in table_rows:
+        table.add_row(row)
 
     ### add json format report ###
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
+        residue_info_json['orig_resnum'] = [
+            '{}{}'.format(*original_map.get((r, ' '), (r, ' ', ''))[:2]).rstrip()
+            for r in residue_info_json['RESNUM']
+        ]
+        residue_info_json['numbering_anomalies'] = [
+            {
+                'orig_seq_id': orig_seq_id,
+                'orig_icode': orig_icode.strip(),
+                'new_seq_id': new_seq_id,
+                'new_icode': new_icode.strip(),
+                'resname': resname,
+                'type': atype,
+            }
+            for new_seq_id, new_icode, orig_seq_id, orig_icode, resname, atype in numbering_anomalies
+        ]
         with open(args.output_json+".json", "w") as outfile:
             json.dump(residue_info_json, outfile)
 

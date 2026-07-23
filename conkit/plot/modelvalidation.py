@@ -65,6 +65,7 @@ MARKERKWARGS = dict(marker='|', linestyle='None')
 _MARKERKWARGS = dict(marker='s', linestyle='None')
 
 
+
 class ModelValidationFigure(Figure):
     """A Figure object specifc for a model validation. This figure represents the proabbility that each given residue
     in the model is involved in a model error. This is donw by feeding a trained classfier the differences observed
@@ -584,7 +585,7 @@ class ModelValidationFigure(Figure):
 
         return 0
 
-    def draw(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True, n_contacts_per_res=2, plddt_threshold=65, svm_threshold=0.5, moltype='Protein'):
+    def draw(self, RUN_SVM=True, RUN_MAP_ALIGN=True, RUN_FILTERS=True, n_contacts_per_res=2, plddt_threshold=65, svm_threshold=0.5, moltype='Protein', numbering_anomalies=None):
 
         misaligned_residues = set(self.alignment.keys())
         residues = self.data['RESNUM']
@@ -621,7 +622,7 @@ class ModelValidationFigure(Figure):
             """Place a row label just inside the left edge of the axes, over the bars."""
             self.ax.text(0.005, bar_top - _BAR_HEIGHT / 2, text,
                          transform=_blend, ha='left', va='center',
-                         fontsize=6, color='#333333', clip_on=False,
+                         fontsize=8, color='#333333', clip_on=False,
                          bbox=dict(boxstyle='square,pad=0.15', fc='white', alpha=0.55, ec='none'))
 
         if RUN_SVM:
@@ -720,11 +721,27 @@ class ModelValidationFigure(Figure):
                 bar_top -= _BAR_STEP
 
         # Add 10 % headroom above the actual score peak so the curve doesn't hug the top edge.
-        score_top = float(np.nanmax(self.smooth_scores)) * 1.10 if RUN_SVM else None
+        # Guard against nan/inf from an all-absent sequence (np.nanmax on all-NaN → nan).
+        if RUN_SVM:
+            peak = float(np.nanmax(self.smooth_scores))
+            score_top = (peak * 1.10) if np.isfinite(peak) else 1.1
+        else:
+            score_top = None
         self.ax.set_ylim(bottom=bar_top, top=score_top)
         self.ax.axhline(svm_threshold, **LINEKWARGS)
-        self.ax.set_xlabel('Residue Number')
+        self.ax.set_xlabel('Residue Number (FASTA position)')
         self.ax.set_ylabel('Smoothed score')
+
+        if numbering_anomalies:
+            _vline_blend = mtransforms.blended_transform_factory(self.ax.transData, self.ax.transAxes)
+            _text_kw = dict(transform=_vline_blend, rotation=90, ha='center',
+                            fontsize=9, color='#333333', clip_on=True,
+                            bbox=dict(boxstyle='square,pad=0.1', fc='white', alpha=0.6, ec='none'))
+            for new_seq_id, _new_icode, _orig_seq_id, _orig_icode, _resname, atype in numbering_anomalies:
+                short_label = 'wrong icode' if atype == 'MISUSED_ICODE' else 'missing icode'
+                self.ax.axvline(new_seq_id, color='#333333', linewidth=1.5, linestyle=':', alpha=0.7, zorder=0)
+                self.ax.text(new_seq_id, 0.84, f"res {new_seq_id}", va='bottom', **_text_kw)
+                self.ax.text(new_seq_id, 0.57, short_label, va='bottom', **_text_kw)
 
         if self.legend:
             self._add_legend(RUN_SVM=RUN_SVM, RUN_MAP_ALIGN=RUN_MAP_ALIGN, RUN_FILTERS=RUN_FILTERS,
