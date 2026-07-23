@@ -729,7 +729,7 @@ class ModelValidationFigure(Figure):
             score_top = None
         self.ax.set_ylim(bottom=bar_top, top=score_top)
         self.ax.axhline(svm_threshold, **LINEKWARGS)
-        self.ax.set_xlabel('Residue Number')
+        self.ax.set_xlabel('Residue Number (FASTA position)')
         self.ax.set_ylabel('Smoothed score')
 
         if numbering_anomalies:

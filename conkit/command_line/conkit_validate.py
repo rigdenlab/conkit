@@ -488,6 +488,10 @@ def main():
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
+        residue_info_json['orig_resnum'] = [
+            '{}{}'.format(*original_map.get((r, ' '), (r, ' ', ''))[:2]).rstrip()
+            for r in residue_info_json['RESNUM']
+        ]
         residue_info_json['numbering_anomalies'] = [
             {
                 'orig_seq_id': orig_seq_id,
