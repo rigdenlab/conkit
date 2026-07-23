@@ -471,7 +471,8 @@ def main():
 
     # Inject annotation-only rows for EXTRA_CANONICAL residues (no FASTA slot,
     # skipped by pdb.py — no metrics available, but user should see they exist).
-    for new_seq_id, new_icode, orig_seq_id, orig_icode, resname, atype in detect_numbering_anomalies(original_map):
+    numbering_anomalies = detect_numbering_anomalies(original_map)
+    for new_seq_id, new_icode, orig_seq_id, orig_icode, resname, atype in numbering_anomalies:
         if atype == 'EXTRA_CANONICAL':
             orig_str = f"{orig_seq_id}{orig_icode.strip()}"
             new_str = f"{new_seq_id}{new_icode.strip()}"
@@ -486,6 +487,17 @@ def main():
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
+        residue_info_json['numbering_anomalies'] = [
+            {
+                'orig_seq_id': orig_seq_id,
+                'orig_icode': orig_icode.strip(),
+                'new_seq_id': new_seq_id,
+                'new_icode': new_icode.strip(),
+                'resname': resname,
+                'type': atype,
+            }
+            for new_seq_id, new_icode, orig_seq_id, orig_icode, resname, atype in numbering_anomalies
+        ]
         with open(args.output_json+".json", "w") as outfile:
             json.dump(residue_info_json, outfile)
 
