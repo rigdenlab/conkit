@@ -207,18 +207,27 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
     # Canonical residues that have no FASTA counterpart (extra structural residues
     # the author gave their own seq_id) are reassigned an insertion code relative
     # to the last aligned FASTA position rather than excluded from the output.
+    #
+    # original_map records the provenance of every renumbered residue:
+    #   (new_seq_id, new_icode) → (orig_seq_id, orig_icode, resname)
+    # Callers can derive numbering anomalies from this map without needing
+    # the renumbering function to classify them explicitly.
     unusable_residues = []
     claimed_fasta_positions = set()
     last_fasta_pos = -1
     icode_counter = {}  # base_seq_num → next icode ordinal (A=65, B=66, ...)
+    original_map = {}
 
     for chain_pos, res in sorted(canonical_by_chain_pos.items()):
         original_id = res.get_id()
+        resname = res.get_resname()
         if chain_pos in alignment_dict:
             fasta_pos = alignment_dict[chain_pos]
-            res.id = (original_id[0], fasta_pos + 1, ' ')
+            new_seq_id = fasta_pos + 1
+            res.id = (original_id[0], new_seq_id, ' ')
             claimed_fasta_positions.add(fasta_pos)
             last_fasta_pos = fasta_pos
+            original_map[(new_seq_id, ' ')] = (original_id[1], original_id[2], resname)
         else:
             if last_fasta_pos >= 0:
                 base_seq_num = last_fasta_pos + 1
@@ -226,6 +235,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
                 new_icode = chr(next_ord)
                 res.id = (original_id[0], base_seq_num, new_icode)
                 icode_counter[base_seq_num] = next_ord + 1
+                original_map[(base_seq_num, new_icode)] = (original_id[1], original_id[2], resname)
                 logger.warning(
                     "Residue %s has no FASTA counterpart; reassigned to (%d, %r) as insertion code. "
                     "This may indicate a numbering anomaly in the structure file.",
@@ -249,6 +259,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
 
     for res in sorted(insertion_residues, key=lambda r: (r.get_id()[1], r.get_id()[2])):
         original_id = res.get_id()
+        resname = res.get_resname()
         base_seq_id = original_id[1]
         base_chain_pos = seq_id_to_chain_pos.get(base_seq_id)
 
@@ -264,16 +275,19 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
 
         if candidate < len(sequence):
             # Unclaimed slot within FASTA → misused insertion code; give it a clean id.
-            res.id = (original_id[0], candidate + 1, ' ')
+            new_seq_id = candidate + 1
+            res.id = (original_id[0], new_seq_id, ' ')
             claimed_fasta_positions.add(candidate)
+            original_map[(new_seq_id, ' ')] = (original_id[1], original_id[2], resname)
             logger.debug(
                 "Insertion-code residue %s reassigned to FASTA position %d (misused icode).",
-                original_id, candidate + 1)
+                original_id, new_seq_id)
         else:
             # No free slot → correctly used insertion code; keep it with base seq_num
             # and original icode so structural detail is preserved in the output.
             base_new_seq_num = alignment_dict[base_chain_pos] + 1
             res.id = (original_id[0], base_new_seq_num, original_id[2])
+            original_map[(base_new_seq_num, original_id[2])] = (original_id[1], original_id[2], resname)
             logger.debug(
                 "Insertion-code residue %s kept in output as (%d, %r) (correctly used icode).",
                 original_id, base_new_seq_num, original_id[2])
@@ -295,4 +309,33 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
     logger.info("Writing renumbered chain to %s/renumbered_%s_%s.%s", loc, selected_chain, outprefix, ext)
     io.save(out_name, ChainSelect())
 
-    return out_name, alignment_dict, reverse_alignment_dict
+    return out_name, alignment_dict, reverse_alignment_dict, original_map
+
+
+def detect_numbering_anomalies(original_map):
+    """Classify renumbering events that indicate numbering anomalies in the input file.
+
+    Parameters
+    ----------
+    original_map : dict
+        {(new_seq_id, new_icode) → (orig_seq_id, orig_icode, resname)} as returned
+        by write_renumbered_version_of_chain_in_struct.
+
+    Returns
+    -------
+    list of (new_seq_id, new_icode, orig_seq_id, orig_icode, resname, anomaly_type)
+    sorted by (new_seq_id, new_icode).  anomaly_type is one of:
+
+        'MISUSED_ICODE'   — residue carried an insertion code in the input file but
+                            the FASTA has a slot for it; assigned a clean sequential number.
+        'EXTRA_CANONICAL' — residue had its own integer seq_id in the input file but
+                            has no FASTA counterpart; reassigned an insertion code.
+                            pdb.py skips these residues during contact extraction.
+    """
+    anomalies = []
+    for (new_seq_id, new_icode), (orig_seq_id, orig_icode, resname) in original_map.items():
+        if orig_icode.strip() and not new_icode.strip():
+            anomalies.append((new_seq_id, new_icode, orig_seq_id, orig_icode, resname, 'MISUSED_ICODE'))
+        elif not orig_icode.strip() and new_icode.strip():
+            anomalies.append((new_seq_id, new_icode, orig_seq_id, orig_icode, resname, 'EXTRA_CANONICAL'))
+    return sorted(anomalies, key=lambda x: (x[0], x[1]))

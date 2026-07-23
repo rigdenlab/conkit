@@ -11,6 +11,7 @@ from Bio.PDB.Selection import unfold_entities
 from conkit.core.sequence import Sequence
 from conkit.misc.renumbering_tools import (
     construct_seq_from_chain,
+    detect_numbering_anomalies,
     get_alignment_map_dict,
     write_renumbered_version_of_chain_in_struct,
 )
@@ -87,35 +88,48 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
             pdb_path, 'pdb', seq, selected_chain='A', moltype='RNA'
         )
 
-    def test_returns_three_tuple(self):
+    def test_returns_four_tuple(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = self._run(tmpdir)
         self.assertIsInstance(result, tuple)
-        self.assertEqual(3, len(result))
+        self.assertEqual(4, len(result))
 
     def test_output_file_is_created(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = self._run(tmpdir)
+            out_name, _, _, _ = self._run(tmpdir)
             self.assertTrue(os.path.exists(out_name))
 
     def test_output_filename_contains_chain_and_stem(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = self._run(tmpdir)
+            out_name, _, _, _ = self._run(tmpdir)
         self.assertIn('renumbered_A_test_rna.pdb', out_name)
 
     def test_alignment_dict_is_identity(self):
         # 'GAU' aligns perfectly to 'GAU', so every position maps to itself (0-indexed)
         with tempfile.TemporaryDirectory() as tmpdir:
-            _, alignment_dict, _ = self._run(tmpdir)
+            _, alignment_dict, _, _ = self._run(tmpdir)
         self.assertEqual({0: 0, 1: 1, 2: 2}, alignment_dict)
 
     def test_residues_renumbered_from_offset(self):
         # PDB residues 5, 6, 7 should become 1, 2, 3 after alignment to 'GAU'
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = self._run(tmpdir)
+            out_name, _, _, _ = self._run(tmpdir)
             struct = BioPDBParser(QUIET=True).get_structure('out', out_name)
             resnums = [r.get_id()[1] for r in unfold_entities(struct[0]['A'], 'R')]
         self.assertEqual([1, 2, 3], resnums)
+
+    def test_original_map_records_provenance(self):
+        # PDB residues 5, 6, 7 renumbered to 1, 2, 3: original_map should map
+        # each new (seq_id, ' ') back to the original (seq_id, ' ', resname).
+        with tempfile.TemporaryDirectory() as tmpdir:
+            _, _, _, original_map = self._run(tmpdir)
+        self.assertIn((1, ' '), original_map)
+        self.assertIn((2, ' '), original_map)
+        self.assertIn((3, ' '), original_map)
+        orig_seq_id, orig_icode, resname = original_map[(1, ' ')]
+        self.assertEqual(5, orig_seq_id)
+        self.assertEqual(' ', orig_icode)
+        self.assertEqual('G', resname)
 
     def test_unknown_filetype_returns_none(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -135,7 +149,7 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
         # A(2,'A') is a genuine extra structural residue with no FASTA slot.
         # All four residues (including the insertion-code one) should appear in output.
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_CORRECTLY_USED_ICODE, 'GAU')
+            out_name, _, _, _ = _write_and_renumber(tmpdir, _PDB_CORRECTLY_USED_ICODE, 'GAU')
             ids = _residue_ids(out_name)
         self.assertEqual(4, len(ids))
         self.assertIn((1, ' '), ids)
@@ -146,7 +160,7 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
 
     def test_correctly_used_icode_canonical_residues_have_blank_icodes(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_CORRECTLY_USED_ICODE, 'GAU')
+            out_name, _, _, _ = _write_and_renumber(tmpdir, _PDB_CORRECTLY_USED_ICODE, 'GAU')
             ids = _residue_ids(out_name)
         blank_icode_count = sum(1 for _, icode in ids if not icode.strip())
         self.assertEqual(3, blank_icode_count, "Three canonical residues should have blank icodes")
@@ -156,7 +170,7 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
         # G aligns to G (FASTA pos 0), U aligns to U (FASTA pos 2), leaving FASTA
         # slot 1 (A) free.  The misused insertion-code A should fill that slot.
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_MISUSED_ICODE, 'GAU')
+            out_name, _, _, _ = _write_and_renumber(tmpdir, _PDB_MISUSED_ICODE, 'GAU')
             ids = _residue_ids(out_name)
         self.assertEqual(3, len(ids))
         self.assertTrue(
@@ -170,7 +184,7 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
         # C(4) has no FASTA counterpart and must be retained in the output with an
         # insertion code rather than silently excluded.
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_EXTRA_CANONICAL, 'GAU')
+            out_name, _, _, _ = _write_and_renumber(tmpdir, _PDB_EXTRA_CANONICAL, 'GAU')
             ids = _residue_ids(out_name)
         self.assertEqual(4, len(ids), "Extra canonical residue should appear in output")
         icode_count = sum(1 for _, icode in ids if icode.strip())
@@ -187,6 +201,68 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
             any('no FASTA counterpart' in msg for msg in cm.output),
             "Expected a warning about a residue with no FASTA counterpart",
         )
+
+    def test_original_map_misused_icode_has_correct_provenance(self):
+        # The misused-icode A(1,'A') gets new id (2,' '). original_map should record
+        # the original insertion-code origin.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            _, _, _, original_map = _write_and_renumber(tmpdir, _PDB_MISUSED_ICODE, 'GAU')
+        # Find the entry whose orig_icode is non-blank (the misused icode residue).
+        misused = [(new_id, v) for new_id, v in original_map.items() if v[1].strip()]
+        self.assertEqual(1, len(misused), "Exactly one misused-icode entry expected")
+        new_id, (orig_seq_id, orig_icode, resname) = misused[0]
+        self.assertEqual(' ', new_id[1], "New icode should be blank after correction")
+        self.assertNotEqual(' ', orig_icode, "Original icode should be non-blank")
+
+    def test_original_map_extra_canonical_has_correct_provenance(self):
+        # The extra canonical C(4,' ') gets new id (3,'A'). original_map should record
+        # the original clean-integer origin.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            _, _, _, original_map = _write_and_renumber(tmpdir, _PDB_EXTRA_CANONICAL, 'GAU')
+        extra = [(new_id, v) for new_id, v in original_map.items() if new_id[1].strip()]
+        self.assertEqual(1, len(extra), "Exactly one extra-canonical entry expected")
+        new_id, (orig_seq_id, orig_icode, resname) = extra[0]
+        self.assertNotEqual(' ', new_id[1], "New icode should be non-blank")
+        self.assertEqual(' ', orig_icode, "Original icode should be blank")
+
+
+class TestDetectNumberingAnomalies(unittest.TestCase):
+
+    def test_empty_map_returns_empty_list(self):
+        self.assertEqual([], detect_numbering_anomalies({}))
+
+    def test_no_anomaly_for_plain_renumbering(self):
+        # A residue that simply moved from seq_id 5 to 1 (both blank icode) is not anomalous.
+        original_map = {(1, ' '): (5, ' ', 'G')}
+        self.assertEqual([], detect_numbering_anomalies(original_map))
+
+    def test_misused_icode_detected(self):
+        # orig had icode 'A', new is clean → MISUSED_ICODE
+        original_map = {(2, ' '): (1, 'A', 'A')}
+        anomalies = detect_numbering_anomalies(original_map)
+        self.assertEqual(1, len(anomalies))
+        self.assertEqual('MISUSED_ICODE', anomalies[0][5])
+        self.assertEqual(2, anomalies[0][0])   # new_seq_id
+        self.assertEqual(' ', anomalies[0][1]) # new_icode
+
+    def test_extra_canonical_detected(self):
+        # orig had blank icode, new has icode 'A' → EXTRA_CANONICAL
+        original_map = {(3, 'A'): (4, ' ', 'C')}
+        anomalies = detect_numbering_anomalies(original_map)
+        self.assertEqual(1, len(anomalies))
+        self.assertEqual('EXTRA_CANONICAL', anomalies[0][5])
+        self.assertEqual(3, anomalies[0][0])   # new_seq_id
+        self.assertEqual('A', anomalies[0][1]) # new_icode
+
+    def test_anomalies_sorted_by_new_seq_id_then_icode(self):
+        original_map = {
+            (5, 'A'): (6, ' ', 'G'),   # EXTRA_CANONICAL
+            (2, ' '): (1, 'B', 'A'),   # MISUSED_ICODE
+            (3, 'A'): (4, ' ', 'C'),   # EXTRA_CANONICAL
+        }
+        anomalies = detect_numbering_anomalies(original_map)
+        keys = [(a[0], a[1]) for a in anomalies]
+        self.assertEqual(sorted(keys), keys)
 
 
 class TestConstructSeqFromChain(unittest.TestCase):
