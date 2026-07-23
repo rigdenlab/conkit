@@ -35,7 +35,7 @@ Command line object for Jackhmmer Multiple Sequence Alignment generation
 
 __author__ = "Felix Simkovic"
 __date__ = "01 June 2016"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 from conkit.applications._compat import _Argument, _Option, _Switch, AbstractCommandline
 
