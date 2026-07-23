@@ -81,7 +81,7 @@ def construct_seq_from_chain(chain, return_borders=True, place_holder='?', alpha
         return seq, canonical_by_chain_pos, insertion_residues
 
 
-def get_alignment_map_dict(moving, static, return_score=False, return_both_directions=True, place_holder='?', mode='global', open_gap_score=-11, extend_gap_score=-2):
+def get_alignment_map_dict(moving, static, return_score=False, return_both_directions=True, place_holder='?', mode='global', open_gap_score=-11, extend_gap_score=-2, moltype='Protein'):
     # Make a dict mapping positions in the moving seq to ones in the static seq.
 
     from Bio import Align
@@ -89,8 +89,11 @@ def get_alignment_map_dict(moving, static, return_score=False, return_both_direc
 
     aligner = Align.PairwiseAligner()
     aligner.mode = mode
-    aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
-    aligner.match_score = 1.0
+    if moltype == 'Protein':
+        aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
+    else:
+        aligner.match_score = 2.0
+        aligner.mismatch_score = -1.0
     aligner.open_gap_score = open_gap_score
     aligner.extend_gap_score = extend_gap_score
     aligner.wildcard = place_holder
@@ -168,7 +171,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
                     construct_seq_from_chain(chain, place_holder='?', alphabet=moltype)
                 break
         alignment_dict, reverse_alignment_dict = get_alignment_map_dict(
-            chain_seq, sequence, place_holder='?')
+            chain_seq, sequence, place_holder='?', moltype=moltype)
     else:
         score_old = -1000
         alignment_dict = {}
@@ -178,7 +181,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
         for chain in chainlist:
             chain_seq, start, stop, cmap, icode_res = construct_seq_from_chain(
                 chain, place_holder='?', alphabet=moltype)
-            result = get_alignment_map_dict(chain_seq, sequence, return_score=True, place_holder='?')
+            result = get_alignment_map_dict(chain_seq, sequence, return_score=True, place_holder='?', moltype=moltype)
             if result is None:
                 continue
             alignment_dict_new, reverse_alignment_dict_new, score = result
