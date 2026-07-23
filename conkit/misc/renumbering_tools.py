@@ -191,9 +191,10 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
                 canonical_by_chain_pos = cmap
                 insertion_residues = icode_res
         if score_old == -1000:
-            logger.warning("No chain in %r has sufficient sequence similarity to the input sequence; aborting.", struct_file)
-            # TODO: investigate whether execution should stop here (renumbering bug investigation)
-            #return 0
+            raise ValueError(
+                f"No chain in {struct_file!r} could be aligned to the input sequence. "
+                "Check that the right files are being used, or specify --chain to select a chain explicitly."
+            )
 
         logger.info("In %r, chain %r best aligns to the input sequence (score %.1f).", struct_file, selected_chain, score_old)
         logger.debug("Chain sequence: %s", chain_seq)
