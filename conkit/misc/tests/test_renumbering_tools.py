@@ -25,6 +25,55 @@ ATOM      2  C1'   A A   6       5.000   0.000   0.000  1.00  0.00           C
 ATOM      3  C1'   U A   7      10.000   0.000   0.000  1.00  0.00           C
 """
 
+# FASTA = 'GAU'.  Structure: G(1), A(2), A(2,'A'), U(3).
+# The insertion-code residue A(2,'A') is a genuine extra structural residue with
+# no FASTA slot.  It should be kept in the output with base seq_num (2) and
+# original icode ('A').
+_PDB_CORRECTLY_USED_ICODE = """\
+ATOM      1  C1'   G A   1       0.000   0.000   0.000  1.00  0.00           C
+ATOM      2  C1'   A A   2       5.000   0.000   0.000  1.00  0.00           C
+ATOM      3  C1'   A A   2A      5.000   5.000   0.000  1.00  0.00           C
+ATOM      4  C1'   U A   3      10.000   0.000   0.000  1.00  0.00           C
+"""
+
+# FASTA = 'GAU'.  Structure canonical residues: G(1), U(2); plus A on insertion
+# code (1,'A').  Alignment maps G→G and U→U, leaving FASTA slot 1 (A) free.
+# The insertion-code A is therefore misused — it should receive a clean number.
+# Expected output: G(1,' '), A(2,' '), U(3,' ') with no insertion codes.
+_PDB_MISUSED_ICODE = """\
+ATOM      1  C1'   G A   1       0.000   0.000   0.000  1.00  0.00           C
+ATOM      2  C1'   A A   1A      5.000   0.000   0.000  1.00  0.00           C
+ATOM      3  C1'   U A   2      10.000   0.000   0.000  1.00  0.00           C
+"""
+
+# FASTA = 'GAU'.  Structure: G(1), A(2), U(3), C(4) — one extra canonical
+# residue (C) with no FASTA counterpart.
+# Expected: C is kept as insertion code off the last aligned FASTA position,
+# i.e. (3,'A').  The three FASTA-matched residues have clean seq_ids 1, 2, 3.
+_PDB_EXTRA_CANONICAL = """\
+ATOM      1  C1'   G A   1       0.000   0.000   0.000  1.00  0.00           C
+ATOM      2  C1'   A A   2       5.000   0.000   0.000  1.00  0.00           C
+ATOM      3  C1'   U A   3      10.000   0.000   0.000  1.00  0.00           C
+ATOM      4  C1'   C A   4      15.000   0.000   0.000  1.00  0.00           C
+"""
+
+
+def _write_and_renumber(tmpdir, pdb_content, fasta_seq):
+    """Write PDB to tmpdir and call write_renumbered_version_of_chain_in_struct."""
+    pdb_path = os.path.join(tmpdir, 'test.pdb')
+    with open(pdb_path, 'w') as fh:
+        fh.write(pdb_content)
+    seq = Sequence('test', fasta_seq)
+    return write_renumbered_version_of_chain_in_struct(
+        pdb_path, 'pdb', seq, selected_chain='A', moltype='RNA'
+    )
+
+
+def _residue_ids(struct_path):
+    """Return list of (seq_id, icode) for all residues in the first model, chain A."""
+    struct = BioPDBParser(QUIET=True).get_structure('out', struct_path)
+    return [(r.get_id()[1], r.get_id()[2]) for r in unfold_entities(struct[0]['A'], 'R')]
+
 
 class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
 
@@ -79,6 +128,66 @@ class TestWriteRenumberedVersionOfChainInStruct(unittest.TestCase):
             )
         self.assertIsNone(result)
 
+    # --- insertion-code and extra-canonical cases ---
+
+    def test_correctly_used_icode_kept_in_output(self):
+        # Structure: G(1), A(2), A(2,'A'), U(3). FASTA='GAU'.
+        # A(2,'A') is a genuine extra structural residue with no FASTA slot.
+        # All four residues (including the insertion-code one) should appear in output.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_CORRECTLY_USED_ICODE, 'GAU')
+            ids = _residue_ids(out_name)
+        self.assertEqual(4, len(ids))
+        self.assertIn((1, ' '), ids)
+        self.assertIn((2, ' '), ids)
+        self.assertIn((3, ' '), ids)
+        # Insertion-code residue kept with base seq_num and original icode.
+        self.assertIn((2, 'A'), ids)
+
+    def test_correctly_used_icode_canonical_residues_have_blank_icodes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_CORRECTLY_USED_ICODE, 'GAU')
+            ids = _residue_ids(out_name)
+        blank_icode_count = sum(1 for _, icode in ids if not icode.strip())
+        self.assertEqual(3, blank_icode_count, "Three canonical residues should have blank icodes")
+
+    def test_misused_icode_gets_clean_sequential_number(self):
+        # Structure canonical: G(1), U(2); insertion code: A(1,'A'). FASTA='GAU'.
+        # G aligns to G (FASTA pos 0), U aligns to U (FASTA pos 2), leaving FASTA
+        # slot 1 (A) free.  The misused insertion-code A should fill that slot.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_MISUSED_ICODE, 'GAU')
+            ids = _residue_ids(out_name)
+        self.assertEqual(3, len(ids))
+        self.assertTrue(
+            all(icode.strip() == '' for _, icode in ids),
+            "All residues should have clean (blank) icodes after misused-icode correction",
+        )
+        self.assertEqual([1, 2, 3], sorted(seq_id for seq_id, _ in ids))
+
+    def test_extra_canonical_residue_kept_with_insertion_code(self):
+        # Structure: G(1), A(2), U(3), C(4). FASTA='GAU'.
+        # C(4) has no FASTA counterpart and must be retained in the output with an
+        # insertion code rather than silently excluded.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_name, _, _ = _write_and_renumber(tmpdir, _PDB_EXTRA_CANONICAL, 'GAU')
+            ids = _residue_ids(out_name)
+        self.assertEqual(4, len(ids), "Extra canonical residue should appear in output")
+        icode_count = sum(1 for _, icode in ids if icode.strip())
+        self.assertEqual(1, icode_count, "Exactly one residue should have an insertion code")
+        clean_ids = sorted(seq_id for seq_id, icode in ids if not icode.strip())
+        self.assertEqual([1, 2, 3], clean_ids, "FASTA-matched residues should have seq_ids 1–3")
+
+    def test_extra_canonical_residue_emits_warning(self):
+        # The function should log a WARNING so the user knows about the anomaly.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertLogs('conkit.misc.renumbering_tools', level='WARNING') as cm:
+                _write_and_renumber(tmpdir, _PDB_EXTRA_CANONICAL, 'GAU')
+        self.assertTrue(
+            any('no FASTA counterpart' in msg for msg in cm.output),
+            "Expected a warning about a residue with no FASTA counterpart",
+        )
+
 
 class TestConstructSeqFromChain(unittest.TestCase):
 
@@ -91,35 +200,78 @@ class TestConstructSeqFromChain(unittest.TestCase):
             chain.add(res)
         return chain
 
+    def _make_chain_with_icodes(self, residues):
+        """Build a chain from a list of (resname, seq_id, icode) tuples."""
+        chain = Chain('A')
+        for resname, seq_id, icode in residues:
+            res = Residue((' ', seq_id, icode), resname, '')
+            chain.add(res)
+        return chain
+
     def test_standard_rna_residues_return_correct_sequence(self):
         chain = self._make_chain(['G', 'A', 'U'])
-        seq, _, _ = construct_seq_from_chain(chain, alphabet='RNA')
+        seq, *_ = construct_seq_from_chain(chain, alphabet='RNA')
         self.assertEqual('GAU', seq)
 
     def test_borders_reflect_residue_numbering(self):
         # Residues numbered 5, 6, 7 — borders should be 5 and 7
         chain = self._make_chain(['G', 'A', 'U'], start_num=5)
-        _, first, last = construct_seq_from_chain(chain, alphabet='RNA')
+        _, first, last, _, _ = construct_seq_from_chain(chain, alphabet='RNA')
         self.assertEqual(5, first)
         self.assertEqual(7, last)
 
-    def test_return_borders_false_gives_string_only(self):
+    def test_return_borders_false_gives_seq_as_first_element(self):
+        # return_borders=False returns (seq, canonical_by_chain_pos, insertion_residues).
         chain = self._make_chain(['G', 'A', 'U'])
         result = construct_seq_from_chain(chain, return_borders=False, alphabet='RNA')
-        self.assertIsInstance(result, str)
-        self.assertEqual('GAU', result)
+        self.assertIsInstance(result, tuple)
+        self.assertIsInstance(result[0], str)
+        self.assertEqual('GAU', result[0])
 
     def test_modified_nucleotide_translates_via_mod_rescodes(self):
         # PSU (pseudouridine) is in mod_nuclist and maps to 'U'
         chain = self._make_chain(['G', 'PSU', 'A'])
-        seq, _, _ = construct_seq_from_chain(chain, alphabet='RNA')
+        seq, *_ = construct_seq_from_chain(chain, alphabet='RNA')
         self.assertEqual('GUA', seq)
 
     def test_unknown_residue_name_uses_placeholder(self):
         # 'XYZ' is not in any rescodes dict, so it becomes '?'
         chain = self._make_chain(['G', 'XYZ', 'A'])
-        seq, _, _ = construct_seq_from_chain(chain, alphabet='RNA')
+        seq, *_ = construct_seq_from_chain(chain, alphabet='RNA')
         self.assertEqual('G?A', seq)
+
+    def test_insertion_code_residues_excluded_from_canonical_seq(self):
+        # G(1,' '), A(2,' '), A(2,'A'), U(3,' ') — only the three canonical
+        # residues should contribute to the sequence string.
+        chain = self._make_chain_with_icodes([
+            ('G', 1, ' '), ('A', 2, ' '), ('A', 2, 'A'), ('U', 3, ' ')
+        ])
+        seq, first, last, canonical_by_chain_pos, insertion_residues = \
+            construct_seq_from_chain(chain, alphabet='RNA')
+        self.assertEqual('GAU', seq)
+        self.assertEqual(3, len(canonical_by_chain_pos))
+        self.assertEqual(1, len(insertion_residues))
+
+    def test_insertion_residues_list_contains_icode_residue(self):
+        # Verify the insertion_residues list holds the correct residue object.
+        chain = self._make_chain_with_icodes([
+            ('G', 1, ' '), ('A', 1, 'A'), ('U', 2, ' ')
+        ])
+        _, _, _, _, insertion_residues = construct_seq_from_chain(chain, alphabet='RNA')
+        self.assertEqual(1, len(insertion_residues))
+        res = insertion_residues[0]
+        self.assertEqual('A', res.resname)
+        self.assertEqual(1, res.get_id()[1])
+        self.assertEqual('A', res.get_id()[2])
+
+    def test_canonical_by_chain_pos_does_not_include_icode_residues(self):
+        # The canonical_by_chain_pos dict must only map canonical (blank-icode) residues.
+        chain = self._make_chain_with_icodes([
+            ('G', 1, ' '), ('A', 2, ' '), ('A', 2, 'A'), ('U', 3, ' ')
+        ])
+        _, _, _, canonical_by_chain_pos, _ = construct_seq_from_chain(chain, alphabet='RNA')
+        for res in canonical_by_chain_pos.values():
+            self.assertEqual(' ', res.get_id()[2], "Only blank-icode residues in canonical_by_chain_pos")
 
 
 class TestGetAlignmentMapDict(unittest.TestCase):

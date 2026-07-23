@@ -720,7 +720,12 @@ class ModelValidationFigure(Figure):
                 bar_top -= _BAR_STEP
 
         # Add 10 % headroom above the actual score peak so the curve doesn't hug the top edge.
-        score_top = float(np.nanmax(self.smooth_scores)) * 1.10 if RUN_SVM else None
+        # Guard against nan/inf from an all-absent sequence (np.nanmax on all-NaN → nan).
+        if RUN_SVM:
+            peak = float(np.nanmax(self.smooth_scores))
+            score_top = (peak * 1.10) if np.isfinite(peak) else 1.1
+        else:
+            score_top = None
         self.ax.set_ylim(bottom=bar_top, top=score_top)
         self.ax.axhline(svm_threshold, **LINEKWARGS)
         self.ax.set_xlabel('Residue Number')
