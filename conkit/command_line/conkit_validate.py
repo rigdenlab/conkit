@@ -403,7 +403,7 @@ def main():
             
         if args.gesamt_exe and (args.distformat in ['pdb', 'mmcif']):
             try:
-                validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat)
+                validation.Run_gesamt_filter(usable_model, args.distfile, args.gesamt_exe, moltype=args.moltype, experimentfiletype=args.pdbformat, predictionfiletype=args.distformat)
                 logger.info(os.linesep + "Added Q-scores.")
             except Exception as e:
                 logger.warning("gesamt Q-score filter failed; Q-score filter will be skipped. Error: %s", e)

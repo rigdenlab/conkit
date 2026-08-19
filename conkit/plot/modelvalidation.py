@@ -478,7 +478,7 @@ class ModelValidationFigure(Figure):
             # TODO: implement using externally_supplied_plddts once the format is decided
             logger.warning("externally_supplied_plddts was provided but external pLDDT support is not yet implemented; pLDDT filter will be skipped.")
 
-    def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe, moltype='Protein', experimentfiletype='pdb'):
+    def Run_gesamt_filter(self, experimentfile, predictionfile, gesamt_exe, moltype='Protein', experimentfiletype='pdb', predictionfiletype=None):
 
         suggested_correspondece = self.alignment.copy()
 
@@ -505,18 +505,31 @@ class ModelValidationFigure(Figure):
         flagged_experiment_regions, flagged_predcition_regions = tools.get_error_borders(svm, map_align, resnums, suggested_correspondece)
 
         # run gesamt for every region
+        if predictionfiletype not in ('pdb', 'mmcif'):
+            logger.warning(
+                "Run_gesamt_filter: prediction file type %r is not a structure format "
+                "(pdb/mmcif); gesamt requires a structure — Q-scores set to -1 (unalignable).",
+                predictionfiletype,
+            )
+            return
+
         if experimentfiletype == 'pdb':
             p = PDBParser()
-        if experimentfiletype == 'mmcif':
+        else:
             p = MMCIFParser()
-        model = p.get_structure('structure', experimentfile)[0]  ## hot fix to get chain name needed for gesamt while we are running single chain only this block needs fixing with external chain selection when multi chain handeling is introduced
-        for chain in model:
+        for chain in p.get_structure('exp', experimentfile)[0]:
             chain_experiment = chain.get_id()
 
-        for r_exp, r_pred in zip(flagged_experiment_regions, flagged_predcition_regions):
+        if predictionfiletype == 'pdb':
+            pp = PDBParser()
+        else:
+            pp = MMCIFParser()
+        for chain in pp.get_structure('pred', predictionfile)[0]:
+            chain_prediction = chain.get_id()
 
-            Q_region = tools.Gesamt_Q_score(predictionfile, r_pred, experimentfile, r_exp, gesamt_exe = gesamt_exe, chain_experiment = chain_experiment, chain_prediction = 'A', moltype=moltype)
-            self.data.loc[ (self.data['RESNUM'] <= r_exp[1]) & (self.data['RESNUM'] >= r_exp[0]), 'Q_IN_ERROR'] = Q_region
+        for r_exp, r_pred in zip(flagged_experiment_regions, flagged_predcition_regions):
+            Q_region = tools.Gesamt_Q_score(predictionfile, r_pred, experimentfile, r_exp, gesamt_exe=gesamt_exe, chain_experiment=chain_experiment, chain_prediction=chain_prediction, moltype=moltype)
+            self.data.loc[(self.data['RESNUM'] <= r_exp[1]) & (self.data['RESNUM'] >= r_exp[0]), 'Q_IN_ERROR'] = Q_region
         
 
         return 0
