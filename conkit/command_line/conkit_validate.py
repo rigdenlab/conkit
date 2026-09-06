@@ -63,7 +63,7 @@ import conkit.command_line
 import conkit.io
 from conkit.io.tools import set_contact_definition
 import conkit.plot
-from conkit.plot.tools import is_executable, areaimol_ACC
+from conkit.plot.tools import is_executable, areaimol_ACC, biopython_ACC
 from conkit.misc import DNATCO_CATEGORIES
 from conkit.misc.renumbering_tools import write_renumbered_version_of_chain_in_struct, detect_numbering_anomalies
 
@@ -354,11 +354,17 @@ def main():
             validation.calculate_features(max_distance = max_distance)
 
         elif args.moltype=='RNA':
-            try:
-                ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log')
-            except Exception as e:
-                logger.warning("areaimol ACC calculation failed; proceeding with ACC=0. Error: %s", e)
-                ext_info = None
+            if args.areaimol_exe:
+                try:
+                    ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log')
+                except Exception as e:
+                    logger.warning("areaimol ACC calculation failed; proceeding with ACC=0. Error: %s", e)
+                    ext_info = None
+            else:
+                logger.info("areaimol not provided; using Bio.PDB ShrakeRupley for ACC calculation.")
+                ext_info = biopython_ACC(usable_model, args.pdbformat)
+                if ext_info is None:
+                    logger.warning("biopython_ACC calculation failed; proceeding with ACC=0.")
             if args.dnatco_exe:
                 try:
                     dnatco_cats = calculate_dnatco(usable_model, args.pdbformat, args.dnatco_exe)

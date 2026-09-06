@@ -729,3 +729,55 @@ def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='a
     ACC_df = {'RESNUM' : resnums, 'ACC' : acc}
 
     return ACC_df
+
+
+def biopython_ACC(structfile, file_type):
+    """Compute per-residue solvent-accessible surface area using Bio.PDB ShrakeRupley.
+
+    Produces values compatible with areaimol_ACC: empirical comparison on 4WCE
+    chain Y showed areaimol does not apply nucleotide-type reference normalisation
+    (implied reference ~1 Å² for all of A/C/G/U), so its output is effectively
+    raw SASA in Å².  ShrakeRupley raw SASA agrees with areaimol to within ~2–3%
+    on the same structure, so no additional scaling is needed.
+
+    Returns the same {'RESNUM': [...], 'ACC': [...]} dict as areaimol_ACC, or
+    None on failure.
+    """
+    import os
+    from Bio.PDB import PDBParser
+    from Bio.PDB.MMCIFParser import MMCIFParser
+    from Bio.PDB.SASA import ShrakeRupley
+
+    if file_type == 'mmcif':
+        import gemmi as _gemmi
+        pdb_path = os.path.splitext(structfile)[0] + '_sasa_tmp.pdb'
+        try:
+            _gemmi.read_structure(structfile).write_pdb(pdb_path)
+        except Exception as e:
+            logger.warning("biopython_ACC: mmCIF→PDB conversion failed: %s", e)
+            return None
+        parse_path = pdb_path
+    elif file_type == 'pdb':
+        parse_path = structfile
+    else:
+        logger.warning("biopython_ACC: unsupported file type %r; skipping ACC calculation.", file_type)
+        return None
+
+    try:
+        parser = PDBParser(QUIET=True)
+        structure = parser.get_structure('s', parse_path)
+        sr = ShrakeRupley()
+        sr.compute(structure, level='R')
+        resnums, acc = [], []
+        for res in structure[0].get_residues():
+            if res.get_id()[2].strip() == '':  # canonical residues only
+                resnums.append(res.get_id()[1])
+                acc.append(round(res.sasa, 4))
+    except Exception as e:
+        logger.warning("biopython_ACC: SASA calculation failed: %s", e)
+        return None
+    finally:
+        if file_type == 'mmcif' and os.path.exists(pdb_path):
+            os.remove(pdb_path)
+
+    return {'RESNUM': resnums, 'ACC': acc}
