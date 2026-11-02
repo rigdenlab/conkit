@@ -1,0 +1,19 @@
+name: conkit
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - cython
+  - joblib
+  - gemmi
+  - scikit-learn=1.6.1  # bundled classifiers were saved with this version; newer versions will warn
+  - prettytable
+  - biopython>=1.85
+  - pip
+  - pip:
+    - -e .

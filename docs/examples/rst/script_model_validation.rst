@@ -51,7 +51,6 @@ For RNA, use ``--moltype RNA``. The tool will use C1′ inter-nucleotide distanc
           --map_align_exe /usr/bin/map_align \
           --gesamt_exe /usr/bin/gesamt \
           --areaimol_exe /usr/bin/areaimol \
-          --gemmi_exe /usr/bin/gemmi \
           --run_svm yes \
           --output 4wce/4wce_Y.png
 
@@ -111,9 +110,6 @@ External executables:
 
 ``--areaimol_exe PATH``
   Path to the ``areaimol`` executable (for solvent-accessibility features; RNA only).
-
-``--gemmi_exe PATH``
-  Path to the ``gemmi`` executable (required by areaimol when the input is an mmCIF file).
 
 ``--dnatco_exe PATH``
   Path to the DNATCO node executable (optional RNA secondary-structure annotation; provides a marginal improvement for the RNA Random Forest classifier).

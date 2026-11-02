@@ -186,7 +186,16 @@ multiple_nuclist = {
   "N": ["N", "A", "C", "G", "T", "U"]
 }
 
-IRRELEVANT_res_codes = { 
-  'HOH', 
-  'MG',
-  ''}
+IRRELEVANT_res_codes = {
+    '',
+    # water
+    'HOH', 'WAT', 'H2O', 'DOD',
+    # monovalent cations
+    'NA', 'K', 'LI', 'RB', 'CS',
+    # divalent cations common in RNA/protein structures
+    'MG', 'CA', 'ZN', 'MN', 'CO', 'NI', 'CU', 'FE', 'SR', 'BA', 'CD',
+    # anions
+    'CL', 'BR', 'IOD', 'SO4', 'PO4', 'NO3',
+    # common crystallisation additives / buffer components
+    'EDO', 'GOL', 'PEG', 'MPD', 'ACT', 'ACE', 'FMT', 'IMD',
+}

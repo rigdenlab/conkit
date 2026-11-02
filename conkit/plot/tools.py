@@ -682,21 +682,17 @@ def get_chunk_borders(moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERRO
 
 
 
-def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log',gemmi_exe='gemmi'):
+def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log'):
 
     if file_type != 'pdb':
         if file_type == 'mmcif':
-            structfile_no_extension = structfile.split('.')[0]
-            pdb_path = structfile_no_extension + '.pdb'
-            result = subprocess.run(
-                [gemmi_exe, 'convert', '--from=mmcif', '--to=pdb', structfile, pdb_path],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            )
-            if result.returncode != 0:
-                logger.warning(
-                    "areaimol_ACC: gemmi conversion failed (exit %d): %s",
-                    result.returncode, result.stderr.decode().strip(),
-                )
+            import gemmi as _gemmi
+            import os
+            pdb_path = os.path.splitext(structfile)[0] + '.pdb'
+            try:
+                _gemmi.read_structure(structfile).write_pdb(pdb_path)
+            except Exception as e:
+                logger.warning("areaimol_ACC: gemmi mmCIF→PDB conversion failed: %s", e)
                 return
             structfile = pdb_path
             logger.debug("Converted mmcif to pdb: %s", structfile)

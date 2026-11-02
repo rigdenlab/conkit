@@ -96,8 +96,7 @@ def create_argument_parser():
                         type=is_executable, help="Path to areaimol executable to calculate solvent accesibility for RNA")
     parser.add_argument("--dnatco_exe", dest="dnatco_exe", default=None,
                         type=is_executable, help="Path to dnatco executable to calculate CANA categories for RNA")
-    parser.add_argument("--gemmi_exe", dest="gemmi_exe", default=None,
-                        type=is_executable, help="Path to the gemmi executable for converting mmcif to legacy pdb required for areaimol")
+
 
     parser.add_argument("--gap_opening_penalty", dest="gap_opening_penalty", default=-1, type=float,
                         help="Gap opening penalty")
@@ -180,8 +179,17 @@ def calculate_dnatco(structfile, filetype, dnatco_exe):
 
     if filetype != 'mmcif':
         if filetype == 'pdb':
-            subprocess.run(['pdb2cif',structfile,structfile.replace('.cif','.pdb')])  # step to try to rescue pdb file entered should be changed because it silently introduces a dependency perhaps this can/should be replaced by a gemmin based call? also the swapping of the extensions is likely not a great way to do this
-            structfile = structfile.replace('.cif','.pdb')
+            import gemmi as _gemmi
+            cif_path = os.path.splitext(structfile)[0] + '.cif'
+            try:
+                st = _gemmi.read_structure(structfile)
+                st.setup_entities()
+                st.assign_label_seq_id()
+                st.make_mmcif_document().write_file(cif_path)
+            except Exception as e:
+                logger.warning("DNATCO: PDB→mmCIF conversion failed: %s; skipping DNATCO.", e)
+                return
+            structfile = cif_path
         else:
             logger.warning("DNATCO: unrecognised structure file type %r (expected 'pdb' or 'mmcif'); skipping DNATCO calculation.", filetype)
             return
@@ -347,7 +355,7 @@ def main():
 
         elif args.moltype=='RNA':
             try:
-                ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log', gemmi_exe=args.gemmi_exe)
+                ext_info = areaimol_ACC(usable_model, args.pdbformat, args.areaimol_exe, tempfile_instructions_name='areaimol_acc_instructions.txt', tempfile_out_name='areaimol_log.log')
             except Exception as e:
                 logger.warning("areaimol ACC calculation failed; proceeding with ACC=0. Error: %s", e)
                 ext_info = None
@@ -423,6 +431,11 @@ def main():
 
     residue_info['NEW_REGISTER'] = ''
 
+    # Which residues are "called errors" for the table uses the consecutive-run
+    # filter (min_error_length) rather than per-residue threshold crossing, so
+    # isolated spikes above threshold are not flagged without their neighbours.
+    svm_called_errors = validation.data.set_index('RESNUM')['SVM_CALLED_ERROR'].to_dict()
+
     table = PrettyTable()
     table.field_names = ["Residue", "Predicted score", "Suggested register", "map align filter", "classifier filter","plddt", "predicted contacts", "Q in error"]
 
@@ -456,7 +469,7 @@ def main():
         else:
             current_residue = f'{residue_letter} ({num_display})'
 
-        score = _error_score_template.format(score) if score > args.score_threshold else _correct_score_template.format(score)
+        score = _error_score_template.format(score) if svm_called_errors.get(resnum, False) else _correct_score_template.format(score)
         if type(cmo_filter) in [int, float]:
             cmo_filter = _error_score_template.format(cmo_filter) if cmo_filter > args.cmo_filter_threshold else _correct_score_template.format(cmo_filter)
         if type(rf_filter) in [int, float]:
@@ -477,7 +490,7 @@ def main():
         if atype == 'EXTRA_CANONICAL':
             orig_str = f"{orig_seq_id}{orig_icode.strip()}"
             new_str = f"{new_seq_id}{new_icode.strip()}"
-            current_residue = f'*** {resname} ({orig_str}→{new_str}) ***'
+            current_residue = f'*** {resname} ({orig_str} → {new_str}) ***'
             table_rows.append(((new_seq_id, new_icode), [current_residue, 'N/A', '', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A']))
 
     table_rows.sort(key=lambda x: x[0])
@@ -488,6 +501,9 @@ def main():
 
     if args.output_json:
         residue_info_json = residue_info.to_dict(orient='list')
+        residue_info_json['SVM_CALLED_ERROR'] = [
+            bool(svm_called_errors.get(r, False)) for r in residue_info_json['RESNUM']
+        ]
         residue_info_json['orig_resnum'] = [
             '{}{}'.format(*original_map.get((r, ' '), (r, ' ', ''))[:2]).rstrip()
             for r in residue_info_json['RESNUM']

@@ -644,8 +644,16 @@ class ModelValidationFigure(Figure):
             self.smooth_scores = smooth_display
             self.ax.plot(full_range, smooth_display, color=tools.ColorDefinitions.SCORE)
 
-            correct_rns = [r for r in present_residues if not called_errors.get(r, False)]
-            error_rns   = [r for r in present_residues if called_errors.get(r, False)]
+            # Colour the bar wherever the smoothed score crosses svm_threshold so
+            # bar and line are always consistent.  The consecutive-run filter
+            # (SVM_CALLED_ERROR) is used by the terminal table, not the figure.
+            smooth_by_resnum = {
+                r: smooth_display[i]
+                for i, r in enumerate(full_range)
+                if not np.isnan(smooth_display[i])
+            }
+            correct_rns = [r for r in present_residues if smooth_by_resnum.get(r, 0.0) < svm_threshold]
+            error_rns   = [r for r in present_residues if smooth_by_resnum.get(r, 0.0) >= svm_threshold]
 
             _color_bar(correct_rns, tools.ColorDefinitions.CORRECT)
             if has_rf_filter:

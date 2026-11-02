@@ -36,6 +36,7 @@ dependencies = [
     "scikit-learn>=1.0",
     "prettytable",
     "joblib",
+    "gemmi",
 ]
 
 [project.urls]

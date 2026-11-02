@@ -2,6 +2,30 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+_ICODE_ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+def _icode_from_counter(n):
+    """Return a letter-only insertion code for the nth extra residue at a position.
+
+    Sequence: A–Z (n=0–25), then AA–ZZ (n=26–701), then AAA–ZZZ, …
+    This avoids drifting into non-letter ASCII or unicode after Z.
+    Note: PDB format only stores one character per icode field, so codes
+    longer than one letter are only meaningful in mmCIF output.
+    """
+    if n < 26:
+        return _ICODE_ALPHA[n]
+    n -= 26
+    width = 2
+    while n >= 26 ** width:
+        n -= 26 ** width
+        width += 1
+    result = ''
+    for _ in range(width):
+        result = _ICODE_ALPHA[n % 26] + result
+        n //= 26
+    return result
+
 
 def construct_seq_from_chain(chain, return_borders=True, place_holder='?', alphabet='RNA'):
     # Takes a Bio.PDB chain and returns its sequence according to the original numbering.
@@ -31,6 +55,7 @@ def construct_seq_from_chain(chain, return_borders=True, place_holder='?', alpha
     from conkit.misc.rescodes import IRRELEVANT_res_codes as rescodes_to_ignore
 
     residues = unfold_entities(chain, "R")
+    residues = [r for r in residues if r.get_resname().strip() not in rescodes_to_ignore]
     # Sort by (integer seq_id, insertion code) so 92 comes before 92A before 92B.
     residues.sort(key=lambda r: (r.get_id()[1], r.get_id()[2]))
 
@@ -219,7 +244,7 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
     unusable_residues = []
     claimed_fasta_positions = set()
     last_fasta_pos = -1
-    icode_counter = {}  # base_seq_num → next icode ordinal (A=65, B=66, ...)
+    icode_counter = {}  # base_seq_num → count of icodes already assigned at that position
     original_map = {}
 
     for chain_pos, res in sorted(canonical_by_chain_pos.items()):
@@ -235,10 +260,10 @@ def write_renumbered_version_of_chain_in_struct(struct_file, file_type, seq, sel
         else:
             if last_fasta_pos >= 0:
                 base_seq_num = last_fasta_pos + 1
-                next_ord = icode_counter.get(base_seq_num, ord('A'))
-                new_icode = chr(next_ord)
+                n = icode_counter.get(base_seq_num, 0)
+                new_icode = _icode_from_counter(n)
                 res.id = (original_id[0], base_seq_num, new_icode)
-                icode_counter[base_seq_num] = next_ord + 1
+                icode_counter[base_seq_num] = n + 1
                 original_map[(base_seq_num, new_icode)] = (original_id[1], original_id[2], resname)
                 logger.warning(
                     "Residue %s has no FASTA counterpart; reassigned to (%d, %r) as insertion code. "
