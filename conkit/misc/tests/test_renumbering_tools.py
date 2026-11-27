@@ -353,27 +353,27 @@ class TestConstructSeqFromChain(unittest.TestCase):
 class TestGetAlignmentMapDict(unittest.TestCase):
 
     def test_returns_two_dicts_by_default(self):
-        result = get_alignment_map_dict('GAU', 'GAU')
+        result = get_alignment_map_dict('GAU', 'GAU', moltype='RNA')
         self.assertIsInstance(result, tuple)
         self.assertEqual(2, len(result))
 
     def test_identical_sequences_produce_identity_map(self):
-        fwd, _ = get_alignment_map_dict('GAU', 'GAU')
+        fwd, _ = get_alignment_map_dict('GAU', 'GAU', moltype='RNA')
         self.assertEqual({0: 0, 1: 1, 2: 2}, fwd)
 
     def test_reverse_dict_is_inverse_of_forward(self):
-        fwd, rev = get_alignment_map_dict('GAU', 'GAU')
+        fwd, rev = get_alignment_map_dict('GAU', 'GAU', moltype='RNA')
         for moving_idx, static_idx in fwd.items():
             self.assertEqual(moving_idx, rev[static_idx])
 
     def test_return_score_gives_three_values(self):
-        result = get_alignment_map_dict('GAU', 'GAU', return_score=True)
+        result = get_alignment_map_dict('GAU', 'GAU', moltype='RNA', return_score=True)
         self.assertEqual(3, len(result))
         _, _, score = result
         self.assertIsInstance(score, float)
 
     def test_return_both_directions_false_gives_single_dict(self):
-        result = get_alignment_map_dict('GAU', 'GAU', return_both_directions=False)
+        result = get_alignment_map_dict('GAU', 'GAU', moltype='RNA', return_both_directions=False)
         self.assertIsInstance(result, dict)
         self.assertEqual({0: 0, 1: 1, 2: 2}, result)
 

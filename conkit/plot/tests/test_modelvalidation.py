@@ -350,7 +350,7 @@ class TestModelValidationFigureDraw(_FixtureBase):
     def test_draw_sets_x_label(self):
         fig = self._make_fig()
         fig.draw(RUN_SVM=False, RUN_MAP_ALIGN=False, RUN_FILTERS=False)
-        self.assertEqual('Residue Number', fig.ax.get_xlabel())
+        self.assertEqual('Residue Number (FASTA position)', fig.ax.get_xlabel())
 
     def test_draw_sets_y_label(self):
         fig = self._make_fig()
