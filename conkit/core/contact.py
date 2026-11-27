@@ -36,7 +36,7 @@ from __future__ import print_function
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 from conkit.core.entity import Entity
 from conkit.core.mappings import AminoAcidOneToThree, AminoAcidThreeToOne, ContactMatchState
@@ -448,4 +448,9 @@ class Contact(Entity):
             return a_a
         elif a_a in AminoAcidThreeToOne.__members__:
             return AminoAcidThreeToOne[a_a].value
-        raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))
+        elif len(a_a) >= 3:
+            # Accept unknown 3+ character codes as potential modified residues
+            # (e.g. PSU, M2G) which appear as HETATM records in RNA structures.
+            return amino_acid
+        else:
+            raise ValueError("Unknown amino acid: {} (assert all is uppercase!)".format(amino_acid))

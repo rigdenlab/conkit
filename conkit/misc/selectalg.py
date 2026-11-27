@@ -31,7 +31,7 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "13 Aug 2018"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 import inspect
 import numpy as np
@@ -95,7 +95,7 @@ class SubselectionAlgorithm(object):
 
         """
         sorted_indices = cls._numpify(data).argsort()[::-1]
-        pivot = np.ceil(sorted_indices.shape[0] * cutoff).astype(np.int)
+        pivot = np.ceil(sorted_indices.shape[0] * cutoff).astype(int)
         keep = sorted_indices[:pivot]
         throw = sorted_indices[pivot:]
         return keep.tolist(), throw.tolist()

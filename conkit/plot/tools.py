@@ -31,10 +31,14 @@
 
 __author__ = "Felix Simkovic"
 __date__ = "16 Feb 2017"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
+import logging
 import numpy as np
 import os
+import subprocess
+
+logger = logging.getLogger(__name__)
 
 from conkit.core.contact import Contact
 from conkit.core.contactmap import ContactMap
@@ -70,9 +74,24 @@ class ColorDefinitions(object):
     FACTOR1 = L20CUTOFF
     SCORE = '#3299a8'
     ERROR = '#f54242'
-    CORRECT = '#40eef7'
+    CORRECT = '#5bc5e0'
     ALIGNED = '#3d8beb'
     MISALIGNED = '#f7ba40'
+    LOW_CONTACTS = '#9b80c8'
+    SUFFICIENT_CONTACTS = '#7ab87a'
+    MISUSED_ICODE = '#E8A838'
+    EXTRA_CANONICAL = '#9B59B6'
+    PLDDT_COLORS = {
+        100: "#0D57D4",
+        90: "#6ACCF2",
+        70: "#FFDA36",
+        50: "#FE7D4D"
+    }
+    Q_COLORS = {
+        1:   "#a5d6a7",  # light green  (Q > 0.5 – structures agree, error may be FP)
+        0.5: "#e64a19",  # deep orange  (Q < 0.5 – structures differ, error plausible)
+        0:   "#494953",  # near-black   (gesamt failed to align)
+    }
     AA_ENCODING = {
         "A": "#882D17",
         "C": "#F3C300",
@@ -277,8 +296,27 @@ def convolution_smooth_values(x, window=5):
     x_smooth = np.convolve(x, box, mode='same')
     return x_smooth
 
+def convolution_diff_values(x, window=5):
+    """Use convolutions to smooth a list of numeric values
 
-def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
+    Parameters
+    ----------
+    x : list, tuple
+       A list with the numeric values to be smoothed
+    window : int
+       The residue window to be used to smooth values [default: 5]
+
+    Returns
+    -------
+    list
+       A list with the smoothed numeric values
+    """
+    box = (np.arange(window) - int(window/2))
+    x_smooth = np.convolve(x, box, mode='same')
+    return x_smooth
+
+
+def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True, smooth_window=10, external_weights=None,max_distance=None):
     """Calculate the RMSD between two different distograms
 
     Parameters
@@ -295,8 +333,8 @@ def get_rmsd(distogram_1, distogram_2, calculate_wrmsd=True):
     tuple
        Two lists with the raw/smoothed RMSD values at each residue position
     """
-    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd)
-    rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), 10)
+    rmsd_raw = Distogram.calculate_rmsd(distogram_1, distogram_2, calculate_wrmsd=calculate_wrmsd, external_weights=external_weights,max_distance=max_distance)
+    rmsd_smooth = convolution_smooth_values(np.nan_to_num(rmsd_raw), smooth_window)
     return rmsd_raw, rmsd_smooth
 
 
@@ -381,7 +419,7 @@ def get_cmap_validation_metrics(model_cmap_dict, predicted_cmap_dict, sequence, 
     return cmap_metrics, smooth_cmap_metrics
 
 
-def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics):
+def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics, population_radius = 10):
     """Calculate the Z-Scores for a series of metrics at each residue position
     using the population of residues within 10A
 
@@ -394,7 +432,7 @@ def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics)
     absent_residues: list, tuple, set
         The residues that are missing from the model
     *metrics: list
-        The mertics for which the Z-Scores will be calculated
+        The metrics for which the Z-Scores will be calculated
 
     Returns
     -------
@@ -410,7 +448,7 @@ def get_zscores(model_distogram, predicted_cmap_dict, absent_residues, *metrics)
                 zscore_metric.append(np.nan)
             continue
 
-        neighbour_residues = model_distogram.find_residues_within(resnum, 10)
+        neighbour_residues = model_distogram.find_residues_within(resnum, population_radius)
         for cmap_metric, zscore_metric in zip(metrics, zscore_cmap_metrics):
             population_scores = [cmap_metric[resid - 1] for resid in neighbour_residues]
             observed_score = cmap_metric[resnum - 1]
@@ -490,3 +528,256 @@ def parse_map_align_stdout(stdout):
                     alignment_dict[int(residue_pair[1])] = int(residue_pair[0])
 
     return alignment_dict
+
+
+_gesamt_moltype_support_cache = {}
+
+def _gesamt_supports_moltype(gesamt_exe):
+    """Return True if this gesamt build recognises the -moltype flag."""
+    if gesamt_exe not in _gesamt_moltype_support_cache:
+        try:
+            out = subprocess.run([gesamt_exe, '-help'], capture_output=True, text=True, timeout=10)
+            supported = '-moltype' in out.stdout or '-moltype' in out.stderr
+        except Exception:
+            supported = False
+        _gesamt_moltype_support_cache[gesamt_exe] = supported
+    return _gesamt_moltype_support_cache[gesamt_exe]
+
+
+def Gesamt_Q_score(predictionfile, err_border_pred, experimentfile, err_border, gesamt_exe='gesamt', chain_experiment='A', chain_prediction='A', moltype='Protein'):
+    start_exp = err_border[0]
+    end_exp = err_border[1]
+    start_pred = err_border_pred[0]
+    end_pred = err_border_pred[1]
+
+    base_cmd = '{} {} -s {}/{}-{} {} -s {}/{}-{}'.format(
+        gesamt_exe, predictionfile, chain_prediction, start_pred, end_pred,
+        experimentfile, chain_experiment, start_exp, end_exp,
+    )
+    if _gesamt_supports_moltype(gesamt_exe):
+        base_cmd += ' -moltype={}'.format(moltype)
+
+    p = subprocess.Popen(base_cmd, stdout=subprocess.PIPE, shell=True)
+    logcontents = str(p.communicate()[0])
+    start_index = logcontents.find('Q-score          :')
+    end_index = logcontents.find('\\n', start_index, -1)
+    try:
+        Q = float(logcontents[end_index-10:end_index])
+    except Exception:
+        logger.warning("Q-score not found in gesamt output:\n%s", logcontents)
+        Q = -1
+    return Q
+
+def all_consecutive_true_indices(arr, count=5):
+    arr = np.asarray(arr, dtype=bool)
+    int_arr = arr.astype(int)
+    
+    # Find where windows of `count` True values occur
+    window_sum = np.convolve(int_arr, np.ones(count, dtype=int), mode='valid')
+    start_indices = np.where(window_sum == count)[0]
+
+    # Collect all indices that are part of any such window
+    result_indices = set()
+    for start in start_indices:
+        result_indices.update(range(start, start + count))
+
+    # Return sorted list of unique indices
+    return sorted(result_indices)
+
+def split_into_blocks(indices):
+
+    diffs = np.diff(indices)
+    split_indices = np.where(diffs > 1)[0] + 1
+    blocks = np.split(indices, split_indices)
+
+    return blocks
+
+def split_into_congruos_blocks(indices,correspondence):
+
+    diffs = np.diff(indices)
+    split_indices = np.where(diffs > 1)[0] + 1
+
+    shifts = [i-correspondence[i] for i in indices ]
+    shift_diffs = np.diff(shifts)
+    shift_indices = np.where(shift_diffs !=0 )[0] +1
+
+    splits = list(set(split_indices)|set(shift_indices))
+    splits.sort()
+
+    blocks = np.split(indices, splits)
+
+    return blocks
+
+def grow_region_to_correct_buffer(region, valid_nums, labels, buffer=3):
+    label_index_num_offset = np.min(valid_nums)
+    
+    regionstart = np.min(region)
+    regionend = np.max(region)
+    
+    b = 1
+    while b<=buffer:
+        if regionend + 1 not in valid_nums:
+            break
+        else: 
+            regionend += 1
+            if labels[regionend-label_index_num_offset]:
+                b = 1
+            else:
+                b += 1
+
+    b = 1
+    while b<=buffer:
+        if regionstart -1 not in valid_nums:
+            break
+        else: 
+            regionstart -= 1
+            if labels[regionstart-label_index_num_offset]:
+                b = 1
+            else:
+                b += 1
+
+    return (regionstart,regionend)
+
+def get_error_borders(svm_list, map_align_list, moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 0):
+
+    length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
+    svm_filled = np.zeros(length)
+    map_align_filled = np.zeros(length, dtype=bool)
+
+    relative_indices = moddeled_resnums - np.min(moddeled_resnums)
+    resnums_completed = np.arange(np.min(moddeled_resnums), np.max(moddeled_resnums) + 1)
+
+    svm_filled[relative_indices] = svm_list
+    svm_bool = (svm_filled >= 0.5)
+
+    map_align_filled[relative_indices] = map_align_list
+
+    general_flagged = svm_bool|map_align_filled
+
+    general_errors_indices = all_consecutive_true_indices(general_flagged, count = MIN_ERROR_SIZE)
+    general_error_resnums = resnums_completed[general_errors_indices]
+    general_errors = split_into_congruos_blocks(moddeled_resnums,correspondence)
+    #general_errors = split_into_blocks(general_error_resnums)
+
+    region_borders = []
+    region_borders_equiv = []
+
+    for err in general_errors:
+        if len(err)>=MIN_ERROR_SIZE:
+
+            err_equiv = [correspondence[err[0]],correspondence[err[-1]]]
+
+            region_borders.append([err[0],err[-1]])
+            region_borders_equiv.append([err_equiv[0],err_equiv[-1]])
+            #borders = grow_region_to_correct_buffer(err, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            #region_borders.append(borders)
+
+            #borders_equiv = grow_region_to_correct_buffer(err_equiv, moddeled_resnums, general_flagged, buffer=ERROR_BORDER_BUFFER)
+            #region_borders_equiv.append(borders_equiv)
+    #print()
+    return region_borders, region_borders_equiv
+
+def get_chunk_borders(moddeled_resnums, correspondence, MIN_ERROR_SIZE = 5, ERROR_BORDER_BUFFER = 0):
+    length = np.max(moddeled_resnums) - np.min(moddeled_resnums) + 1
+
+
+
+def areaimol_ACC(structfile,file_type,areaimol_exe,tempfile_instructions_name='areaimol_acc_instructions.txt',tempfile_out_name='areaimol_log.log'):
+
+    if file_type != 'pdb':
+        if file_type == 'mmcif':
+            import gemmi as _gemmi
+            import os
+            pdb_path = os.path.splitext(structfile)[0] + '.pdb'
+            try:
+                _gemmi.read_structure(structfile).write_pdb(pdb_path)
+            except Exception as e:
+                logger.warning("areaimol_ACC: gemmi mmCIF→PDB conversion failed: %s", e)
+                return
+            structfile = pdb_path
+            logger.debug("Converted mmcif to pdb: %s", structfile)
+        else:
+            logger.warning("areaimol_ACC: unrecognised structure file type %r (expected 'pdb' or 'mmcif'); skipping ACC calculation.", file_type)
+            return
+
+    cmd = [f'{areaimol_exe}', 'XYZIN' ,f'{structfile}']
+    instructions = "REPORT CONTACT NO GXGRATIO NO\nEND\neof".encode('utf-8')
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE,stdin=subprocess.PIPE) 
+    out, err = p.communicate(instructions)
+    ### this section needs error handling
+    out_str = out.decode('utf-8')
+    lines = out_str.split('\n')
+
+    for l in range(len(lines)):
+        if  'Per-residue ASA & ratio to reference GXG value.' in lines[l]:
+            start = l+3
+        if  "Total area of chain '" in lines[l]:
+            end = l-2
+
+    whole_list_of_values = []
+    for l in range(start,end):
+        lsplitted=lines[l].split()
+        whole_list_of_values = whole_list_of_values + lsplitted
+
+    resnums = whole_list_of_values[2::5].copy()
+    acc = whole_list_of_values[3::5].copy()
+
+    for r in range(len(resnums)):
+        resnums[r] = int(resnums[r]) 
+        acc[r] = float(acc[r])
+
+    ACC_df = {'RESNUM' : resnums, 'ACC' : acc}
+
+    return ACC_df
+
+
+def biopython_ACC(structfile, file_type):
+    """Compute per-residue solvent-accessible surface area using Bio.PDB ShrakeRupley.
+
+    Produces values compatible with areaimol_ACC: empirical comparison on 4WCE
+    chain Y showed areaimol does not apply nucleotide-type reference normalisation
+    (implied reference ~1 Å² for all of A/C/G/U), so its output is effectively
+    raw SASA in Å².  ShrakeRupley raw SASA agrees with areaimol to within ~2–3%
+    on the same structure, so no additional scaling is needed.
+
+    Returns the same {'RESNUM': [...], 'ACC': [...]} dict as areaimol_ACC, or
+    None on failure.
+    """
+    import os
+    from Bio.PDB import PDBParser
+    from Bio.PDB.MMCIFParser import MMCIFParser
+    from Bio.PDB.SASA import ShrakeRupley
+
+    if file_type == 'mmcif':
+        import gemmi as _gemmi
+        pdb_path = os.path.splitext(structfile)[0] + '_sasa_tmp.pdb'
+        try:
+            _gemmi.read_structure(structfile).write_pdb(pdb_path)
+        except Exception as e:
+            logger.warning("biopython_ACC: mmCIF→PDB conversion failed: %s", e)
+            return None
+        parse_path = pdb_path
+    elif file_type == 'pdb':
+        parse_path = structfile
+    else:
+        logger.warning("biopython_ACC: unsupported file type %r; skipping ACC calculation.", file_type)
+        return None
+
+    try:
+        parser = PDBParser(QUIET=True)
+        structure = parser.get_structure('s', parse_path)
+        sr = ShrakeRupley()
+        sr.compute(structure, level='R')
+        resnums, acc = [], []
+        for res in structure[0].get_residues():
+            if res.get_id()[2].strip() == '':  # canonical residues only
+                resnums.append(res.get_id()[1])
+                acc.append(round(res.sasa, 4))
+    except Exception as e:
+        logger.warning("biopython_ACC: SASA calculation failed: %s", e)
+        return None
+    finally:
+        if file_type == 'mmcif' and os.path.exists(pdb_path):
+            os.remove(pdb_path)
+
+    return {'RESNUM': resnums, 'ACC': acc}

@@ -35,12 +35,9 @@ Command line object for bbcontacts contact filtering application
 
 __author__ = "Felix Simkovic"
 __date__ = "10 Aug 2016"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
-from Bio.Application import _Argument
-from Bio.Application import _Option
-from Bio.Application import _Switch
-from Bio.Application import AbstractCommandline
+from conkit.applications._compat import _Argument, _Option, _Switch, AbstractCommandline
 
 
 class BbcontactsCommandline(AbstractCommandline):

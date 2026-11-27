@@ -35,7 +35,7 @@ from __future__ import division
 
 __author__ = "Felix Simkovic"
 __date__ = "03 Aug 2016"
-__version__ = "0.13.3"
+__version__ = "0.14.1"
 
 import collections
 import numpy as np
@@ -86,12 +86,13 @@ class ContactMap(Entity):
 
     """
 
-    __slots__ = ["_sequence"]
+    __slots__ = ["_sequence","_plddt"]
 
     def __init__(self, id):
         """Initialise a new contact map"""
         self._sequence = None
-        super(ContactMap, self).__init__(id)
+        self._plddt = None
+        super(ContactMap, self).__init__(id)  ## give the contact map all atributes and methods of Entity
 
     def __repr__(self):
         return '{}(id="{}", ncontacts={})'.format(self.__class__.__name__, self.id, self.ncontacts)
@@ -366,7 +367,7 @@ class ContactMap(Entity):
         from conkit.core.ext.c_contactmap import c_singletons
 
         X = np.array(self.as_list(), dtype=np.int64)
-        throwables = np.full(X.shape[0], False, dtype=np.bool)
+        throwables = np.full(X.shape[0], False, dtype=bool)
         c_singletons(X, 2, throwables)
         singletons = self.deepcopy()
         for i, contact in enumerate(self):
@@ -404,6 +405,18 @@ class ContactMap(Entity):
 
         """
         return self._sequence
+        
+    @property
+    def plddt(self):
+        """The predicted local distance difference test values giving rise to the contact map`
+
+        Returns
+        -------
+        list
+           A dict containing the plddt values ordered along the sequence
+
+        """
+        return self._plddt
 
     @sequence.setter
     def sequence(self, sequence):
@@ -423,6 +436,26 @@ class ContactMap(Entity):
             self._sequence = sequence
         else:
             raise TypeError("Instance of Sequence() required: {}".format(sequence))
+
+
+    @plddt.setter
+    def plddt(self, plddt):
+        """Associate a list of plddt values with the :obj:`~conkit.core.contactmap.ContactMap`
+
+        Parameters
+        ----------
+        plddt dict
+
+        Raises
+        ------
+        :exc:`TypeError`
+           Incorrect hierarchy instance provided
+
+        """
+        if isinstance(plddt, dict):
+            self._plddt = plddt
+        else:
+            raise TypeError("list required")
 
     @property
     def top_contact(self):
@@ -458,7 +491,7 @@ class ContactMap(Entity):
         Returns
         -------
         dict
-            A dictionary represnetation of the :obj:`~conkit.core.contactmap.ContactMap` instance
+            A dictionary representation of the :obj:`~conkit.core.contactmap.ContactMap` instance
         """
         if self.sequence is None:
             seq_len = self.highest_residue_number

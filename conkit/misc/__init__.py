@@ -32,19 +32,46 @@ __author__ = "Felix Simkovic"
 __date__ = "18 May 2018"
 __version__ = "2.0"
 
+import logging
 import os
 import joblib
 import numpy as np
 import warnings
 
+logger = logging.getLogger(__name__)
+
 TRAINED_CLASSIFIER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'trained_classifier.joblib')
 STANDARD_SCALER_PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'standard_scaler.joblib')
+LOCATION = os.path.abspath(os.path.dirname(__file__))
+
 SELECTED_VALIDATION_FEATURES = ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
                                 'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY']
-ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
+SELECTED_VALIDATION_FEATURES_DICT ={
+                                'Protein_DSSP_AF2_dist_': ['WRMSD_SMOOTH', 'ZSCORE_WRMSD', 'COIL', 'HELIX', 'ACC', 'FPR_SMOOTH',
+                                'SENSITIVITY_SMOOTH', 'ZSCORE_SENSITIVITY', 'ACCURACY', 'ZSCORE_ACCURACY'],
+
+                                'RNA_AF3_dist_': ['ACC', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'ACCURACY_SMOOTH', 'FN_SMOOTH',
+                                'FPR_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'],
+
+                                'RNA_AF3_struct_': ['ACC', 'WRMSD', 'FN', 'SENSITIVITY', 'ACCURACY_SMOOTH', 'ZSCORE_WRMSD', 
+                                'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY'],
+
+                                'RNA_DNATCO_AF3_dist_': ['ACC', 'AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12',
+                                'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'ACCURACY', 'FN', 'FP', 'FPR', 'ACCURACY_SMOOTH', 
+                                'FN_SMOOTH', 'FPR_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FPR'],
+
+                                'RNA_DNATCO_AF3_struct_': ['ACC', 'AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12',
+                                'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'WRMSD', 'FN',
+                                'SENSITIVITY', 'ACCURACY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN', 'ZSCORE_SENSITIVITY']
+                                
+                                }
+
+ALL_VALIDATION_FEATURES = ['RESNUM', 'WRMSD', 'WRMSD_SMOOTH', 'ACCURACY', 'FN', 'FNR', 'FP', 'FPR', 'SENSITIVITY',
                            'SPECIFICITY', 'ACCURACY_SMOOTH', 'FN_SMOOTH', 'FNR_SMOOTH', 'FP_SMOOTH', 'FPR_SMOOTH',
                            'SENSITIVITY_SMOOTH', 'SPECIFICITY_SMOOTH', 'ZSCORE_WRMSD', 'ZSCORE_ACCURACY', 'ZSCORE_FN',
                            'ZSCORE_FNR', 'ZSCORE_FP', 'ZSCORE_FPR', 'ZSCORE_SENSITIVITY', 'ZSCORE_SPECIFICITY']
+
+DNATCO_CATEGORIES = ['AAA', 'AAw', 'AAu', 'A-B', 'B-A', 'BBB', 'BBw', 'B12', 'BB2', 'miB', 'ICL', 'OPN', 'SYN', 'ZZZ', 'DNATCO_TOT_RMSD']
 
 
 def load_validation_model():
@@ -54,7 +81,38 @@ def load_validation_model():
         raise FileNotFoundError('Cannot find scaler pickle file {}'.format(STANDARD_SCALER_PICKLE))
     classifier = joblib.load(TRAINED_CLASSIFIER_PICKLE)
     scaler = joblib.load(STANDARD_SCALER_PICKLE)
+
     return classifier, scaler
+
+def load_specific_validation_model(name):
+    logger.debug("Loading validation model: %s", name)
+    classifier_fn = os.path.join(LOCATION, f'{name}trained_classifier.pkl')
+    scaler_fn = os.path.join(LOCATION, f'{name}standard_scaler.pkl')
+    if not os.path.isfile(classifier_fn):
+        raise FileNotFoundError('Cannot find classifier pickle file {}'.format(classifier_fn))
+    if not os.path.isfile(scaler_fn):
+        raise FileNotFoundError('Cannot find scaler pickle file {}'.format(scaler_fn))
+    classifier = joblib.load(classifier_fn)
+    scaler = joblib.load(scaler_fn)
+
+    return classifier, scaler
+
+def load_filter(filter_type):
+    scaler_fn = f'{filter_type}_lasso_filter_scaler.pkl'
+    filter_fn = f'{filter_type}_lasso_filter.pkl'
+
+    filter_file = os.path.join(LOCATION, filter_fn)
+    scaler_file = os.path.join(LOCATION, scaler_fn)
+
+    if not os.path.isfile(filter_file):
+        raise FileNotFoundError('Cannot find filter pickle file {}'.format(filter_file))
+    if not os.path.isfile(scaler_file):
+        raise FileNotFoundError('Cannot find scaler pickle file {}'.format(scaler_file))
+        
+    _filter = joblib.load(filter_file)
+    _scaler = joblib.load(scaler_file)
+
+    return _filter, _scaler
 
 
 def deprecate(version, msg=None):

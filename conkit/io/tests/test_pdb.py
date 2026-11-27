@@ -170,5 +170,41 @@ END
         self.assertEqual([86, 171, 208, 171, 208, 208], [c.res2_seq for c in contact_map1 if c.true_positive])
 
 
+    def test_hetatm_excluded_by_default(self):
+        # Two standard RNA residues (ATOM) plus one modified base (HETATM).
+        # With include_hetatms=False the modified base must be stripped, leaving
+        # only the G-A pair.
+        content = """\
+ATOM      1  C1'   G A   1       0.000   0.000   0.000  1.00  0.00           C
+ATOM      2  C1'   A A   2       5.000   0.000   0.000  1.00  0.00           C
+HETATM    3  C1' PSU A   3      10.000   0.000   0.000  1.00  0.00           C
+END
+"""
+        f_name = self.tempfile(content=content)
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=15, atom_type="C1'", include_hetatms=False)
+        contact_map = contact_file.top_map
+        self.assertEqual(1, len(contact_map))
+        self.assertEqual([1], [c.res1_seq for c in contact_map])
+        self.assertEqual([2], [c.res2_seq for c in contact_map])
+
+    def test_hetatm_included_for_rna(self):
+        # Same fixture. With include_hetatms=True the modified base PSU is kept,
+        # giving three residue pairs instead of one.
+        content = """\
+ATOM      1  C1'   G A   1       0.000   0.000   0.000  1.00  0.00           C
+ATOM      2  C1'   A A   2       5.000   0.000   0.000  1.00  0.00           C
+HETATM    3  C1' PSU A   3      10.000   0.000   0.000  1.00  0.00           C
+END
+"""
+        f_name = self.tempfile(content=content)
+        with open(f_name, "r") as f_in:
+            contact_file = PdbParser().read(f_in, distance_cutoff=15, atom_type="C1'", include_hetatms=True)
+        contact_map = contact_file.top_map
+        self.assertEqual(3, len(contact_map))
+        self.assertEqual([1, 1, 2], [c.res1_seq for c in contact_map])
+        self.assertEqual([2, 3, 3], [c.res2_seq for c in contact_map])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
